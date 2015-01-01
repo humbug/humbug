@@ -1,0 +1,23 @@
+#!/usr/bin/env php
+<?php
+
+if (PHP_SAPI !== 'cli') {
+    echo 'Warning: Humbug may only be invoked from a command line', PHP_EOL;
+}
+
+require_once __DIR__ . '/../src/bootstrap.php';
+
+use Humbug\Console\Application;
+
+if (function_exists('date_default_timezone_set')
+&& function_exists('date_default_timezone_get')) {
+    date_default_timezone_set(@date_default_timezone_get());
+}
+
+error_reporting(-1);
+if (function_exists('ini_set')) {
+    @ini_set('display_errors', 1);
+}
+
+$application = new Application();
+$application->run();

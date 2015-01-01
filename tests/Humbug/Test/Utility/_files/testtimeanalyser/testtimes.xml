@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="ArrayTest"
+             file="/home/sb/ArrayTest.php"
+             tests="2"
+             assertions="2"
+             failures="0"
+             errors="0"
+             time="0.116030">
+    <testcase name="testNewArrayIsEmpty"
+              class="ArrayTest"
+              file="/home/sb/ArrayTest.php"
+              line="6"
+              assertions="1"
+              time="0.008044"/>
+    <testcase name="testArrayContainsAnElement"
+              class="ArrayTest"
+              file="/home/sb/ArrayTest.php"
+              line="15"
+              assertions="1"
+              time="0.107986"/>
+  </testsuite>
+  <testsuite name="ArrayTest2"
+             file="/home/sb/ArrayTest2.php"
+             tests="2"
+             assertions="2"
+             failures="0"
+             errors="0"
+             time="0.016030">
+    <testcase name="testNewArrayIsEmpty"
+              class="ArrayTest2"
+              file="/home/sb/ArrayTest2.php"
+              line="6"
+              assertions="1"
+              time="0.008044"/>
+    <testcase name="testArrayContainsAnElement"
+              class="ArrayTest2"
+              file="/home/sb/ArrayTest2.php"
+              line="15"
+              assertions="1"
+              time="0.007986"/>
+  </testsuite>
+</testsuites>
