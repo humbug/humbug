@@ -198,6 +198,12 @@ class Mutable
             case '-':
                 $type = 'OperatorSubtraction';
                 break;
+            case '>':
+                $type = 'ConditionGreaterThan';
+                break;
+            case '<':
+                $type = 'ConditionLessThan';
+                break;
         }
         if (!empty($type)) {
             $mutationClass =  'Humbug\\Mutation\\' . $type;
@@ -234,6 +240,12 @@ class Mutable
                 break;
             case T_BOOLEAN_OR:
                 $type = 'BooleanOr';
+                break;
+            case T_IS_GREATER_OR_EQUAL:
+                $type = 'ConditionGreaterThanOrEqualTo';
+                break;
+            case T_IS_SMALLER_OR_EQUAL:
+                $type = 'ConditionLessThanOrEqualTo';
                 break;
             case T_STRING:
                 $type = $this->parseTString($token);
