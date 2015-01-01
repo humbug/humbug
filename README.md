@@ -127,6 +127,21 @@ The humbug command is now at ./humbug/bin/humbug.
 
 Humbug will currently work on PHP 5.4 or greater.
 
+Performance
+-----------
+
+Mutation Testing is slow. The concept being to re-run your test suite for each
+mutation generated. To speed things up, Humbug does the following:
+
+* On each test run, it only uses those test classes which cover the specific file
+and line on which the mutation was inserted.
+* It orders test classes to run so that the slowest go last (hopefully the faster
+tests will detect it early!).
+* We use Runkit because...writing many files is the opposite of fast.
+* If a mutation falls on a line not covered by any tests, well, we don't bother
+running any tests.
+
+The result is that Humbug will trundle along at a fairly nice speed.
 
 Did I Say Rough Edges?
 ----------------------
