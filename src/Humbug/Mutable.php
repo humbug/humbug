@@ -169,7 +169,7 @@ class Mutable
              * Check all tokens and see which can be mutated. Keep the viable
              * mutations ready to spawn later.
              */
-            foreach ($cleanTokens as $index=>$token) {
+            foreach ($method['tokens'] as $index=>$token) {
                 foreach ($this->mutators as $mutator) {
                     if ($mutator::mutates($cleanTokens, $index)) {
                         $this->mutations[] = [
