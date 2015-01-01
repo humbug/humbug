@@ -114,10 +114,13 @@ We use Runkit to alter PHP methods without resorting to writing entire source co
 copies all over the place. No, you are not required to install this on production
 servers. Yes, it would be nice to have the PECL runkit synced to Dmitry's version.
 
-Packagist registration will follow shortly, but for now:
+Packagist registration will follow shortly, but for now you can clone and install
+its dependencies using Composer:
 
 ```
 git clone https://github.com/padraic/humbug.git
+cd humbug
+/path/to/composer.phar install
 ```
 
 The humbug command is now at ./humbug/bin/humbug.
