@@ -30,7 +30,7 @@ class BooleanTrue extends MutationAbstract
     public static function mutates(array $tokens, $index)
     {
         $t = $tokens[$index];
-        if (!is_array($t) && $t[0] == T_STRING && strtolower($t[1]) == 'true') {
+        if (is_array($t) && $t[0] == T_STRING && strtolower($t[1]) == 'true') {
             return true;
         }
         return false;
