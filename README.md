@@ -69,23 +69,24 @@ Humbug is analysing source files...
 Mutation Testing is commencing...
 (.: killed, M: escaped, S: uncovered, E: fatal error, T: timed out)
 
-.MMMSS.SSSM.SSMSS..SMSM.T.M.....S.......MMM.SS.SMMS...SMMSMS |   60
-SSSSSSSS..S.M..S.MM...M.SSM.....MM.SEEE..M..M.ME...M..ESSSSS |  120
-MSSMM.MMMMS..MMMMSSSSS.MMSMSSSSSS.......M..M
+.MMMSS.SSSM.SSS.MSS.....SMSM.MTT.MM.....SM.........SMMMM.SS. |   60
+SMMS......SMMSMMMSSSSSSSSSS..S.M...M.S..MM....M.SSM.......MM |  120
+.MSMEEE..M..M.ME...M..ESSSSSMSSMM.MMMMS.EMMMMMSSSMSS.MMSMSSS |  180
+SSSSS........M..MMSM
 
-164 mutations were generated:
-      63 mutants were killed
-      43 mutants were never detected
-       5 fatal errors were encountered
-       1 time outs were encountered
-      52 mutants were not covered by any test
+200 mutations were generated:
+      78 mutants were killed
+      56 mutants were never detected
+       6 fatal errors were encountered
+       2 time outs were encountered
+      58 mutants were not covered by any test
 
-Out of 112 testable mutants, 60% were detected.
-Out of 164 total mutations, 32% were untestable.
+Out of 142 testable mutants, 59% were detected.
+Out of 200 total mutations, 29% were untestable.
 
 Remember that some mutants will inevitably be harmless (i.e. false positives).
 
-Time: 2.44 minutes Memory: 9.75MB
+Time: 36.66 seconds Memory: 10.75MB
 ```
 
 Additional detailed information about escaped mutations and errors is currently
@@ -140,6 +141,10 @@ tests will detect it early!).
 * We use Runkit because...writing many files is the opposite of fast.
 * If a mutation falls on a line not covered by any tests, well, we don't bother
 running any tests.
+* Performance may, depending on the source code, be significantly impacted by timeouts.
+The default of 60s may be far too high for smaller codebases, and far too low for
+larger ones. As a rule of thumb, it shouldn't exceed the seconds needed to
+normally run the tests being mutated (and can be set lower).
 
 The result is that Humbug will trundle along at a fairly nice speed.
 
