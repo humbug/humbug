@@ -153,6 +153,8 @@ class Humbug extends Command
         /**
          * We can do parallel runs, but typically two test runs will compete for
          * any uninsulated resources (e.g. files/database) so hardcoded to 1 for now.
+         *
+         * TODO: Move PHPUnit specific stuff to adapter...
          */
         $parallels = 1;
 

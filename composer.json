@@ -1,10 +1,10 @@
 {
     "name": "humbug/humbug",
     "description": "Bah...",
-    "keywords": ["testing"],
+    "keywords": ["testing", "mutation", "mutation testing"],
     "homepage": "https://github.com/padraic/humbug",
     "type": "library",
-    "license": "BSD",
+    "license": "BSD-3-Clause",
     "authors": [
         {
             "name": "Padraic Brady",
@@ -16,7 +16,7 @@
         "issues": "https://github.com/padraic/humbug/issues"
     },
     "require": {
-        "php": ">=5.5.0",
+        "php": ">=5.4.0",
         "symfony/console": "~2.6",
         "symfony/finder": "~2.6",
         "symfony/process": "~2.6",
