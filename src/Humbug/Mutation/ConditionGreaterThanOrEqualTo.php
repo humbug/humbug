@@ -26,4 +26,13 @@ class ConditionGreaterThanOrEqualTo extends MutationAbstract
         return $tokens;
     }
 
+    public static function mutates(array $tokens, $index)
+    {
+        $t = $tokens[$index];
+        if (is_array($t) && $t[0] == T_IS_GREATER_OR_EQUAL) {
+            return true;
+        }
+        return false;
+    }
+
 }

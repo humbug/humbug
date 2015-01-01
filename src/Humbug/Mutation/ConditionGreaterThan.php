@@ -29,4 +29,13 @@ class ConditionGreaterThan extends MutationAbstract
         return $tokens;
     }
 
+    public static function mutates(array $tokens, $index)
+    {
+        $t = $tokens[$index];
+        if (!is_array($t) && $t == '>') {
+            return true;
+        }
+        return false;
+    }
+
 }

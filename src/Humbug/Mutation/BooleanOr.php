@@ -26,4 +26,13 @@ class BooleanOr extends MutationAbstract
         return $tokens;
     }
 
+    public static function mutates(array $tokens, $index)
+    {
+        $t = $tokens[$index];
+        if (is_array($t) && $t[0] == T_BOOLEAN_OR) {
+            return true;
+        }
+        return false;
+    }
+
 }

@@ -36,6 +36,21 @@ class Mutable
      */
     protected $mutables = [];
 
+    protected $mutators = [
+        '\Humbug\Mutation\BooleanAnd',
+        '\Humbug\Mutation\BooleanFalse',
+        '\Humbug\Mutation\BooleanOr',
+        '\Humbug\Mutation\BooleanTrue',
+        '\Humbug\Mutation\ConditionGreaterThan',
+        '\Humbug\Mutation\ConditionGreaterThanOrEqualTo',
+        '\Humbug\Mutation\ConditionLessThan',
+        '\Humbug\Mutation\ConditionLessThanOrEqualTo',
+        '\Humbug\Mutation\OperatorAddition',
+        '\Humbug\Mutation\OperatorSubtraction',
+        '\Humbug\Mutation\OperatorIncrement',
+        '\Humbug\Mutation\OperatorDecrement'
+    ];
+
     /**
      * Constructor; sets name and relative path of the file being mutated
      *
@@ -154,130 +169,26 @@ class Mutable
              * Check all tokens and see which can be mutated. Keep the viable
              * mutations ready to spawn later.
              */
-            foreach ($method['tokens'] as $index=>$token) {
-                if (is_string($token['token'])) {
-                    $mutation = $this->parseStringToken($token['token'], $index);
-                } else {
-                    $mutation = $this->parseToken($token['token'], $index);
-                }
-                if (!is_null($mutation)) {
-                    $this->mutations[] = [
-                        'replace'       => $method['replace'],
-                        'args'          => $method['args'],
-                        'file'          => $method['file'],
-                        'class'         => $method['class'],
-                        'method'        => $method['method'],
-                        'classesUsed'   => $method['classesUsed'],
-                        'tokens'        => $cleanTokens,//$method['tokens'],
-                        'index'         => $index,
-                        'mutation'      => $mutation,
-                        'line'          => $token['line']
-                    ];
+            foreach ($cleanTokens as $index=>$token) {
+                foreach ($this->mutators as $mutator) {
+                    if ($mutator::mutates($cleanTokens, $index)) {
+                        $this->mutations[] = [
+                            'replace'       => $method['replace'],
+                            'args'          => $method['args'],
+                            'file'          => $method['file'],
+                            'class'         => $method['class'],
+                            'method'        => $method['method'],
+                            'classesUsed'   => $method['classesUsed'],
+                            'tokens'        => $cleanTokens,
+                            'index'         => $index,
+                            'mutation'      => new $mutator($this->getFilename()),
+                            'line'          => $token['line']
+                        ];
+                    }
                 }
             }
+            
         }
-    }
-
-    /**
-     * Parse a given token (in string form) to identify its type and ascertain
-     * whether it can be replaced with a mutated form. The mutated form, if
-     * any, is returned for future integration into a mutated version of the
-     * source code being tested.
-     *
-     * @param array $token The token to check for viable mutations
-     * @param integer $index The index of the token in the method's body
-     * @return mixed Return null if no mutation, or a mutation object
-     */
-    protected function parseStringToken($token, $index)
-    {
-        $type = '';
-        switch ($token) {
-            case '+':
-                $type = 'OperatorAddition';
-                break;
-            case '-':
-                $type = 'OperatorSubtraction';
-                break;
-            case '>':
-                $type = 'ConditionGreaterThan';
-                break;
-            case '<':
-                $type = 'ConditionLessThan';
-                break;
-        }
-        if (!empty($type)) {
-            $mutationClass =  'Humbug\\Mutation\\' . $type;
-            if (!class_exists($mutationClass)) {
-                require_once str_replace('\\', '/', ltrim($mutationClass, '\\')) . '.php';
-            }
-            $mutation = new $mutationClass($this->getFilename());
-            return $mutation;
-        }
-    }
-
-    /**
-     * Parse a given token (in array form) to identify its type and ascertain
-     * whether it can be replaced with a mutated form. The mutated form, if
-     * any, is returned for future integration into a mutated version of the
-     * source code being tested.
-     *
-     * @param array $token The token to check for viable mutations
-     * @param integer $index The index of the token in the method's body
-     * @return mixed Return null if no mutation, or a mutation object
-     */
-    protected function parseToken(array $token, $index)
-    {
-        $type = '';
-        switch ($token[0]) {
-            case T_INC:
-                $type = 'OperatorIncrement';
-                break;
-            case T_DEC:
-                $type = 'OperatorDecrement';
-                break;
-            case T_BOOLEAN_AND:
-                $type = 'BooleanAnd';
-                break;
-            case T_BOOLEAN_OR:
-                $type = 'BooleanOr';
-                break;
-            case T_IS_GREATER_OR_EQUAL:
-                $type = 'ConditionGreaterThanOrEqualTo';
-                break;
-            case T_IS_SMALLER_OR_EQUAL:
-                $type = 'ConditionLessThanOrEqualTo';
-                break;
-            case T_STRING:
-                $type = $this->parseTString($token);
-                break;
-        }
-        if (!empty($type)) {
-            $mutationClass =  'Humbug\\Mutation\\' . $type;
-            if (!class_exists($mutationClass)) {
-                // todo: given we're autoloading, could we not just kick up an exception here?
-                require_once str_replace('\\', '/', ltrim($mutationClass, '\\')) . '.php';
-            }
-            $mutation = new $mutationClass($this->getFilename());
-            return $mutation;
-        }
-        return null;
-    }
-
-    /**
-     * Parse a T_STRING value to identify a possible mutation type
-     *
-     * @param array $token
-     * @return string
-     */
-    public function parseTString(array $token)
-    {
-        $type = null;
-        if (strtolower($token[1]) == 'true') {
-            $type = 'BooleanTrue';
-        } elseif (strtolower($token[1]) == 'false') {
-            $type = 'BooleanFalse';
-        }
-        return $type;
     }
 
     /**
