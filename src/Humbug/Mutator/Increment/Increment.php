@@ -8,13 +8,14 @@
  * @license    https://github.com/padraic/humbug/blob/master/LICENSE New BSD License
  */
 
-namespace Humbug\Mutation;
+namespace Humbug\Mutator\Increment;
 
-class OperatorSubtraction extends MutationAbstract
+use Humbug\Mutator\MutatorAbstract;
+
+class Increment extends MutatorAbstract
 {
-
     /**
-     * Replace minus sign (-) with plus sign (+)
+     * Replace T_INC (++) with T_DEC (--)
      *
      * @param array $tokens
      * @param int $index
@@ -22,14 +23,15 @@ class OperatorSubtraction extends MutationAbstract
      */
     public function getMutation(array $tokens, $index)
     {
-        $tokens[$index] = '+';
+        $tokens[$index][0] = T_DEC;
+        $tokens[$index][1] = '--';
         return $tokens;
     }
 
     public static function mutates(array $tokens, $index)
     {
         $t = $tokens[$index];
-        if (!is_array($t) && $t == '-') {
+        if (is_array($t) && $t[0] == T_INC) {
             return true;
         }
         return false;

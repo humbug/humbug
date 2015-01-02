@@ -8,12 +8,15 @@
  * @license    https://github.com/padraic/humbug/blob/master/LICENSE New BSD License
  */
 
-namespace Humbug\Mutation;
+namespace Humbug\Mutator\ConditionalBoundary;
 
-class OperatorIncrement extends MutationAbstract
+use Humbug\Mutator\MutatorAbstract;
+
+class LessThan extends MutatorAbstract
 {
+
     /**
-     * Replace T_INC (++) with T_DEC (--)
+     * Replace (<) with (<=)
      *
      * @param array $tokens
      * @param int $index
@@ -21,15 +24,17 @@ class OperatorIncrement extends MutationAbstract
      */
     public function getMutation(array $tokens, $index)
     {
-        $tokens[$index][0] = T_DEC;
-        $tokens[$index][1] = '--';
+        $tokens[$index] = [
+            T_IS_SMALLER_OR_EQUAL,
+            '<='
+        ];
         return $tokens;
     }
 
     public static function mutates(array $tokens, $index)
     {
         $t = $tokens[$index];
-        if (is_array($t) && $t[0] == T_INC) {
+        if (!is_array($t) && $t == '<') {
             return true;
         }
         return false;

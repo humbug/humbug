@@ -8,9 +8,11 @@
  * @license    https://github.com/padraic/humbug/blob/master/LICENSE New BSD License
  */
 
-namespace Humbug\Mutation;
+namespace Humbug\Mutator\Boolean;
 
-class BooleanFalse extends MutationAbstract
+use Humbug\Mutator\MutatorAbstract;
+
+class False extends MutatorAbstract
 {
 
     /**

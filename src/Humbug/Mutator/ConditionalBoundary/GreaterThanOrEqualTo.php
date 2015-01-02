@@ -8,13 +8,15 @@
  * @license    https://github.com/padraic/humbug/blob/master/LICENSE New BSD License
  */
 
-namespace Humbug\Mutation;
+namespace Humbug\Mutator\ConditionalBoundary;
 
-class ConditionLessThan extends MutationAbstract
+use Humbug\Mutator\MutatorAbstract;
+
+class GreaterThanOrEqualTo extends MutatorAbstract
 {
 
     /**
-     * Replace (<) with (<=)
+     * Replace (>=) with (>)
      *
      * @param array $tokens
      * @param int $index
@@ -22,17 +24,14 @@ class ConditionLessThan extends MutationAbstract
      */
     public function getMutation(array $tokens, $index)
     {
-        $tokens[$index] = [
-            T_IS_SMALLER_OR_EQUAL,
-            '<='
-        ];
+        $tokens[$index] = '>';
         return $tokens;
     }
 
     public static function mutates(array $tokens, $index)
     {
         $t = $tokens[$index];
-        if (!is_array($t) && $t == '<') {
+        if (is_array($t) && $t[0] == T_IS_GREATER_OR_EQUAL) {
             return true;
         }
         return false;

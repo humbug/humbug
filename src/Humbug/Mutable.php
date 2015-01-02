@@ -37,18 +37,18 @@ class Mutable
     protected $mutables = [];
 
     protected $mutators = [
-        '\Humbug\Mutation\BooleanAnd',
-        '\Humbug\Mutation\BooleanFalse',
-        '\Humbug\Mutation\BooleanOr',
-        '\Humbug\Mutation\BooleanTrue',
-        '\Humbug\Mutation\ConditionGreaterThan',
-        '\Humbug\Mutation\ConditionGreaterThanOrEqualTo',
-        '\Humbug\Mutation\ConditionLessThan',
-        '\Humbug\Mutation\ConditionLessThanOrEqualTo',
-        '\Humbug\Mutation\OperatorAddition',
-        '\Humbug\Mutation\OperatorSubtraction',
-        '\Humbug\Mutation\OperatorIncrement',
-        '\Humbug\Mutation\OperatorDecrement'
+        '\Humbug\Mutator\Boolean\LogicalAnd',
+        '\Humbug\Mutator\Boolean\False',
+        '\Humbug\Mutator\Boolean\LogicalOr',
+        '\Humbug\Mutator\Boolean\True',
+        '\Humbug\Mutator\ConditionalBoundary\GreaterThan',
+        '\Humbug\Mutator\ConditionalBoundary\GreaterThanOrEqualTo',
+        '\Humbug\Mutator\ConditionalBoundary\LessThan',
+        '\Humbug\Mutator\ConditionalBoundary\LessThanOrEqualTo',
+        '\Humbug\Mutator\Arithmetic\Addition',
+        '\Humbug\Mutator\Arithmetic\Subtraction',
+        '\Humbug\Mutator\Increment\Increment',
+        '\Humbug\Mutator\Increment\Decrement'
     ];
 
     /**

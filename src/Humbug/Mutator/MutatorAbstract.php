@@ -8,11 +8,11 @@
  * @license    https://github.com/padraic/humbug/blob/master/LICENSE New BSD License
  */
 
-namespace Humbug\Mutation;
+namespace Humbug\Mutator;
 
 use Humbug\Utility\Diff;
 
-abstract class MutationAbstract
+abstract class MutatorAbstract
 {
 
     /**
