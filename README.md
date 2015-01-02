@@ -176,6 +176,60 @@ unit testing. A 2 second test suite may require 30 seconds for mutation testing.
 5 minutes. It all depends on the interplay between lines of code, number of tests,
 level of code coverage, and the performance of both code and tests.
 
+Mutators
+--------
+
+Humbug implements a basic suite of Mutators, which essentially tells us when a
+particular PHP token can be mutated, and also apply that mutation to an array
+of tokens.
+
+Binary Arithmetic:
+
+| Original | Mutated |
+| :------: |:-------:| 
+| + | - |
+| - | + |
+
+Boolean Substitution:
+
+| Original | Mutated |
+| :------: |:-------:| 
+| true | false |
+| false | true |
+| && | &#124;&#124; |
+| &#124;&#124; | && |
+
+Conditional Boundaries:
+
+| Original | Mutated
+| :------: |:-------:
+| >        | >=
+| <        | <=
+| >=       | >
+| <=       | <
+
+Negated Conditionals:
+
+| Original | Mutated |
+| :------: |:-------:| 
+| == | != |
+| != | == |
+| === | !== |
+| !== | === |
+| > | <= |
+| < | >= |
+| >= | < |
+| <= | > |
+
+Increments:
+
+| Original | Mutated |
+| :------: |:-------:| 
+| ++ | -- |
+| -- | ++ |
+
+More Mutators will be added over time.
+
 Did I Say Rough Edges?
 ----------------------
 
