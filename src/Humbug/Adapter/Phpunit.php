@@ -120,7 +120,7 @@ class Phpunit extends AdapterAbstract
             $timeout
         );
 
-        $process = new PhpProcess($job);
+        $process = new PhpProcess($job, null, $_ENV);
         $process->setTimeout($timeout);
 
         return $process;
