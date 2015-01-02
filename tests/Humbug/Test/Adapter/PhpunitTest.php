@@ -50,14 +50,18 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
         ]);
 
         $adapter = new Phpunit;
-        $result = $adapter->runTests(
+        $process = $adapter->runTests(
             $container,
             true, 
             true
         );
+        $process->run();
+
+        $result = $process->getOutput();
+
         $this->assertStringStartsWith(
             \PHPUnit_Runner_Version::getVersionString(),
-            $result['output']['stdout']
+            $result
         );
     }
 
@@ -77,14 +81,18 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
         ]);
 
         $adapter = new Phpunit;
-        $result = $adapter->runTests(
+        $process = $adapter->runTests(
             $container,
             true, 
             true
         );
+        $process->run();
+
+        $result = $process->getOutput();
+
         $this->assertStringStartsWith(
             \PHPUnit_Runner_Version::getVersionString(),
-            $result['output']['stdout']
+            $result
         );
     }
 
@@ -103,12 +111,16 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
         ]);
         
         $adapter = new Phpunit;
-        $result = $adapter->runTests(
+        $process = $adapter->runTests(
             $container,
             true, 
             true
         );
-        $this->assertTrue($adapter->processOutput($result['output']['stdout']));
+        $process->run();
+
+        $result = $process->getOutput();
+
+        $this->assertTrue($adapter->processOutput($result));
     }
 
     public function testAdapterDetectsTestsFailingFromTestFail()
@@ -127,12 +139,16 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
         ]);
 
         $adapter = new Phpunit;
-        $result = $adapter->runTests(
+        $process = $adapter->runTests(
             $container,
             true, 
             true
         );
-        $this->assertFalse($adapter->processOutput($result['output']['stdout']));
+        $process->run();
+
+        $result = $process->getOutput();
+
+        $this->assertFalse($adapter->processOutput($result));
     }
 
     public function testAdapterDetectsTestsFailingFromException()
@@ -150,12 +166,16 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
         ]);
 
         $adapter = new Phpunit;
-        $result = $adapter->runTests(
+        $process = $adapter->runTests(
             $container,
             true, 
             true
         );
-        $this->assertFalse($adapter->processOutput($result['output']['stdout']));
+        $process->run();
+
+        $result = $process->getOutput();
+
+        $this->assertFalse($adapter->processOutput($result));
     }
 
     public function testAdapterDetectsTestsFailingFromError()
@@ -173,12 +193,16 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
         ]);
 
         $adapter = new Phpunit;
-        $result = $adapter->runTests(
+        $process = $adapter->runTests(
             $container,
             true, 
             true
         );
-        $this->assertFalse($adapter->processOutput($result['output']['stdout']));
+        $process->run();
+
+        $result = $process->getOutput();
+
+        $this->assertFalse($adapter->processOutput($result));
     }
     
     public function testAdapterOutputProcessingDetectsFailOverMultipleLinesWithNoDepOnFinalStatusReport()
