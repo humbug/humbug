@@ -78,6 +78,7 @@ MM.MSSSSM.S.S..M..MSMSSSSSSSSSSS............M...MMMSSM.
 
 Out of 214 testable mutants, 69% were detected.
 Out of 295 total mutations, 27% were untestable.
+Out of 295 total mutations, 48% were not detected.
 
 Remember that some mutants will inevitably be harmless (i.e. false positives).
 
