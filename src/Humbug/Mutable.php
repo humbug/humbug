@@ -37,18 +37,31 @@ class Mutable
     protected $mutables = [];
 
     protected $mutators = [
+        // Booleans
         '\Humbug\Mutator\Boolean\LogicalAnd',
         '\Humbug\Mutator\Boolean\False',
         '\Humbug\Mutator\Boolean\LogicalOr',
         '\Humbug\Mutator\Boolean\True',
+        // Conditional Boundaries
         '\Humbug\Mutator\ConditionalBoundary\GreaterThan',
         '\Humbug\Mutator\ConditionalBoundary\GreaterThanOrEqualTo',
         '\Humbug\Mutator\ConditionalBoundary\LessThan',
         '\Humbug\Mutator\ConditionalBoundary\LessThanOrEqualTo',
+        // Binary Arithmetic
         '\Humbug\Mutator\Arithmetic\Addition',
         '\Humbug\Mutator\Arithmetic\Subtraction',
+        // Increments
         '\Humbug\Mutator\Increment\Increment',
-        '\Humbug\Mutator\Increment\Decrement'
+        '\Humbug\Mutator\Increment\Decrement',
+        // Negation of Conditionals
+        '\Humbug\Mutator\ConditionalNegation\Equal',
+        '\Humbug\Mutator\ConditionalNegation\NotEqual',
+        '\Humbug\Mutator\ConditionalNegation\Identical',
+        '\Humbug\Mutator\ConditionalNegation\NotIdentical',
+        '\Humbug\Mutator\ConditionalNegation\GreaterThan',
+        '\Humbug\Mutator\ConditionalNegation\GreaterThanOrEqualTo',
+        '\Humbug\Mutator\ConditionalNegation\LessThan',
+        '\Humbug\Mutator\ConditionalNegation\LessThanOrEqualTo',
     ];
 
     /**
