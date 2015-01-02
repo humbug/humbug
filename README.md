@@ -3,51 +3,45 @@ Humbug: Mutation Testing for PHP
 
 Humbug is a Mutation Testing framework for PHP. It is currently in development and
 so, while it does actually work quite well, it will have rough edges that a team
-of minions are slaving to hammer out.
+of minions are slaving to hammer out. If it falls out of the gate, you have been
+warned ;).
 
 Mutation Testing is, in a nutshell, giving your unit tests a run for their money.
 It involves injecting small defects into source code and then checking if the unit
 tests noticed. If they do, then your unit tests have "killed" the mutation. If not,
 the mutation has escaped detection. As unit tests are intended to prevent regressions,
-having a real regression pass unnoticed might be a bad thing.
+having a real regression pass unnoticed would be a bad thing!
 
-Not all mutations actually break your code - some will naturally create changes
-which are equivalent to the original code.
-
-While Code Coverage will tell you what code your unit tests actually execute,
-Mutation Testing will help you to assess how well those unit tests actually monitor
-the covered code.
+Whereas Code Coverage can tell you what code your tests are executing, Mutation
+Testing is intended to help you judge how well your unit tests actually perform
+and where they could be improved.
 
 Usage
 -----
 
-Humbug is still under development so be aware of the rough edges. Ensure that you are
-using PHPUnit >3.7 (preferably the latest 4.4) and have a phpunit configuration file
-in the root directory of your project. It's preferable to include a filter whitelist
-in this configuration file for the code coverage collection. With this in place,
-navigate to your project's root directory and check the help (adjust path as needed).
+Humbug is still under development so, to repeat, beware of rough edges. To ensure
+a smooth ride, you should be using PHPUnit 4. You should have your phpunit
+configuration file in the base of your project (same level as your source and tests
+directories). If the configuration file contains a whitelist for code coverage, it
+should at least cover your main source code.
+
+Assuming humbug was cloned on same directory level as your project, from your project's
+base directory:
+
 
 ```
-./bin/humbug -h
+../humbug/bin/humbug - h
 ```
 
 A few options will be automatically detected if they follow standard conventions.
-Otherwise, set the --basedir and --srcdir options when running. Run humbug without
-any arguments and it should work fine. It's not like anyone is rolling saving
-throws...
+Otherwise, set the --basedir and --srcdir options when running. If the defaults
+look okay, running humbug from your project's base directory without any arguments
+should be sufficient.
 
-Bear in mind that Mutation Testing runs your tests multiple times. While it will
-make every effort to manage tests so that only relevant ones are actually run for
-each mutation, it still means that as your source code increases, test count
-increases and code coverage improves, the Mutation Testing execution time will
-be extended.
-
-Use it on something small while testing it out to get a feel for performance ;).
-In very short order, minions will be adding more flexibility to target Humbug at
-specific tests and subsets of tests. The magic command:
+The magic command, while in your project's base directory:
 
 ```
-./bin/humbug
+../humbug/bin/humbug
 ```
 
 If all went well, you will get something similar to:
@@ -92,13 +86,41 @@ Time: 36.66 seconds Memory: 10.75MB
 Additional detailed information about escaped mutations and errors is currently
 next on the list. These will be logged to a file (given the amount of data).
 
+Mutation Testing is typically a slow process, however Humbug implements a number
+of significant optimisations. It generates code coverage data so that only tests
+application to a specific mutation are run. It runs all tests in order of their
+logged execution time (smallest first). It will not execute tests where code
+coverage for a mutated line is nil. You may also adjust the timeout setting (if
+too high for your project).
+
+These optimisations, while requiring some upfront execution time, make Humbug
+quite fast once it gets going.
+
+The example summary results reported a number of statistics:
+* 29% of mutations impacted untested code. If your Code Coverage (not reported
+by Humbug) was reading 90%, then this might be really bad news. That 10% of
+uncovered code has given rise to 30% of the generated regressions.
+* 59% of covered testable mutations led to test failures, errors or timeouts.
+This means that 41% escaped detection. Some are probably false positives, so the
+bad news is often overstated a little bit.
+* In combination, if you do the math, the unit tests have a combined detection
+rate of ~40% (probably a bit higher in reality due to false positives). If your
+code coverage were showing 90% or higher. How does that reconcile with a mutation
+detection rate 50 points lower? You have tests, but are they good tests?
+
+Interpreting these results depends on context. Humbug will (soon) log mutations
+to file so they can be examined in more detail. In general, however, higher
+detection rates are probably desireable. At the end of the day, if unit tests
+are not capable of catching regressions, then their efficacy is impaired.
+
+
 Installation
 ------------
 
-Humbug requires the installation of the runkit extension. Yes, that scares me too!
+Humbug currently requires the installation of the runkit extension. Yes, that scares me too!
 Use the updated version at https://github.com/padraic/runkit and NOT the one you
 would normally get from PECL. This has minor modifications for PHP 5.6 support from
-the one maintained by Dmitry Zenovich. For Ubuntu:
+a fork maintained by Dmitry Zenovich. For Ubuntu:
 
 ```
 git clone https://github.com/padraic/runkit.git
@@ -124,20 +146,21 @@ cd humbug
 /path/to/composer.phar install
 ```
 
-The humbug command is now at ./humbug/bin/humbug.
+The humbug command is now at bin/humbug.
 
 Humbug will currently work on PHP 5.4 or greater.
 
 Performance
 -----------
 
-Mutation Testing is slow. The concept being to re-run your test suite for each
-mutation generated. To speed things up, Humbug does the following:
+Mutation Testing has traditionally been slow. The concept being to re-run your test
+suite for each mutation generated. To speed things up significantly, Humbug does the
+following:
 
 * On each test run, it only uses those test classes which cover the specific file
 and line on which the mutation was inserted.
 * It orders test classes to run so that the slowest go last (hopefully the faster
-tests will detect it early!).
+tests will detect mutations early!).
 * We use Runkit because...writing many files is the opposite of fast.
 * If a mutation falls on a line not covered by any tests, well, we don't bother
 running any tests.
@@ -146,13 +169,17 @@ The default of 60s may be far too high for smaller codebases, and far too low fo
 larger ones. As a rule of thumb, it shouldn't exceed the seconds needed to
 normally run the tests being mutated (and can be set lower).
 
-The result is that Humbug will trundle along at a fairly nice speed.
+While all of this speeds up Humbug, do be aware that a Humbug run will be slower than
+unit testing. A 2 second test suite may require 30 seconds for mutation testing. Or
+5 minutes. It all depends on the interplay between lines of code, number of tests,
+level of code coverage, and the performance of both code and tests.
 
 Did I Say Rough Edges?
 ----------------------
 
 This is a short list of known issues:
 
+* It makes assumptions about local directories which may be incorrect (read Usage).
 * Configuring Humbug is by command line; a configuration file is really needed.
 * PHP file parsing has a few bugs: it makes assumptions about whitespace and likely will
 explode when meeting a closure. This should never interrupt a MT run, however. At worst, it will report an "E".
