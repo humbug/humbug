@@ -275,31 +275,33 @@ class Phpunit extends AdapterAbstract
 
             // TODO: Handle >1 test suites
             $suite1 = $xpath->query('/phpunit/testsuites/testsuite')->item(0);
-            foreach ($suite1->childNodes as $child) {
-                if ($child instanceof \DOMElement && $child->tagName !== 'exclude') {
-                    $suite1->removeChild($child);
+            if (is_a($suite1, 'DOMElement')) {
+                foreach ($suite1->childNodes as $child) {
+                    if ($child instanceof \DOMElement && $child->tagName !== 'exclude') {
+                        $suite1->removeChild($child);
+                    }
                 }
-            }
 
-            /**
-             * Add test files explicitly in order given
-             */
-            $files = [];
-            foreach ($cases as $case) {
-                $files[] = $case['file'];
-                $file = $dom->createElement('file', $case['file']);
-                $suite1->appendChild($file);
-            }
-            /**
-             * JUnit logging excludes some immeasurable tests so we'll add those back.
-             */
-            if ($addMissingTests) {
-                $finder = new Finder;
-                $finder->name('*Test.php');
-                foreach ($finder->in($container->getBaseDirectory())->exclude('vendor') as $file) {
-                    if (!in_array($file->getRealpath(), $files)) {
-                        $file = $dom->createElement('file', $file->getRealpath());
-                        $suite1->appendChild($file);
+                /**
+                 * Add test files explicitly in order given
+                 */
+                $files = [];
+                foreach ($cases as $case) {
+                    $files[] = $case['file'];
+                    $file = $dom->createElement('file', $case['file']);
+                    $suite1->appendChild($file);
+                }
+                /**
+                 * JUnit logging excludes some immeasurable tests so we'll add those back.
+                 */
+                if ($addMissingTests) {
+                    $finder = new Finder;
+                    $finder->name('*Test.php');
+                    foreach ($finder->in($container->getBaseDirectory())->exclude('vendor') as $file) {
+                        if (!in_array($file->getRealpath(), $files)) {
+                            $file = $dom->createElement('file', $file->getRealpath());
+                            $suite1->appendChild($file);
+                        }
                     }
                 }
             }
