@@ -1,7 +1,7 @@
 {
     "name": "humbug/humbug",
     "description": "Humbug is a Mutation Testing framework for PHP. Whereas Code Coverage can tell you what code your tests are executing, Mutation Testing is intended to help you judge how well your unit tests actually perform and where they could be improved.",
-    "keywords": ["testing", "mutation", "mutation testing"],
+    "keywords": ["mutation testing", "testing", "coverage", "unit testing"],
     "homepage": "https://github.com/padraic/humbug",
     "type": "library",
     "license": "BSD-3-Clause",
