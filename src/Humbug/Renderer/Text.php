@@ -64,19 +64,6 @@ class Text
     }
 
     /**
-     * Render message where the initial test run experienced a fatal error.
-     *
-     * @param array $result
-     */
-    public function renderInitialRunError(array $result)
-    {
-        $this->write('<warning>Tests must be in a fully passing state before Humbug is run.</warning>');
-        $this->write('<warning>Incomplete, skipped or risky tests are allowed.</warning>');
-        $this->write('<error>An error has been experienced by Humbug during the initial test run:');
-        $this->write($result['stderr'].'</error>');
-    }
-
-    /**
      * Render message where the initial test run didn't pass (excl. incomplete/skipped/risky tests)
      *
      * @param array $result
@@ -85,7 +72,12 @@ class Text
     {
         $this->write('<warning>Tests must be in a fully passing state before Humbug is run.</warning>');
         $this->write('<warning>Incomplete, skipped or risky tests are allowed.</warning>');
-        $this->write('<warning>' . $this->indent($result['stdout']) . '</warning>');
+        if (!empty($result['stdout'])) {
+            $this->write('<warning>Stdout: \n' . $this->indent($result['stdout']) . '\n</warning>');
+        }
+        if (!empty($result['stderr'])) {
+            $this->write('<warning>Stderr: \n' . $this->indent($result['stderr']) . '\n</warning>');
+        }
     }
 
     /**
@@ -183,7 +175,7 @@ class Text
     /**
      * Render message that mutation testing loop is starting
      *
-     * 
+     *
      */
     public function renderSummaryReport($total, $kills, $escapes, $errors, $timeouts, $shadows)
     {
@@ -219,7 +211,7 @@ class Text
     /**
      * Render details concerning any escaped mutants or fatal errors encountered
      *
-     * 
+     *
      */
     public function renderDetailedReport(array $escaped)
     {
@@ -240,7 +232,7 @@ class Text
             $i++;
         }
     }
-    
+
     /**
      * Utility function to prefix output lines with an indent
      *
