@@ -208,8 +208,10 @@ class Text
             $measure = round(100 * ($vanquishedTotal / $measurableTotal));
         }
         $uncovered = round(100 * ($shadows / $total));
-        $this->write('Out of ' . ($total - $shadows) . ' testable mutants, ' . $measure . '% were detected.');
-        $this->write('Out of ' . $total . ' total mutations, ' . $uncovered . '% were untestable.');
+        $totalUndetected = round(100 * ($vanquishedTotal / $total));
+        $this->write('Out of ' . ($total - $shadows) . ' mutants covered by tests, ' . $measure . '% were detected.');
+        $this->write('Out of ' . $total . ' total mutations, ' . $uncovered . '% were not covered by tests.');
+        $this->write('Out of ' . $total . ' total mutations, ' . $totalUndetected . '% were not detected.');
         $this->write(PHP_EOL, false);
         $this->write('Remember that some mutants will inevitably be harmless (i.e. false positives).');
     }

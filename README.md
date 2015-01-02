@@ -63,24 +63,25 @@ Humbug is analysing source files...
 Mutation Testing is commencing...
 (.: killed, M: escaped, S: uncovered, E: fatal error, T: timed out)
 
-.MMMSS.SSSM.SSS.MSS.....SMSM.MTT.MM.....SM.........SMMMM.SS. |   60
-SMMS......SMMSMMMSSSSSSSSSS..S.M...M.S..MM....M.SSM.......MM |  120
-.MSMEEE..M..M.ME...M..ESSSSSMSSMM.MMMMS.EMMMMMSSSMSS.MMSMSSS |  180
-SSSSS........M..MMSM
+M.MMMMMSSSS.SSSM.SSSS..MSS........SMS.M.M.TT....MM........SM |   60
+..............SSMMM.M..SSSS.S..MMS............SMMSMMM.M.M.SS |  120
+SSSSSSSSSSSSS..S..M.SS...M...S...MM......MM..SSM.........MM. |  180
+..M.SM.EEE..MM...M..ME....M..ESSSSSSSSSEMSSSM.M.MMMM.S...MM. |  240
+MM.MSSSSM.S.S..M..MSMSSSSSSSSSSS............M...MMMSSM.
 
-200 mutations were generated:
-      78 mutants were killed
-      56 mutants were never detected
+295 mutations were generated:
+     142 mutants were killed
+      64 mutants were never detected
        6 fatal errors were encountered
        2 time outs were encountered
-      58 mutants were not covered by any test
+      81 mutants were not covered by any test
 
-Out of 142 testable mutants, 59% were detected.
-Out of 200 total mutations, 29% were untestable.
+Out of 214 testable mutants, 69% were detected.
+Out of 295 total mutations, 27% were untestable.
 
 Remember that some mutants will inevitably be harmless (i.e. false positives).
 
-Time: 36.66 seconds Memory: 10.75MB
+Time: 58.2 seconds Memory: 11.75MB
 ```
 
 Additional detailed information about escaped mutations and errors is currently
@@ -97,16 +98,16 @@ These optimisations, while requiring some upfront execution time, make Humbug
 quite fast once it gets going.
 
 The example summary results reported a number of statistics:
-* 29% of mutations impacted untested code. If your Code Coverage (not reported
+* 27% of mutations impacted untested code. If your Code Coverage (not reported
 by Humbug) was reading 90%, then this might be really bad news. That 10% of
 uncovered code has given rise to 30% of the generated regressions.
-* 59% of covered testable mutations led to test failures, errors or timeouts.
-This means that 41% escaped detection. Some are probably false positives, so the
+* 69% of covered testable mutations led to test failures, errors or timeouts.
+This means that 31% escaped detection. Some are probably false positives, so the
 bad news is often overstated a little bit.
 * In combination, if you do the math, the unit tests have a combined detection
-rate of ~40% (probably a bit higher in reality due to false positives). If your
+rate of ~49% (probably a bit higher in reality due to false positives). If your
 code coverage were showing 90% or higher. How does that reconcile with a mutation
-detection rate 50 points lower? You have tests, but are they good tests?
+detection rate 41 points lower? You have tests, but are they good tests?
 
 Interpreting these results depends on context. Humbug will (soon) log mutations
 to file so they can be examined in more detail. In general, however, higher
