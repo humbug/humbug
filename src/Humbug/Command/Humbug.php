@@ -42,7 +42,7 @@ class Humbug extends Command
 
         $this->validate($input, $output);
         $container = new Container($input, $output);
-        
+
         if ($input->hasOption('log-text')) {
             $renderer = new Text($output, true);
         } else {
@@ -64,7 +64,7 @@ class Humbug extends Command
          */
         $adapter = $container->getAdapter();
         $process = $adapter->runTests($container, true, true);
-        $process->run();
+        $exitCode = $process->run();
         $result = [ // default values
             'passed'    => true,
             'timeout'   => false,
@@ -80,22 +80,13 @@ class Humbug extends Command
         /**
          * Check if the initial test run ended with a fatal error
          */
-        if (!empty($result['stderr'])) {
-            $renderer->renderInitialRunError($result);
-            $this->logText($input, $renderer);
-            exit(1);
-        }
-
-        /**
-         * Check if the initial test run was not in a passing state
-         */
-        if ($result['passed'] === false) {
+        if ($exitCode !== 0) {
             $renderer->renderInitialRunFail($result);
             $this->logText($input, $renderer);
             exit(1);
         }
 
-        /** 
+        /**
          * Initial test run was a success!
          */
         $renderer->renderInitialRunPass($result);
