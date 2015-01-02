@@ -30,6 +30,9 @@ class Exponentiation extends MutatorAbstract
 
     public static function mutates(array $tokens, $index)
     {
+        if (!defined('T_POW')) {
+            return false;
+        }
         $t = $tokens[$index];
         if (is_array($t) && $t[0] == T_POW) {
             return true;
