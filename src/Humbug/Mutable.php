@@ -50,6 +50,16 @@ class Mutable
         // Binary Arithmetic
         '\Humbug\Mutator\Arithmetic\Addition',
         '\Humbug\Mutator\Arithmetic\Subtraction',
+        '\Humbug\Mutator\Arithmetic\Multiplication',
+        '\Humbug\Mutator\Arithmetic\Division',
+        '\Humbug\Mutator\Arithmetic\Modulus',
+        '\Humbug\Mutator\Arithmetic\Exponentiation',
+        '\Humbug\Mutator\Arithmetic\BitwiseAnd',
+        '\Humbug\Mutator\Arithmetic\BitwiseOr',
+        '\Humbug\Mutator\Arithmetic\BitwiseXor',
+        '\Humbug\Mutator\Arithmetic\Not',
+        '\Humbug\Mutator\Arithmetic\ShiftRight',
+        '\Humbug\Mutator\Arithmetic\ShiftLeft',
         // Increments
         '\Humbug\Mutator\Increment\Increment',
         '\Humbug\Mutator\Increment\Decrement',

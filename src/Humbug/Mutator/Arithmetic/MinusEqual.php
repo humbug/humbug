@@ -8,15 +8,15 @@
  * @license    https://github.com/padraic/humbug/blob/master/LICENSE New BSD License
  */
 
-namespace Humbug\Mutator\ConditionalNegation;
+namespace Humbug\Mutator\Arithmetic;
 
 use Humbug\Mutator\MutatorAbstract;
 
-class NotEqual extends MutatorAbstract
+class MinusEqual extends MutatorAbstract
 {
 
     /**
-     * Replace (!= or <>) with (==)
+     * Replace (-=) with (+=)
      *
      * @param array $tokens
      * @param int $index
@@ -25,8 +25,8 @@ class NotEqual extends MutatorAbstract
     public function getMutation(array $tokens, $index)
     {
         $tokens[$index] = [
-            T_IS_EQUAL,
-            '=='
+            T_PLUS_EQUAL,
+            '+='
         ];
         return $tokens;
     }
@@ -34,7 +34,7 @@ class NotEqual extends MutatorAbstract
     public static function mutates(array $tokens, $index)
     {
         $t = $tokens[$index];
-        if (is_array($t) && $t[0] == T_IS_NOT_EQUAL) {
+        if (is_array($t) && $t[0] == T_MINUS_EQUAL) {
             return true;
         }
         return false;
