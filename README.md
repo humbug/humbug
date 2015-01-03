@@ -63,26 +63,27 @@ Humbug is analysing source files...
 Mutation Testing is commencing...
 (.: killed, M: escaped, S: uncovered, E: fatal error, T: timed out)
 
-M.MMMMMSSSS.SSSM.SSSS..MSS........SMS.M.M.TT....MM........SM |   60
-..............SSMMM.M..SSSS.S..MMS............SMMSMMM.M.M.SS |  120
-SSSSSSSSSSSSS..S..M.SS...M...S...MM......MM..SSM.........MM. |  180
-..M.SM.EEE..MM...M..ME....M..ESSSSSSSSSEMSSSM.M.MMMM.S...MM. |  240
-MM.MSSSSM.S.S..M..MSMSSSSSSSSSSS............M...MMMSSM.
+M.MMMMMSSSS.SSSM.SSSS..MSS........SMSS.M.M.TT....MM........S |   60
+M..............SSMMM..M..SSSS.S..MMS............SMMSMMM.M.EM |  120
+.SSSSSSSSSSSSSSSS..S..M.SS...M...S...MM......MM..SSM........ |  180
+.MM...M.SM.EEE..MM...M..ME....M..ESSSSSSSSSSMEMSSSM.M.MMMM.S |  240
+...MM.MM.M.MSSSSSSM.S.S..M..MSMSSSSSSSSSSS..........E..M...M |  300
+MMMMMSSSM.
 
-295 mutations were generated:
-     142 mutants were killed
-      64 mutants were never detected
-       6 fatal errors were encountered
+310 mutations were generated:
+     144 mutants were killed
+      69 mutants were never detected
+       8 fatal errors were encountered
        2 time outs were encountered
-      81 mutants were not covered by any test
+      87 mutants were not covered by any test
 
-Out of 214 testable mutants, 69% were detected.
-Out of 295 total mutations, 27% were untestable.
-Out of 295 total mutations, 48% were not detected.
+Out of 223 mutants covered by tests, 68% were detected.
+Out of 310 total mutations, 28% were not covered by tests.
+Out of 310 total mutations, 53% were not detected.
 
 Remember that some mutants will inevitably be harmless (i.e. false positives).
 
-Time: 58.2 seconds Memory: 11.75MB
+Time: 36.17 seconds Memory: 13.75MB
 ```
 
 Additional detailed information about escaped mutations and errors is currently
