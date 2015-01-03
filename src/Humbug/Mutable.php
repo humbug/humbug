@@ -72,6 +72,8 @@ class Mutable
         '\Humbug\Mutator\ConditionalNegation\GreaterThanOrEqualTo',
         '\Humbug\Mutator\ConditionalNegation\LessThan',
         '\Humbug\Mutator\ConditionalNegation\LessThanOrEqualTo',
+        // Return Values
+        '\Humbug\Mutator\ReturnValue\This',
     ];
 
     /**
