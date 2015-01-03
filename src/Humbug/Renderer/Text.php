@@ -199,8 +199,13 @@ class Text
         } else {
             $measure = round(100 * ($vanquishedTotal / $measurableTotal));
         }
-        $uncovered = round(100 * ($shadows / $total));
-        $totalUndetected = round(100 * (($total - $vanquishedTotal) / $total));
+        if ($total !== 0) {
+            $uncovered = round(100 * ($shadows / $total));
+            $totalUndetected = round(100 * (($total - $vanquishedTotal) / $total));
+        } else {
+            $uncovered = 0;
+            $totalUndetected = 0;
+        }
         $this->write('Out of ' . ($total - $shadows) . ' mutants covered by tests, ' . $measure . '% were detected.');
         $this->write('Out of ' . $total . ' total mutations, ' . $uncovered . '% were not covered by tests.');
         $this->write('Out of ' . $total . ' total mutations, ' . $totalUndetected . '% were not detected.');
