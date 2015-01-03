@@ -26,12 +26,14 @@ class Float extends MutatorAbstract
     {
         $num = (float) $tokens[$index][1];
         $replace = null;
-        if ($num == 0 || $tokens[$index][1] == 0) {
+        if ($num == 0) {
             $replace = 1.0;
-        } elseif ($num == 1 || $tokens[$index][1] == 1) {
+        } elseif ($num == 1) {
             $replace = 0.0;
-        } else {
+        } elseif ($num < 2) {
             $replace = $num + 1;
+        } else {
+            $replace = 1.0;
         }
         $tokens[$index] = [
             T_DNUMBER,
