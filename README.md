@@ -242,6 +242,12 @@ Increments:
 | ++ | -- |
 | -- | ++ |
 
+Return Values:
+
+| Original | Mutated |
+| :------: |:-------:| 
+| return $this; | return null; |
+
 More Mutators will be added over time.
 
 Did I Say Rough Edges?
