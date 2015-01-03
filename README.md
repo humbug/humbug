@@ -248,6 +248,15 @@ Return Values:
 | :------: |:-------:| 
 | return $this; | return null; |
 
+Literal Numbers:
+
+| Original | Mutated |
+| :------: |:-------:| 
+| 0 | 1 |
+| 1 | 0 |
+| Int > 1 | Int + 1 |
+| Float > 1 | Float + 1 |
+
 More Mutators will be added over time.
 
 Did I Say Rough Edges?
