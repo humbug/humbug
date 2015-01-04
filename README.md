@@ -111,11 +111,9 @@ Out of 402 total mutations, 33% were not covered by tests.
 
 Remember that some mutants will inevitably be harmless (i.e. false positives).
 
+Humbug results are being logged as JSON to: log.json
 Time: 48.7 seconds Memory: 15.00MB
 ```
-
-Additional detailed information about escaped mutations and errors is currently
-next on the list. These will be logged to a file (given the amount of data).
 
 Mutation Testing is typically a slow process, however Humbug implements a number
 of significant optimisations. It generates code coverage data so that only tests
@@ -140,7 +138,7 @@ indicate a need for more tests that your Code Coverage might typically suggest.
 
 Interpreting these results requires some context. The logs will list all undetected
 mutations as diffs against the original source code. Examining these will provide
-further insight.
+further insight as to what specific mutations went undetected.
 
 
 Installation
