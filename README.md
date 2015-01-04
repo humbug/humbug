@@ -33,10 +33,37 @@ base directory:
 ../humbug/bin/humbug - h
 ```
 
-A few options will be automatically detected if they follow standard conventions.
-Otherwise, set the --basedir and --srcdir options when running. If the defaults
-look okay, running humbug from your project's base directory without any arguments
-should be sufficient.
+In the base directory of your project create a humbug.json file:
+
+```
+{
+    "timeout": 10,
+    "source": {
+        "directories": [
+            "src"
+        ]
+    }
+}
+```
+
+Edit as appropriate. If source files exist in the base directory, or files in
+the source directories must be excluded, you can add exclude patterns (here's one
+for files in base directory where composer vendor and Tests directories are excluded):
+
+```
+{
+    "timeout": 10,
+    "source": {
+        "directories": [
+            "."
+        ],
+        "excludes": [
+            "vendor",
+            "Tests"
+        ]
+    }
+}
+```
 
 The magic command, while in your project's base directory:
 

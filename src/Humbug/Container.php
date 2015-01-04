@@ -16,6 +16,7 @@ use Humbug\Generator;
 use Humbug\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Finder\Finder;
 
 class Container
 {
@@ -37,6 +38,8 @@ class Container
     protected $generator;
 
     protected $bootstrap = '';
+
+    protected $timeout = null;
 
     public function __construct(InputInterface $input, OutputInterface $output)
     {
@@ -181,11 +184,11 @@ class Container
      *
      * @return array
      */
-    public function getMutables()
+    public function getMutables(Finder $finder)
     {
         if (empty($this->mutables)) {
             $generator = $this->getGenerator();
-            $generator->generate();
+            $generator->generate($finder);
             $this->mutables = $generator->getMutables();
         }
         return $this->mutables;
@@ -213,9 +216,13 @@ class Container
     {
         if (!isset($this->_generator)) {
             $this->generator = new Generator;
-            $this->generator->setSourceDirectory($this->get('srcdir'));
         }
         return $this->generator;
+    }
+
+    public function setTimeout($seconds)
+    {
+        $this->timeout = $seconds;
     }
 
     /**
@@ -224,17 +231,15 @@ class Container
     
     public function getTimeout()
     {
+        if (!is_null($this->timeout)) {
+            return $this->timeout;
+        }
         return $this->get('timeout');
     }
 
     public function getAdapterConstraints()
     {
         return $this->get('constraints');
-    }
-
-    public function getSourceDirectory()
-    {
-        return rtrim($this->get('srcdir'), ' \\/');
     }
 
     public function getTestDirectory()

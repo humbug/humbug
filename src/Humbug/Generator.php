@@ -11,8 +11,7 @@
 namespace Humbug;
 
 use Humbug\Mutable;
-use Humbug\Exception\InvalidArgumentException;
-use Humbug\Exception\LogicException;
+use Symfony\Component\Finder\Finder;
 
 class Generator
 {
@@ -47,15 +46,14 @@ class Generator
      *
      * @return void
      */
-    public function generate($mutableObject = null)
+    public function generate(Finder $finder, $mutableObject = null)
     {
-        $files = $this->getFiles();
-        foreach ($files as $file) {
+        foreach ($finder as $file) {
             if (is_null($mutableObject)) {
-                $mutable = new Mutable($file);
+                $mutable = new Mutable($file->getRealpath());
             } else {
                 $mutable = new $mutableObject;
-                $mutable->setFilename($file);
+                $mutable->setFilename($file->getRealpath());
             }
             $this->mutables[] = $mutable;
         }
@@ -69,72 +67,6 @@ class Generator
     public function getMutables()
     {
         return $this->mutables;
-    }
-
-    /**
-     * Set the source directory of the source code to be mutated
-     *
-     * @param string $sourceDirectory
-     */
-    public function setSourceDirectory($sourceDirectory)
-    {
-        if (!file_exists($sourceDirectory)) {
-            throw new InvalidArgumentException(
-                'Directory does not exist: '.$sourceDirectory
-            );
-        }
-        $this->sourceDirectory = $sourceDirectory;
-    }
-
-    /**
-     * Get the source directory of the source code to be mutated
-     *
-     * @return string
-     */
-    public function getSourceDirectory()
-    {
-        return $this->sourceDirectory;
-    }
-
-    /**
-     * Return collated files against which mutations can be generated.
-     *
-     * @return array
-     */
-    public function getFiles()
-    {
-        if (empty($this->files)) {
-            if ($this->getSourceDirectory() == '') {
-                throw new LogicException('Source directory has not been set');
-            }
-            $this->collateFiles($this->getSourceDirectory());
-        }
-        return $this->files;
-    }
-
-    /**
-     * Collate all files capable of being mutated. For now, this only
-     * considers files ending in the PHP extension.
-     *
-     * @return void
-     */
-    protected function collateFiles($target)
-    {
-        $d = dir($target);
-        while (false !== ($res = $d->read())) {
-            if ($res == '.' || $res == '..') {
-                continue;
-            }
-            $entry = $target . '/' . $res;
-            if (is_dir($entry)) {
-                $this->collateFiles($entry);
-                continue;
-            } elseif (!preg_match("/\.php$/", $res)) {
-                continue;
-            }
-            $this->files[] = $entry;
-        }
-        $d->close();
     }
     
 }

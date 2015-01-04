@@ -24,9 +24,12 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Finder\Finder;
 
 class Humbug extends Command
 {
+
+    protected $finder;
 
     /**
      * Execute the command.
@@ -41,7 +44,13 @@ class Humbug extends Command
         $output->writeln($this->getApplication()->getLongVersion() . PHP_EOL);
 
         $this->validate($input, $output);
-        $container = new Container($input, $output);
+        $container = $this->container = new Container($input, $output);
+
+        /**
+         * Setup source code finder and timeout if set
+         */
+        $this->doConfiguration();
+
 
         if ($input->hasOption('log-text')) {
             $renderer = new Text($output, true);
@@ -114,7 +123,7 @@ class Humbug extends Command
         /**
          * Examine all source code files and collect up mutations to apply
          */
-        $mutables = $container->getMutables();
+        $mutables = $container->getMutables($this->finder);
 
         /**
          * Message re Mutation Testing starting
@@ -288,6 +297,44 @@ class Humbug extends Command
          */
     }
 
+    protected function doConfiguration()
+    {
+        if (!file_exists('humbug.json')) {
+            throw new \Exception(
+                'Configuration file does not exist. Please create a humbug.json file.'
+            );
+        }
+        $config = json_decode(file_get_contents('humbug.json'));
+        // TODO: check for json err
+        if (!isset($config->source)) {
+            throw new \Exception(
+                'Source code data is not included in configuration file'
+            );
+        }
+        if (!isset($config->source->directories) && !isset($config->source->excludes)) {
+            throw new \Exception(
+                'You must set at least one source directory or exclude in the configuration file'
+            );
+        }
+        $this->finder = new Finder;
+        $this->finder->files()->name('*.php');
+        if (isset($config->source->directories)) {
+            foreach ($config->source->directories as $directory) {
+                $this->finder->in($directory);
+            }
+        } else {
+            $this->finder->in('.');
+        }
+        if (isset($config->source->excludes)) {
+            foreach ($config->source->excludes as $exclude) {
+                $this->finder->exclude($exclude);
+            }
+        }
+        if (isset($config->timeout)) {
+            $this->container->setTimeout((int) $config->timeout);
+        }
+    }
+
     protected function configure()
     {
         $dirs = $this->checkDirectories();
@@ -300,13 +347,6 @@ class Humbug extends Command
                InputOption::VALUE_REQUIRED,
                'Set base directory from where to run tests.',
                 $dirs['base']
-            )
-            ->addOption(
-               'srcdir',
-               'S',
-               InputOption::VALUE_REQUIRED,
-               'Set source directory for the files to be tested.',
-                $dirs['source']
             )
             ->addOption(
                'testdir',
@@ -340,7 +380,7 @@ class Humbug extends Command
                't',
                InputOption::VALUE_REQUIRED,
                'Sets a timeout applied for each test run to combat infinite loop mutations.',
-                60
+                10
             )
             ->addOption(
                'detail',
@@ -363,16 +403,6 @@ class Humbug extends Command
     {
         $dirs = [];
         $dirs['base'] = getcwd();
-        if (file_exists($dirs['base'] . '/src')) {
-            $dirs['source'] = $dirs['base'] . '/src';
-        } elseif (file_exists($dirs['base'] . '/lib')) {
-            $dirs['source'] = $dirs['base'] . '/lib';
-        } elseif (file_exists($dirs['base'] . '/library')) {
-            $dirs['source'] = $dirs['base'] . '/library';
-        }
-        if (!isset($dirs['source'])) {
-            $dirs['source'] = 'UNABLE TO DETECT; SPECIFY';
-        }
         return $dirs;
     }
 
@@ -384,15 +414,6 @@ class Humbug extends Command
         if (!file_exists($input->getOption('basedir'))) {
             throw new InvalidArgumentException(
                 'The base directory specified does not exist or could not be read.'
-            );
-        }
-        /**
-         * Source directory
-         */
-        if (!file_exists($input->getOption('srcdir'))) {
-            throw new InvalidArgumentException(
-                'The source directory specified does not exist or could not be '
-                . 'automatically detected. Please specify in the options'
             );
         }
         /**

@@ -36,6 +36,11 @@ class Mutable
      */
     protected $mutables = [];
 
+    /**
+     * Array of Mutators currently enabled to generate mutations
+     *
+     * @var array
+     */
     protected $mutators = [
         // Booleans
         '\Humbug\Mutator\Boolean\LogicalAnd',

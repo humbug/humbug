@@ -42,7 +42,6 @@ class Phpunit extends AdapterAbstract
     {
 
         $jobopts = [
-            'srcdir'        => $container->getSourceDirectory(),
             'testdir'       => $container->getTestDirectory(),
             'basedir'       => $container->getBaseDirectory(),
             'timeout'       => $container->getTimeout(),
