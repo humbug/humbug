@@ -139,9 +139,9 @@ class Phpunit extends AdapterAbstract
      */
     public static function main($arguments, $mutation = null)
     {
-
+        
         $arguments = unserialize(base64_decode($arguments));
-
+        
         /**
          * Grab the Runkit extension utility and apply the mutation if needed
          */
@@ -249,10 +249,6 @@ class Phpunit extends AdapterAbstract
                 && ($node->tagName == 'directory'
                 || $node->tagName == 'exclude'
                 || $node->tagName == 'file')) {
-                    if (!file_exists($node->nodeValue)) {
-                        throw new RuntimeException('Unable to locate file specified in testsuites: ' . $node->nodeValue);
-                    }
-
                     $node->nodeValue = realpath($node->nodeValue);
                 }
             }
@@ -272,7 +268,7 @@ class Phpunit extends AdapterAbstract
         }
 
         if (!empty($cases)) {
-
+            
             // TODO: Handle >1 test suites
             $suite1 = $xpath->query('/phpunit/testsuites/testsuite')->item(0);
             if (is_a($suite1, 'DOMElement')) {
@@ -311,5 +307,5 @@ class Phpunit extends AdapterAbstract
         $dom->save($saveFile);
         return $saveFile;
     }
-
+    
 }
