@@ -36,15 +36,17 @@ In the base directory of your project create a humbug.json file:
         ]
     },
     "logs": {
-        "json": "./humbuglog.json"
+        "text": "humbuglog.txt",
+        "json": "humbuglog.json"
     }
 }
 ```
 
-Edit as appropriate. If you do not define a log, detailed information about escaped
-mutants will not be available. If source files exist in the base directory, or files in
-the source directories must be excluded, you can add exclude patterns (here's one
-for files in base directory where composer vendor and Tests directories are excluded):
+Edit as appropriate. If you do not define at least one log, detailed information
+about escaped mutants will not be available. The Text log is the most human readable.
+If source files exist in the base directory, or files in the source directories
+must be excluded, you can add exclude patterns (here's one for files in base
+directory where composer vendor and Tests directories are excluded):
 
 ```
 {
@@ -59,7 +61,7 @@ for files in base directory where composer vendor and Tests directories are excl
         ]
     },
     "logs": {
-        "json": "./humbuglog.json"
+        "text": "humbuglog.txt"
     }
 }
 ```

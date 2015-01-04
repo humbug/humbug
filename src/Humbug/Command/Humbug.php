@@ -60,7 +60,7 @@ class Humbug extends Command
         $this->doConfiguration($output);
 
 
-        if ($input->hasOption('log-text')) {
+        if ($this->logText === true) {
             $renderer = new Text($output, true);
         } else {
             $renderer = new Text($output);
@@ -171,7 +171,7 @@ class Humbug extends Command
             $analyser
         );
 
-        $logIndex = 0;
+        //$logIndex = 0;
 
         foreach ($mutables as $i => $mutable) {
             $mutations = $mutable->generate()->getMutations();
@@ -202,10 +202,10 @@ class Humbug extends Command
                          * the uncovered mutants separately and omit them
                          * from final score.
                          */
-                        $logIndex++;
+                        //$logIndex++;
                         $countMutants++;
                         $countMutantShadows++;
-                        $batch[$tracker]['mutation']->mutate(
+                        /*$batch[$tracker]['mutation']->mutate(
                             $batch[$tracker]['tokens'],
                             $batch[$tracker]['index']
                         );
@@ -214,7 +214,7 @@ class Humbug extends Command
                             'stdout'    => '',
                             'stderr'    => ''
                         ];
-                        $mutantShadows[$logIndex] = $toLog;
+                        $mutantShadows[$logIndex] = $toLog;*/
                         $renderer->renderShadowMark();
                     }
                 }
@@ -255,7 +255,7 @@ class Humbug extends Command
                      * Handle the defined result for each process
                      */
                     $countMutants++;
-                    $logIndex++;
+                    //$logIndex++;
 
                     $renderer->renderProgressMark($result);
                     $this->logText($input, $renderer);
@@ -273,19 +273,19 @@ class Humbug extends Command
                         'stderr'    => $result['stderr']
                     ];
 
-                    $logIndex++;
+                    //$logIndex++;
                     if ($result['timeout'] === true) {
                         $countMutantTimeouts++;
-                        $mutantTimeouts[$logIndex] = $toLog;
+                        //$mutantTimeouts[] = $toLog;
                     } elseif (!empty($result['stderr'])) {
                         $countMutantErrors++;
-                        $mutantErrors[$logIndex] = $toLog;
+                        //$mutantErrors[] = $toLog;
                     } elseif ($result['passed'] === false) {
                         $countMutantKills++;
-                        $mutantKills[$logIndex] = $toLog;
+                        //$mutantKills[] = $toLog;
                     } else {
                         $countMutantEscapes++;
-                        $mutantEscapes[$logIndex] = $toLog;
+                        $mutantEscapes[] = $toLog;
                     }
                 }
             }
@@ -310,6 +310,9 @@ class Humbug extends Command
         );
         $output->write(PHP_EOL);
 
+        /**
+         * Do any detailed logging now
+         */
         if ($this->logJson === true) {
             $renderer->renderLogToJson($this->jsonLogFile);
             $this->logJson(
@@ -324,20 +327,27 @@ class Humbug extends Command
                 $this->jsonLogFile
             );
         }
+        if ($this->logText === true) {
+            $renderer->renderLogToText($this->textLogFile);
+            $this->logText($input, $renderer);
+            $out = [PHP_EOL, '-----'];
+            foreach ($mutantEscapes as $index => $escaped) {
+                $out[] = $index+1 . ') ' . get_class($escaped['mutation']['mutation']);
+                $out[] = 'Diff on ' . $escaped['mutation']['class'] . '::' . $escaped['mutation']['method'] . '() in ' . $escaped['mutation']['file'] . ':';
+                $out[] = $escaped['mutation']['mutation']->getDiff();
+                $out[] = PHP_EOL;
+            }
+            $this->logText($input, $renderer, implode(PHP_EOL, $out));
+        }
+        if ($this->logJson === true || $this->logText === true) {
+            $output->write(PHP_EOL);
+        }
 
         /**
          * Render performance data
          */
         $renderer->renderPerformanceData(Performance::getTimeString(), Performance::getMemoryUsageString());
         $this->logText($input, $renderer);
-
-        /**
-         * Render detailed report with information on escapee diffs
-         */
-        /*$renderer->renderDetailedReport(
-            $mutantEscapes
-        );
-        $this->logText($input, $renderer);*/
 
         /**
          * Render any closing messages?
@@ -570,25 +580,25 @@ class Humbug extends Command
                 . 'highly recommended.'
             );
         }
-        /**
-         * Detailed Captures
-         */
-        if (!is_numeric($input->getOption('detail')) || $input->getOption('detail') < 0
-        || $input->getOption('detail') > 1) {
-            throw new InvalidArgumentException(
-                'The detail flag must be either 0 or 1'
-            );
+    }
+
+    protected function logText(InputInterface $input, Text $renderer, $output = null)
+    {
+        if ($this->logText === true) {
+            if (!is_null($output)) {
+                file_put_contents(
+                    $this->textLogFile,
+                    $output,
+                    FILE_APPEND
+                );
+            } else {
+                file_put_contents(
+                    $this->textLogFile,
+                    $renderer->getBuffer(),
+                    FILE_APPEND
+                );
+            }
         }
     }
 
-    protected function logText(InputInterface $input, $renderer)
-    {
-        if ($this->logText === true) {
-            file_put_contents(
-                $input->textLogFile,
-                $renderer->getBuffer(),
-                FILE_APPEND
-            );
-        }
-    }
 }

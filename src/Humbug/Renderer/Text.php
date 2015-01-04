@@ -224,28 +224,13 @@ class Text
     }
 
     /**
-     * Render details concerning any escaped mutants or fatal errors encountered
+     * Render JSON logging message
      *
      *
      */
-    public function renderDetailedReport(array $escaped)
+    public function renderLogToText($log)
     {
-        if (count($escaped) == 0) {
-            return;
-        }
-        $i = 1;
-        foreach ($escaped as $mutant) {
-            $mutation = $mutant['mutation'];
-            $stdout = $mutant['stdout'];
-            $this->write($i . ')');
-            $this->write('Diff on ' . $mutation['class'] . '::' . $mutation['method'] . '() in ' . $mutation['file'] . ':');
-            $this->write($mutation['mutation']->getDiff());
-            $this->write(PHP_EOL, false);
-            if (!empty($stdout)) {
-                $this->write($this->indent($stdout));
-            }
-            $i++;
-        }
+        $this->write('Humbug results are being logged as TEXT to: <options=bold>' . $log . '</options=bold>');
     }
 
     /**
