@@ -117,12 +117,13 @@ Humbug results are being logged as JSON to: log.json
 Time: 48.7 seconds Memory: 15.00MB
 ```
 
-Mutation Testing is typically a slow process, however Humbug implements a number
+Mutation Testing has traditionally been a slow process, however Humbug implements a number
 of significant optimisations. It generates code coverage data so that only tests
-application to a specific mutation are run. It runs all tests in order of their
+applicable to a specific mutated line of code are run. It runs any tests in order of their
 logged execution time (smallest first). It will not execute tests where code
 coverage for a mutated line is nil. You may also adjust the timeout setting (if
-too high for your project).
+too high for your project). The timeout exists to counteract infinite loops when
+created through the mutation process.
 
 These optimisations, while requiring some upfront execution time, make Humbug
 quite fast once it gets going.
