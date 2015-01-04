@@ -11,14 +11,13 @@
 namespace Humbug\Command;
 
 use Humbug\Container;
-use Humbug\Utility\TestTimeAnalyser;
 use Humbug\Adapter\Phpunit;
 use Humbug\Utility\Performance;
 use Humbug\Utility\ParallelGroup;
-use Humbug\Utility\CoverageData;
 use Humbug\Renderer\Text;
 use Humbug\Exception\InvalidArgumentException;
 use Humbug\Exception\NoCoveringTestsException;
+use Humbug\Exception\JsonConfigException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -79,8 +78,7 @@ class Humbug extends Command
          * and also log the results so test runs during the mutation phase can
          * be optimised.
          */
-        $adapter = $container->getAdapter();
-        $process = $adapter->runTests($container, true, true);
+        $process = $container->getAdapter()->runTests($container, true, true);
         $exitCode = $process->run();
         $result = [ // default values
             'passed'    => true,
@@ -90,7 +88,7 @@ class Humbug extends Command
         ];
         $result['stdout'] = $process->getOutput();
         $result['stderr'] = $process->getErrorOutput();
-        if (!$adapter->processOutput($result['stdout'])) {
+        if (!$container->getAdapter()->processOutput($result['stdout'])) {
             $result['passed'] = false;
         }
 
@@ -117,9 +115,7 @@ class Humbug extends Command
          * TODO: Move to adapter eventually
          */
         $orderedTestCases = null;
-        $analyser = new TestTimeAnalyser(
-            $container->getCacheDirectory() . '/junitlog.humbug.xml'
-        );
+        $analyser = $container->getAdapter()->getLogAnalyser($container);
         $orderedTestCases = $analyser->process()->getTestCases();
 
         /**
@@ -166,10 +162,7 @@ class Humbug extends Command
          */
         $parallels = 1;
 
-        $coverage = new CoverageData(
-            $container->getCacheDirectory() . '/coverage.humbug.php',
-            $analyser
-        );
+        $coverage = $container->getAdapter()->getCoverageData($container, $analyser);
 
         //$logIndex = 0;
 
@@ -247,7 +240,7 @@ class Humbug extends Command
                     if ($group->timedOut($tracker)) {
                         $result['timeout'] = true;
                     }
-                    if (!$adapter->processOutput($result['stdout'])) {
+                    if (!$container->getAdapter()->processOutput($result['stdout'])) {
                         $result['passed'] = false;
                     }
 
@@ -348,10 +341,6 @@ class Humbug extends Command
          */
         $renderer->renderPerformanceData(Performance::getTimeString(), Performance::getMemoryUsageString());
         $this->logText($input, $renderer);
-
-        /**
-         * Render any closing messages?
-         */
     }
 
     protected function logJson($total, $kills, $escapes, $errors, $timeouts, $shadows, array $mutantEscapes, array $mutantShadows, $file)
@@ -405,22 +394,27 @@ class Humbug extends Command
     protected function doConfiguration(OutputInterface $output)
     {
         if (!file_exists('humbug.json')) {
-            throw new \Exception(
+            throw new JsonConfigException(
                 'Configuration file does not exist. Please create a humbug.json file.'
             );
         }
         $config = json_decode(file_get_contents('humbug.json'));
-        // TODO: check for json err
+        if (null === $config || json_last_error() !== JSON_ERROR_NONE) {
+            throw new JsonConfigException(
+                'Error parsing configuration file JSON'
+                . (function_exists('json_last_error_msg') ? ': ' . json_last_error_msg() : '')
+            );
+        }
         /**
          * Check for source code scanning config
          */
         if (!isset($config->source)) {
-            throw new \Exception(
+            throw new JsonConfigException(
                 'Source code data is not included in configuration file'
             );
         }
         if (!isset($config->source->directories) && !isset($config->source->excludes)) {
-            throw new \Exception(
+            throw new JsonConfigException(
                 'You must set at least one source directory or exclude in the configuration file'
             );
         }
@@ -454,7 +448,7 @@ class Humbug extends Command
         } else {
             if (isset($config->logs->json)) {
                 if (!file_exists(dirname($config->logs->json))) {
-                    throw new \Exception(
+                    throw new JsonConfigException(
                         'Directory for json logging does not exist: ' . dirname($config->logs->json)
                     );
                 }
@@ -466,7 +460,7 @@ class Humbug extends Command
             }
             if (isset($config->logs->text)) {
                 if (!file_exists(dirname($config->logs->text))) {
-                    throw new \Exception(
+                    throw new JsonConfigException(
                         'Directory for text logging does not exist: ' . dirname($config->logs->text)
                     );
                 }

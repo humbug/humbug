@@ -14,6 +14,8 @@ use Humbug\Container;
 use Humbug\Runkit;
 use Humbug\Utility\Job;
 use Humbug\Utility\Process;
+use Humbug\Utility\TestTimeAnalyser;
+use Humbug\Utility\CoverageData;
 use Humbug\Exception\RuntimeException;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\PhpProcess;
@@ -168,6 +170,33 @@ class Phpunit extends AdapterAbstract
             if (getcwd() !== $originalWorkingDir) chdir($originalWorkingDir);
             throw $e;
         }
+    }
+
+    /**
+     * Load coverage data from and return
+     *
+     * @return \Humbug\Utility\CoverageData
+     */
+    public function getCoverageData(Container $container, TestTimeAnalyser $analyser)
+    {
+        $coverage = new CoverageData(
+            $container->getCacheDirectory() . '/coverage.humbug.php',
+            $analyser
+        );
+        return $coverage;
+    }
+
+    /**
+     * Load coverage data from and return
+     *
+     * @return \Humbug\Utility\TestTimeAnalyser
+     */
+    public function getLogAnalyser(Container $container)
+    {
+        $analyser = new TestTimeAnalyser(
+            $container->getCacheDirectory() . '/junitlog.humbug.xml'
+        );
+        return $analyser;
     }
 
     /**

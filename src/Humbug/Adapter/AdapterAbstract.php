@@ -15,8 +15,6 @@ use Humbug\Container;
 abstract class AdapterAbstract
 {
 
-    const TIMED_OUT = 'timed out';
-
     /**
      * Output from the test library in use
      *
@@ -40,25 +38,5 @@ abstract class AdapterAbstract
      */
     abstract public function runTests(Container $container, $useStdout = false,
     $firstRun = false, array $mutation = null, array $testCases = []);
-
-    /**
-     * Set the test library output so it can be used later
-     *
-     * @param string $output
-     */
-    public function setOutput($output)
-    {
-        $this->output = $output;
-    }
-
-    /**
-     * Get the test library output
-     *
-     * @return string
-     */
-    public function getOutput()
-    {
-        return $this->output;
-    }  
     
 }
