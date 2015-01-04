@@ -252,11 +252,6 @@ class Container
         return rtrim($this->get('basedir'), ' \\/');
     }
 
-    public function getDetailCaptures()
-    {
-        return (boolean) $this->get('detail');
-    }
-
     public function setBootstrap($bootstrap)
     {
         $this->bootstrap = realpath($bootstrap);

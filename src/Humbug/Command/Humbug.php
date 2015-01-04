@@ -516,13 +516,6 @@ class Humbug extends Command
                'Sets a timeout applied for each test run to combat infinite loop mutations.',
                 10
             )
-            ->addOption(
-               'detail',
-               'd',
-               InputOption::VALUE_REQUIRED,
-               'Add more details, including test results, about mutations which induced test failures.',
-                0
-            )
         ;
     }
 
