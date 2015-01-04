@@ -25,14 +25,6 @@ configuration file in the base of your project (same level as your source and te
 directories). If the configuration file contains a whitelist for code coverage, it
 should at least cover your main source code.
 
-Assuming humbug was cloned on same directory level as your project, from your project's
-base directory:
-
-
-```
-../humbug/bin/humbug - h
-```
-
 In the base directory of your project create a humbug.json file:
 
 ```
@@ -65,7 +57,8 @@ for files in base directory where composer vendor and Tests directories are excl
 }
 ```
 
-The magic command, while in your project's base directory:
+The magic command, while in your project's base directory (and assuming humbug
+was cloned at same level as your project directory):
 
 ```
 ../humbug/bin/humbug
