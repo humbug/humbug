@@ -203,8 +203,9 @@ class Phpunit extends AdapterAbstract
     {
         $conf = null;
         $dir = null;
-        if (!empty($container->getTestDirectory())) {
-            $dir = $container->getTestDirectory();
+        $testDir = $container->getTestDirectory();
+        if (!empty($testDir)) {
+            $dir = $testDir;
             $conf = $dir . '/phpunit.xml';
         } elseif (!file_exists($conf)) {
             $dir = $container->getBaseDirectory();
