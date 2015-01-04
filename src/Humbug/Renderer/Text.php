@@ -188,7 +188,7 @@ class Text
         $this->write($total . ' mutations were generated:');
         $this->write($pkills . ' mutants were killed');
         $this->write($pshadows . ' mutants were not covered by tests');
-        $this->write($pescapes . ' tested mutants were not detected');
+        $this->write($pescapes . ' covered mutants were not detected');
         $this->write($perrors . ' fatal errors were encountered');
         $this->write($ptimeouts . ' time outs were encountered');
         $this->write(PHP_EOL, false);
@@ -211,6 +211,16 @@ class Text
         $this->write('Out of ' . $total . ' total mutations, <options=bold>' . $uncoveredRate . '%</options=bold> were not covered by tests.');
         $this->write(PHP_EOL, false);
         $this->write('Remember that some mutants will inevitably be harmless (i.e. false positives).');
+    }
+
+    /**
+     * Render JSON logging message
+     *
+     *
+     */
+    public function renderLogToJson($log)
+    {
+        $this->write('Humbug results are being logged as JSON to: <options=bold>' . $log . '</options=bold>');
     }
 
     /**

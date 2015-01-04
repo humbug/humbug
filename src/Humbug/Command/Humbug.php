@@ -31,6 +31,14 @@ class Humbug extends Command
 
     protected $finder;
 
+    protected $logJson = false;
+
+    protected $jsonLogFile;
+
+    protected $logText = false;
+
+    protected $textLogFile;
+
     /**
      * Execute the command.
      * The text output, other than some newline management, is held within
@@ -49,7 +57,7 @@ class Humbug extends Command
         /**
          * Setup source code finder and timeout if set
          */
-        $this->doConfiguration();
+        $this->doConfiguration($output);
 
 
         if ($input->hasOption('log-text')) {
@@ -163,6 +171,8 @@ class Humbug extends Command
             $analyser
         );
 
+        $logIndex = 0;
+
         foreach ($mutables as $i => $mutable) {
             $mutations = $mutable->generate()->getMutations();
             $batches = array_chunk($mutations, $parallels);
@@ -192,8 +202,19 @@ class Humbug extends Command
                          * the uncovered mutants separately and omit them
                          * from final score.
                          */
+                        $logIndex++;
                         $countMutants++;
                         $countMutantShadows++;
+                        $batch[$tracker]['mutation']->mutate(
+                            $batch[$tracker]['tokens'],
+                            $batch[$tracker]['index']
+                        );
+                        $toLog = [
+                            'mutation'  => $batch[$tracker],
+                            'stdout'    => '',
+                            'stderr'    => ''
+                        ];
+                        $mutantShadows[$logIndex] = $toLog;
                         $renderer->renderShadowMark();
                     }
                 }
@@ -234,26 +255,37 @@ class Humbug extends Command
                      * Handle the defined result for each process
                      */
                     $countMutants++;
+                    $logIndex++;
 
                     $renderer->renderProgressMark($result);
                     $this->logText($input, $renderer);
 
+                    /**
+                     * Prep for diff generation
+                     */
+                    $batch[$tracker]['mutation']->mutate(
+                        $batch[$tracker]['tokens'],
+                        $batch[$tracker]['index']
+                    );
+                    $toLog = [
+                        'mutation'  => $batch[$tracker],
+                        'stdout'    => $result['stdout'],
+                        'stderr'    => $result['stderr']
+                    ];
+
+                    $logIndex++;
                     if ($result['timeout'] === true) {
                         $countMutantTimeouts++;
+                        $mutantTimeouts[$logIndex] = $toLog;
                     } elseif (!empty($result['stderr'])) {
                         $countMutantErrors++;
+                        $mutantErrors[$logIndex] = $toLog;
                     } elseif ($result['passed'] === false) {
                         $countMutantKills++;
+                        $mutantKills[$logIndex] = $toLog;
                     } else {
                         $countMutantEscapes++;
-                        $batch[$tracker]['mutation']->mutate(
-                            $batch[$tracker]['tokens'],
-                            $batch[$tracker]['index']
-                        );
-                        $mutantEscapes[] = [
-                            'mutation'  => $batch[$tracker],
-                            'stdout'    => $result['stdout']
-                        ];
+                        $mutantEscapes[$logIndex] = $toLog;
                     }
                 }
             }
@@ -278,6 +310,21 @@ class Humbug extends Command
         );
         $output->write(PHP_EOL);
 
+        if ($this->logJson === true) {
+            $renderer->renderLogToJson($this->jsonLogFile);
+            $this->logJson(
+                $countMutants,
+                $countMutantKills,
+                $countMutantEscapes,
+                $countMutantErrors,
+                $countMutantTimeouts,
+                $countMutantShadows,
+                $mutantEscapes,
+                $mutantShadows,
+                $this->jsonLogFile
+            );
+        }
+
         /**
          * Render performance data
          */
@@ -297,7 +344,55 @@ class Humbug extends Command
          */
     }
 
-    protected function doConfiguration()
+    protected function logJson($total, $kills, $escapes, $errors, $timeouts, $shadows, array $mutantEscapes, array $mutantShadows, $file)
+    {
+        $vanquishedTotal = $kills + $timeouts;
+        $measurableTotal = $total - $errors - $shadows;
+        if ($measurableTotal !== 0) {
+            $detectionRateTested  = round(100 * ($vanquishedTotal / $measurableTotal));
+        } else {
+            $detectionRateTested  = 0;
+        }
+        if ($total !== 0) {
+            $uncoveredRate = round(100 * ($shadows / ($total - $errors)));
+            $detectionRateAll = round(100 * ($vanquishedTotal / ($total - $errors)));
+        } else {
+            $uncoveredRate = 0;
+            $detectionRateAll = 0;
+        }
+        $out = [
+            'summary' => [
+                'total' => $total,
+                'kills' => $kills,
+                'escapes' => $escapes,
+                'errors' => $errors,
+                'timeouts' => $timeouts,
+                'notests' => $shadows,
+                'covered_score' => $detectionRateTested,
+                'combined_score' => $detectionRateAll,
+                'mutation_coverage' => (100 - $uncoveredRate)
+            ],
+            'escaped' => []
+        ];
+        foreach ($mutantEscapes as $escaped) {
+            $out['escaped'][] = [
+                'file'      => $escaped['mutation']['file'],
+                'mutator'   => get_class($escaped['mutation']['mutation']),
+                'class'     => $escaped['mutation']['class'],
+                'method'    => $escaped['mutation']['method'],
+                'line'      => $escaped['mutation']['line'],
+                'diff'      => $escaped['mutation']['mutation']->getDiff(),
+                'stdout'    => (isset($escaped['stdout']) ? $escaped['stdout'] : ''), 
+                'stderr'    => (isset($escaped['stderr']) ? $escaped['stderr'] : '')
+            ];
+        }
+        file_put_contents(
+            $this->jsonLogFile,
+            json_encode($out, JSON_PRETTY_PRINT)
+        );
+    }
+
+    protected function doConfiguration(OutputInterface $output)
     {
         if (!file_exists('humbug.json')) {
             throw new \Exception(
@@ -306,6 +401,9 @@ class Humbug extends Command
         }
         $config = json_decode(file_get_contents('humbug.json'));
         // TODO: check for json err
+        /**
+         * Check for source code scanning config
+         */
         if (!isset($config->source)) {
             throw new \Exception(
                 'Source code data is not included in configuration file'
@@ -330,8 +428,44 @@ class Humbug extends Command
                 $this->finder->exclude($exclude);
             }
         }
+
+        /**
+         * Check for timeout config
+         */
         if (isset($config->timeout)) {
             $this->container->setTimeout((int) $config->timeout);
+        }
+
+        /**
+         * Check for logging config
+         */
+        if (!isset($config->logs) || (!isset($config->logs->json) && !isset($config->logs->text))) {
+            $output->writeln('<error>No log file is specified. Detailed results will not be available.</error>');
+        } else {
+            if (isset($config->logs->json)) {
+                if (!file_exists(dirname($config->logs->json))) {
+                    throw new \Exception(
+                        'Directory for json logging does not exist: ' . dirname($config->logs->json)
+                    );
+                }
+                $this->logJson = true;
+                $this->jsonLogFile = $config->logs->json;
+                if (file_exists($this->jsonLogFile)) {
+                    unlink($this->jsonLogFile);
+                }
+            }
+            if (isset($config->logs->text)) {
+                if (!file_exists(dirname($config->logs->text))) {
+                    throw new \Exception(
+                        'Directory for text logging does not exist: ' . dirname($config->logs->text)
+                    );
+                }
+                $this->logText = true;
+                $this->textLogFile = $config->logs->text;
+                if (file_exists($this->textLogFile)) {
+                    unlink($this->textLogFile);
+                }
+            }
         }
     }
 
@@ -387,13 +521,6 @@ class Humbug extends Command
                'd',
                InputOption::VALUE_REQUIRED,
                'Add more details, including test results, about mutations which induced test failures.',
-                0
-            )
-            ->addOption(
-               'log-text',
-               null,
-               InputOption::VALUE_REQUIRED,
-               'Log output to the given text file.',
                 0
             )
         ;
@@ -459,21 +586,13 @@ class Humbug extends Command
                 'The detail flag must be either 0 or 1'
             );
         }
-        /**
-         * Logging to text file
-         */
-        if ($input->hasOption('log-text')) {
-            if (file_exists($input->getOption('log-text'))) {
-                unlink($input->getOption('log-text'));
-            }
-        }
     }
 
     protected function logText(InputInterface $input, $renderer)
     {
-        if ($input->hasOption('log-text')) {
+        if ($this->logText === true) {
             file_put_contents(
-                $input->getOption('log-text'),
+                $input->textLogFile,
                 $renderer->getBuffer(),
                 FILE_APPEND
             );
