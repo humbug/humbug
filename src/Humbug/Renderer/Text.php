@@ -187,28 +187,28 @@ class Text
         $this->write(PHP_EOL, false);
         $this->write($total . ' mutations were generated:');
         $this->write($pkills . ' mutants were killed');
-        $this->write($pescapes . ' mutants were never detected');
+        $this->write($pshadows . ' mutants were not covered by tests');
+        $this->write($pescapes . ' tested mutants were not detected');
         $this->write($perrors . ' fatal errors were encountered');
         $this->write($ptimeouts . ' time outs were encountered');
-        $this->write($pshadows . ' mutants were not covered by any test');
         $this->write(PHP_EOL, false);
         $vanquishedTotal = $kills + $timeouts;
         $measurableTotal = $total - $errors - $shadows;
-        if ($measurableTotal == 0) {
-            $measure = 0;
+        if ($measurableTotal !== 0) {
+            $detectionRateTested  = round(100 * ($vanquishedTotal / $measurableTotal));
         } else {
-            $measure = round(100 * ($vanquishedTotal / $measurableTotal));
+            $detectionRateTested  = 0;
         }
         if ($total !== 0) {
-            $uncovered = round(100 * ($shadows / $total));
-            $totalUndetected = round(100 * (($total - $vanquishedTotal) / $total));
+            $uncoveredRate = round(100 * ($shadows / ($total - $errors)));
+            $detectionRateAll = round(100 * ($vanquishedTotal / ($total - $errors)));
         } else {
-            $uncovered = 0;
-            $totalUndetected = 0;
+            $uncoveredRate = 0;
+            $detectionRateAll = 0;
         }
-        $this->write('Out of ' . ($total - $shadows) . ' mutants covered by tests, ' . $measure . '% were detected.');
-        $this->write('Out of ' . $total . ' total mutations, ' . $uncovered . '% were not covered by tests.');
-        $this->write('Out of ' . $total . ' total mutations, ' . $totalUndetected . '% were not detected.');
+        $this->write('Out of ' . ($total - $shadows) . ' test covered mutations, <options=bold>' . $detectionRateTested . '%</options=bold> were detected.');
+        $this->write('Out of ' . $total . ' total mutations, <options=bold>' . $detectionRateAll . '%</options=bold> were detected.');
+        $this->write('Out of ' . $total . ' total mutations, <options=bold>' . $uncoveredRate . '%</options=bold> were not covered by tests.');
         $this->write(PHP_EOL, false);
         $this->write('Remember that some mutants will inevitably be harmless (i.e. false positives).');
     }
