@@ -249,10 +249,9 @@ class Phpunit extends AdapterAbstract
                 && ($node->tagName == 'directory'
                 || $node->tagName == 'exclude'
                 || $node->tagName == 'file')) {
-                    if (!file_exists($node->nodeValue)) {
-                        throw new RuntimeException('Unable to locate file specified in testsuites: ' . $node->nodeValue);
-                    }
-
+                    if (0 === count(glob($node->nodeValue))) {
+                         throw new RuntimeException('Unable to locate file specified in testsuites: ' . $node->nodeValue);
+                     }
                     $node->nodeValue = realpath($node->nodeValue);
                 }
             }
@@ -311,5 +310,5 @@ class Phpunit extends AdapterAbstract
         $dom->save($saveFile);
         return $saveFile;
     }
-
+    
 }
