@@ -83,27 +83,28 @@ Humbug is analysing source files...
 Mutation Testing is commencing...
 (.: killed, M: escaped, S: uncovered, E: fatal error, T: timed out)
 
-M.MMMMMSSSS.SSSM.SSSS..MSS........SMSS.M.M.TT....MM........S |   60
-M..............SSMMM..M..SSSS.S..MMS............SMMSMMM.M.EM |  120
-.SSSSSSSSSSSSSSSS..S..M.SS...M...S...MM......MM..SSM........ |  180
-.MM...M.SM.EEE..MM...M..ME....M..ESSSSSSSSSSMEMSSSM.M.MMMM.S |  240
-...MM.MM.M.MSSSSSSM.S.S..M..MSMSSSSSSSSSSS..........E..M...M |  300
-MMMMMSSSM.
+M.MMMMMSSSSSS.SSSSSM.SSSSS..MM.MMSS........SSMMSSS.M.M.M.TT. |   60
+M...MM........SM...............SSMMM.M.MM...SSSS.S..MMS..... |  120
+........SMMSMMMM.M.EM.SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSM....... |  180
+...S..M.SS...M...SSSSSSS....MM..M....MM..S.SSSSM............ |  240
+..MM...M.SM.EEE..MM...M..ME....M..ESSSSSSSSSSSMEMSSSM..M.MMM |  300
+M..S...MMM.MMM.M.M..SSSSSSMM.SSS..S..M..MSMSSSSSSSSSSSSSS... |  360
+...E.M.M.M...E..SM...MMMMMMMMMMMSSSSSSM.SS
 
-310 mutations were generated:
-     144 mutants were killed
-      69 mutants were never detected
-       8 fatal errors were encountered
+402 mutations were generated:
+     171 mutants were killed
+     129 mutants were not covered by tests
+      91 tested mutants were not detected
+       9 fatal errors were encountered
        2 time outs were encountered
-      87 mutants were not covered by any test
 
-Out of 223 mutants covered by tests, 68% were detected.
-Out of 310 total mutations, 28% were not covered by tests.
-Out of 310 total mutations, 53% were not detected.
+Out of 273 test covered mutations, 66% were detected.
+Out of 402 total mutations, 44% were detected.
+Out of 402 total mutations, 33% were not covered by tests.
 
 Remember that some mutants will inevitably be harmless (i.e. false positives).
 
-Time: 36.17 seconds Memory: 13.75MB
+Time: 48.7 seconds Memory: 15.00MB
 ```
 
 Additional detailed information about escaped mutations and errors is currently
@@ -120,21 +121,19 @@ These optimisations, while requiring some upfront execution time, make Humbug
 quite fast once it gets going.
 
 The example summary results reported a number of statistics:
-* 27% of mutations impacted untested code. If your Code Coverage (not reported
-by Humbug) was reading 90%, then this might be really bad news. That 10% of
-uncovered code has given rise to 30% of the generated regressions.
-* 69% of covered testable mutations led to test failures, errors or timeouts.
-This means that 31% escaped detection. Some are probably false positives, so the
-bad news is often overstated a little bit.
-* In combination, if you do the math, the unit tests have a combined detection
-rate of ~49% (probably a bit higher in reality due to false positives). If your
-code coverage were showing 90% or higher. How does that reconcile with a mutation
-detection rate 41 points lower? You have tests, but are they good tests?
+* The headline news is that 66% of mutations which were covered by unit tests
+were detected by your unit tests. Analysing the log may assist in improving that score.
+* A combined detection score of 44% was achieved. This includes mutations which
+occured in source code not covered by any of the tests run. Better code coverage
+would increase this combined score.
+* Finally, 33% of the mutations generated occured in source not covered by unit
+tests. For example, if you had a 90% Code Coverage then this is telling you that
+the 10% uncovered code is generating 33% of all mutations. Such discrepancies may
+indicate a need for more tests that your Code Coverage might typically suggest.
 
-Interpreting these results depends on context. Humbug will (soon) log mutations
-to file so they can be examined in more detail. In general, however, higher
-detection rates are probably desireable. At the end of the day, if unit tests
-are not capable of catching regressions, then their efficacy is impaired.
+Interpreting these results requires some context. The logs will list all undetected
+mutations as diffs against the original source code. Examining these will provide
+further insight.
 
 
 Installation
