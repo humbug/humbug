@@ -40,7 +40,8 @@ class Phpunit extends AdapterAbstract
      * @return  array
      */
     public function runTests(Container $container, $useStdout = true,
-    $firstRun = false, array $mutation = null, array $testCases = [])
+    $firstRun = false, array $mutation = null, array $testCases = [],
+    $testCaseFilter = null)
     {
 
         $jobopts = [
@@ -54,6 +55,9 @@ class Phpunit extends AdapterAbstract
 
         if(!$useStdout) {
             array_unshift($jobopts['cliopts'], '--stderr');
+        }
+        if (!is_null($testCaseFilter)) {
+            array_unshift($jobopts['cliopts'], "--filter='".$testCaseFilter."'");
         }
         /*
          * We only need a single fail!

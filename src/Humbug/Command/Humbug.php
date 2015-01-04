@@ -116,7 +116,8 @@ class Humbug extends Command
          */
         $orderedTestCases = null;
         $analyser = $container->getAdapter()->getLogAnalyser($container);
-        $orderedTestCases = $analyser->process()->getTestCases();
+        $analyser->process();
+        $coverage = $container->getAdapter()->getCoverageData($container, $analyser);
 
         /**
          * Message re Static Analysis
@@ -162,8 +163,6 @@ class Humbug extends Command
          */
         $parallels = 1;
 
-        $coverage = $container->getAdapter()->getCoverageData($container, $analyser);
-
         //$logIndex = 0;
 
         foreach ($mutables as $i => $mutable) {
@@ -181,6 +180,7 @@ class Humbug extends Command
                             $mutation['file'],
                             $mutation['line']
                         );
+                        //$testCaseFilter = $coverage->getTestCaseFilter();
 
                         $processes[$tracker] = $container->getAdapter()->runTests(
                             $container,
@@ -188,6 +188,7 @@ class Humbug extends Command
                             false,
                             $mutation,
                             $orderedTestCases
+                            //,$testCaseFilter
                         );
                     } catch (NoCoveringTestsException $e) {
                         /**

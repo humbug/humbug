@@ -21,6 +21,8 @@ class CoverageData
 
     protected $analyser;
 
+    protected $filter;
+
     public function __construct($file, TestTimeAnalyser $analyser)
     {
         $file = realpath($file);
@@ -57,6 +59,7 @@ class CoverageData
 
     public function getTestClasses($file, $line)
     {
+        $this->filter = null;
         $file = realpath($file);
         if (!$this->hasTestClasses($file, $line)) {
             throw new NoCoveringTestsException(
@@ -65,12 +68,25 @@ class CoverageData
             );
         }
         $classes = [];
+        $cases = [];
         foreach ($this->data[$file][$line] as $reference) {
             $parts = explode('::', $reference);
             $classes[] = $parts[0];
+            $caseParts = explode(' ', $parts[1]);
+            $cases[] = $caseParts[0];
         }
         $classes = array_unique($classes);
+        /*if (count($cases) > 0) {
+            $cases = array_unique($cases);
+            $caseNameFilter = implode('|', $cases);
+            $this->filter = "/" . $caseNameFilter . "/";
+        }*/
         return $classes;
+    }
+
+    public function getTestCaseFilter()
+    {
+        return $this->filter;
     }
 
 }
