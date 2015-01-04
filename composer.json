@@ -30,10 +30,10 @@
         "ext-runkit": "Install from http://www.github.com/padraic/runkit. Do not use PECL!"
     },
     "autoload": {
-        "psr-0": { "Humbug": "src/" }
+        "psr-0": { "Humbug\\": "src/" }
     },
     "autoload-dev": {
-        "psr-0": { "Humbug\\Test": "tests/" }
+        "psr-0": { "Humbug\\Test\\": "tests/" }
     },
     "bin": ["bin/humbug"],
     "extra": {
