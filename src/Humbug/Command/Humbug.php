@@ -273,7 +273,7 @@ class Humbug extends Command
                         //$mutantTimeouts[] = $toLog;
                     } elseif (!empty($result['stderr'])) {
                         $countMutantErrors++;
-                        //$mutantErrors[] = $toLog;
+                        $mutantErrors[] = $toLog;
                     } elseif ($result['passed'] === false) {
                         $countMutantKills++;
                         //$mutantKills[] = $toLog;
@@ -315,20 +315,34 @@ class Humbug extends Command
                 $countMutantEscapes,
                 $countMutantErrors,
                 $countMutantTimeouts,
-                $countMutantShadows,
+                $countMutantErrors,
                 $mutantEscapes,
-                $mutantShadows,
+                $mutantErrors,
                 $this->jsonLogFile
             );
         }
         if ($this->logText === true) {
             $renderer->renderLogToText($this->textLogFile);
             $this->logText($input, $renderer);
-            $out = [PHP_EOL, '-----'];
+            $out = [PHP_EOL, '-------', 'Escapes', '-------'];
             foreach ($mutantEscapes as $index => $escaped) {
                 $out[] = $index+1 . ') ' . get_class($escaped['mutation']['mutation']);
                 $out[] = 'Diff on ' . $escaped['mutation']['class'] . '::' . $escaped['mutation']['method'] . '() in ' . $escaped['mutation']['file'] . ':';
                 $out[] = $escaped['mutation']['mutation']->getDiff();
+                $out[] = PHP_EOL;
+            }
+            if (count($mutantErrors) > 0) {
+                $out[] = [PHP_EOL, '------', 'Errors', '------'];
+            }
+            foreach ($mutantErrors as $index => $errored) {
+                $out[] = $index+1 . ') ' . get_class($errored['mutation']['mutation']);
+                $out[] = 'Diff on ' . $errored['mutation']['class'] . '::' . $errored['mutation']['method'] . '() in ' . $errored['mutation']['file'] . ':';
+                $out[] = $errored['mutation']['mutation']->getDiff();
+                $out[] = PHP_EOL;
+                $out[] = 'The following output was received on stderr:';
+                $out[] = PHP_EOL;
+                $out[] = (string) $errored['stderr'];
+                $out[] = PHP_EOL;
                 $out[] = PHP_EOL;
             }
             $this->logText($input, $renderer, implode(PHP_EOL, $out));
