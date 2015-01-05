@@ -259,7 +259,7 @@ class Phpunit extends AdapterAbstract
         $root = $dom->documentElement;
         if ($root->hasAttribute('bootstrap')) {
             $bootstrap = $root->getAttribute('bootstrap');
-            $path = realpath($dir . $bootstrap);
+            $path = static::locateBootstrapFile($bootstrap, dirname($conf));
             $root->setAttribute('bootstrap', $path);
             $container->setBootstrap($path);
         }
@@ -380,4 +380,24 @@ class Phpunit extends AdapterAbstract
         return $saveFile;
     }
 
+
+    private static function locateBootstrapFile($name, $workingDir)
+    {
+        if ('/' === $name[0] || '\\' === $name[0]) {
+            if (!file_exists($name)) {
+                throw new InvalidArgumentException("Bootstrap file:$name does not exist");
+            }
+
+            return realpath($name);
+        }
+
+        // todo windows absolute paths?
+
+        $relativePath = $workingDir.DIRECTORY_SEPARATOR.$name;
+        if (file_exists($relativePath)) {
+            return realpath($relativePath);
+        }
+
+        throw new InvalidArgumentException("Could not find bootstrap file $name working from $workingDir");
+    }
 }
