@@ -407,7 +407,7 @@ class Humbug extends Command
             );
         }
         $this->container->setBaseDirectory(getcwd());
-        
+
         /**
          * Check for source code scanning config
          */
@@ -435,6 +435,7 @@ class Humbug extends Command
                 $this->finder->exclude($exclude);
             }
         }
+        $this->container->setSourceList($config->source);
 
         /**
          * Check for timeout config

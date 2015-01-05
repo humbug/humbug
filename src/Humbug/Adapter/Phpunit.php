@@ -260,6 +260,9 @@ class Phpunit extends AdapterAbstract
         } else {
             throw new RuntimeException('Unable to locate phpunit.xml(.dist) file. This is required by Humbug.');
         }
+        if (!empty($dir)) {
+            $dir .= '/';
+        }
         $dom = new \DOMDocument;
         $dom->preserveWhitespace = false;
         $dom->formatOutput = true;
@@ -268,11 +271,16 @@ class Phpunit extends AdapterAbstract
         $root = $dom->documentElement;
         if ($root->hasAttribute('bootstrap')) {
             $bootstrap = $root->getAttribute('bootstrap');
-            $path = realpath($bootstrap);
+            $path = realpath($dir . $bootstrap);
             $root->setAttribute('bootstrap', $path);
             $container->setBootstrap($path);
         }
 
+        $xpath = new \DOMXPath($dom);
+
+        /**
+         * On first runs collect a test log and also generate code coverage
+         */
         if (!is_null($junitLog)) {
             $logging = $dom->createElement('logging');
             $root->appendChild($logging);
@@ -281,9 +289,37 @@ class Phpunit extends AdapterAbstract
             $log->setAttribute('target', $junitLog);
             $log->setAttribute('logIncompleteSkipped', 'true');
             $logging->appendChild($log);
+
+            /**
+             * While we're here, reset code coverage filter to meet the known source
+             * code constraints.
+             */
+            $filters = $xpath->query('/phpunit/filter');
+            foreach ($filters as $filter) {
+                $root->removeChild($filter);
+            }
+            $filter = $dom->createElement('filter');
+            $whitelist = $dom->createElement('whitelist');
+            $root->appendChild($filter);
+            $filter->appendChild($whitelist);
+            $source = $container->getSourceList();
+            if (isset($source->directories)) {
+                foreach ($source->directories as $d) {
+                    $directory = $dom->createElement('directory', realpath($d));
+                    $whitelist->appendChild($directory);
+                }
+            }
+            if (isset($source->excludes)) {
+                $exclude = $dom->createElement('exclude');
+                foreach ($source->excludes as $d) {
+                    $directory = $dom->createElement('directory', realpath($d));
+                    $exclude->appendChild($directory);
+                }
+                $whitelist->appendChild($exclude);
+            }
         }
 
-        $xpath = new \DOMXPath($dom);
+        
         $suites = $xpath->query('/phpunit/testsuites/testsuite');
         foreach ($suites as $suite) {
             foreach ($suite->childNodes as $node) {
