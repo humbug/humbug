@@ -332,7 +332,7 @@ class Humbug extends Command
                 $out[] = PHP_EOL;
             }
             if (count($mutantErrors) > 0) {
-                $out[] += [PHP_EOL, '------', 'Errors', '------'];
+                $out = array_merge($out, [PHP_EOL, '------', 'Errors', '------']);
             }
             foreach ($mutantErrors as $index => $errored) {
                 $out[] = $index+1 . ') ' . get_class($errored['mutation']['mutation']);

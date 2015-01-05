@@ -306,6 +306,7 @@ class Phpunit extends AdapterAbstract
             if (isset($source->directories)) {
                 foreach ($source->directories as $d) {
                     $directory = $dom->createElement('directory', realpath($d));
+                    $directory->setAttribute('suffix', '.php');
                     $whitelist->appendChild($directory);
                 }
             }
@@ -375,6 +376,7 @@ class Phpunit extends AdapterAbstract
                 if ($addMissingTests) {
                     $finder = new Finder;
                     $finder->name('*Test.php');
+                    // TODO: Make sure this only ever includes tests!
                     foreach ($finder->in($container->getBaseDirectory())->exclude('vendor') as $file) {
                         if (!in_array($file->getRealpath(), $files)) {
                             $file = $dom->createElement('file', $file->getRealpath());
