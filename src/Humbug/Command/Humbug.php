@@ -332,7 +332,7 @@ class Humbug extends Command
                 $out[] = PHP_EOL;
             }
             if (count($mutantErrors) > 0) {
-                $out[] = [PHP_EOL, '------', 'Errors', '------'];
+                $out[] += [PHP_EOL, '------', 'Errors', '------'];
             }
             foreach ($mutantErrors as $index => $errored) {
                 $out[] = $index+1 . ') ' . get_class($errored['mutation']['mutation']);
@@ -341,7 +341,7 @@ class Humbug extends Command
                 $out[] = PHP_EOL;
                 $out[] = 'The following output was received on stderr:';
                 $out[] = PHP_EOL;
-                $out[] = (string) $errored['stderr'];
+                $out[] = $errored['stderr'];
                 $out[] = PHP_EOL;
                 $out[] = PHP_EOL;
             }
