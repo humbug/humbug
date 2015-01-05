@@ -66,6 +66,21 @@ directory where composer vendor and Tests directories are excluded):
 }
 ```
 
+If, from your project's base directory, you must run tests from another directory
+then you can signal this also:
+
+```
+{
+    "chdir": "tests",
+    "timeout": 10,
+    "source": {
+        "directories": [
+            "src"
+        ],
+    }
+}
+```
+
 The magic command, while in your project's base directory (and assuming humbug
 was cloned at same level as your project directory):
 
@@ -142,7 +157,6 @@ indicate a need for more tests that your Code Coverage might typically suggest.
 Interpreting these results requires some context. The logs will list all undetected
 mutations as diffs against the original source code. Examining these will provide
 further insight as to what specific mutations went undetected.
-
 
 Installation
 ------------

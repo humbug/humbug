@@ -45,7 +45,7 @@ class Phpunit extends AdapterAbstract
     {
 
         $jobopts = [
-            'testdir'       => $container->getTestDirectory(),
+            'testdir'       => $container->getTestRunDirectory(),
             'basedir'       => $container->getBaseDirectory(),
             'timeout'       => $container->getTimeout(),
             'cachedir'      => $container->getCacheDirectory(),
@@ -232,11 +232,20 @@ class Phpunit extends AdapterAbstract
         return true;
     }
 
+    /**
+     * Wrangle XML to create a PHPUnit configuration, based on the original, that
+     * allows for more control over what tests are run, allows JUnit logging,
+     * and ensures that Code Coverage (for Humbug use) whitelists all of the
+     * relevant source code.
+     *
+     *
+     * @return string
+     */
     public static function assembleConfiguration(Container $container, array $cases = [], $junitLog = null, $addMissingTests = false)
     {
         $conf = null;
         $dir = null;
-        $testDir = $container->getTestDirectory();
+        $testDir = $container->getTestRunDirectory();
         if (!empty($testDir)) {
             $dir = $testDir;
             $conf = $dir . '/phpunit.xml';

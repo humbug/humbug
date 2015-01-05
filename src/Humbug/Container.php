@@ -41,6 +41,10 @@ class Container
 
     protected $timeout = null;
 
+    protected $testRunDirectory;
+
+    protected $baseDirectory;
+
     public function __construct(InputInterface $input, OutputInterface $output)
     {
         $this->input = $input;
@@ -57,6 +61,50 @@ class Container
     public function get($option)
     {
         return $this->input->getOption($option);
+    }
+
+    /**
+     * Set the directory from which tests must be run (only if not base)
+     *
+     * @param string $dir
+     */
+    public function setTestRunDirectory($dir)
+    {
+        
+        $this->testRunDirectory = rtrim($dir, ' \\/');;
+        return $this;
+    }
+
+    /**
+     * Get the directory from which tests must be run
+     *
+     * @return string
+     */
+    public function getTestRunDirectory()
+    {
+        return $this->testRunDirectory;
+    }
+
+    /**
+     * Set the base directory.
+     *
+     * @param string $dir
+     */
+    public function setBaseDirectory($dir)
+    {
+        
+        $this->baseDirectory = rtrim($dir, ' \\/');;
+        return $this;
+    }
+
+    /**
+     * Get the base directory.
+     *
+     * @return string
+     */
+    public function getBaseDirectory()
+    {
+        return $this->baseDirectory;
     }
 
     /**
@@ -242,22 +290,13 @@ class Container
         return $this->get('constraints');
     }
 
-    public function getTestDirectory()
-    {
-        return rtrim($this->get('testdir'), ' \\/');
-    }
-
-    public function getBaseDirectory()
-    {
-        return rtrim($this->get('basedir'), ' \\/');
-    }
-
     public function setBootstrap($bootstrap)
     {
         $this->bootstrap = realpath($bootstrap);
     }
 
-    public function getBootstrap() {
+    public function getBootstrap()
+    {
         return $this->bootstrap;
     }
 

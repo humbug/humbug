@@ -406,6 +406,8 @@ class Humbug extends Command
                 . (function_exists('json_last_error_msg') ? ': ' . json_last_error_msg() : '')
             );
         }
+        $this->container->setBaseDirectory(getcwd());
+        
         /**
          * Check for source code scanning config
          */
@@ -439,6 +441,18 @@ class Humbug extends Command
          */
         if (isset($config->timeout)) {
             $this->container->setTimeout((int) $config->timeout);
+        }
+
+        /**
+         * Check for change working directory config
+         */
+        if (isset($config->chdir)) {
+            if (!file_exists($config->chdir)) {
+                throw new JsonConfigException(
+                    'Directory in which to run tests does not exist: ' . $config->chdir
+                );
+            }
+            $this->container->setTestRunDirectory($config->chdir);
         }
 
         /**
@@ -476,23 +490,9 @@ class Humbug extends Command
 
     protected function configure()
     {
-        $dirs = $this->checkDirectories();
         $this
             ->setName('humbug')
             ->setDescription('Run Humbug for target tests')
-            ->addOption(
-               'basedir',
-               'B',
-               InputOption::VALUE_REQUIRED,
-               'Set base directory from where to run tests.',
-                $dirs['base']
-            )
-            ->addOption(
-               'testdir',
-               'T',
-               InputOption::VALUE_REQUIRED,
-               'Set tests directory if required to change directories to run tests.'
-            )
             ->addOption(
                'adapter',
                'a',
@@ -524,32 +524,8 @@ class Humbug extends Command
         ;
     }
 
-    protected function checkDirectories()
-    {
-        $dirs = [];
-        $dirs['base'] = getcwd();
-        return $dirs;
-    }
-
     protected function validate(InputInterface $input, OutputInterface $output)
     {
-        /**
-         * Base directory
-         */
-        if (!file_exists($input->getOption('basedir'))) {
-            throw new InvalidArgumentException(
-                'The base directory specified does not exist or could not be read.'
-            );
-        }
-        /**
-         * Tests directory
-         */
-        if (!empty($input->getOption('testdir')) && !file_exists($input->getOption('testdir'))) {
-            throw new InvalidArgumentException(
-                'The tests directory specified does not exist or could not be '
-                . 'automatically detected. Please specify in the options'
-            );
-        }
         /**
          * Adapter
          */
@@ -558,12 +534,6 @@ class Humbug extends Command
                 'Only a PHPUnit adapter is supported at this time. Sorry!'
             );
         }
-        /**
-         * Adapter Options
-         */
-        /**
-         * Adapter Constraints
-         */
         /**
          * Timeout
          */
