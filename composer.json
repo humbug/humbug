@@ -26,9 +26,6 @@
         "phpunit/phpunit": "~4.4",
         "mockery/mockery": "~0.9"
     },
-    "suggest": {
-        "ext-runkit": "Install from http://www.github.com/padraic/runkit. Do not use PECL!"
-    },
     "autoload": {
         "psr-0": { "Humbug\\": "src/" }
     },
