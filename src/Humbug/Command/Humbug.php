@@ -185,11 +185,11 @@ class Humbug extends Command
                         /**
                          * Unleash the Mutant!
                          */
-                        $mutant[$tracker] = $this->container->getCacheDirectory() . '/humbug.mutant.' . uniqid() . '.php';
+                        $mutants[$tracker] = $this->container->getCacheDirectory() . '/humbug.mutant.' . uniqid() . '.php';
                         $mutatorClass = $mutation['mutator'];
                         $mutator = new $mutatorClass;
                         file_put_contents(
-                            $mutant[$tracker],
+                            $mutants[$tracker],
                             $mutator->mutate(
                                 Tokenizer::getTokens(file_get_contents($mutation['file'])),
                                 $mutation['index']
@@ -201,7 +201,7 @@ class Humbug extends Command
                             $container,
                             true,
                             false,
-                            $mutant[$tracker],
+                            $mutants[$tracker],
                             $orderedTestCases
                         );
 
