@@ -11,7 +11,6 @@
 namespace Humbug;
 
 use Humbug\Adapter;
-use Humbug\Runkit;
 use Humbug\Generator;
 use Humbug\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Input\InputInterface;
@@ -30,8 +29,6 @@ class Container
     protected $adapter;
 
     protected $adapterOptions = [];
-
-    protected $runkit;
 
     protected $mutables = [];
 
@@ -224,31 +221,6 @@ class Container
     {
         $this->adapter = $adapter;
         return $this;
-    }
-
-    /**
-     * Set a custom runkit instance.
-     *
-     * @param \Humbug\Utility\Runkit $runkit
-     */
-    public function setRunkit(Runkit $runkit)
-    {
-        $this->runkit = $runkit;
-        return $this;
-    }
-
-    /**
-     * Creates and returns a new instance of \Humbug\Runkit if not previously
-     * loaded
-     *
-     * @return \Humbug\Runkit
-     */
-    public function getRunkit()
-    {
-        if (is_null($this->runkit)) {
-            $this->runkit = new Runkit;
-        }
-        return $this->runkit;
     }
 
     /**

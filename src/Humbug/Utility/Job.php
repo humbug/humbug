@@ -24,15 +24,10 @@ class Job
         $args = base64_encode(serialize($args));
         $humbugBootstrap = realpath(__DIR__ . '/../../bootstrap.php');
         $bootstrap = addslashes($bootstrap);
-        $prepend = '';
-        $prepend2 = '';
+        $inBeforeAutoloader = '';
         if (!is_null($mutantFile)) {
             $mutantFile = addslashes($mutantFile);
-            $prepend = <<<PREPEND
-use Humbug\StreamWrapper\Mutator;
-Mutator::capture("{$mutantFile}");
-PREPEND;
-            $prepend2 = <<<PREPEND
+            $inBeforeAutoloader = <<<PREPEND
 require_once "{$mutantFile}";
 PREPEND;
         }
@@ -42,7 +37,7 @@ namespace Humbug\\Env;
 error_reporting(error_reporting() & ~E_NOTICE);
 require_once "{$humbugBootstrap}";
 if (!empty("{$bootstrap}")) require_once "{$bootstrap}";
-{$prepend2}
+{$inBeforeAutoloader}
 use Humbug\Adapter\Phpunit;
 Phpunit::main("{$args}");
 SCRIPT;

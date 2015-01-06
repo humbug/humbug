@@ -161,28 +161,7 @@ further insight as to what specific mutations went undetected.
 Installation
 ------------
 
-Humbug currently requires the installation of the runkit extension. Yes, that scares me too!
-Use the updated version at https://github.com/padraic/runkit and NOT the one you
-would normally get from PECL. This has minor modifications for PHP 5.6 support from
-a fork maintained by Dmitry Zenovich. For Ubuntu:
-
-```
-git clone https://github.com/padraic/runkit.git
-cd runkit
-phpize
-./configure
-make
-sudo make install
-sudo bash -c "echo 'extension=runkit.so' > /etc/php5/mods-available/runkit.ini"
-sudo php5enmod runkit
-```
-
-We use Runkit to alter PHP methods without resorting to writing entire source code
-copies all over the place. No, you are not required to install this on production
-servers. Yes, it would be nice to have the PECL runkit synced to Dmitry's version.
-
-Packagist registration will follow shortly, but for now you can clone and install
-its dependencies using Composer:
+You can clone and install Humbug's dependencies using Composer:
 
 ```
 git clone https://github.com/padraic/humbug.git

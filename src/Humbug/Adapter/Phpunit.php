@@ -11,7 +11,6 @@
 namespace Humbug\Adapter;
 
 use Humbug\Container;
-use Humbug\Runkit;
 use Humbug\Utility\Job;
 use Humbug\Utility\Process;
 use Humbug\Utility\TestTimeAnalyser;

@@ -130,7 +130,7 @@ class Text
     {
         $this->progressCount++;
         if ($result['timeout'] === true) {
-            $this->output->write('<fg=cyan;options=bold>T</fg=cyan;options=bold>', false);
+            $this->write('<fg=cyan;options=bold>T</fg=cyan;options=bold>', false);
         } elseif (strlen($result['stderr']) > 0) {
             $this->write('<fg=yellow;options=bold>E</fg=yellow;options=bold>', false);
         } elseif ($result['passed'] === true) {
@@ -153,7 +153,7 @@ class Text
     public function renderShadowMark($eolInterval = 60)
     {
         $this->progressCount++;
-        $this->output->write('<fg=blue;options=bold>S</fg=blue;options=bold>', false);
+        $this->write('<fg=blue;options=bold>S</fg=blue;options=bold>', false);
         if (($this->progressCount % $eolInterval) == 0) {
             $counter = str_pad($this->progressCount, 5, ' ', STR_PAD_LEFT);
             $this->write(' |' . $counter . PHP_EOL, false);

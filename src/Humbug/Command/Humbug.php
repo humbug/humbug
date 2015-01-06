@@ -271,7 +271,6 @@ class Humbug extends Command
                         $countMutantTimeouts++;
                         //$mutantTimeouts[] = $toLog;
                     } elseif (!$process->isSuccessful()) {
-                        echo $result['stderr'];
                         $countMutantErrors++;
                         $mutantErrors[] = $toLog;
                     } elseif ($result['passed'] === false) {
@@ -334,11 +333,6 @@ class Humbug extends Command
                 $out[] = 'Diff on ' . $escaped['mutation']['class'] . '::' . $escaped['mutation']['method'] . '() in ' . $escaped['mutation']['file'] . ':';
                 $out[] = $escaped['diff'];
                 $out[] = PHP_EOL;
-                $out[] = 'The following output was received on stdout:';
-                $out[] = PHP_EOL;
-                $out[] = $escaped['stdout'];
-                $out[] = PHP_EOL;
-                $out[] = PHP_EOL;
             }
             if (count($mutantErrors) > 0) {
                 $out = array_merge($out, [PHP_EOL, '------', 'Errors', '------']);
@@ -400,11 +394,11 @@ class Humbug extends Command
         foreach ($mutantEscapes as $escaped) {
             $out['escaped'][] = [
                 'file'      => $escaped['mutation']['file'],
-                'mutator'   => get_class($escaped['mutation']['mutation']),
+                'mutator'   => $escaped['mutation']['mutator'],
                 'class'     => $escaped['mutation']['class'],
                 'method'    => $escaped['mutation']['method'],
                 'line'      => $escaped['mutation']['line'],
-                'diff'      => $escaped['mutation']['mutation']->getDiff(),
+                'diff'      => $escaped['diff'],
                 'stdout'    => (isset($escaped['stdout']) ? $escaped['stdout'] : ''), 
                 'stderr'    => (isset($escaped['stderr']) ? $escaped['stderr'] : '')
             ];
