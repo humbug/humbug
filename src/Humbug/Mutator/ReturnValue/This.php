@@ -42,7 +42,6 @@ class This extends MutatorAbstract
             }
         }
         $this->tokensMutated = $tokens;
-        return $this->reconstructFromTokens($this->tokensMutated);
     }
 
     public static function mutates(array $tokens, $index)

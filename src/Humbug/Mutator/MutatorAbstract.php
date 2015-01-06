@@ -11,6 +11,7 @@
 namespace Humbug\Mutator;
 
 use Humbug\Utility\Diff;
+use Humbug\Utility\Tokenizer;
 
 abstract class MutatorAbstract
 {
@@ -30,23 +31,6 @@ abstract class MutatorAbstract
     protected $tokensMutated = [];
 
     /**
-     * Name and relative path of the file being mutated
-     *
-     * @var string
-     */
-    protected $filename;
-
-    /**
-     * Constructor; sets name and relative path of the file being mutated
-     *
-     * @param string $filename
-     */
-    public function __construct($filename = '')
-    {
-        $this->filename = $filename;
-    }
-
-    /**
      * Perform a mutation against the given original source code tokens for
      * a mutable element
      *
@@ -57,18 +41,7 @@ abstract class MutatorAbstract
     {
         $this->tokensOriginal = $tokens;
         $this->tokensMutated = $this->getMutation($this->tokensOriginal, $index);
-        return $this->reconstructFromTokens($this->tokensMutated);
-    }
-
-    /**
-     * Return the file path of the file which is currently being assessed for
-     * mutations.
-     *
-     * @return string
-     */
-    public function getFilename()
-    {
-        return $this->filename;
+        return Tokenizer::reconstructFromTokens($this->tokensMutated);
     }
 
     /**
@@ -79,8 +52,8 @@ abstract class MutatorAbstract
      */
     public function getDiff()
     {
-        $original = $this->reconstructFromTokens($this->tokensOriginal);
-        $mutated = $this->reconstructFromTokens($this->tokensMutated);
+        $original = Tokenizer::reconstructFromTokens($this->tokensOriginal);
+        $mutated = Tokenizer::reconstructFromTokens($this->tokensMutated);
         $difference = Diff::difference($original, $mutated);
         return $difference;
     }
@@ -93,25 +66,5 @@ abstract class MutatorAbstract
      * @return array
      */
     abstract public function getMutation(array $tokens, $index);
-
-    /**
-     * Reconstruct a new mutation into a source code string based on the
-     * returned tokens
-     *
-     * @param array $tokens
-     * @return string
-     */
-    protected function reconstructFromTokens(array $tokens)
-    {
-        $str = '';
-        foreach ($tokens as $token) {
-            if (is_string($token)) {
-                $str .= $token;
-            } else {
-                $str .= $token[1];
-            }
-        }
-        return $str;
-    }
 
 }

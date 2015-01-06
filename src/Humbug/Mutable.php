@@ -10,10 +10,10 @@
 
 namespace Humbug;
 
+use Humbug\Utility\Tokenizer;
+
 class Mutable
 {
-
-    const T_NEWLINE = -1;
 
     /**
      * Name and relative path of the file to be mutated
@@ -28,13 +28,6 @@ class Mutable
      * @var array
      */
     protected $mutations = [];
-
-    /**
-     *  Array of mutable elements located in file
-     *
-     * @var array
-     */
-    protected $mutables = [];
 
     /**
      * Array of Mutators currently enabled to generate mutations
@@ -101,8 +94,57 @@ class Mutable
      */
     public function generate()
     {
-        $this->mutables = $this->parseMutables();
-        $this->parseTokensToMutations($this->mutables);
+        $source = file_get_contents($this->getFilename());
+        $tokens = Tokenizer::getTokens($source);
+        $lineNumber = 1;
+        $methodName = '???';
+        $className = '???';
+        foreach ($tokens as $index => $token) {
+
+            if (is_array($token) && $token[0] == Tokenizer::T_NEWLINE) {
+                $lineNumber = $token[2] + 1;
+                continue;
+            }
+
+            if (is_array($token) && $token[0] == T_NAMESPACE) {
+                $namespace = '';
+                for ($j=$index+1; $j<count($tokens); $j++) {
+                    if ($tokens[$j][0] == T_STRING) {
+                        $namespace .= '\\' . $tokens[$j][1];
+                    } elseif ($tokens[$j] == '{' || $tokens[$j] == ';') {
+                        break;
+                    }
+                }
+                continue;
+            }
+
+            if (is_array($token) && ($token[0] == T_CLASS || $token[0] == T_INTERFACE)
+            && $tokens[$index-1][0] !== T_DOUBLE_COLON) {
+                $className = $namespace . '\\' . $tokens[$index+2][1];
+                continue;
+            }
+
+            if (is_array($token) && $token[0] == T_FUNCTION) {
+                if (!isset($tokens[$index+2][1])) {
+                    continue; // ignore closure
+                }
+                $methodName = $tokens[$index+2][1];
+                continue;
+            }
+
+            foreach ($this->mutators as $mutator) {
+                if ($mutator::mutates($tokens, $index)) {
+                    $this->mutations[] = [
+                        'file'          => $this->getFilename(),
+                        'class'         => $className,
+                        'method'        => $methodName,
+                        'index'         => $index,
+                        'mutator'      => $mutator,
+                        'line'          => $lineNumber
+                    ];
+                }
+            }
+        }
         return $this;
     }
 
@@ -111,7 +153,7 @@ class Mutable
      */
     public function cleanup()
     {
-        unset($this->mutations, $this->mutables);
+        unset($this->mutations);
     }
 
     /**
@@ -148,98 +190,12 @@ class Mutable
     }
 
     /**
-     * Get an array of method metainfo in tokenised form representing methods
-     * which are capable of being mutated. Note: This does not guarantee they
-     * will be mutated since this depends on the scope of supported mutations.
-     *
-     * @return array
-     */
-    public function getMutables()
-    {
-        return $this->mutables;
-    }
-
-    /**
-     * Check whether the current file will contain a mutation of the given type
-     *
-     * @param string $type The mutation type as documented
-     * @return bool
-     */
-    public function hasMutation($type)
-    {
-        $typeClass = '\\Humbug\\Mutation\\' . $type;
-        // Don't ask...
-        $mutations = array_values(array_values(array_values($this->getMutations())));
-        foreach ($mutations as $mutation) {
-            if ($mutation instanceof $typeClass) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Based on the internal array of mutable methods, generate another
-     * internal array of supported mutations accessible using getMutations().
-     *
-     * @param array $mutables
-     * @return void
-     */
-    protected function parseTokensToMutations(array $mutables)
-    {
-        foreach ($mutables as $method) {
-            if (!isset($method['tokens']) || empty($method['tokens'])) {
-                continue;
-            }
-            /**
-             * Get non-interpolated tokens just as should arrive from token_get_all()
-             */
-            $cleanTokens = [];
-            foreach ($method['tokens'] as $index=>$t) {
-                $cleanTokens[$index] = $t['token'];
-            }
-            /**
-             * Check all tokens and see which can be mutated. Keep the viable
-             * mutations ready to spawn later.
-             */
-            foreach ($method['tokens'] as $index=>$token) {
-                foreach ($this->mutators as $mutator) {
-                    if ($mutator::mutates($cleanTokens, $index)) {
-                        $this->mutations[] = [
-                            'replace'       => $method['replace'],
-                            'args'          => $method['args'],
-                            'file'          => $method['file'],
-                            'class'         => $method['class'],
-                            'method'        => $method['method'],
-                            'classesUsed'   => $method['classesUsed'],
-                            'tokens'        => $cleanTokens,
-                            'index'         => $index,
-                            'mutation'      => new $mutator($this->getFilename()),
-                            'line'          => $token['line']
-                        ];
-                    }
-                }
-            }
-            
-        }
-    }
-
-    /**
-     * Parse given file into classes, method signatures and method bodies. We need
-     * to track line numbers to allow cross referencing between code coverage data
-     * and covering tests which we can use to run only those tests which target
-     * a given mutated line of code.
-     *
-     * Also, a rabbit hole...
-     *
-     * TODO: Account for all variable spacing between tokens
-     *
-     * @return array
+     * Fare thee well runkit...
      */
     protected function parseMutables()
     {
         $source = file_get_contents($this->getFilename());
-        $tokens = $this->getTokens($source);
+        $tokens = Tokenizer::getTokens($source);
 
         $inblock = false;
         $inarg = false;
@@ -473,7 +429,7 @@ class Mutable
                 if ($roundcount == 0 && $collectArg) {
                     if (count($argTokens) > 0) {
                         if (!$inclosure) {
-                            $mutable['args'] = $this->reconstructFromTokens($argTokens);
+                            $mutable['args'] = Tokenizer::reconstructFromTokens($argTokens);
                         }
                     }
                     $argTokens = [];
@@ -536,65 +492,6 @@ class Mutable
             }
         }
         return $methods;
-    }
-
-    /**
-     * Get tokens use token_get_all() but post process to interpolate new line
-     * markers so we can check the line number of each token.
-     *
-     * @param string $source
-     * @return array
-     */
-    protected function getTokens($source)
-    {
-        $newline = 0;
-        $tokens = token_get_all($source);
-        foreach ($tokens as $token) {
-            $tname = is_array($token) ? $token[0] : null;
-            $tdata = is_array($token) ? $token[1] : $token;
-            if ($tname == T_CONSTANT_ENCAPSED_STRING) {
-                $ntokens[] = [$tname, $tdata];
-                continue;
-            } elseif (substr($tdata, 0, 2) == '/*') {
-                $ntokens[] = [$tname, $tdata];
-                $split = preg_split("%(\r\n|\n)%", $tdata, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
-                foreach ($split as $value) {
-                    if ($value == "\r\n" || $value == "\n") {
-                        $newline++;
-                    }
-                }
-                continue;
-            }
-            $split = preg_split("%(\r\n|\n)%", $tdata, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
-            foreach ($split as $data) {
-                if ($data == "\r\n" || $data == "\n") {
-                    $newline++;
-                    $ntokens[] = [self::T_NEWLINE, $data, $newline];
-                } else {
-                    $ntokens[] = is_array($token) ? [$tname, $data] : $data;
-                }
-            }
-        }
-        return $ntokens;
-    }
-
-    /**
-     * Reconstruct a string of source code from its constituent tokens
-     *
-     * @param array $tokens
-     * @return string
-     */
-    protected function reconstructFromTokens(array $tokens)
-    {
-        $str = '';
-        foreach ($tokens as $token) {
-            if (is_string($token)) {
-                $str .= $token;
-            } else {
-                $str .= $token[1];
-            }
-        }
-        return $str;
     }
     
 }

@@ -40,7 +40,7 @@ class Phpunit extends AdapterAbstract
      * @return  array
      */
     public function runTests(Container $container, $useStdout = true,
-    $firstRun = false, array $mutation = null, array $testCases = [],
+    $firstRun = false, $mutantFile = null, array $testCases = [],
     $testCaseFilter = null)
     {
 
@@ -119,7 +119,7 @@ class Phpunit extends AdapterAbstract
         }
 
         $job = Job::generate(
-            $mutation,
+            $mutantFile,
             $jobopts,
             $container->getBootstrap(),
             $timeout
@@ -143,21 +143,10 @@ class Phpunit extends AdapterAbstract
      * @param string $arguments PHP serialised set of arguments to pass to PHPUnit
      * @return void
      */
-    public static function main($arguments, $mutation = null)
+    public static function main($arguments)
     {
 
         $arguments = unserialize(base64_decode($arguments));
-
-        /**
-         * Grab the Runkit extension utility and apply the mutation if needed
-         */
-        if (!is_null($mutation)) {
-            $mutation = unserialize(base64_decode($mutation));
-            if (!empty($mutation)) {
-                $runkit = new Runkit;
-                $runkit->applyMutation($mutation);
-            }
-        }
 
         /**
          * Switch working directory to tests (if required) and execute the test suite

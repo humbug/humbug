@@ -256,7 +256,7 @@ class Container
      *
      * @return array
      */
-    public function getMutables(Finder $finder)
+    public function getMutableFiles(Finder $finder)
     {
         if (empty($this->mutables)) {
             $generator = $this->getGenerator();

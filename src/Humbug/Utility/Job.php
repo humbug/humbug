@@ -19,32 +19,28 @@ class Job
      * @param array $mutation Mutation data and objects to be used
      * @return string
      */
-    public static function generate(array $mutation = null, array $args = [], $bootstrap = '', $timeout = 120)
+    public static function generate($mutantFile = null, array $args = [], $bootstrap = '')
     {
         $args = base64_encode(serialize($args));
-        if (!is_null($mutation)) {
-            $mutation = '"'.base64_encode(serialize($mutation)).'"';
-        } else {
-            $mutation = 'null';
-        }
-        $humbug = realpath(__DIR__ . '/../../bootstrap.php');
+        $humbugBootstrap = realpath(__DIR__ . '/../../bootstrap.php');
         $bootstrap = addslashes($bootstrap);
+        $prepend = '';
+        if (!is_null($mutantFile)) {
+            $mutantFile = addslashes($mutantFile);
+            $prepend = <<<PREPEND
+use Humbug\StreamWrapper\Mutator;
+Mutator::capture("{$mutantFile}");
+PREPEND;
+        }
         $script = <<<SCRIPT
 <?php
 namespace Humbug\\Env;
 error_reporting(error_reporting() & ~E_NOTICE);
+require_once "{$humbugBootstrap}";
+{$prepend}
 if (!empty("{$bootstrap}")) require_once "{$bootstrap}";
-require_once "{$humbug}";
 use Humbug\Adapter\Phpunit;
-class Job {
-    static function main () {
-        Phpunit::main(
-            "{$args}",
-            {$mutation}
-        );
-    }
-}
-Job::main();
+Phpunit::main("{$args}");
 SCRIPT;
         return $script;
     }

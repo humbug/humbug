@@ -14,6 +14,7 @@ use Humbug\Container;
 use Humbug\Adapter\Phpunit;
 use Humbug\Utility\Performance;
 use Humbug\Utility\ParallelGroup;
+use Humbug\Utility\Tokenizer;
 use Humbug\Renderer\Text;
 use Humbug\Exception\InvalidArgumentException;
 use Humbug\Exception\NoCoveringTestsException;
@@ -128,7 +129,7 @@ class Humbug extends Command
         /**
          * Examine all source code files and collect up mutations to apply
          */
-        $mutables = $container->getMutables($this->finder);
+        $mutables = $container->getMutableFiles($this->finder);
 
         /**
          * Message re Mutation Testing starting
@@ -163,14 +164,14 @@ class Humbug extends Command
          */
         $parallels = 1;
 
-        //$logIndex = 0;
-
         foreach ($mutables as $i => $mutable) {
             $mutations = $mutable->generate()->getMutations();
             $batches = array_chunk($mutations, $parallels);
 
             foreach ($batches as $batch) {
                 $processes = [];
+                $mutants = [];
+                $diffs = [];
                 // Being utterly paranoid, track index using $tracker explicitly
                 // to ensure process->mutation indices are linked for reporting.
                 foreach ($batch as $tracker => $mutation) {
@@ -180,35 +181,40 @@ class Humbug extends Command
                             $mutation['file'],
                             $mutation['line']
                         );
-                        //$testCaseFilter = $coverage->getTestCaseFilter();
+
+                        /**
+                         * Unleash the Mutant!
+                         */
+                        $mutant[$tracker] = $this->container->getCacheDirectory() . '/humbug.mutant.' . uniqid() . '.php';
+                        $mutatorClass = $mutation['mutator'];
+                        $mutator = new $mutatorClass;
+                        file_put_contents(
+                            $mutant[$tracker],
+                            $mutator->mutate(
+                                Tokenizer::getTokens(file_get_contents($mutation['file'])),
+                                $mutation['index']
+                            )
+                        );
+                        $diffs[$tracker] = $mutator->getDiff();
 
                         $processes[$tracker] = $container->getAdapter()->runTests(
                             $container,
                             true,
                             false,
-                            $mutation,
+                            $mutant[$tracker],
                             $orderedTestCases
-                            //,$testCaseFilter
                         );
+
+                        unlink($mutant[$tracker]);
+
                     } catch (NoCoveringTestsException $e) {
                         /**
                          * No tests excercise the mutated line. We'll report
                          * the uncovered mutants separately and omit them
                          * from final score.
                          */
-                        //$logIndex++;
                         $countMutants++;
                         $countMutantShadows++;
-                        /*$batch[$tracker]['mutation']->mutate(
-                            $batch[$tracker]['tokens'],
-                            $batch[$tracker]['index']
-                        );
-                        $toLog = [
-                            'mutation'  => $batch[$tracker],
-                            'stdout'    => '',
-                            'stderr'    => ''
-                        ];
-                        $mutantShadows[$logIndex] = $toLog;*/
                         $renderer->renderShadowMark();
                     }
                 }
@@ -249,7 +255,6 @@ class Humbug extends Command
                      * Handle the defined result for each process
                      */
                     $countMutants++;
-                    //$logIndex++;
 
                     $renderer->renderProgressMark($result);
                     $this->logText($input, $renderer);
@@ -257,21 +262,17 @@ class Humbug extends Command
                     /**
                      * Prep for diff generation
                      */
-                    $batch[$tracker]['mutation']->mutate(
-                        $batch[$tracker]['tokens'],
-                        $batch[$tracker]['index']
-                    );
                     $toLog = [
                         'mutation'  => $batch[$tracker],
+                        'diff'      => $diffs[$tracker],
                         'stdout'    => $result['stdout'],
                         'stderr'    => $result['stderr']
                     ];
 
-                    //$logIndex++;
                     if ($result['timeout'] === true) {
                         $countMutantTimeouts++;
                         //$mutantTimeouts[] = $toLog;
-                    } elseif (!empty($result['stderr'])) {
+                    } elseif (!$process->isSuccessful()) {
                         $countMutantErrors++;
                         $mutantErrors[] = $toLog;
                     } elseif ($result['passed'] === false) {
@@ -326,18 +327,18 @@ class Humbug extends Command
             $this->logText($input, $renderer);
             $out = [PHP_EOL, '-------', 'Escapes', '-------'];
             foreach ($mutantEscapes as $index => $escaped) {
-                $out[] = $index+1 . ') ' . get_class($escaped['mutation']['mutation']);
+                $out[] = $index+1 . ') ' . $escaped['mutation']['mutator'];
                 $out[] = 'Diff on ' . $escaped['mutation']['class'] . '::' . $escaped['mutation']['method'] . '() in ' . $escaped['mutation']['file'] . ':';
-                $out[] = $escaped['mutation']['mutation']->getDiff();
+                $out[] = $escaped['diff'];
                 $out[] = PHP_EOL;
             }
             if (count($mutantErrors) > 0) {
                 $out = array_merge($out, [PHP_EOL, '------', 'Errors', '------']);
             }
             foreach ($mutantErrors as $index => $errored) {
-                $out[] = $index+1 . ') ' . get_class($errored['mutation']['mutation']);
+                $out[] = $index+1 . ') ' . $errored['mutation']['mutator'];
                 $out[] = 'Diff on ' . $errored['mutation']['class'] . '::' . $errored['mutation']['method'] . '() in ' . $errored['mutation']['file'] . ':';
-                $out[] = $errored['mutation']['mutation']->getDiff();
+                $out[] = $errored['diff'];
                 $out[] = PHP_EOL;
                 $out[] = 'The following output was received on stderr:';
                 $out[] = PHP_EOL;

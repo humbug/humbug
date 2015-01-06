@@ -37,6 +37,6 @@ abstract class AdapterAbstract
      * @return  array
      */
     abstract public function runTests(Container $container, $useStdout = false,
-    $firstRun = false, array $mutation = null, array $testCases = []);
+    $firstRun = false, $mutantFile = null, array $testCases = []);
     
 }
