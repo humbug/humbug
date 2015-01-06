@@ -205,8 +205,6 @@ class Humbug extends Command
                             $orderedTestCases
                         );
 
-                        unlink($mutant[$tracker]);
-
                     } catch (NoCoveringTestsException $e) {
                         /**
                          * No tests excercise the mutated line. We'll report
@@ -273,6 +271,7 @@ class Humbug extends Command
                         $countMutantTimeouts++;
                         //$mutantTimeouts[] = $toLog;
                     } elseif (!$process->isSuccessful()) {
+                        echo $result['stderr'];
                         $countMutantErrors++;
                         $mutantErrors[] = $toLog;
                     } elseif ($result['passed'] === false) {
@@ -282,6 +281,10 @@ class Humbug extends Command
                         $countMutantEscapes++;
                         $mutantEscapes[] = $toLog;
                     }
+                }
+
+                foreach ($mutants as $mutant) {
+                    if (file_exists($mutant)) unlink($mutant);
                 }
             }
 
@@ -330,6 +333,11 @@ class Humbug extends Command
                 $out[] = $index+1 . ') ' . $escaped['mutation']['mutator'];
                 $out[] = 'Diff on ' . $escaped['mutation']['class'] . '::' . $escaped['mutation']['method'] . '() in ' . $escaped['mutation']['file'] . ':';
                 $out[] = $escaped['diff'];
+                $out[] = PHP_EOL;
+                $out[] = 'The following output was received on stdout:';
+                $out[] = PHP_EOL;
+                $out[] = $escaped['stdout'];
+                $out[] = PHP_EOL;
                 $out[] = PHP_EOL;
             }
             if (count($mutantErrors) > 0) {

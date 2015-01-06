@@ -25,11 +25,15 @@ class Job
         $humbugBootstrap = realpath(__DIR__ . '/../../bootstrap.php');
         $bootstrap = addslashes($bootstrap);
         $prepend = '';
+        $prepend2 = '';
         if (!is_null($mutantFile)) {
             $mutantFile = addslashes($mutantFile);
             $prepend = <<<PREPEND
 use Humbug\StreamWrapper\Mutator;
 Mutator::capture("{$mutantFile}");
+PREPEND;
+            $prepend2 = <<<PREPEND
+require_once "{$mutantFile}";
 PREPEND;
         }
         $script = <<<SCRIPT
@@ -37,8 +41,8 @@ PREPEND;
 namespace Humbug\\Env;
 error_reporting(error_reporting() & ~E_NOTICE);
 require_once "{$humbugBootstrap}";
-{$prepend}
 if (!empty("{$bootstrap}")) require_once "{$bootstrap}";
+{$prepend2}
 use Humbug\Adapter\Phpunit;
 Phpunit::main("{$args}");
 SCRIPT;
