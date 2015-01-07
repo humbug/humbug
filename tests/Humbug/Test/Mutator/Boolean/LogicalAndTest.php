@@ -27,4 +27,14 @@ class LogicalAndTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    public function testMutatesLogicalAndToLogicalOr()
+    {
+        $tokens = array(10 => array(T_BOOLEAN_AND, '&&'));
+
+        $this->assertTrue(Mutator\Boolean\LogicalAnd::mutates($tokens, 10));
+
+        $tokens = array(11 => array(T_BOOLEAN_OR, '||'));
+
+        $this->assertFalse(Mutator\Boolean\LogicalAnd::mutates($tokens, 11));
+    }
 }
