@@ -13,7 +13,7 @@ namespace Humbug\Test\Mutator\Increment;
 
 use Humbug\Mutator;
 
-class OperatorDecrementTest extends \PHPUnit_Framework_TestCase
+class DecrementTest extends \PHPUnit_Framework_TestCase
 {
 
     public function testReturnsTokenEquivalentToIncrementOperator()

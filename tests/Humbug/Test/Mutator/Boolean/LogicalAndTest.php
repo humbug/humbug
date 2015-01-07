@@ -13,17 +13,15 @@ namespace Humbug\Test\Mutator\Boolean;
 
 use Humbug\Mutator;
 
-class BooleanFalseTest extends \PHPUnit_Framework_TestCase
+class LogicalAndTest extends \PHPUnit_Framework_TestCase
 {
 
-    public function testReturnsTokenEquivalentToTrue()
+    public function testReturnsTokenEquivalentToBooleanOr()
     {
-        $mutation = new Mutator\Boolean\False;
+        $mutation = new Mutator\Boolean\LogicalAnd;
         $this->assertEquals(
             array(
-                10 => array(
-                    T_STRING, 'true'
-                )
+                10 => array(T_BOOLEAN_OR, '||')
             ),
             $mutation->getMutation(array(), 10)
         );

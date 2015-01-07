@@ -9,19 +9,21 @@
  * @license    https://github.com/padraic/humbug/blob/master/LICENSE New BSD License
  */
 
-namespace Humbug\Test\Mutator\Increment;
+namespace Humbug\Test\Mutator\Boolean;
 
 use Humbug\Mutator;
 
-class OperatorIncrementTest extends \PHPUnit_Framework_TestCase
+class TrueTest extends \PHPUnit_Framework_TestCase
 {
 
-    public function testReturnsTokenEquivalentToDecrementOperator()
+    public function testReturnsTokenEquivalentToFalse()
     {
-        $mutation = new Mutator\Increment\Increment;
+        $mutation = new Mutator\Boolean\True;
         $this->assertEquals(
             array(
-                10 => array(T_DEC, '--')
+                10 => array(
+                    T_STRING, 'false'
+                )
             ),
             $mutation->getMutation(array(), 10)
         );

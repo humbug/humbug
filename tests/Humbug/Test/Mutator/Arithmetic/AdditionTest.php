@@ -13,7 +13,7 @@ namespace Humbug\Test\Mutator\Arithmetic;
 
 use Humbug\Mutator;
 
-class OperatorAdditionTest extends \PHPUnit_Framework_TestCase
+class AdditionTest extends \PHPUnit_Framework_TestCase
 {
 
     public function testReturnsTokenEquivalentToSubtractionOperator()

@@ -13,7 +13,7 @@ namespace Humbug\Test\Mutator\Boolean;
 
 use Humbug\Mutator;
 
-class BooleanOrTest extends \PHPUnit_Framework_TestCase
+class LogicalOrTest extends \PHPUnit_Framework_TestCase
 {
 
     public function testReturnsTokenEquivalentToBooleanAnd()
