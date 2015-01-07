@@ -27,4 +27,15 @@ class OperatorAdditionTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    public function testMutatesAdditionOperatorToSubtractionOperator()
+    {
+        $tokens = array(10 => '+');
+
+        $this->assertTrue(Mutator\Arithmetic\Addition::mutates($tokens, 10));
+
+        $tokens = array(11 => '-');
+
+        $this->assertFalse(Mutator\Arithmetic\Addition::mutates($tokens, 11));
+    }
+
 }
