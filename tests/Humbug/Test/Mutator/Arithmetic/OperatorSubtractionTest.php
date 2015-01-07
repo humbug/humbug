@@ -9,19 +9,19 @@
  * @license    https://github.com/padraic/humbug/blob/master/LICENSE New BSD License
  */
 
-namespace Humbug\Test\Mutation;
+namespace Humbug\Test\Mutator\Arithmetic;
 
-use Humbug\Mutation;
+use Humbug\Mutator;
 
-class OperatorAdditionTest extends \PHPUnit_Framework_TestCase
+class OperatorSubtractionTest extends \PHPUnit_Framework_TestCase
 {
 
-    public function testReturnsTokenEquivalentToSubtractionOperator()
+    public function testReturnsTokenEquivalentToAdditionOperator()
     {
-        $mutation = new Mutation\OperatorAddition;
+        $mutation = new Mutator\Arithmetic\Subtraction;
         $this->assertEquals(
             array(
-                10 => '-'
+                10 => '+'
             ),
             $mutation->getMutation(array(), 10)
         );
