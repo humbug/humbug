@@ -259,7 +259,7 @@ class Phpunit extends AdapterAbstract
         $root = $dom->documentElement;
         if ($root->hasAttribute('bootstrap')) {
             $bootstrap = $root->getAttribute('bootstrap');
-            $path = realpath($dir . $bootstrap);
+            $path = static::makeAbsolutePath($bootstrap, dirname($conf));
             $root->setAttribute('bootstrap', $path);
             $container->setBootstrap($path);
         }
@@ -320,7 +320,7 @@ class Phpunit extends AdapterAbstract
                         throw new RuntimeException('Unable to locate file specified in testsuites: ' . $node->nodeValue);
                     }
 
-                    $node->nodeValue = realpath($node->nodeValue);
+                    $node->nodeValue = static::makeAbsolutePath($node->nodeValue, dirname($conf));
                 }
             }
         }
@@ -331,11 +331,11 @@ class Phpunit extends AdapterAbstract
          */
         $directories = $xpath->query('//directory');
         foreach ($directories as $directory) {
-            $directory->nodeValue = realpath($directory->nodeValue);
+            $directory->nodeValue = static::makeAbsolutePath($directory->nodeValue, dirname($conf));
         }
         $files = $xpath->query('//file');
         foreach ($files as $file) {
-            $file->nodeValue = realpath($file->nodeValue);
+            $file->nodeValue = static::makeAbsolutePath($file->nodeValue, dirname($conf));
         }
 
         if (!empty($cases)) {
@@ -380,4 +380,26 @@ class Phpunit extends AdapterAbstract
         return $saveFile;
     }
 
+
+    private static function makeAbsolutePath($name, $workingDir)
+    {
+        // @see https://github.com/symfony/Config/blob/master/FileLocator.php#L83
+        if ('/' === $name[0] 
+            || '\\' === $name[0]
+            || (strlen($name) > 3 && ctype_alpha($name[0]) && $name[1] == ':' && ($name[2] == '\\' || $name[2] == '/'))
+        ) {
+            if (!file_exists($name)) {
+                throw new InvalidArgumentException("$name does not exist");
+            }
+
+            return realpath($name);
+        }
+
+        $relativePath = $workingDir.DIRECTORY_SEPARATOR.$name;
+        if (file_exists($relativePath)) {
+            return realpath($relativePath);
+        }
+
+        throw new InvalidArgumentException("Could not find file $name working from $workingDir");
+    }
 }

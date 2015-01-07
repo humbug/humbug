@@ -9,19 +9,19 @@
  * @license    https://github.com/padraic/humbug/blob/master/LICENSE New BSD License
  */
 
-namespace Humbug\Test\Mutation;
+namespace Humbug\Test\Mutator\Increment;
 
-use Humbug\Mutation;
+use Humbug\Mutator;
 
-class BooleanAndTest extends \PHPUnit_Framework_TestCase
+class OperatorDecrementTest extends \PHPUnit_Framework_TestCase
 {
 
-    public function testReturnsTokenEquivalentToBooleanOr()
+    public function testReturnsTokenEquivalentToIncrementOperator()
     {
-        $mutation = new Mutation\BooleanAnd;
+        $mutation = new Mutator\Increment\Decrement;
         $this->assertEquals(
             array(
-                10 => array(T_BOOLEAN_OR, '||')
+                10 => array(T_INC, '++')
             ),
             $mutation->getMutation(array(), 10)
         );

@@ -12,7 +12,7 @@
 namespace Humbug\Test;
 
 use Humbug\Runkit;
-use Humbug\Mutation;
+use Humbug\Mutator;
 
 class RunkitTest extends \PHPUnit_Framework_TestCase
 {
@@ -31,7 +31,7 @@ class RunkitTest extends \PHPUnit_Framework_TestCase
             'args' => '$op1,$op2',
             'tokens' => array(array(335,'return',7), array(309,'$op1',7), '+', array(309,'$op2',7), ';'),
             'index' => 2,
-            'mutation' => new Mutation\OperatorAddition($this->root . '/runkit/Math1.php')
+            'mutation' => new Mutator\Arithmetic\Addition($this->root . '/runkit/Math1.php')
         );
         require_once $mutation['file'];
         $runkit = new Runkit;
@@ -50,7 +50,7 @@ class RunkitTest extends \PHPUnit_Framework_TestCase
             'args' => '$op1,$op2',
             'tokens' => array(array(335,'return',7), array(309,'$op1',7), '+', array(309,'$op2',7), ';'),
             'index' => 2,
-            'mutation' => new Mutation\OperatorAddition($this->root . '/runkit/Math1.php')
+            'mutation' => new Mutator\Arithmetic\Addition($this->root . '/runkit/Math1.php')
         );
         require_once $mutation['file'];
         $runkit = new Runkit;
@@ -69,7 +69,7 @@ class RunkitTest extends \PHPUnit_Framework_TestCase
             'args' => '$op1,$op2',
             'tokens' => array(array(335,'return',7), array(309,'$op1',7), '+', array(309,'$op2',7), ';'),
             'index' => 2,
-            'mutation' => new Mutation\OperatorAddition($this->root . '/runkit/Math2.php')
+            'mutation' => new Mutator\Arithmetic\Addition($this->root . '/runkit/Math2.php')
         );
         require_once $mutation['file'];
         $runkit = new Runkit;
@@ -87,7 +87,7 @@ class RunkitTest extends \PHPUnit_Framework_TestCase
             'args' => '$op1,$op2',
             'tokens' => array(array(335,'return',7), array(309,'$op1',7), '+', array(309,'$op2',7), ';'),
             'index' => 2,
-            'mutation' => new Mutation\OperatorAddition($this->root . '/runkit/Math2.php')
+            'mutation' => new Mutator\Arithmetic\Addition($this->root . '/runkit/Math2.php')
         );
         require_once $mutation['file'];
         $runkit = new Runkit;
@@ -97,7 +97,7 @@ class RunkitTest extends \PHPUnit_Framework_TestCase
     }
 }
 
-class StubHumbugMutation1 extends Mutation\MutationAbstract
+class StubHumbugMutation1 extends Mutator\MutatorAbstract
 {
     public function getMutation(array $tokens, $index){}
 }
