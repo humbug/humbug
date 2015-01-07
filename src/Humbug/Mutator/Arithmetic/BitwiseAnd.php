@@ -32,6 +32,18 @@ class BitwiseAnd extends MutatorAbstract
     {
         $t = $tokens[$index];
         if (!is_array($t) && $t == '&') {
+            /**
+             * Exclude likely uses of ampersand for references
+             */
+            if (is_array($tokens[$index+1]) && $tokens[$index+1][0] == T_VARIABLE) {
+                return false;
+            }
+            if (is_array($tokens[$index+1]) && $tokens[$index+1][0] == T_FUNCTION) {
+                return false;
+            }
+            if (!is_array($tokens[$index-1]) && $tokens[$index-1] == '=') {
+                return false;
+            }
             return true;
         }
         return false;
