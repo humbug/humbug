@@ -13,7 +13,7 @@ namespace Humbug\Test\Mutator\Boolean;
 
 use Humbug\Mutator;
 
-class BooleanOrTest extends \PHPUnit_Framework_TestCase
+class LogicalOrTest extends \PHPUnit_Framework_TestCase
 {
 
     public function testReturnsTokenEquivalentToBooleanAnd()
@@ -27,4 +27,14 @@ class BooleanOrTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    public function testMutatesLogicalOrToLogicalAnd()
+    {
+        $tokens = array(10 => array(T_BOOLEAN_OR, '||'));
+
+        $this->assertTrue(Mutator\Boolean\LogicalOr::mutates($tokens, 10));
+
+        $tokens = array(11 => array(T_BOOLEAN_AND, '&&'));
+
+        $this->assertFalse(Mutator\Boolean\LogicalOr::mutates($tokens, 11));
+    }
 }

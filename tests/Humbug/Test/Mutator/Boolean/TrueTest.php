@@ -13,7 +13,7 @@ namespace Humbug\Test\Mutator\Boolean;
 
 use Humbug\Mutator;
 
-class BooleanTrueTest extends \PHPUnit_Framework_TestCase
+class TrueTest extends \PHPUnit_Framework_TestCase
 {
 
     public function testReturnsTokenEquivalentToFalse()
@@ -29,4 +29,14 @@ class BooleanTrueTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    public function testMutatesTrueToFalse()
+    {
+        $tokens = array(10 => array(T_STRING, 'TRUE'));
+
+        $this->assertTrue(Mutator\Boolean\True::mutates($tokens, 10));
+
+        $tokens = array(11 => array(T_STRING, 'FALSE'));
+
+        $this->assertFalse(Mutator\Boolean\True::mutates($tokens, 11));
+    }
 }

@@ -13,18 +13,25 @@ namespace Humbug\Test\Mutator\Arithmetic;
 
 use Humbug\Mutator;
 
-class OperatorAdditionTest extends \PHPUnit_Framework_TestCase
+class NotTest extends \PHPUnit_Framework_TestCase
 {
 
-    public function testReturnsTokenEquivalentToSubtractionOperator()
+    public function testReturnsTokenEquivalentToWhitespace()
     {
-        $mutation = new Mutator\Arithmetic\Addition;
+        $mutation = new Mutator\Arithmetic\Not;
         $this->assertEquals(
             array(
-                10 => '-'
+                10 => array(T_WHITESPACE, '')
             ),
             $mutation->getMutation(array(), 10)
         );
+    }
+
+    public function testMutatesNotToWhitespace()
+    {
+        $tokens = array(10 => '~');
+
+        $this->assertTrue(Mutator\Arithmetic\Not::mutates($tokens, 10));
     }
 
 }
