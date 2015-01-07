@@ -20,20 +20,20 @@ class DivisionTest extends \PHPUnit_Framework_TestCase
     {
         $mutation = new Mutator\Arithmetic\Division;
         $this->assertEquals(
-            array(
+            [
                 10 => '*'
-            ),
-            $mutation->getMutation(array(), 10)
+            ],
+            $mutation->getMutation([], 10)
         );
     }
 
     public function testMutatesDivisionToMultiplication()
     {
-        $tokens = array(10 => '/');
+        $tokens = [10 => '/'];
 
         $this->assertTrue(Mutator\Arithmetic\Division::mutates($tokens, 10));
 
-        $tokens = array(11 => '*');
+        $tokens = [11 => '*'];
 
         $this->assertFalse(Mutator\Arithmetic\Division::mutates($tokens, 11));
     }

@@ -38,11 +38,11 @@ class Performance
 
     public static function getTimeString()
     {
-        $horizons = array(
+        $horizons = [
             'hour'   => 3600000,
             'minute' => 60000,
             'second' => 1000
-        );
+        ];
         $milliseconds = round(self::getTime() * 1000);
         foreach ($horizons as $unit => $value) {
             if ($milliseconds >= $value) {

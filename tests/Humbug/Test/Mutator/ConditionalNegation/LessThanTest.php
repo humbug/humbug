@@ -20,20 +20,20 @@ class LessThanTest extends \PHPUnit_Framework_TestCase
     {
         $mutation = new Mutator\ConditionalNegation\LessThan;
         $this->assertEquals(
-            array(
-                10 => array(T_IS_GREATER_OR_EQUAL, '>=')
-            ),
-            $mutation->getMutation(array(), 10)
+            [
+                10 => [T_IS_GREATER_OR_EQUAL, '>=']
+            ],
+            $mutation->getMutation([], 10)
         );
     }
 
     public function testMutatesLessThanToGreaterThanOrEqualTo()
     {
-        $tokens = array(10 => '<');
+        $tokens = [10 => '<'];
 
         $this->assertTrue(Mutator\ConditionalNegation\LessThan::mutates($tokens, 10));
 
-        $tokens = array(11 => array(T_IS_GREATER_OR_EQUAL, '>='));
+        $tokens = [11 => [T_IS_GREATER_OR_EQUAL, '>=']];
 
         $this->assertFalse(Mutator\ConditionalNegation\LessThan::mutates($tokens, 11));
     }

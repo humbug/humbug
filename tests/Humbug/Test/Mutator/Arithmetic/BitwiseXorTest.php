@@ -20,20 +20,20 @@ class BitwiseXorTest extends \PHPUnit_Framework_TestCase
     {
         $mutation = new Mutator\Arithmetic\BitwiseXor;
         $this->assertEquals(
-            array(
+            [
                 10 => '&'
-            ),
-            $mutation->getMutation(array(), 10)
+            ],
+            $mutation->getMutation([], 10)
         );
     }
 
     public function testMutatesBitwiseXorToBitwiseAnd()
     {
-        $tokens = array(10 => '^');
+        $tokens = [10 => '^'];
 
         $this->assertTrue(Mutator\Arithmetic\BitwiseXor::mutates($tokens, 10));
 
-        $tokens = array(11 => '&');
+        $tokens = [11 => '&'];
 
         $this->assertFalse(Mutator\Arithmetic\BitwiseXor::mutates($tokens, 11));
     }

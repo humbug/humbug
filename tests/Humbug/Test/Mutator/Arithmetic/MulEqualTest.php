@@ -20,20 +20,20 @@ class MulEqualTest extends \PHPUnit_Framework_TestCase
     {
         $mutation = new Mutator\Arithmetic\MulEqual;
         $this->assertEquals(
-            array(
-                10 => array(T_DIV_EQUAL, '/=')
-            ),
-            $mutation->getMutation(array(), 10)
+            [
+                10 => [T_DIV_EQUAL, '/=']
+            ],
+            $mutation->getMutation([], 10)
         );
     }
 
     public function testMutatesMulEqualToDivEqual()
     {
-        $tokens = array(10 => array(T_MUL_EQUAL, '*='));
+        $tokens = [10 => [T_MUL_EQUAL, '*=']];
 
         $this->assertTrue(Mutator\Arithmetic\MulEqual::mutates($tokens, 10));
 
-        $tokens = array(11 => array(T_DIV_EQUAL, '/='));
+        $tokens = [11 => [T_DIV_EQUAL, '/=']];
 
         $this->assertFalse(Mutator\Arithmetic\MulEqual::mutates($tokens, 11));
     }

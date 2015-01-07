@@ -322,7 +322,7 @@ class Idun_Form_Helper_Token
         }
         
         if (!isset($session->tokens) || !is_array($session->tokens)) {
-            $session->tokens = array();
+            $session->tokens = [];
         }
         
         return $session;
