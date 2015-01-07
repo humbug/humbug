@@ -55,9 +55,9 @@ class Phpunit extends AdapterAbstract
         if(!$useStdout) {
             array_unshift($jobopts['cliopts'], '--stderr');
         }
-        if (!is_null($testCaseFilter)) {
-            array_unshift($jobopts['cliopts'], "--filter='".$testCaseFilter."'");
-        }
+        
+        array_unshift($jobopts['cliopts'], '--tap');
+
         /*
          * We only need a single fail!
          */
@@ -196,26 +196,15 @@ class Phpunit extends AdapterAbstract
      * In the context of mutation testing, a test failure is good (i.e. the
      * mutation was detected by the test suite).
      *
-     * TODO: Make this better - get output in a more deliberate format
+     * This assume the output is in Test Anywhere Protocol (TAP) format.
      *
      * @param string $output
      * @return bool
      */
     public static function processOutput($output)
     {
-        // TODO: Check this versus the process timeout at a higher level.
-        if (substr($output, 0, 21) == 'Your tests timed out.') { //TODO: Multiple instances
+        if (preg_match("%[\n\r]+not ok \\d+%", $output)) {
             return false;
-        }
-        $lines = explode("\n", $output);
-        $useful = array_slice($lines, 2);
-        foreach ($useful as $line) {
-            if ($line == "\n") {
-                break;
-            }
-            if (preg_match("/.*[EF].*/", $line)) {
-                return false;
-            }
         }
         return true;
     }
