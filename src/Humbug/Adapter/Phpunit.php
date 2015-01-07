@@ -383,15 +383,17 @@ class Phpunit extends AdapterAbstract
 
     private static function makeAbsolutePath($name, $workingDir)
     {
-        if ('/' === $name[0] || '\\' === $name[0]) {
+        // @see https://github.com/symfony/Config/blob/master/FileLocator.php#L83
+        if ('/' === $name[0] 
+            || '\\' === $name[0]
+            || (strlen($name) > 3 && ctype_alpha($name[0]) && $name[1] == ':' && ($name[2] == '\\' || $name[2] == '/'))
+        ) {
             if (!file_exists($name)) {
                 throw new InvalidArgumentException("$name does not exist");
             }
 
             return realpath($name);
         }
-
-        // todo windows absolute paths?
 
         $relativePath = $workingDir.DIRECTORY_SEPARATOR.$name;
         if (file_exists($relativePath)) {
