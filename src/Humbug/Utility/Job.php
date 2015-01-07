@@ -36,7 +36,8 @@ PREPEND;
 namespace Humbug\\Env;
 error_reporting(error_reporting() & ~E_NOTICE);
 require_once "{$humbugBootstrap}";
-if (!empty("{$bootstrap}")) require_once "{$bootstrap}";
+\$bootstrap = "{$bootstrap}";
+if (!empty(\$bootstrap)) require_once "{$bootstrap}";
 {$inBeforeAutoloader}
 use Humbug\Adapter\Phpunit;
 Phpunit::main("{$args}");
