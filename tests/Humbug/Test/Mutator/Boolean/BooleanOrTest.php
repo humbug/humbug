@@ -9,7 +9,7 @@
  * @license    https://github.com/padraic/humbug/blob/master/LICENSE New BSD License
  */
 
-namespace Humbug\Test\Mutation;
+namespace Humbug\Test\Mutator\Boolean;
 
 use Humbug\Mutator;
 

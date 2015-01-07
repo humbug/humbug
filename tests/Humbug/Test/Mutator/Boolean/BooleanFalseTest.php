@@ -9,20 +9,20 @@
  * @license    https://github.com/padraic/humbug/blob/master/LICENSE New BSD License
  */
 
-namespace Humbug\Test\Mutation;
+namespace Humbug\Test\Mutator\Boolean;
 
 use Humbug\Mutator;
 
-class BooleanTrueTest extends \PHPUnit_Framework_TestCase
+class BooleanFalseTest extends \PHPUnit_Framework_TestCase
 {
 
-    public function testReturnsTokenEquivalentToFalse()
+    public function testReturnsTokenEquivalentToTrue()
     {
-        $mutation = new Mutator\Boolean\True;
+        $mutation = new Mutator\Boolean\False;
         $this->assertEquals(
             array(
                 10 => array(
-                    T_STRING, 'false'
+                    T_STRING, 'true'
                 )
             ),
             $mutation->getMutation(array(), 10)
