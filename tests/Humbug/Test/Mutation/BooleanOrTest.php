@@ -11,14 +11,14 @@
 
 namespace Humbug\Test\Mutation;
 
-use Humbug\Mutation;
+use Humbug\Mutator;
 
 class BooleanOrTest extends \PHPUnit_Framework_TestCase
 {
 
     public function testReturnsTokenEquivalentToBooleanAnd()
     {
-        $mutation = new Mutation\BooleanOr;
+        $mutation = new Mutator\Boolean\LogicalOr;
         $this->assertEquals(
             array(
                 10 => array(T_BOOLEAN_AND, '&&')

@@ -11,14 +11,14 @@
 
 namespace Humbug\Test\Mutation;
 
-use Humbug\Mutation;
+use Humbug\Mutator;
 
 class OperatorAdditionTest extends \PHPUnit_Framework_TestCase
 {
 
     public function testReturnsTokenEquivalentToSubtractionOperator()
     {
-        $mutation = new Mutation\OperatorAddition;
+        $mutation = new Mutator\Arithmetic\Addition;
         $this->assertEquals(
             array(
                 10 => '-'

@@ -12,7 +12,7 @@
 namespace Humbug\Test;
 
 use Humbug\Mutable;
-use Humbug\Mutation;
+use Humbug\Mutator;
 
 class MutableTest extends \PHPUnit_Framework_TestCase
 {
@@ -176,7 +176,7 @@ class MutableTest extends \PHPUnit_Framework_TestCase
         $mutations = $file->getMutations();
         $mutation = $mutations[0];
         $this->assertEquals(dirname(__FILE__) . '/_files/IfClause.php', $mutation['file']);
-        $this->assertEquals('Some_Class_With_If_Clause_In_Method', $mutation['class']);
+        $this->assertEquals('\Some_Class_With_If_Clause_In_Method', $mutation['class']);
         $this->assertEquals('_getSession', $mutation['method']);
         $this->assertEquals('', $mutation['args']);
         $block = <<<BLOCK

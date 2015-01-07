@@ -11,14 +11,14 @@
 
 namespace Humbug\Test\Mutation;
 
-use Humbug\Mutation;
+use Humbug\Mutator;
 
 class BooleanFalseTest extends \PHPUnit_Framework_TestCase
 {
 
     public function testReturnsTokenEquivalentToTrue()
     {
-        $mutation = new Mutation\BooleanFalse;
+        $mutation = new Mutator\Boolean\False;
         $this->assertEquals(
             array(
                 10 => array(

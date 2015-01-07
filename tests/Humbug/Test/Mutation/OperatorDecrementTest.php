@@ -11,14 +11,14 @@
 
 namespace Humbug\Test\Mutation;
 
-use Humbug\Mutation;
+use Humbug\Mutator;
 
 class OperatorDecrementTest extends \PHPUnit_Framework_TestCase
 {
 
     public function testReturnsTokenEquivalentToIncrementOperator()
     {
-        $mutation = new Mutation\OperatorDecrement;
+        $mutation = new Mutator\Increment\Decrement;
         $this->assertEquals(
             array(
                 10 => array(T_INC, '++')
