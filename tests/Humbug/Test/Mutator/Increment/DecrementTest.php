@@ -27,4 +27,14 @@ class DecrementTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    public function testMutatesDecrementToIncrement()
+    {
+        $tokens = array(10 => array(T_DEC, '--'));
+
+        $this->assertTrue(Mutator\Increment\Decrement::mutates($tokens, 10));
+
+        $tokens = array(11 => array(T_INC, '++'));
+
+        $this->assertFalse(Mutator\Increment\Decrement::mutates($tokens, 11));
+    }
 }
