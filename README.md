@@ -229,12 +229,17 @@ Binary Arithmetic:
 
 Boolean Substitution:
 
+This temporarily encompasses logical mutators.
+
 | Original | Mutated |
 | :------: |:-------:| 
 | true | false |
 | false | true |
 | && | &#124;&#124; |
 | &#124;&#124; | && |
+| and | for |
+| or | and |
+| ! |  |
 
 Conditional Boundaries:
 

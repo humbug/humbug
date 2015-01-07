@@ -23,8 +23,10 @@ class LogicalAnd extends MutatorAbstract
      */
     public function getMutation(array $tokens, $index)
     {
-        $tokens[$index][0] = T_BOOLEAN_OR;
-        $tokens[$index][1] = '||';
+        $tokens[$index] = [
+            T_BOOLEAN_OR,
+            '||'
+        ];
         return $tokens;
     }
 

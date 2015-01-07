@@ -12,10 +12,11 @@ namespace Humbug\Mutator\Boolean;
 
 use Humbug\Mutator\MutatorAbstract;
 
-class LogicalOr extends MutatorAbstract
+class LogicalNot extends MutatorAbstract
 {
+
     /**
-     * Replace T_BOOLEAN_OR (||) with T_BOOLEAN_AND (&&) 
+     * Replace (!) with (blank string)
      *
      * @param array $tokens
      * @param int $index
@@ -23,17 +24,14 @@ class LogicalOr extends MutatorAbstract
      */
     public function getMutation(array $tokens, $index)
     {
-        $tokens[$index] = [
-            T_BOOLEAN_AND,
-            '&&'
-        ];
+        $tokens[$index] = '';
         return $tokens;
     }
 
     public static function mutates(array $tokens, $index)
     {
         $t = $tokens[$index];
-        if (is_array($t) && $t[0] == T_BOOLEAN_OR) {
+        if (!is_array($t) && $t == '!') {
             return true;
         }
         return false;

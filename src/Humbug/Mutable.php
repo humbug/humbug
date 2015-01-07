@@ -36,10 +36,14 @@ class Mutable
      */
     protected $mutators = [
         // Booleans
-        '\Humbug\Mutator\Boolean\LogicalAnd',
-        '\Humbug\Mutator\Boolean\False',
-        '\Humbug\Mutator\Boolean\LogicalOr',
         '\Humbug\Mutator\Boolean\True',
+        '\Humbug\Mutator\Boolean\False',
+        '\Humbug\Mutator\Boolean\LogicalNot',
+        '\Humbug\Mutator\Boolean\LogicalAnd',
+        '\Humbug\Mutator\Boolean\LogicalOr',
+        '\Humbug\Mutator\Boolean\LogicalLowerAnd',
+        '\Humbug\Mutator\Boolean\LogicalLowerOr',
+        
         // Conditional Boundaries
         '\Humbug\Mutator\ConditionalBoundary\GreaterThan',
         '\Humbug\Mutator\ConditionalBoundary\GreaterThanOrEqualTo',

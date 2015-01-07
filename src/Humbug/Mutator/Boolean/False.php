@@ -24,8 +24,10 @@ class False extends MutatorAbstract
      */
     public function getMutation(array $tokens, $index)
     {
-        $tokens[$index][0] = T_STRING;
-        $tokens[$index][1] = 'true';
+        $tokens[$index] = [
+            T_STRING,
+            'true'
+        ];
         return $tokens;
     }
 
