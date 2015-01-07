@@ -20,20 +20,20 @@ class NotEqualTest extends \PHPUnit_Framework_TestCase
     {
         $mutation = new Mutator\ConditionalNegation\NotEqual;
         $this->assertEquals(
-            array(
-                10 => array(T_IS_EQUAL, '==')
-            ),
-            $mutation->getMutation(array(), 10)
+            [
+                10 => [T_IS_EQUAL, '==']
+            ],
+            $mutation->getMutation([], 10)
         );
     }
 
     public function testMutatesNotEqualToEqual()
     {
-        $tokens = array(10 => array(T_IS_NOT_EQUAL, '!='));
+        $tokens = [10 => [T_IS_NOT_EQUAL, '!=']];
 
         $this->assertTrue(Mutator\ConditionalNegation\NotEqual::mutates($tokens, 10));
 
-        $tokens = array(11 => array(T_IS_EQUAL, '=='));
+        $tokens = [11 => [T_IS_EQUAL, '==']];
 
         $this->assertFalse(Mutator\ConditionalNegation\NotEqual::mutates($tokens, 11));
     }

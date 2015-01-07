@@ -33,34 +33,34 @@ class MutableTest extends \PHPUnit_Framework_TestCase
     public function testShouldNotHaveMutationsBeforeGeneration()
     {
         $file = new Mutable($this->root . '/math1.php');
-        $this->assertEquals(array(), $file->getMutations());
+        $this->assertEquals([], $file->getMutations());
     }
 
     public function testShouldNotHaveDetectedMutablesBeforeGeneration()
     {
         $file = new Mutable($this->root . '/math1.php');
-        $this->assertEquals(array(), $file->getMutables());
+        $this->assertEquals([], $file->getMutables());
     }
 
     public function testShouldNotGenerateMutablesForEmptyClass()
     {
         $file = new Mutable($this->root . '/math0.php');
         $file->generate();
-        $this->assertEquals(array(), $file->getMutables());
+        $this->assertEquals([], $file->getMutables());
     }
 
     public function testShouldNotgenerateForEmptyClass()
     {
         $file = new Mutable($this->root . '/math0.php');
         $file->generate();
-        $this->assertEquals(array(), $file->getMutations());
+        $this->assertEquals([], $file->getMutations());
     }
 
     public function testShouldNotGenerateMutationsIfOnlyEmptyMethodsInClass()
     {
         $file = new Mutable($this->root . '/math00.php');
         $file->generate();
-        $this->assertEquals(array(), $file->getMutations());
+        $this->assertEquals([], $file->getMutations());
     }
 
     public function testShouldGenerateMutablesEvenIfMethodBodyIsNotViable()
@@ -68,14 +68,14 @@ class MutableTest extends \PHPUnit_Framework_TestCase
         $file = new Mutable($this->root . '/math000.php');
         $file->generate();
         $return = $file->getMutables();
-        $this->assertEquals(array('file','class','method','args','tokens'),array_keys($return[0]));
+        $this->assertEquals(['file','class','method','args','tokens'],array_keys($return[0]));
     }
 
     public function testShouldNotGenerateMutablesIfMethodBodyIsNotViable()
     {
         $file = new Mutable($this->root . '/math000.php');
         $file->generate();
-        $this->assertEquals(array(), $file->getMutations());
+        $this->assertEquals([], $file->getMutations());
     }
 
     public function testShouldGenerateAMutationIfPossible()
@@ -83,7 +83,7 @@ class MutableTest extends \PHPUnit_Framework_TestCase
         $file = new Mutable($this->root . '/math1.php');
         $file->generate();
         $return = $file->getMutations();
-        $this->assertEquals(array('file','class','method','args','tokens','index','mutation'),array_keys($return[0]));
+        $this->assertEquals(['file','class','method','args','tokens','index','mutation'],array_keys($return[0]));
     }
 
     public function testShouldReturnMutationsAsMutantObjectWrappers()

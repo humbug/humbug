@@ -20,22 +20,22 @@ class FalseTest extends \PHPUnit_Framework_TestCase
     {
         $mutation = new Mutator\Boolean\False;
         $this->assertEquals(
-            array(
-                10 => array(
+            [
+                10 => [
                     T_STRING, 'true'
-                )
-            ),
-            $mutation->getMutation(array(), 10)
+                ]
+            ],
+            $mutation->getMutation([], 10)
         );
     }
 
     public function testMutatesFalseToTrue()
     {
-        $tokens = array(10 => array(T_STRING, 'FALSE'));
+        $tokens = [10 => [T_STRING, 'FALSE']];
 
         $this->assertTrue(Mutator\Boolean\False::mutates($tokens, 10));
 
-        $tokens = array(11 => array(T_STRING, 'TRUE'));
+        $tokens = [11 => [T_STRING, 'TRUE']];
 
         $this->assertFalse(Mutator\Boolean\False::mutates($tokens, 11));
     }

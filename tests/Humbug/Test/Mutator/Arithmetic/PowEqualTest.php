@@ -20,10 +20,10 @@ class PowEqualTest extends \PHPUnit_Framework_TestCase
     {
         $mutation = new Mutator\Arithmetic\PowEqual;
         $this->assertEquals(
-            array(
-                10 => array(T_DIV_EQUAL, '/=')
-            ),
-            $mutation->getMutation(array(), 10)
+            [
+                10 => [T_DIV_EQUAL, '/=']
+            ],
+            $mutation->getMutation([], 10)
         );
     }
 
@@ -33,11 +33,11 @@ class PowEqualTest extends \PHPUnit_Framework_TestCase
             $this->markTestSkipped();
         }
 
-        $tokens = array(10 => array(T_POW_EQUAL, '**='));
+        $tokens = [10 => [T_POW_EQUAL, '**=']];
 
         $this->assertTrue(Mutator\Arithmetic\PowEqual::mutates($tokens, 10));
 
-        $tokens = array(11 => array(T_DIV_EQUAL, '/='));
+        $tokens = [11 => [T_DIV_EQUAL, '/=']];
 
         $this->assertFalse(Mutator\Arithmetic\PowEqual::mutates($tokens, 11));
     }

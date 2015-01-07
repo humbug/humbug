@@ -20,16 +20,16 @@ class NotTest extends \PHPUnit_Framework_TestCase
     {
         $mutation = new Mutator\Arithmetic\Not;
         $this->assertEquals(
-            array(
-                10 => array(T_WHITESPACE, '')
-            ),
-            $mutation->getMutation(array(), 10)
+            [
+                10 => [T_WHITESPACE, '']
+            ],
+            $mutation->getMutation([], 10)
         );
     }
 
     public function testMutatesNotToWhitespace()
     {
-        $tokens = array(10 => '~');
+        $tokens = [10 => '~'];
 
         $this->assertTrue(Mutator\Arithmetic\Not::mutates($tokens, 10));
     }

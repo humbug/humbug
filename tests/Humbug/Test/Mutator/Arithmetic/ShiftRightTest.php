@@ -20,20 +20,20 @@ class ShiftRightTest extends \PHPUnit_Framework_TestCase
     {
         $mutation = new Mutator\Arithmetic\ShiftRight;
         $this->assertEquals(
-            array(
-                10 => array(T_SL, '<<')
-            ),
-            $mutation->getMutation(array(), 10)
+            [
+                10 => [T_SL, '<<']
+            ],
+            $mutation->getMutation([], 10)
         );
     }
 
     public function testMutatesShiftRightToShiftLeft()
     {
-        $tokens = array(10 => array(T_SR, '>>'));
+        $tokens = [10 => [T_SR, '>>']];
 
         $this->assertTrue(Mutator\Arithmetic\ShiftRight::mutates($tokens, 10));
 
-        $tokens = array(11 => array(T_SL, '<<'));
+        $tokens = [11 => [T_SL, '<<']];
 
         $this->assertFalse(Mutator\Arithmetic\ShiftRight::mutates($tokens, 11));
     }

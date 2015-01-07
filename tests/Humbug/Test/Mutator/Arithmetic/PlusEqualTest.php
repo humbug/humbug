@@ -20,20 +20,20 @@ class PlusEqualTest extends \PHPUnit_Framework_TestCase
     {
         $mutation = new Mutator\Arithmetic\PlusEqual;
         $this->assertEquals(
-            array(
-                10 => array(T_MINUS_EQUAL, '-=')
-            ),
-            $mutation->getMutation(array(), 10)
+            [
+                10 => [T_MINUS_EQUAL, '-=']
+            ],
+            $mutation->getMutation([], 10)
         );
     }
 
     public function testMutatesPlusEqualToMinusEqual()
     {
-        $tokens = array(10 => array(T_PLUS_EQUAL, '+='));
+        $tokens = [10 => [T_PLUS_EQUAL, '+=']];
 
         $this->assertTrue(Mutator\Arithmetic\PlusEqual::mutates($tokens, 10));
 
-        $tokens = array(11 => array(T_MINUS_EQUAL, '-='));
+        $tokens = [11 => [T_MINUS_EQUAL, '-=']];
 
         $this->assertFalse(Mutator\Arithmetic\PlusEqual::mutates($tokens, 11));
     }

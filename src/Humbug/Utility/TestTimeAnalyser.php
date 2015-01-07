@@ -61,11 +61,11 @@ class TestTimeAnalyser
             // This may exclude data provision run data
             if ($case->hasAttribute('class')) { 
                 if (!isset($testCases[$case->getAttribute('class')])) {
-                    $testCases[$case->getAttribute('class')] = array(
+                    $testCases[$case->getAttribute('class')] = [
                         'class' => $case->getAttribute('class'),
                         'file' => $case->getAttribute('file'),
                         'time' => 0
-                    );
+                    ];
                 }
                 $testCases[$case->getAttribute('class')]['time'] += (float) $case->getAttribute('time');
             }

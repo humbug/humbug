@@ -24,15 +24,15 @@ class RunkitTest extends \PHPUnit_Framework_TestCase
     
     public function testShouldApplyGivenMutationsUsingRunkitToReplaceEffectedMethods()
     {
-        $mutation = array(
+        $mutation = [
             'file' => $this->root . '/runkit/Math1.php',
             'class' => 'RunkitTest_Math1',
             'method' => 'add',
             'args' => '$op1,$op2',
-            'tokens' => array(array(335,'return',7), array(309,'$op1',7), '+', array(309,'$op2',7), ';'),
+            'tokens' => [[335,'return',7], [309,'$op1',7], '+', [309,'$op2',7], ';'],
             'index' => 2,
             'mutation' => new Mutator\Arithmetic\Addition($this->root . '/runkit/Math1.php')
-        );
+        ];
         require_once $mutation['file'];
         $runkit = new Runkit;
         $runkit->applyMutation($mutation);
@@ -43,15 +43,15 @@ class RunkitTest extends \PHPUnit_Framework_TestCase
 
     public function testShouldRevertToOriginalMethodBodyWhenRequested()
     {
-        $mutation = array(
+        $mutation = [
             'file' => $this->root . '/runkit/Math1.php',
             'class' => 'RunkitTest_Math1',
             'method' => 'add',
             'args' => '$op1,$op2',
-            'tokens' => array(array(335,'return',7), array(309,'$op1',7), '+', array(309,'$op2',7), ';'),
+            'tokens' => [[335,'return',7], [309,'$op1',7], '+', [309,'$op2',7], ';'],
             'index' => 2,
             'mutation' => new Mutator\Arithmetic\Addition($this->root . '/runkit/Math1.php')
-        );
+        ];
         require_once $mutation['file'];
         $runkit = new Runkit;
         $runkit->applyMutation($mutation);
@@ -62,15 +62,15 @@ class RunkitTest extends \PHPUnit_Framework_TestCase
 
     public function testShouldApplyGivenMutationsUsingRunkitToReplaceEffectedStaticMethods()
     {
-        $mutation = array(
+        $mutation = [
             'file' => $this->root . '/runkit/Math2.php',
             'class' => 'RunkitTest_Math2',
             'method' => 'add',
             'args' => '$op1,$op2',
-            'tokens' => array(array(335,'return',7), array(309,'$op1',7), '+', array(309,'$op2',7), ';'),
+            'tokens' => [[335,'return',7], [309,'$op1',7], '+', [309,'$op2',7], ';'],
             'index' => 2,
             'mutation' => new Mutator\Arithmetic\Addition($this->root . '/runkit/Math2.php')
-        );
+        ];
         require_once $mutation['file'];
         $runkit = new Runkit;
         $runkit->applyMutation($mutation);
@@ -80,15 +80,15 @@ class RunkitTest extends \PHPUnit_Framework_TestCase
 
     public function testShouldRevertToOriginalStaticMethodBodyWhenRequested()
     {
-        $mutation = array(
+        $mutation = [
             'file' => $this->root . '/runkit/Math2.php',
             'class' => 'RunkitTest_Math2',
             'method' => 'add',
             'args' => '$op1,$op2',
-            'tokens' => array(array(335,'return',7), array(309,'$op1',7), '+', array(309,'$op2',7), ';'),
+            'tokens' => [[335,'return',7], [309,'$op1',7], '+', [309,'$op2',7], ';'],
             'index' => 2,
             'mutation' => new Mutator\Arithmetic\Addition($this->root . '/runkit/Math2.php')
-        );
+        ];
         require_once $mutation['file'];
         $runkit = new Runkit;
         $runkit->applyMutation($mutation);

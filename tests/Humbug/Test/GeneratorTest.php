@@ -50,10 +50,10 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
     {
         $generator = new Generator;
         $generator->setSourceDirectory($this->root);
-        $this->assertEquals(array(
+        $this->assertEquals([
             $this->root . '/library/bool2.php',
             $this->root . '/library/bool1.php'
-        ),$generator->getFiles());
+        ],$generator->getFiles());
     }
 
     public function testShouldGenerateMutableFileObjects()
@@ -72,7 +72,7 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
     {
         $generator = new Generator;
         $generator->setSourceDirectory($this->root);
-        $mutable = $this->getMock('Mutable', array('generate', 'setFilename'));
+        $mutable = $this->getMock('Mutable', ['generate', 'setFilename']);
         $generator->generate($mutable);
         $this->assertEquals(2, count($generator->getMutables()));
     }

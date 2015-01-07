@@ -20,20 +20,20 @@ class IdenticalTest extends \PHPUnit_Framework_TestCase
     {
         $mutation = new Mutator\ConditionalNegation\Identical;
         $this->assertEquals(
-            array(
-                10 => array(T_IS_NOT_IDENTICAL, '!==')
-            ),
-            $mutation->getMutation(array(), 10)
+            [
+                10 => [T_IS_NOT_IDENTICAL, '!==']
+            ],
+            $mutation->getMutation([], 10)
         );
     }
 
     public function testMutatesIdenticalToNotIdentical()
     {
-        $tokens = array(10 => array(T_IS_IDENTICAL, '==='));
+        $tokens = [10 => [T_IS_IDENTICAL, '===']];
 
         $this->assertTrue(Mutator\ConditionalNegation\Identical::mutates($tokens, 10));
 
-        $tokens = array(11 => array(T_IS_NOT_IDENTICAL, '!=='));
+        $tokens = [11 => [T_IS_NOT_IDENTICAL, '!==']];
 
         $this->assertFalse(Mutator\ConditionalNegation\Identical::mutates($tokens, 11));
     }

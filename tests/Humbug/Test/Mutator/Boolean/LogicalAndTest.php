@@ -20,20 +20,20 @@ class LogicalAndTest extends \PHPUnit_Framework_TestCase
     {
         $mutation = new Mutator\Boolean\LogicalAnd;
         $this->assertEquals(
-            array(
-                10 => array(T_BOOLEAN_OR, '||')
-            ),
-            $mutation->getMutation(array(), 10)
+            [
+                10 => [T_BOOLEAN_OR, '||']
+            ],
+            $mutation->getMutation([], 10)
         );
     }
 
     public function testMutatesLogicalAndToLogicalOr()
     {
-        $tokens = array(10 => array(T_BOOLEAN_AND, '&&'));
+        $tokens = [10 => [T_BOOLEAN_AND, '&&']];
 
         $this->assertTrue(Mutator\Boolean\LogicalAnd::mutates($tokens, 10));
 
-        $tokens = array(11 => array(T_BOOLEAN_OR, '||'));
+        $tokens = [11 => [T_BOOLEAN_OR, '||']];
 
         $this->assertFalse(Mutator\Boolean\LogicalAnd::mutates($tokens, 11));
     }

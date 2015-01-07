@@ -20,20 +20,20 @@ class GreaterThanOrEqualToTest extends \PHPUnit_Framework_TestCase
     {
         $mutation = new Mutator\ConditionalBoundary\GreaterThanOrEqualTo;
         $this->assertEquals(
-            array(
+            [
                 10 => '>'
-            ),
-            $mutation->getMutation(array(), 10)
+            ],
+            $mutation->getMutation([], 10)
         );
     }
 
     public function testMutatesGreaterThanToGreaterThanOrEqualTo()
     {
-        $tokens = array(10 => array(T_IS_GREATER_OR_EQUAL, '>='));
+        $tokens = [10 => [T_IS_GREATER_OR_EQUAL, '>=']];
 
         $this->assertTrue(Mutator\ConditionalBoundary\GreaterThanOrEqualTo::mutates($tokens, 10));
 
-        $tokens = array(11 => '>');
+        $tokens = [11 => '>'];
 
         $this->assertFalse(Mutator\ConditionalBoundary\GreaterThanOrEqualTo::mutates($tokens, 11));
     }

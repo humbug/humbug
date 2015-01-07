@@ -20,20 +20,20 @@ class ModEqualTest extends \PHPUnit_Framework_TestCase
     {
         $mutation = new Mutator\Arithmetic\ModEqual;
         $this->assertEquals(
-            array(
-                10 => array(T_MUL_EQUAL, '*=')
-            ),
-            $mutation->getMutation(array(), 10)
+            [
+                10 => [T_MUL_EQUAL, '*=']
+            ],
+            $mutation->getMutation([], 10)
         );
     }
 
     public function testMutatesModEqualToMulEqual()
     {
-        $tokens = array(10 => array(T_MOD_EQUAL, '%='));
+        $tokens = [10 => [T_MOD_EQUAL, '%=']];
 
         $this->assertTrue(Mutator\Arithmetic\ModEqual::mutates($tokens, 10));
 
-        $tokens = array(11 => array(T_MUL_EQUAL, '*='));
+        $tokens = [11 => [T_MUL_EQUAL, '*=']];
 
         $this->assertFalse(Mutator\Arithmetic\ModEqual::mutates($tokens, 11));
     }

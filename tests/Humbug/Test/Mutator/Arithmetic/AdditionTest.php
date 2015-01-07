@@ -20,20 +20,20 @@ class AdditionTest extends \PHPUnit_Framework_TestCase
     {
         $mutation = new Mutator\Arithmetic\Addition;
         $this->assertEquals(
-            array(
+            [
                 10 => '-'
-            ),
-            $mutation->getMutation(array(), 10)
+            ],
+            $mutation->getMutation([], 10)
         );
     }
 
     public function testMutatesAdditionOperatorToSubtractionOperator()
     {
-        $tokens = array(10 => '+');
+        $tokens = [10 => '+'];
 
         $this->assertTrue(Mutator\Arithmetic\Addition::mutates($tokens, 10));
 
-        $tokens = array(11 => '-');
+        $tokens = [11 => '-'];
 
         $this->assertFalse(Mutator\Arithmetic\Addition::mutates($tokens, 11));
     }

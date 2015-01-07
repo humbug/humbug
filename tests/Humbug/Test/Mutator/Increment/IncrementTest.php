@@ -20,20 +20,20 @@ class IncrementTest extends \PHPUnit_Framework_TestCase
     {
         $mutation = new Mutator\Increment\Increment;
         $this->assertEquals(
-            array(
-                10 => array(T_DEC, '--')
-            ),
-            $mutation->getMutation(array(), 10)
+            [
+                10 => [T_DEC, '--']
+            ],
+            $mutation->getMutation([], 10)
         );
     }
 
     public function testMutatesIncrementToDecrement()
     {
-        $tokens = array(10 => array(T_INC, '++'));
+        $tokens = [10 => [T_INC, '++']];
 
         $this->assertTrue(Mutator\Increment\Increment::mutates($tokens, 10));
 
-        $tokens = array(11 => array(T_DEC, '--'));
+        $tokens = [11 => [T_DEC, '--']];
 
         $this->assertFalse(Mutator\Increment\Increment::mutates($tokens, 11));
     }

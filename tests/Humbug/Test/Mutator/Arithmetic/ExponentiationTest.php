@@ -20,10 +20,10 @@ class ExponentiationTest extends \PHPUnit_Framework_TestCase
     {
         $mutation = new Mutator\Arithmetic\Exponentiation;
         $this->assertEquals(
-            array(
+            [
                 10 => '/'
-            ),
-            $mutation->getMutation(array(), 10)
+            ],
+            $mutation->getMutation([], 10)
         );
     }
 
@@ -33,11 +33,11 @@ class ExponentiationTest extends \PHPUnit_Framework_TestCase
             $this->markTestSkipped();
         }
 
-        $tokens = array(10 => array(T_POW));
+        $tokens = [10 => [T_POW]];
 
         $this->assertTrue(Mutator\Arithmetic\Exponentiation::mutates($tokens, 10));
 
-        $tokens = array(11 => '/');
+        $tokens = [11 => '/'];
 
         $this->assertFalse(Mutator\Arithmetic\Exponentiation::mutates($tokens, 11));
     }
