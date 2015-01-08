@@ -28,7 +28,7 @@ class Generator
      *
      * @var string
      */
-    protected $sourceDirectory = ''; // move set/check to constructor...
+    protected $sourceDirectory;
 
     /**
      * The collection of possible mutations stored as sets of mutation
@@ -39,7 +39,50 @@ class Generator
     protected $mutables = [];
 
     /**
-     * Given a source directory (@see \Humbug\Generator::setSourceDirectory)
+     * Construct sourceDirectory
+     *
+     * @param string $sourceDirectory
+     */
+    public function __construct($sourceDirectory = null)
+    {
+        if ($sourceDirectory === null) {
+            $sourceDirectory = '.';
+        }
+
+        $this->sourceDirectory = $sourceDirectory;
+    }
+
+    /**
+     * Get sourceDirectory
+     *
+     * @return string
+     */
+    public function getSourceDirectory()
+    {
+        return $this->sourceDirectory;
+    }
+
+    /**
+     * Get Files
+     *
+     * @return array
+     */
+    public function getFiles()
+    {
+        if (!$this->mutables) {
+            $finder = new Finder;
+            foreach ($finder->in($this->getSourceDirectory()) as $file) {
+                $this->files[] = $file->getRealPath();
+            }
+            return $this->files;
+        }
+
+        // not sure yet about it...
+        return $this->mutables;
+    }
+
+    /**
+     * Given a source directory (@see \Humbug\Generator::__construct)
      * pass each to a \Humbug\Mutable instance which is used to generate
      * mutations and store the instructions for applying and reversing them as
      * a set of mutables (instances of \Humbug\Mutation).
@@ -61,12 +104,12 @@ class Generator
 
     /**
      * Return an array of mutable files.
-     * 
+     *
      * @return \Humbug\Mutable[]
      */
     public function getMutables()
     {
         return $this->mutables;
     }
-    
+
 }

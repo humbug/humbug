@@ -32,8 +32,7 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
 
     public function testShouldStoreSourceDirectoryValue()
     {
-        $generator = new Generator;
-        $generator->setSourceDirectory($this->root . '/library');
+        $generator = new Generator($this->root . '/library');
         $this->assertEquals($this->root . '/library', $generator->getSourceDirectory());
     }
 
@@ -42,14 +41,12 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
      */
     public function testShouldThrowExceptionOnNonexistingDirectory()
     {
-        $generator = new Generator;
-        $generator->setSourceDirectory($this->badRoot);
+        $generator = new Generator($this->badRoot);
     }
 
     public function testShouldCollateAllFilesValidForMutationTesting()
     {
-        $generator = new Generator;
-        $generator->setSourceDirectory($this->root);
+        $generator = new Generator($this->root);
         $this->assertEquals([
             $this->root . '/library/bool2.php',
             $this->root . '/library/bool1.php'
@@ -58,8 +55,7 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
 
     public function testShouldGenerateMutableFileObjects()
     {
-        $generator = new Generator;
-        $generator->setSourceDirectory($this->root);
+        $generator = new Generator($this->root);
         $mutable = m::mock('\\Humbug\\Mutable[generate]');
         $mutable->shouldReceive('setFilename');
         $mutable->shouldReceive('generate');
@@ -70,8 +66,7 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
 
     public function testShouldGenerateAMutableFileObjectPerDetectedFile()
     {
-        $generator = new Generator;
-        $generator->setSourceDirectory($this->root);
+        $generator = new Generator($this->root);
         $mutable = $this->getMock('Mutable', ['generate', 'setFilename']);
         $generator->generate($mutable);
         $this->assertEquals(2, count($generator->getMutables()));
