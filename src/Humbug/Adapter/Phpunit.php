@@ -40,7 +40,7 @@ class Phpunit extends AdapterAbstract
      */
     public function runTests(Container $container, $useStdout = true,
     $firstRun = false, $mutantFile = null, array $testCases = [],
-    $testCaseFilter = null)
+    $interceptFile = null)
     {
 
         $jobopts = [
@@ -121,7 +121,7 @@ class Phpunit extends AdapterAbstract
             $mutantFile,
             $jobopts,
             $container->getBootstrap(),
-            $timeout
+            $interceptFile
         );
 
         $process = new PhpProcess($job, null, $_ENV);

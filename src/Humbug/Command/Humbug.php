@@ -202,7 +202,8 @@ class Humbug extends Command
                             true,
                             false,
                             $mutants[$tracker],
-                            $orderedTestCases
+                            $orderedTestCases,
+                            $mutation['file']
                         );
 
                     } catch (NoCoveringTestsException $e) {

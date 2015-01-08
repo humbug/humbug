@@ -19,7 +19,7 @@ class Job
      * @param array $mutation Mutation data and objects to be used
      * @return string
      */
-    public static function generate($mutantFile = null, array $args = [], $bootstrap = '')
+    public static function generate($mutantFile = null, array $args = [], $bootstrap = '', $replacingFile = null)
     {
         $args = base64_encode(serialize($args));
         $humbugBootstrap = realpath(__DIR__ . '/../../bootstrap.php');
@@ -27,8 +27,11 @@ class Job
         $inBeforeAutoloader = '';
         if (!is_null($mutantFile)) {
             $mutantFile = addslashes($mutantFile);
+            $replacingFile = addslashes($replacingFile);
             $inBeforeAutoloader = <<<PREPEND
-require_once "{$mutantFile}";
+use Humbug\StreamWrapper\IncludeInterceptor;
+IncludeInterceptor::intercept("{$replacingFile}", "{$mutantFile}");
+IncludeInterceptor::enable();
 PREPEND;
         }
         $script = <<<SCRIPT
@@ -36,9 +39,9 @@ PREPEND;
 namespace Humbug\\Env;
 error_reporting(error_reporting() & ~E_NOTICE);
 require_once "{$humbugBootstrap}";
+{$inBeforeAutoloader}
 \$bootstrap = "{$bootstrap}";
 if (!empty(\$bootstrap)) require_once "{$bootstrap}";
-{$inBeforeAutoloader}
 use Humbug\Adapter\Phpunit;
 Phpunit::main("{$args}");
 SCRIPT;
