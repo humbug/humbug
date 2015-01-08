@@ -45,7 +45,7 @@ class Mutable
         '\Humbug\Mutator\Boolean\LogicalLowerOr',
         
         // Conditional Boundaries
-        '\Humbug\Mutator\ConditionalBoundary\GreaterThan',
+        /*'\Humbug\Mutator\ConditionalBoundary\GreaterThan',
         '\Humbug\Mutator\ConditionalBoundary\GreaterThanOrEqualTo',
         '\Humbug\Mutator\ConditionalBoundary\LessThan',
         '\Humbug\Mutator\ConditionalBoundary\LessThanOrEqualTo',
@@ -84,7 +84,7 @@ class Mutable
         '\Humbug\Mutator\Number\Integer',
         '\Humbug\Mutator\Number\Float',
         // Return Values
-        '\Humbug\Mutator\ReturnValue\This',
+        '\Humbug\Mutator\ReturnValue\This',*/
     ];
 
     /**

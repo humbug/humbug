@@ -15,6 +15,7 @@ use Humbug\Adapter\Phpunit;
 use Humbug\Utility\Performance;
 use Humbug\Utility\ParallelGroup;
 use Humbug\Utility\Tokenizer;
+use Humbug\Utility\Diff;
 use Humbug\Renderer\Text;
 use Humbug\Exception\InvalidArgumentException;
 use Humbug\Exception\NoCoveringTestsException;
@@ -187,15 +188,14 @@ class Humbug extends Command
                          */
                         $mutants[$tracker] = $this->container->getCacheDirectory() . '/humbug.mutant.' . uniqid() . '.php';
                         $mutatorClass = $mutation['mutator'];
-                        $mutator = new $mutatorClass;
-                        file_put_contents(
-                            $mutants[$tracker],
-                            $mutator->mutate(
-                                Tokenizer::getTokens(file_get_contents($mutation['file'])),
-                                $mutation['index']
-                            )
+
+                        $originalFileContent = file_get_contents($mutation['file']);
+                        $mutatedFileContent = $mutatorClass::mutate(
+                            Tokenizer::getTokens($originalFileContent),
+                            $mutation['index']
                         );
-                        $diffs[$tracker] = $mutator->getDiff();
+                        file_put_contents($mutants[$tracker], $mutatedFileContent);
+                        $diffs[$tracker] = Diff::difference($originalFileContent, $mutatedFileContent);
 
                         $processes[$tracker] = $container->getAdapter()->runTests(
                             $container,
