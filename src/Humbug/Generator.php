@@ -42,11 +42,16 @@ class Generator
      * Construct sourceDirectory
      *
      * @param string $sourceDirectory
+     * @throws Exception\RuntimeException
      */
     public function __construct($sourceDirectory = null)
     {
         if ($sourceDirectory === null) {
-            $sourceDirectory = '.';
+            $sourceDirectory = realpath(__DIR__);
+        }
+
+        if (!is_dir($sourceDirectory)) {
+            throw new Exception\RuntimeException('$sourceDirectory must is not a valid directory');
         }
 
         $this->sourceDirectory = $sourceDirectory;
@@ -71,7 +76,7 @@ class Generator
     {
         if (!$this->mutables) {
             $finder = new Finder;
-            foreach ($finder->in($this->getSourceDirectory()) as $file) {
+            foreach ($finder->in($this->getSourceDirectory())->name('*.php') as $file) {
                 $this->files[] = $file->getRealPath();
             }
             return $this->files;

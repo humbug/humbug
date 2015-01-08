@@ -13,7 +13,7 @@ namespace Humbug\Test;
 
 use Humbug\Generator;
 use Humbug\Mutable;
-use Humbug\FUTException;
+use Humbug\Exception;
 use Mockery as m;
 
 class GeneratorTest extends \PHPUnit_Framework_TestCase
@@ -37,7 +37,7 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Humbug\FUTException
+     * @expectedException \Humbug\Exception\RuntimeException
      */
     public function testShouldThrowExceptionOnNonexistingDirectory()
     {
@@ -48,8 +48,8 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
     {
         $generator = new Generator($this->root);
         $this->assertEquals([
-            $this->root . '/library/bool2.php',
-            $this->root . '/library/bool1.php'
+            $this->root . '/library/bool1.php',
+            $this->root . '/library/bool2.php'
         ],$generator->getFiles());
     }
 
