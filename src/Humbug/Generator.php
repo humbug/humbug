@@ -51,7 +51,7 @@ class Generator
         }
 
         if (!is_dir($sourceDirectory)) {
-            throw new Exception\RuntimeException('$sourceDirectory must is not a valid directory');
+            throw new Exception\RuntimeException('$sourceDirectory must be a valid directory');
         }
 
         $this->sourceDirectory = $sourceDirectory;
