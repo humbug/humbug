@@ -15,6 +15,7 @@ use Humbug\Utility\Job;
 use Humbug\Utility\Process;
 use Humbug\Utility\TestTimeAnalyser;
 use Humbug\Utility\CoverageData;
+use Humbug\Exception\InvalidArgumentException;
 use Humbug\Exception\RuntimeException;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\PhpProcess;
