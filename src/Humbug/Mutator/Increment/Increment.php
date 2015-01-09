@@ -21,7 +21,7 @@ class Increment extends MutatorAbstract
      * @param int $index
      * @return array
      */
-    public function getMutation(array $tokens, $index)
+    public static function getMutation(array $tokens, $index)
     {
         $tokens[$index][0] = T_DEC;
         $tokens[$index][1] = '--';

@@ -22,7 +22,7 @@ class Integer extends MutatorAbstract
      * @param int $index
      * @return array
      */
-    public function getMutation(array $tokens, $index)
+    public static function getMutation(array $tokens, $index)
     {
         $num = (integer) $tokens[$index][1];
         $replace = null;

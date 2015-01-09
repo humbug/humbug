@@ -22,14 +22,8 @@ class This extends MutatorAbstract
      * @param int $index
      * @return array
      */
-    public function getMutation(array $tokens, $index)
+    public static function getMutation(array $tokens, $index)
     {
-        // ignored This should be made a protected method
-    }
-
-    public function mutate($tokens, $index)
-    {
-        $this->tokensOriginal = $tokens;
         for ($i=$index+1; $i < count($tokens); $i++) { 
             if (is_array($tokens[$i]) && $tokens[$i][0] == T_WHITESPACE) {
                 continue;
@@ -41,7 +35,7 @@ class This extends MutatorAbstract
                 break;
             }
         }
-        $this->tokensMutated = $tokens;
+        return $tokens;
     }
 
     public static function mutates(array $tokens, $index)
