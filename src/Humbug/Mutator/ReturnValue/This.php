@@ -22,7 +22,7 @@ class This extends MutatorAbstract
      * @param int $index
      * @return array
      */
-    public static function getMutation(array $tokens, $index)
+    public static function getMutation(array &$tokens, $index)
     {
         for ($i=$index+1; $i < count($tokens); $i++) { 
             if (is_array($tokens[$i]) && $tokens[$i][0] == T_WHITESPACE) {
@@ -35,10 +35,9 @@ class This extends MutatorAbstract
                 break;
             }
         }
-        return $tokens;
     }
 
-    public static function mutates(array $tokens, $index)
+    public static function mutates(array &$tokens, $index)
     {
         $t = $tokens[$index];
         if (is_array($t) && $t[0] == T_RETURN) {

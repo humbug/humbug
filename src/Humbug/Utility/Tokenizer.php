@@ -60,7 +60,7 @@ class Tokenizer {
      * @param array $tokens
      * @return string
      */
-    public static function reconstructFromTokens(array $tokens)
+    public static function reconstructFromTokens(array &$tokens)
     {
         $str = '';
         foreach ($tokens as $token) {

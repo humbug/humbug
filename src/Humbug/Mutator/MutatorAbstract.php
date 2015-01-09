@@ -21,10 +21,10 @@ abstract class MutatorAbstract
      * @param array $tokens
      * @param int $index
      */
-    public static function mutate(array $tokens, $index)
+    public static function mutate(array &$tokens, $index)
     {
-        $tokensMutated = static::getMutation($tokens, $index);
-        return Tokenizer::reconstructFromTokens($tokensMutated);
+        static::getMutation($tokens, $index);
+        return Tokenizer::reconstructFromTokens($tokens);
     }
 
 }

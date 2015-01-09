@@ -22,16 +22,15 @@ class Equal extends MutatorAbstract
      * @param int $index
      * @return array
      */
-    public static function getMutation(array $tokens, $index)
+    public static function getMutation(array &$tokens, $index)
     {
         $tokens[$index] = [
             T_IS_NOT_EQUAL,
             '!='
         ];
-        return $tokens;
     }
 
-    public static function mutates(array $tokens, $index)
+    public static function mutates(array &$tokens, $index)
     {
         $t = $tokens[$index];
         if (is_array($t) && $t[0] == T_IS_EQUAL) {

@@ -190,8 +190,9 @@ class Humbug extends Command
                         $mutatorClass = $mutation['mutator'];
 
                         $originalFileContent = file_get_contents($mutation['file']);
+                        $tokens = Tokenizer::getTokens($originalFileContent);
                         $mutatedFileContent = $mutatorClass::mutate(
-                            Tokenizer::getTokens($originalFileContent),
+                            $tokens,
                             $mutation['index']
                         );
                         file_put_contents($mutants[$tracker], $mutatedFileContent);

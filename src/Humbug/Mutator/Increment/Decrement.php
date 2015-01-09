@@ -21,14 +21,15 @@ class Decrement extends MutatorAbstract
      * @param int $index
      * @return array
      */
-    public static function getMutation(array $tokens, $index)
+    public static function getMutation(array &$tokens, $index)
     {
-        $tokens[$index][0] = T_INC;
-        $tokens[$index][1] = '++';
-        return $tokens;
+        $tokens[$index] = [
+            T_INC,
+            '++'
+        ];
     }
 
-    public static function mutates(array $tokens, $index)
+    public static function mutates(array &$tokens, $index)
     {
         $t = $tokens[$index];
         if (is_array($t) && $t[0] == T_DEC) {
