@@ -42,7 +42,7 @@ class Generator
      * Construct sourceDirectory
      *
      * @param string $sourceDirectory
-     * @throws Exception\RuntimeException
+     * @throws Exception\InvalidArgumentException
      */
     public function __construct($sourceDirectory = null)
     {
@@ -51,7 +51,7 @@ class Generator
         }
 
         if (!is_dir($sourceDirectory)) {
-            throw new Exception\RuntimeException('$sourceDirectory must be a valid directory');
+            throw new Exception\InvalidArgumentException('$sourceDirectory must be a valid directory');
         }
 
         $this->sourceDirectory = $sourceDirectory;
