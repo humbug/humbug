@@ -289,7 +289,6 @@ class Humbug extends Command
             }
 
             $mutable->cleanup();
-            unset($this->_mutables[$i]); //or null
         }
 
         Performance::stop();
