@@ -100,6 +100,8 @@ Humbug version 1.0-dev
 
 Humbug running test suite to generate logs and code coverage data...
 
+  242 [============================================================] 30 secs
+
 Humbug has completed the initial test run successfully.
 
 Humbug is analysing source files...
@@ -107,29 +109,36 @@ Humbug is analysing source files...
 Mutation Testing is commencing...
 (.: killed, M: escaped, S: uncovered, E: fatal error, T: timed out)
 
-M.MMMMMSSSSSS.SSSSSM.SSSSS..MM.MMSS........SSMMSSS.M.M.M.TT. |   60
-M...MM........SM...............SSMMM.M.MM...SSSS.S..MMS..... |  120
-........SMMSMMMM.M.EM.SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSM....... |  180
-...S..M.SS...M...SSSSSSS....MM..M....MM..S.SSSSM............ |  240
-..MM...M.SM.EEE..MM...M..ME....M..ESSSSSSSSSSSMEMSSSM..M.MMM |  300
-M..S...MMM.MMM.M.M..SSSSSSMM.SSS..S..M..MSMSSSSSSSSSSSSSS... |  360
-...E.M.M.M...E..SM...MMMMMMMMMMMSSSSSSM.SS
+SS..E.SM..ESSMMMMMSSSSSSSSSSSSSSSSSSE.ESSSSSSSSSSSSSSSSSSSM. |   60 ( 7/76)
+.M....MMMESSS..SSSSSSSSSSSS...MMM.MEMMESS.SS........SSS....S |  120 (12/76)
+SMMSSSSM.M.M.M...TT.M...T.MM.SSSS...SSSSSSSSSSSSSM..M..M.SSS |  180 (16/76)
+S.......M.......MMM...M...SSSS.SSSEM..M.M.M.MM...SSSSS.SSS.M |  240 (18/76)
+SMMMMMMM.STSSSTTTSSSSS.......SSSSS............SSSMMMSSSMMMMM |  300 (23/76)
+.MM.M.SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSESS |  360 (29/76)
+S....S......SS......M...SSS..S..M...SSSSSSSSSSSSSSSSSS..MMMM |  420 (36/76)
+M..M....MMM..SSSSSSS..SSSSSSSSSS.EM.SS.ME.MSSSS...........MM |  480 (43/76)
+.SSS....M.SM.M.M..M..SS.MMMSS.......MMMS................SSSS |  540 (50/76)
+SSSSSSSSSSSSSSSSSSSE.SSSEMEMMMMMMS.MSSSSSSSMSSSSSSSSSSSSSSSS |  600 (51/76)
+S.MEMSSSSSSM..SMM.MMMM...SSS...EMMMEM.MMS.MMSSSSSSSSS.M..SSS |  660 (60/76)
+SSSSSSMM.SSSSSS...MSS......SSSSSS..M..MSSMSMSSSSSSSSSSSSSSSS |  720 (66/76)
+SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
 
-402 mutations were generated:
-     171 mutants were killed
-     129 mutants were not covered by tests
-      91 tested mutants were not detected
-       9 fatal errors were encountered
-       2 time outs were encountered
+779 mutations were generated:
+     229 mutants were killed
+     410 mutants were not covered by tests
+     119 covered mutants were not detected
+      14 fatal errors were encountered
+       7 time outs were encountered
 
-Out of 273 test covered mutations, 66% were detected.
-Out of 402 total mutations, 44% were detected.
-Out of 402 total mutations, 33% were not covered by tests.
+Out of 369 test covered mutations, 68% were detected.
+Out of 779 total mutations, 32% were detected.
+Out of 779 total mutations, 53% were not covered by tests.
 
 Remember that some mutants will inevitably be harmless (i.e. false positives).
 
-Humbug results are being logged as JSON to: log.json
-Time: 48.7 seconds Memory: 15.00MB
+Humbug results are being logged as TEXT to: log.txt
+
+Time: 2.26 minutes Memory: 8.75MB
 ```
 
 Mutation Testing has traditionally been a slow process, however Humbug implements a number
@@ -144,15 +153,15 @@ These optimisations, while requiring some upfront execution time, make Humbug
 quite fast once it gets going.
 
 The example summary results reported a number of statistics:
-* The headline news is that 66% of mutations which were covered by unit tests
+* The headline news is that 68% of mutations which were covered by unit tests
 were detected by your unit tests. Analysing the log may assist in improving that score.
-* A combined detection score of 44% was achieved. This includes mutations which
+* A combined detection score of 32% was achieved. This includes mutations which
 occured in source code not covered by any of the tests run. Better code coverage
 would increase this combined score.
-* Finally, 33% of the mutations generated occured in source not covered by unit
+* Finally, 53% of the mutations generated occured in source not covered by unit
 tests. For example, if you had a 90% Code Coverage then this is telling you that
-the 10% uncovered code is generating 33% of all mutations. Such discrepancies may
-indicate a need for more tests that your Code Coverage might typically suggest.
+the 10% uncovered code is generating 53% of all mutations. Such discrepancies are
+proof that Code Coverage is, ahem, unreliable.
 
 Interpreting these results requires some context. The logs will list all undetected
 mutations as diffs against the original source code. Examining these will provide
