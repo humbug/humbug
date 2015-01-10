@@ -62,4 +62,18 @@ class Performance
     {
         return sprintf('%4.2fMB', self::getMemoryUsage());
     }
+
+    public static function upMemProfiler()
+    {
+        if (function_exists('memprof_enable')) {
+            memprof_enable();
+        }
+    }
+
+    public static function downMemProfiler()
+    {
+        if (function_exists('memprof_enable')) {
+            memprof_dump_callgrind(fopen(sys_get_temp_dir() . '/callgrind.humbug.out', 'w'));
+        }
+    }
 }
