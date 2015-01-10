@@ -46,6 +46,17 @@ class Generator
      */
     public function __construct($sourceDirectory = null)
     {
+        $this->setSourceDirectory($sourceDirectory);
+    }
+
+    /**
+     * Set sourceDirectory
+     *
+     * @param string $sourceDirectory
+     * @throws Exception\InvalidArgumentException
+     */
+    public function setSourceDirectory($sourceDirectory = null)
+    {
         if ($sourceDirectory === null) {
             $sourceDirectory = realpath(__DIR__);
         }
