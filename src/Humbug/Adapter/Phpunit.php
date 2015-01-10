@@ -247,7 +247,9 @@ class Phpunit extends AdapterAbstract
         $dom->loadXML(file_get_contents($conf));
 
         $root = $dom->documentElement;
+        $hasBootstrap = false;
         if ($root->hasAttribute('bootstrap')) {
+            $hasBootstrap = true;
             $bootstrap = $root->getAttribute('bootstrap');
             $path = static::makeAbsolutePath($bootstrap, dirname($conf));
             $root->setAttribute('bootstrap', $path);
@@ -316,6 +318,7 @@ class Phpunit extends AdapterAbstract
         }
 
         $xpath = new \DOMXPath($dom);
+
         /**
          * Set any remaining file & directory references to realpaths
          */
@@ -334,6 +337,14 @@ class Phpunit extends AdapterAbstract
             $suite1 = $xpath->query('/phpunit/testsuites/testsuite')->item(0);
             if (is_a($suite1, 'DOMElement')) {
                 foreach ($suite1->childNodes as $child) {
+                    // phpunit.xml may omit bootstrap location but grab it automatically - include explicitly
+                    if ($child instanceof \DOMElement && $child->tagName == 'directory' && $hasBootstrap === false) {
+                        $bootstrapDir = static::makeAbsolutePath($child->nodeValue, dirname($conf));
+                        if (file_exists($bootstrapDir . '/bootstrap.php')) {
+                            $root->setAttribute('bootstrap', $bootstrapDir . '/bootstrap.php');
+                        }
+                    }
+                    // we only want file references in specific order + excludes (for now, we retain these)
                     if ($child instanceof \DOMElement && $child->tagName !== 'exclude') {
                         $suite1->removeChild($child);
                     }
@@ -359,6 +370,20 @@ class Phpunit extends AdapterAbstract
                         if (!in_array($file->getRealpath(), $files)) {
                             $file = $dom->createElement('file', $file->getRealpath());
                             $suite1->appendChild($file);
+                        }
+                    }
+                }
+            }
+        } else {
+            // TODO: Handle >1 test suites
+            $suite1 = $xpath->query('/phpunit/testsuites/testsuite')->item(0);
+            if (is_a($suite1, 'DOMElement')) {
+                foreach ($suite1->childNodes as $child) {
+                    // phpunit.xml may omit bootstrap location but grab it automatically - include explicitly
+                    if ($child instanceof \DOMElement && $child->tagName == 'directory' && $hasBootstrap === false) {
+                        $bootstrapDir = static::makeAbsolutePath($child->nodeValue, dirname($conf));
+                        if (file_exists($bootstrapDir . '/bootstrap.php')) {
+                            $root->setAttribute('bootstrap', $bootstrapDir . '/bootstrap.php');
                         }
                     }
                 }
