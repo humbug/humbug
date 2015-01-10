@@ -25,6 +25,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Finder\Finder;
 
 class Humbug extends Command
@@ -82,7 +83,23 @@ class Humbug extends Command
          * be optimised.
          */
         $process = $container->getAdapter()->runTests($container, true, true);
-        $exitCode = $process->run();
+        $progress = new ProgressBar($output);
+        $progress->setFormat('verbose');
+        $progress->setBarWidth(60);
+        $progress->start();
+
+        $process->start();
+        usleep(1000);
+        while ($process->isRunning()) {
+            usleep(10000);
+            if (preg_match("%[\n\r]+ok (\\d+).*$%", $process->getOutput(), $matches)) {
+                $progress->setProgress((int) $matches[1]);
+            }
+        }
+        $progress->finish();
+        $output->write(PHP_EOL.PHP_EOL);
+        $exitCode = $process->getExitCode();
+
         $result = [ // default values
             'passed'    => true,
             'timeout'   => false,
