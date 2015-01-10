@@ -89,6 +89,7 @@ class Mutable
         '\Humbug\Mutator\ReturnValue\Integer',
         '\Humbug\Mutator\ReturnValue\Float',
         '\Humbug\Mutator\ReturnValue\NewObject',
+        '\Humbug\Mutator\ReturnValue\FunctionCall',
     ];
 
     /**
