@@ -43,7 +43,6 @@ class Mutable
         '\Humbug\Mutator\Boolean\LogicalOr',
         '\Humbug\Mutator\Boolean\LogicalLowerAnd',
         '\Humbug\Mutator\Boolean\LogicalLowerOr',
-        
         // Conditional Boundaries
         '\Humbug\Mutator\ConditionalBoundary\GreaterThan',
         '\Humbug\Mutator\ConditionalBoundary\GreaterThanOrEqualTo',
@@ -89,6 +88,7 @@ class Mutable
         '\Humbug\Mutator\ReturnValue\False',
         '\Humbug\Mutator\ReturnValue\Integer',
         '\Humbug\Mutator\ReturnValue\Float',
+        '\Humbug\Mutator\ReturnValue\NewObject',
     ];
 
     /**
@@ -120,7 +120,7 @@ class Mutable
                 continue;
             }
 
-            $namespace = '';
+            $namespace = ''; // TODO: Looks to be well out of place...
 
             if (is_array($token) && $token[0] == T_NAMESPACE) {
                 for ($j=$index+1; $j<count($tokens); $j++) {
