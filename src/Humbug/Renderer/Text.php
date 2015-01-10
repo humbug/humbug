@@ -126,7 +126,7 @@ class Text
      *
      * @param array $result
      */
-    public function renderProgressMark(array $result, $eolInterval = 70)
+    public function renderProgressMark(array $result, $count, $current, $eolInterval = 60)
     {
         $this->progressCount++;
         if ($result['timeout'] === true) {
@@ -140,7 +140,11 @@ class Text
         }
         if (($this->progressCount % $eolInterval) == 0) {
             $counter = str_pad($this->progressCount, 5, ' ', STR_PAD_LEFT);
-            $this->write(' |' . $counter . PHP_EOL, false);
+            $this->write(
+                ' |' . $counter . ' ('
+                . str_pad($current, strlen($count), ' ', STR_PAD_LEFT)
+                . '/' . $count . ')' . PHP_EOL
+            , false);
         }
     }
 
@@ -150,13 +154,17 @@ class Text
      *
      * @param array $result
      */
-    public function renderShadowMark($eolInterval = 70)
+    public function renderShadowMark($count, $current, $eolInterval = 60)
     {
         $this->progressCount++;
         $this->write('<fg=blue;options=bold>S</fg=blue;options=bold>', false);
         if (($this->progressCount % $eolInterval) == 0) {
             $counter = str_pad($this->progressCount, 5, ' ', STR_PAD_LEFT);
-            $this->write(' |' . $counter . PHP_EOL, false);
+            $this->write(
+                ' |' . $counter . ' ('
+                . str_pad($current, strlen($count), ' ', STR_PAD_LEFT)
+                . '/' . $count . ')' . PHP_EOL
+            , false);
         }
     }
 

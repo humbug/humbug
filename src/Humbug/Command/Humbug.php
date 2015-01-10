@@ -91,7 +91,7 @@ class Humbug extends Command
         $process->start();
         usleep(1000);
         while ($process->isRunning()) {
-            usleep(10000);
+            usleep(2500);
             if (preg_match("%[\n\r]+ok (\\d+).*$%", $process->getOutput(), $matches)) {
                 $progress->setProgress((int) $matches[1]);
             }
@@ -183,6 +183,9 @@ class Humbug extends Command
          */
         $parallels = 1;
 
+        /**
+         * MUTATION TESTING!
+         */
         foreach ($mutables as $i => $mutable) {
             $mutations = $mutable->generate()->getMutations();
             $batches = array_chunk($mutations, $parallels);
@@ -233,7 +236,7 @@ class Humbug extends Command
                          */
                         $countMutants++;
                         $countMutantShadows++;
-                        $renderer->renderShadowMark();
+                        $renderer->renderShadowMark(count($mutables), $i);
                     }
                 }
 
@@ -274,7 +277,7 @@ class Humbug extends Command
                      */
                     $countMutants++;
 
-                    $renderer->renderProgressMark($result);
+                    $renderer->renderProgressMark($result, count($mutables), $i);
                     $this->logText($input, $renderer);
 
                     /**
