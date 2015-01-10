@@ -126,7 +126,7 @@ class Text
      *
      * @param array $result
      */
-    public function renderProgressMark(array $result, $eolInterval = 60)
+    public function renderProgressMark(array $result, $eolInterval = 70)
     {
         $this->progressCount++;
         if ($result['timeout'] === true) {
@@ -150,7 +150,7 @@ class Text
      *
      * @param array $result
      */
-    public function renderShadowMark($eolInterval = 60)
+    public function renderShadowMark($eolInterval = 70)
     {
         $this->progressCount++;
         $this->write('<fg=blue;options=bold>S</fg=blue;options=bold>', false);
