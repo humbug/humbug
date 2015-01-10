@@ -192,16 +192,16 @@ class Text
         $this->write($perrors . ' fatal errors were encountered');
         $this->write($ptimeouts . ' time outs were encountered');
         $this->write(PHP_EOL, false);
-        $vanquishedTotal = $kills + $timeouts;
-        $measurableTotal = $total - $errors - $shadows;
+        $vanquishedTotal = $kills + $timeouts + $errors;
+        $measurableTotal = $total - $shadows;
         if ($measurableTotal !== 0) {
             $detectionRateTested  = round(100 * ($vanquishedTotal / $measurableTotal));
         } else {
             $detectionRateTested  = 0;
         }
         if ($total !== 0) {
-            $uncoveredRate = round(100 * ($shadows / ($total - $errors)));
-            $detectionRateAll = round(100 * ($vanquishedTotal / ($total - $errors)));
+            $uncoveredRate = round(100 * ($shadows / $total));
+            $detectionRateAll = round(100 * ($vanquishedTotal / $total));
         } else {
             $uncoveredRate = 0;
             $detectionRateAll = 0;

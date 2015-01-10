@@ -275,7 +275,16 @@ Return Values:
 
 | Original | Mutated |
 | :------: |:-------:| 
+| return true; | return false; |
+| return false; | return true; |
+| return 0; | return 1; |
+| return <Any Integer>; | return 0; |
+| return 0.0; | return 1.0; |
+| return 1.0; | return 0.0; |
+| return <Any Float > 1.0>; | return -(<Float> + 1); |
 | return $this; | return null; |
+| return function(); | function(); return null; |
+| return new Class; | new Class; return null; |
 
 Literal Numbers:
 
