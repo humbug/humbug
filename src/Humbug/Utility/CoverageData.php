@@ -13,6 +13,7 @@ namespace Humbug\Utility;
 use Humbug\Exception\InvalidArgumentException;
 use Humbug\Exception\NoCoveringTestsException;
 use Humbug\Utility\TestTimeAnalyser;
+use Symfony\Component\Finder\Finder;
 
 class CoverageData
 {
@@ -21,8 +22,11 @@ class CoverageData
 
     protected $analyser;
 
-    protected $filter;
-
+    /**
+     * The constructor processes the main coverage report into
+     * a set of split files. A coverage data extract per source code file
+     * available.
+     */
     public function __construct($file, TestTimeAnalyser $analyser)
     {
         $file = realpath($file);
@@ -31,9 +35,21 @@ class CoverageData
                 'File does not exist: ' . $file
             );
         }
-        $coverage = include $file;
-        $this->data = $coverage->getData();
+        $this->process($file);
         $this->analyser = $analyser;
+    }
+
+    public function loadCoverageFor($file)
+    {
+        $cache = sys_get_temp_dir() . '/coverage.humbug.' . md5($file) . '.cache';
+        if (!file_exists($cache)) {
+            throw new NoCoveringTestsException(
+                'No coverage data for this file could be located:' . $file
+            );
+        }
+        $coverage = include $cache;
+        $this->data = $coverage->getData();
+        unset($coverage);
     }
 
     public function hasTestClasses($file, $line)
@@ -75,17 +91,66 @@ class CoverageData
             $cases[] = $caseParts[0];
         }
         $classes = array_unique($classes);
-        /*if (count($cases) > 0) {
-            $cases = array_unique($cases);
-            $caseNameFilter = implode('|', $cases);
-            $this->filter = "/" . $caseNameFilter . "/";
-        }*/
         return $classes;
     }
 
-    public function getTestCaseFilter()
+    public function cleanup()
     {
-        return $this->filter;
+        $finder = new Finder;
+        $finder->files()->name('humbug.coverage.*.cache');
+        foreach ($finder->in(sys_get_temp_dir()) as $file) {
+            @unlink($file->getRealpath());
+        }
+    }
+
+    protected function process($file)
+    {
+        $fp = fopen($file, 'r');
+        $start = false;
+        $passthru = false;
+        $out = null;
+        $buffer = '';
+        $matches = null;
+        while (false !== ($line = fgets($fp))) {
+            if ($passthru === true && !preg_match("%^  '[^']*' => $%", $line)) {
+                if (preg_match("%^\\)\\)\\;%", $line)) {
+                    $this->wrapup($out, $file, $buffer);
+                    break;
+                } else {
+                    $buffer .= $line;
+                    continue;
+                }
+            }
+            if ($start === true && preg_match("%^  '([^']*)' => $%", $line, $matches)) {
+                if ($passthru === true) {
+                    $this->wrapup($out, $file, $buffer);
+                }
+                $file = 'coverage.humbug.' . md5($matches[1]) . '.cache';
+                $out = fopen(sys_get_temp_dir() . '/' . $file, 'w');
+                $buffer = '<?php'
+                    . PHP_EOL . '$coverage = new PHP_CodeCoverage;'
+                    . PHP_EOL . '$coverage->setData(array ('
+                    . PHP_EOL . '  \'' . $matches[1] . '\' => '
+                    . PHP_EOL;
+                $passthru = true;
+                continue;
+            }
+            if ($start === false && preg_match("%^\\\$coverage\\-\\>setData%", $line)) {
+                $start = true;
+                continue;
+            }
+        }
+        unset($buffer);
+        fclose($fp);
+    }
+
+    protected function wrapup($out, $file, &$buffer)
+    {
+        $buffer .= PHP_EOL . '));'
+            . PHP_EOL . 'return $coverage;';
+        fwrite($out, $buffer);
+        fclose($out);
+        unset($buffer);
     }
 
 }

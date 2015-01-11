@@ -404,6 +404,8 @@ class Phpunit extends AdapterAbstract
         $boolean = $dom->createElement('boolean');
         $arguments->appendChild($boolean);
         $boolean->nodeValue = 'true';
+
+        
         $saveFile = $container->getCacheDirectory() . '/phpunit.humbug.xml';
         $dom->save($saveFile);
         return $saveFile;

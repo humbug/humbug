@@ -191,6 +191,17 @@ class Humbug extends Command
             $batches = array_chunk($mutations, $parallels);
             unset($mutations);
 
+            try {
+                $coverage->loadCoverageFor($mutable->getFilename());
+            } catch (NoCoveringTestsException $e) { // not even a report exists?
+                foreach ($batches as $batch) {
+                    $countMutants++;
+                    $countMutantShadows++;
+                    $renderer->renderShadowMark(count($mutables), $i);
+                }
+                continue;
+            }
+
             foreach ($batches as $batch) {
                 $processes = [];
                 $mutants = [];
