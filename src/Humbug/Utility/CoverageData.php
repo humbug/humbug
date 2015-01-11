@@ -41,11 +41,9 @@ class CoverageData
         $file = realpath($file);
         if (!isset($this->data[$file])) {
             return false;
-        }
-        if (!isset($this->data[$file][$line])) {
+        } elseif (!isset($this->data[$file][$line])) {
             return false;
-        }
-        if (empty($this->data[$file][$line])) {
+        } elseif (empty($this->data[$file][$line])) {
             return false;
         }
         return true;
@@ -69,7 +67,8 @@ class CoverageData
         }
         $classes = [];
         $cases = [];
-        foreach ($this->data[$file][$line] as $reference) {
+        $line = $this->data[$file][$line];
+        foreach ($line as $reference) {
             $parts = explode('::', $reference);
             $classes[] = $parts[0];
             $caseParts = explode(' ', $parts[1]);

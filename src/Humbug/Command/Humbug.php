@@ -189,6 +189,7 @@ class Humbug extends Command
         foreach ($mutables as $i => $mutable) {
             $mutations = $mutable->generate()->getMutations();
             $batches = array_chunk($mutations, $parallels);
+            unset($mutations);
 
             foreach ($batches as $batch) {
                 $processes = [];

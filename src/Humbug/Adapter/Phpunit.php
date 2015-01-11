@@ -255,6 +255,7 @@ class Phpunit extends AdapterAbstract
             $root->setAttribute('bootstrap', $path);
             $container->setBootstrap($path);
         }
+        $root->setAttribute('cacheTokens', 'false');
 
         $xpath = new \DOMXPath($dom);
 
