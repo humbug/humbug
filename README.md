@@ -100,7 +100,7 @@ Humbug version 1.0-dev
 
 Humbug running test suite to generate logs and code coverage data...
 
-  242 [============================================================] 30 secs
+  242 [=======================================================] 30 secs
 
 Humbug has completed the initial test run successfully.
 

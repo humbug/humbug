@@ -85,7 +85,7 @@ class Humbug extends Command
         $process = $container->getAdapter()->runTests($container, true, true);
         $progress = new ProgressBar($output);
         $progress->setFormat('verbose');
-        $progress->setBarWidth(60);
+        $progress->setBarWidth(55);
         $progress->start();
 
         $process->start();

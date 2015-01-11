@@ -390,6 +390,19 @@ class Phpunit extends AdapterAbstract
             }
         }
 
+        /**
+         * Include any listeners
+         */
+        $listeners = $dom->createElement('listeners');
+        $root->appendChild($listeners);
+        $listener = $dom->createElement('listener');
+        $listeners->appendChild($listener);
+        $listener->setAttribute('class', '\\MyBuilder\\PhpunitAccelerator\\TestListener');
+        $arguments = $dom->createElement('arguments');
+        $listener->appendChild($arguments);
+        $boolean = $dom->createElement('boolean');
+        $arguments->appendChild($boolean);
+        $boolean->nodeValue = 'true';
         $saveFile = $container->getCacheDirectory() . '/phpunit.humbug.xml';
         $dom->save($saveFile);
         return $saveFile;

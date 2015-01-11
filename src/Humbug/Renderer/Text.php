@@ -208,15 +208,15 @@ class Text
             $detectionRateTested  = 0;
         }
         if ($total !== 0) {
-            $uncoveredRate = round(100 * ($shadows / $total));
+            $coveredRate = round(100 * (($total - $shadows) / $total));
             $detectionRateAll = round(100 * ($vanquishedTotal / $total));
         } else {
-            $uncoveredRate = 0;
+            $coveredRate = 0;
             $detectionRateAll = 0;
         }
         $this->write('Out of ' . ($total - $shadows) . ' test covered mutations, <options=bold>' . $detectionRateTested . '%</options=bold> were detected.');
         $this->write('Out of ' . $total . ' total mutations, <options=bold>' . $detectionRateAll . '%</options=bold> were detected.');
-        $this->write('Out of ' . $total . ' total mutations, <options=bold>' . $uncoveredRate . '%</options=bold> were not covered by tests.');
+        $this->write('Out of ' . $total . ' total mutations, <options=bold>' . $coveredRate . '%</options=bold> were covered by tests.');
         $this->write(PHP_EOL, false);
         $this->write('Remember that some mutants will inevitably be harmless (i.e. false positives).');
     }
