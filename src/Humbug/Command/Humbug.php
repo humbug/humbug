@@ -325,6 +325,7 @@ class Humbug extends Command
             $mutable->cleanup();
         }
 
+        $coverage->cleanup();
         Performance::stop();
 
         /**

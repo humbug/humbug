@@ -97,7 +97,7 @@ class CoverageData
     public function cleanup()
     {
         $finder = new Finder;
-        $finder->files()->name('humbug.coverage.*.cache');
+        $finder->files()->name('coverage.humbug.*.cache');
         foreach ($finder->in(sys_get_temp_dir()) as $file) {
             @unlink($file->getRealpath());
         }
