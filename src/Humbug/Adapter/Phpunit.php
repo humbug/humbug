@@ -241,10 +241,12 @@ class Phpunit extends AdapterAbstract
         if (!empty($dir)) {
             $dir .= '/';
         }
+        $oldValue = libxml_disable_entity_loader(true);
         $dom = new \DOMDocument;
         $dom->preserveWhitespace = false;
         $dom->formatOutput = true;
         $dom->loadXML(file_get_contents($conf));
+        libxml_disable_entity_loader($oldValue);
 
         $root = $dom->documentElement;
         $hasBootstrap = false;
