@@ -15,6 +15,7 @@
     "support": {
         "issues": "https://github.com/padraic/humbug/issues"
     },
+    "minimum-stability": "dev",
     "require": {
         "php": ">=5.4.0",
         "phpunit/phpunit": "~4.4",
@@ -22,12 +23,18 @@
         "symfony/finder": "~2.6",
         "symfony/process": "~2.6",
         "sebastian/diff": "~1.1",
-        "mybuilder/phpunit-accelerator": ">=1.0.1"
+        "mybuilder/phpunit-accelerator": "dev-shutdownfunction"
     },
     "require-dev": {
         "mockery/mockery": "~0.9",
         "ext-xdebug": ">=2.1.4"
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/padraic/phpunit-accelerator.git"
+        }
+    ],
     "suggest": {
         "ext-xdebug": ">=2.2.1"
     },
