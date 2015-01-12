@@ -385,6 +385,8 @@ class Phpunit extends AdapterAbstract
                         $bootstrapDir = static::makeAbsolutePath($child->nodeValue, dirname($conf));
                         if (file_exists($bootstrapDir . '/bootstrap.php')) {
                             $root->setAttribute('bootstrap', $bootstrapDir . '/bootstrap.php');
+                            $container->setBootstrap($bootstrapDir . '/bootstrap.php');
+                            $hasBootstrap = true;
                         }
                     }
                 }
