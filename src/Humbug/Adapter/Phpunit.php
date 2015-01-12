@@ -252,9 +252,11 @@ class Phpunit extends AdapterAbstract
             $hasBootstrap = true;
             $bootstrap = $root->getAttribute('bootstrap');
             $path = static::makeAbsolutePath($bootstrap, dirname($conf));
-            $root->setAttribute('bootstrap', $path);
+            //$root->setAttribute('bootstrap', $path);
+            //$root->removeAttribute('bootstrap');
             $container->setBootstrap($path);
         }
+        $root->setAttribute('bootstrap', sys_get_temp_dir() . '/humbug.phpunit.bootstrap.php');
         $root->setAttribute('cacheTokens', 'false');
 
         $xpath = new \DOMXPath($dom);
@@ -380,11 +382,12 @@ class Phpunit extends AdapterAbstract
             $suite1 = $xpath->query('/phpunit/testsuites/testsuite')->item(0);
             if (is_a($suite1, 'DOMElement')) {
                 foreach ($suite1->childNodes as $child) {
-                    // phpunit.xml may omit bootstrap location but grab it automatically - include explicitly
+                    // phpunit.xml may omit bootstrap location but grab it if we can
                     if ($child instanceof \DOMElement && $child->tagName == 'directory' && $hasBootstrap === false) {
                         $bootstrapDir = static::makeAbsolutePath($child->nodeValue, dirname($conf));
                         if (file_exists($bootstrapDir . '/bootstrap.php')) {
-                            $root->setAttribute('bootstrap', $bootstrapDir . '/bootstrap.php');
+                            $container->setBootstrap($bootstrapDir . '/bootstrap.php');
+                            $hasBootstrap = true;
                         }
                     }
                 }
@@ -394,7 +397,7 @@ class Phpunit extends AdapterAbstract
         /**
          * Include any listeners
          */
-        $listeners = $dom->createElement('listeners');
+        /*$listeners = $dom->createElement('listeners');
         $root->appendChild($listeners);
         $listener = $dom->createElement('listener');
         $listeners->appendChild($listener);
@@ -403,7 +406,7 @@ class Phpunit extends AdapterAbstract
         $listener->appendChild($arguments);
         $boolean = $dom->createElement('boolean');
         $arguments->appendChild($boolean);
-        $boolean->nodeValue = 'true';
+        $boolean->nodeValue = 'true';*/
 
         
         $saveFile = $container->getCacheDirectory() . '/phpunit.humbug.xml';

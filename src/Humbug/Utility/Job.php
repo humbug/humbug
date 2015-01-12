@@ -21,27 +21,42 @@ class Job
      */
     public static function generate($mutantFile = null, array $args = [], $bootstrap = '', $replacingFile = null)
     {
-        $args = base64_encode(serialize($args));
         $humbugBootstrap = realpath(__DIR__ . '/../../bootstrap.php');
-        $bootstrap = addslashes($bootstrap);
-        $inBeforeAutoloader = '';
+        $file = sys_get_temp_dir() . '/humbug.phpunit.bootstrap.php';
+
         if (!is_null($mutantFile)) {
             $mutantFile = addslashes($mutantFile);
             $replacingFile = addslashes($replacingFile);
-            $inBeforeAutoloader = <<<PREPEND
+            $prepend = <<<PREPEND
+require_once "{$humbugBootstrap}";
 use Humbug\StreamWrapper\IncludeInterceptor;
 IncludeInterceptor::intercept("{$replacingFile}", "{$mutantFile}");
 IncludeInterceptor::enable();
 PREPEND;
+            if (!empty($bootstrap)) {
+                $content = file_get_contents($bootstrap);
+                $buffer = preg_replace("^.*\\<\\?php", "<?php\n" . $prepend, $content);
+                var_dump($buffer);
+            } else {
+                $buffer = "<?php\n" . $prepend;
+            }
+            file_put_contents($file, $buffer);
+        } else {
+            if (!empty($bootstrap)) {
+                $buffer = file_get_contents($bootstrap);
+            } else {
+                $buffer = "<?php\n";
+            }
+            file_put_contents($file, $buffer);
         }
+
+        $args = base64_encode(serialize($args));
+        
         $script = <<<SCRIPT
 <?php
 namespace Humbug\\Env;
-error_reporting(error_reporting() & ~E_NOTICE);
 require_once "{$humbugBootstrap}";
-{$inBeforeAutoloader}
-\$bootstrap = "{$bootstrap}";
-if (!empty(\$bootstrap)) require_once "{$bootstrap}";
+error_reporting(error_reporting() & ~E_NOTICE);
 use Humbug\Adapter\Phpunit;
 Phpunit::main("{$args}");
 SCRIPT;
