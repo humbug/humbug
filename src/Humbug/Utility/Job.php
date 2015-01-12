@@ -12,7 +12,6 @@ namespace Humbug\Utility;
 
 class Job
 {
-    
     /**
      * Generate a new Job script to be executed under a separate PHP process
      *
@@ -28,22 +27,21 @@ class Job
             $mutantFile = addslashes($mutantFile);
             $replacingFile = addslashes($replacingFile);
             $prepend = <<<PREPEND
+<?php
 require_once "{$humbugBootstrap}";
 use Humbug\StreamWrapper\IncludeInterceptor;
 IncludeInterceptor::intercept("{$replacingFile}", "{$mutantFile}");
 IncludeInterceptor::enable();
 PREPEND;
             if (!empty($bootstrap)) {
-                $content = file_get_contents($bootstrap);
-                $buffer = preg_replace("^.*\\<\\?php", "<?php\n" . $prepend, $content);
-                var_dump($buffer);
+                $buffer = $prepend . "\nrequire_once '{$bootstrap}';";
             } else {
-                $buffer = "<?php\n" . $prepend;
+                $buffer = $prepend;
             }
             file_put_contents($file, $buffer);
         } else {
             if (!empty($bootstrap)) {
-                $buffer = file_get_contents($bootstrap);
+                $buffer = "<?php\nrequire_once '{$bootstrap}';";
             } else {
                 $buffer = "<?php\n";
             }
