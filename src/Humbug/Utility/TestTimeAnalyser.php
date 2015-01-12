@@ -37,8 +37,10 @@ class TestTimeAnalyser
         $testCases = [];
         $testSuites = [];
         $time = [];
+        $oldValue = libxml_disable_entity_loader(true);
         $dom = new \DOMDocument;
         $dom->loadXML($this->log);
+        libxml_disable_entity_loader($oldValue);
         $xpath = new \DOMXPath($dom);
 
         /**
