@@ -394,7 +394,7 @@ class Phpunit extends AdapterAbstract
         /**
          * Include any listeners
          */
-        $listeners = $dom->createElement('listeners');
+        /*$listeners = $dom->createElement('listeners');
         $root->appendChild($listeners);
         $listener = $dom->createElement('listener');
         $listeners->appendChild($listener);
@@ -403,7 +403,7 @@ class Phpunit extends AdapterAbstract
         $listener->appendChild($arguments);
         $boolean = $dom->createElement('boolean');
         $arguments->appendChild($boolean);
-        $boolean->nodeValue = 'true';
+        $boolean->nodeValue = 'true';*/
 
         
         $saveFile = $container->getCacheDirectory() . '/phpunit.humbug.xml';
