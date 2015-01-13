@@ -192,13 +192,14 @@ class Humbug extends Command
          * MUTATION TESTING!
          */
         foreach ($mutables as $i => $mutable) {
+
             $mutations = $mutable->generate()->getMutations();
             $batches = array_chunk($mutations, $parallels);
             unset($mutations);
 
             try {
                 $coverage->loadCoverageFor($mutable->getFilename());
-            } catch (NoCoveringTestsException $e) { // not even a report exists?
+            } catch (NoCoveringTestsException $e) {
                 foreach ($batches as $batch) {
                     $countMutants++;
                     $countMutantShadows++;

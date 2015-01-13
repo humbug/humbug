@@ -41,6 +41,7 @@ class CoverageData
 
     public function loadCoverageFor($file)
     {
+        unset($this->data);
         $cache = sys_get_temp_dir() . '/coverage.humbug.' . md5($file) . '.cache';
         if (!file_exists($cache)) {
             throw new NoCoveringTestsException(
@@ -67,8 +68,9 @@ class CoverageData
 
     public function getOrderedTestCases($file, $line)
     {
-        $classes = $this->getTestClasses($file, $line);
-        return $this->analyser->getTestCasesFromClasses($classes);
+        return $this->analyser->getTestCasesFromClasses(
+            $this->getTestClasses($file, $line)
+        );
     }
 
     public function getTestClasses($file, $line)
@@ -90,6 +92,7 @@ class CoverageData
             $caseParts = explode(' ', $parts[1]);
             $cases[] = $caseParts[0];
         }
+        unset($line);
         $classes = array_unique($classes);
         return $classes;
     }
@@ -109,21 +112,20 @@ class CoverageData
         $start = false;
         $passthru = false;
         $out = null;
-        $buffer = '';
         $matches = null;
         while (false !== ($line = fgets($fp))) {
             if ($passthru === true && !preg_match("%^  '[^']*' => $%", $line)) {
                 if (preg_match("%^\\)\\)\\;%", $line)) {
-                    $this->wrapup($out, $file, $buffer);
+                    $this->wrapup($out);
                     break;
                 } else {
-                    $buffer .= $line;
+                    fwrite($out, $line);
                     continue;
                 }
             }
             if ($start === true && preg_match("%^  '([^']*)' => $%", $line, $matches)) {
                 if ($passthru === true) {
-                    $this->wrapup($out, $file, $buffer);
+                    $this->wrapup($out);
                 }
                 $file = 'coverage.humbug.' . md5($matches[1]) . '.cache';
                 $out = fopen(sys_get_temp_dir() . '/' . $file, 'w');
@@ -132,6 +134,7 @@ class CoverageData
                     . PHP_EOL . '$coverage->setData(array ('
                     . PHP_EOL . '  \'' . $matches[1] . '\' => '
                     . PHP_EOL;
+                fwrite($out, $buffer);
                 $passthru = true;
                 continue;
             }
@@ -140,17 +143,15 @@ class CoverageData
                 continue;
             }
         }
-        unset($buffer);
         fclose($fp);
     }
 
-    protected function wrapup($out, $file, &$buffer)
+    protected function wrapup($out)
     {
-        $buffer .= PHP_EOL . '));'
+        $buffer = PHP_EOL . '));'
             . PHP_EOL . 'return $coverage;';
         fwrite($out, $buffer);
         fclose($out);
-        unset($buffer);
     }
 
 }

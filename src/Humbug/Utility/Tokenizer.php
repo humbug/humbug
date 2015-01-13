@@ -21,7 +21,7 @@ class Tokenizer {
      * @param string $source
      * @return array
      */
-    public static function getTokens($source)
+    public static function getTokens(&$source)
     {
         $newline = 0;
         $tokens = token_get_all($source);

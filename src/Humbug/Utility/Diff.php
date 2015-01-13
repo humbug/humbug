@@ -17,7 +17,7 @@ class Diff
 
     protected static $differ;
 
-    public static function difference($from, $to, $lines = 12)
+    public static function difference(&$from, &$to, $lines = 12)
     {
         if (null === self::$differ) {
             self::$differ = new Differ;
