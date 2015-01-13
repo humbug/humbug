@@ -33,6 +33,7 @@ class ParallelGroup
         while ($this->stillRunning()) {
             usleep(1000);
         }
+        $this->processes = [];
     }
 
     public function stillRunning()

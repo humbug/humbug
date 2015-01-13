@@ -90,10 +90,15 @@ class Humbug extends Command
 
         $process->start();
         usleep(1000);
+        $hasFailure = false;
         while ($process->isRunning()) {
             usleep(2500);
             if (preg_match("%[\n\r]+ok (\\d+).*$%", $process->getOutput(), $matches)) {
                 $progress->setProgress((int) $matches[1]);
+                $process->clearOutput();
+            } elseif (preg_match("%[\n\r]+not ok (\\d+).*$%", $process->getOutput(), $matches)) {
+                $hasFailure = true;
+                $process->clearOutput();
             }
         }
         $progress->finish();
@@ -115,7 +120,7 @@ class Humbug extends Command
         /**
          * Check if the initial test run ended with a fatal error
          */
-        if ($exitCode !== 0) {
+        if ($exitCode !== 0 || $hasFailure) {
             $renderer->renderInitialRunFail($result);
             $this->logText($input, $renderer);
             exit(1);
@@ -275,14 +280,13 @@ class Humbug extends Command
                         'stderr'    => ''
                     ];
 
-                    $result['stdout'] = $process->getOutput();
-                    $result['stderr'] = $process->getErrorOutput();
                     if ($group->timedOut($tracker)) {
                         $result['timeout'] = true;
                     }
-                    if (!$container->getAdapter()->processOutput($result['stdout'])) {
+                    if (!$container->getAdapter()->processOutput($process->getOutput())) {
                         $result['passed'] = false;
                     }
+                    $process->clearOutput();
 
                     /**
                      * Handle the defined result for each process
@@ -298,8 +302,6 @@ class Humbug extends Command
                     $toLog = [
                         'mutation'  => $batch[$tracker],
                         'diff'      => $diffs[$tracker],
-                        'stdout'    => $result['stdout'],
-                        'stderr'    => $result['stderr']
                     ];
 
                     if ($result['timeout'] === true) {
@@ -307,6 +309,8 @@ class Humbug extends Command
                         //$mutantTimeouts[] = $toLog;
                     } elseif (!$process->isSuccessful()) {
                         $countMutantErrors++;
+                        $toLog['stderr'] = $process->getErrorOutput();
+                        $process->clearErrorOutput();
                         $mutantErrors[] = $toLog;
                     } elseif ($result['passed'] === false) {
                         $countMutantKills++;
@@ -315,7 +319,9 @@ class Humbug extends Command
                         $countMutantEscapes++;
                         $mutantEscapes[] = $toLog;
                     }
+                    unset($process);
                 }
+                $processes = [];
 
                 foreach ($mutants as $mutant) {
                     if (file_exists($mutant)) unlink($mutant);
