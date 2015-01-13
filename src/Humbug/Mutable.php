@@ -87,7 +87,9 @@ class Mutable
         '\Humbug\Mutator\ReturnValue\True',
         '\Humbug\Mutator\ReturnValue\False',
         '\Humbug\Mutator\ReturnValue\Integer',
-        '\Humbug\Mutator\ReturnValue\Float',
+        //'\Humbug\Mutator\ReturnValue\Float',
+        '\Humbug\Mutator\ReturnValue\IntegerNegation',
+        '\Humbug\Mutator\ReturnValue\FloatNegation',
         '\Humbug\Mutator\ReturnValue\NewObject',
         '\Humbug\Mutator\ReturnValue\FunctionCall',
     ];

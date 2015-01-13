@@ -12,7 +12,7 @@ namespace Humbug\Mutator\ReturnValue;
 
 use Humbug\Mutator\MutatorAbstract;
 
-class Float extends MutatorAbstract
+class FloatNegation extends MutatorAbstract
 {
 
     /**
@@ -29,11 +29,7 @@ class Float extends MutatorAbstract
                 continue;
             } elseif (is_array($tokens[$i]) && $tokens[$i][0] == T_DNUMBER) {
                 $num = (float) $tokens[$i][1];
-                if ($num == 0) {
-                    $replace = 1.0;
-                } elseif ($num > 1) {
-                    $replace = 0.0;
-                }
+                $replace = -1 * $num;
                 $tokens[$i] = [
                     T_DNUMBER,
                     sprintf("%.2f", $replace)
@@ -51,7 +47,7 @@ class Float extends MutatorAbstract
             for ($i=$index+1; $i < count($tokens); $i++) { 
                 if (is_array($tokens[$i]) && $tokens[$i][0] == T_WHITESPACE) {
                     continue;
-                } elseif (is_array($tokens[$i]) && $tokens[$i][0] == T_DNUMBER) {
+                } elseif (is_array($tokens[$i]) && $tokens[$i][0] == T_DNUMBER && $tokens[$i][1] != 0) {
                     $has = true;
                     continue;
                 } elseif (!is_array($tokens[$i]) && $tokens[$i] == ';') {
