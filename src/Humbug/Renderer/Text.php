@@ -21,7 +21,6 @@ class Text
 
     protected $type = OutputInterface::OUTPUT_NORMAL;
 
-    protected $useBuffer;
 
     protected $buffer;
 
@@ -68,7 +67,7 @@ class Text
      *
      * @param array $result
      */
-    public function renderInitialRunFail(array $result)
+    public function renderInitialRunFail(array &$result)
     {
         $this->write('<warning>Tests must be in a fully passing state before Humbug is run.</warning>');
         $this->write('<warning>Incomplete, skipped or risky tests are allowed.</warning>');
@@ -126,7 +125,7 @@ class Text
      *
      * @param array $result
      */
-    public function renderProgressMark(array $result, $count, $current, $eolInterval = 60)
+    public function renderProgressMark(array &$result, $count, $current, $eolInterval = 60)
     {
         $this->progressCount++;
         if ($result['timeout'] === true) {

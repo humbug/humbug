@@ -277,8 +277,7 @@ class Humbug extends Command
                     $result = [
                         'passed'    => true,
                         'timeout'   => false,
-                        'stdout'    => '',
-                        'stderr'    => ''
+                        'stderr'    => $process->getErrorOutput(),
                     ];
 
                     if ($group->timedOut($tracker)) {
@@ -311,7 +310,6 @@ class Humbug extends Command
                     } elseif (!$process->isSuccessful()) {
                         $countMutantErrors++;
                         $toLog['stderr'] = $process->getErrorOutput();
-                        $process->clearErrorOutput();
                         $mutantErrors[] = $toLog;
                     } elseif ($result['passed'] === false) {
                         $countMutantKills++;
@@ -405,7 +403,7 @@ class Humbug extends Command
         Performance::downMemProfiler();
     }
 
-    protected function logJson($total, $kills, $escapes, $errors, $timeouts, $shadows, array $mutantEscapes, array $mutantShadows, $file)
+    protected function logJson($total, $kills, $escapes, $errors, $timeouts, $shadows, array &$mutantEscapes, array $mutantShadows, $file)
     {
         $vanquishedTotal = $kills + $timeouts + $errors;
         $measurableTotal = $total - $shadows;

@@ -42,6 +42,7 @@ class CoverageData
     public function loadCoverageFor($file)
     {
         unset($this->data);
+        gc_collect_cycles();
         $cache = sys_get_temp_dir() . '/coverage.humbug.' . md5($file) . '.cache';
         if (!file_exists($cache)) {
             throw new NoCoveringTestsException(
