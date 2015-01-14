@@ -84,6 +84,10 @@ class XmlConfiguration
         /**
          * On first runs collect a test log and also generate code coverage
          */
+        $oldLogs = self::$xpath->query('//logging');
+        foreach ($oldLogs as $oldLog) {
+            self::$root->removeElement($oldLog);
+        }
         if ($log === true) {
             static::handleLogging();
         }
@@ -162,8 +166,10 @@ class XmlConfiguration
 
     private static function handleLogging()
     {
+        // add new logs as needed
         $logging = self::$dom->createElement('logging');
         self::$root->appendChild($logging);
+        // junit
         $log = self::$dom->createElement('log');
         $log->setAttribute('type', 'junit');
         $log->setAttribute(
@@ -171,6 +177,14 @@ class XmlConfiguration
             self::$container->getCacheDirectory() . '/junitlog.humbug.xml'
         );
         $log->setAttribute('logIncompleteSkipped', 'true');
+        $logging->appendChild($log);
+        // php coverage
+        $log = self::$dom->createElement('log');
+        $log->setAttribute('type', 'coverage-php');
+        $log->setAttribute(
+            'target',
+            self::$container->getCacheDirectory() . '/coverage.humbug.php'
+        );
         $logging->appendChild($log);
 
         /**

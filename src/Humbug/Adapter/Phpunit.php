@@ -82,8 +82,6 @@ class Phpunit extends AdapterAbstract
             $configFile = XmlConfiguration::assemble($container, $testCases);
         } elseif ($firstRun) {
             $configFile = XmlConfiguration::assemble($container, [], true, true);
-            $coverageFile = $container->getCacheDirectory() . '/coverage.humbug.php';
-            array_unshift($jobopts['cliopts'], '--coverage-php=' . $coverageFile);
         }
         if (!is_null($configFile)) {
             foreach ($jobopts['cliopts'] as $key => $value) {
