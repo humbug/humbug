@@ -82,7 +82,7 @@ class Humbug extends Command
          * and also log the results so test runs during the mutation phase can
          * be optimised.
          */
-        $process = $container->getAdapter()->runTests($container, true, true);
+        $process = $container->getAdapter()->getProcess($container, true);
         $progress = new ProgressBar($output);
         $progress->setFormat('verbose');
         $progress->setBarWidth(58);
@@ -113,7 +113,7 @@ class Humbug extends Command
         ];
         $result['stdout'] = $process->getOutput();
         $result['stderr'] = $process->getErrorOutput();
-        if (!$container->getAdapter()->processOutput($result['stdout'])) {
+        if (!$container->getAdapter()->ok($result['stdout'])) {
             $result['passed'] = false;
         }
 
@@ -237,13 +237,12 @@ class Humbug extends Command
                         file_put_contents($mutants[$tracker], $mutatedFileContent);
                         $diffs[$tracker] = Diff::difference($originalFileContent, $mutatedFileContent);
 
-                        $processes[$tracker] = $container->getAdapter()->runTests(
+                        $processes[$tracker] = $container->getAdapter()->getProcess(
                             $container,
-                            true,
                             false,
-                            $mutants[$tracker],
-                            $orderedTestCases,
-                            $mutation['file']
+                            $mutation['file'], // file to intercept
+                            $mutants[$tracker], // mutated file to substitute
+                            $orderedTestCases
                         );
 
                     } catch (NoCoveringTestsException $e) {
@@ -283,7 +282,7 @@ class Humbug extends Command
                     if ($group->timedOut($tracker)) {
                         $result['timeout'] = true;
                     }
-                    if (!$container->getAdapter()->processOutput($process->getOutput())) {
+                    if (!$container->getAdapter()->ok($process->getOutput())) {
                         $result['passed'] = false;
                     }
                     $process->clearOutput();

@@ -11,6 +11,7 @@
 namespace Humbug\Adapter;
 
 use Humbug\Container;
+use Humbug\Adapter\Phpunit\XmlConfiguration;
 use Humbug\Utility\Job;
 use Humbug\Utility\Process;
 use Humbug\Utility\TestTimeAnalyser;
@@ -39,9 +40,12 @@ class Phpunit extends AdapterAbstract
      * @param   array             $testCases
      * @return  array
      */
-    public function runTests(Container $container, $useStdout = true,
-    $firstRun = false, $mutantFile = null, array $testCases = [],
-    $interceptFile = null)
+    public function getProcess(
+        Container $container,
+        $firstRun = false,
+        $interceptFile = null,
+        $mutantFile = null,
+        array $testCases = [])
     {
 
         $jobopts = [
@@ -52,11 +56,10 @@ class Phpunit extends AdapterAbstract
             'cliopts'       => $container->getAdapterOptions(),
             'constraints'   => $container->getAdapterConstraints()
         ];
-
-        if(!$useStdout) {
-            array_unshift($jobopts['cliopts'], '--stderr');
-        }
         
+        /**
+         * We like standardised easy to parse outout
+         */
         array_unshift($jobopts['cliopts'], '--tap');
 
         /*
@@ -76,27 +79,22 @@ class Phpunit extends AdapterAbstract
          */
         $configFile = null;
         if (count($testCases) > 0) {
-            $configFile = self::assembleConfiguration($container, $testCases);
+            $configFile = XmlConfiguration::assemble($container, $testCases);
         } elseif ($firstRun) {
-            $configFile = self::assembleConfiguration(
-                $container,
-                [],
-                $container->getCacheDirectory() . '/junitlog.humbug.xml',
-                true
-            );
+            $configFile = XmlConfiguration::assemble($container, [], true, true);
             $coverageFile = $container->getCacheDirectory() . '/coverage.humbug.php';
-            array_unshift($jobopts['cliopts'], $coverageFile);
-            array_unshift($jobopts['cliopts'], '--coverage-php');
+            array_unshift($jobopts['cliopts'], '--coverage-php=' . $coverageFile);
         }
         if (!is_null($configFile)) {
             foreach ($jobopts['cliopts'] as $key => $value) {
                 if ($value == '--configuration' || $value == '-C') {
                     unset($jobopts['cliopts'][$key]);
                     unset($jobopts['cliopts'][$key+1]);
+                } elseif (preg_match('%\\-\\-configuration=%', $value)) {
+                    unset($jobopts['cliopts'][$key]);
                 }
             }
-            array_unshift($jobopts['cliopts'], $configFile);
-            array_unshift($jobopts['cliopts'], '--configuration');
+            array_unshift($jobopts['cliopts'], '--configuration=' . $configFile);
         }
 
         /**
@@ -202,7 +200,7 @@ class Phpunit extends AdapterAbstract
      * @param string $output
      * @return bool
      */
-    public static function processOutput($output)
+    public static function ok($output)
     {
         if (preg_match("%[\n\r]+not ok \\d+%", $output)) {
             return false;
@@ -210,232 +208,4 @@ class Phpunit extends AdapterAbstract
         return true;
     }
 
-    /**
-     * Wrangle XML to create a PHPUnit configuration, based on the original, that
-     * allows for more control over what tests are run, allows JUnit logging,
-     * and ensures that Code Coverage (for Humbug use) whitelists all of the
-     * relevant source code.
-     *
-     *
-     * @return string
-     */
-    public static function assembleConfiguration(Container $container, array $cases = [], $junitLog = null, $addMissingTests = false)
-    {
-        $conf = null;
-        $dir = null;
-        $testDir = $container->getTestRunDirectory();
-        if (!empty($testDir)) {
-            $dir = $testDir;
-            $conf = $dir . '/phpunit.xml';
-        } elseif (!file_exists($conf)) {
-            $dir = $container->getBaseDirectory();
-            $conf = $dir . '/phpunit.xml';
-        }
-        if (file_exists($conf)) {
-            $conf = realpath($conf);
-        } elseif (file_exists($conf . '.dist')) {
-            $conf = realpath($conf . '.dist');
-        } else {
-            throw new RuntimeException('Unable to locate phpunit.xml(.dist) file. This is required by Humbug.');
-        }
-        if (!empty($dir)) {
-            $dir .= '/';
-        }
-        $oldValue = libxml_disable_entity_loader(true);
-        $dom = new \DOMDocument;
-        $dom->preserveWhitespace = false;
-        $dom->formatOutput = true;
-        $dom->loadXML(file_get_contents($conf));
-        libxml_disable_entity_loader($oldValue);
-
-        $root = $dom->documentElement;
-        $hasBootstrap = false;
-        if ($root->hasAttribute('bootstrap')) {
-            $hasBootstrap = true;
-            $bootstrap = $root->getAttribute('bootstrap');
-            $path = static::makeAbsolutePath($bootstrap, dirname($conf));
-            //$root->setAttribute('bootstrap', $path);
-            //$root->removeAttribute('bootstrap');
-            $container->setBootstrap($path);
-        }
-        $root->setAttribute('bootstrap', sys_get_temp_dir() . '/humbug.phpunit.bootstrap.php');
-        $root->setAttribute('cacheTokens', 'false');
-
-        $xpath = new \DOMXPath($dom);
-
-        /**
-         * On first runs collect a test log and also generate code coverage
-         */
-        if (!is_null($junitLog)) {
-            $logging = $dom->createElement('logging');
-            $root->appendChild($logging);
-            $log = $dom->createElement('log');
-            $log->setAttribute('type', 'junit');
-            $log->setAttribute('target', $junitLog);
-            $log->setAttribute('logIncompleteSkipped', 'true');
-            $logging->appendChild($log);
-
-            /**
-             * While we're here, reset code coverage filter to meet the known source
-             * code constraints.
-             */
-            $filters = $xpath->query('/phpunit/filter');
-            foreach ($filters as $filter) {
-                $root->removeChild($filter);
-            }
-            $filter = $dom->createElement('filter');
-            $whitelist = $dom->createElement('whitelist');
-            $root->appendChild($filter);
-            $filter->appendChild($whitelist);
-            $source = $container->getSourceList();
-            if (isset($source->directories)) {
-                foreach ($source->directories as $d) {
-                    $directory = $dom->createElement('directory', realpath($d));
-                    $directory->setAttribute('suffix', '.php');
-                    $whitelist->appendChild($directory);
-                }
-            }
-            if (isset($source->excludes)) {
-                $exclude = $dom->createElement('exclude');
-                foreach ($source->excludes as $d) {
-                    $directory = $dom->createElement('directory', realpath($d));
-                    $exclude->appendChild($directory);
-                }
-                $whitelist->appendChild($exclude);
-            }
-        }
-
-        
-        $suites = $xpath->query('/phpunit/testsuites/testsuite');
-        foreach ($suites as $suite) {
-            foreach ($suite->childNodes as $node) {
-                if ($node instanceof \DOMElement
-                && ($node->tagName == 'directory'
-                || $node->tagName == 'exclude'
-                || $node->tagName == 'file')) {
-                    if (0 === count(glob($node->nodeValue))) {
-                        throw new RuntimeException('Unable to locate file specified in testsuites: ' . $node->nodeValue);
-                    }
-
-                    $node->nodeValue = static::makeAbsolutePath($node->nodeValue, dirname($conf));
-                }
-            }
-        }
-
-        $xpath = new \DOMXPath($dom);
-
-        /**
-         * Set any remaining file & directory references to realpaths
-         */
-        $directories = $xpath->query('//directory');
-        foreach ($directories as $directory) {
-            $directory->nodeValue = static::makeAbsolutePath($directory->nodeValue, dirname($conf));
-        }
-        $files = $xpath->query('//file');
-        foreach ($files as $file) {
-            $file->nodeValue = static::makeAbsolutePath($file->nodeValue, dirname($conf));
-        }
-
-        if (!empty($cases)) {
-
-            // TODO: Handle >1 test suites
-            $suite1 = $xpath->query('/phpunit/testsuites/testsuite')->item(0);
-            if (is_a($suite1, 'DOMElement')) {
-                foreach ($suite1->childNodes as $child) {
-                    // phpunit.xml may omit bootstrap location but grab it automatically - include explicitly
-                    if ($child instanceof \DOMElement && $child->tagName == 'directory' && $hasBootstrap === false) {
-                        $bootstrapDir = static::makeAbsolutePath($child->nodeValue, dirname($conf));
-                        if (file_exists($bootstrapDir . '/bootstrap.php')) {
-                            $root->setAttribute('bootstrap', $bootstrapDir . '/bootstrap.php');
-                        }
-                    }
-                    // we only want file references in specific order + excludes (for now, we retain these)
-                    if ($child instanceof \DOMElement && $child->tagName !== 'exclude') {
-                        $suite1->removeChild($child);
-                    }
-                }
-
-                /**
-                 * Add test files explicitly in order given
-                 */
-                $files = [];
-                foreach ($cases as $case) {
-                    $files[] = $case['file'];
-                    $file = $dom->createElement('file', $case['file']);
-                    $suite1->appendChild($file);
-                }
-                /**
-                 * JUnit logging excludes some immeasurable tests so we'll add those back.
-                 */
-                if ($addMissingTests) {
-                    $finder = new Finder;
-                    $finder->name('*Test.php');
-                    // TODO: Make sure this only ever includes tests!
-                    foreach ($finder->in($container->getBaseDirectory())->exclude('vendor') as $file) {
-                        if (!in_array($file->getRealpath(), $files)) {
-                            $file = $dom->createElement('file', $file->getRealpath());
-                            $suite1->appendChild($file);
-                        }
-                    }
-                }
-            }
-        } else {
-            // TODO: Handle >1 test suites
-            $suite1 = $xpath->query('/phpunit/testsuites/testsuite')->item(0);
-            if (is_a($suite1, 'DOMElement')) {
-                foreach ($suite1->childNodes as $child) {
-                    // phpunit.xml may omit bootstrap location but grab it if we can
-                    if ($child instanceof \DOMElement && $child->tagName == 'directory' && $hasBootstrap === false) {
-                        $bootstrapDir = static::makeAbsolutePath($child->nodeValue, dirname($conf));
-                        if (file_exists($bootstrapDir . '/bootstrap.php')) {
-                            $container->setBootstrap($bootstrapDir . '/bootstrap.php');
-                            $hasBootstrap = true;
-                        }
-                    }
-                }
-            }
-        }
-
-        /**
-         * Include any listeners
-         */
-        /*$listeners = $dom->createElement('listeners');
-        $root->appendChild($listeners);
-        $listener = $dom->createElement('listener');
-        $listeners->appendChild($listener);
-        $listener->setAttribute('class', '\\MyBuilder\\PhpunitAccelerator\\TestListener');
-        $arguments = $dom->createElement('arguments');
-        $listener->appendChild($arguments);
-        $boolean = $dom->createElement('boolean');
-        $arguments->appendChild($boolean);
-        $boolean->nodeValue = 'true';*/
-
-        
-        $saveFile = $container->getCacheDirectory() . '/phpunit.humbug.xml';
-        $dom->save($saveFile);
-        return $saveFile;
-    }
-
-
-    private static function makeAbsolutePath($name, $workingDir)
-    {
-        // @see https://github.com/symfony/Config/blob/master/FileLocator.php#L83
-        if ('/' === $name[0] 
-            || '\\' === $name[0]
-            || (strlen($name) > 3 && ctype_alpha($name[0]) && $name[1] == ':' && ($name[2] == '\\' || $name[2] == '/'))
-        ) {
-            if (!file_exists($name)) {
-                throw new InvalidArgumentException("$name does not exist");
-            }
-
-            return realpath($name);
-        }
-
-        $relativePath = $workingDir.DIRECTORY_SEPARATOR.$name;
-        if (file_exists($relativePath)) {
-            return realpath($relativePath);
-        }
-
-        throw new InvalidArgumentException("Could not find file $name working from $workingDir");
-    }
 }

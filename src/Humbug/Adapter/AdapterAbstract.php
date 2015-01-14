@@ -36,7 +36,12 @@ abstract class AdapterAbstract
      * @param   array             $testCases
      * @return  array
      */
-    abstract public function runTests(Container $container, $useStdout = false,
-    $firstRun = false, $mutantFile = null, array $testCases = []);
+    abstract public function getProcess(
+        Container $container,
+        $firstRun = false,
+        $interceptFile = null,
+        $mutantFile = null,
+        array $testCases = []
+    );
     
 }
