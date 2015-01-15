@@ -27,7 +27,7 @@ should at least cover your main source code.
 
 In the base directory of your project create a humbug.json file:
 
-```
+```js
 {
     "timeout": 10,
     "source": {
@@ -48,7 +48,7 @@ If source files exist in the base directory, or files in the source directories
 must be excluded, you can add exclude patterns (here's one for files in base
 directory where composer vendor and Tests directories are excluded):
 
-```
+```js
 {
     "timeout": 10,
     "source": {
@@ -69,7 +69,7 @@ directory where composer vendor and Tests directories are excluded):
 If, from your project's base directory, you must run tests from another directory
 then you can signal this also:
 
-```
+```js
 {
     "chdir": "tests",
     "timeout": 10,
