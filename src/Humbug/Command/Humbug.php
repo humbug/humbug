@@ -98,7 +98,7 @@ class Humbug extends Command
                 $process->clearOutput();
             } elseif (preg_match("%[\n\r]+not ok (\\d+).*$%", $process->getOutput(), $matches)) {
                 $hasFailure = true;
-                $process->clearOutput();
+                $process->stop();
             }
         }
         $progress->finish();

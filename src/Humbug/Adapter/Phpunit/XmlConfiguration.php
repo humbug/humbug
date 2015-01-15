@@ -101,7 +101,7 @@ class XmlConfiguration
                 || $node->tagName == 'file')) {
                     $fullPath = $dir . '/' . $node->nodeValue;
                     if (0 === count(glob($fullPath))) {
-                        throw new RuntimeException('Unable to locate file specified in testsuites: ' . $node->nodeValue);
+                        throw new RuntimeException('Unable to locate file specified in testsuites: ' . $fullPath);
                     }
 
                     $node->nodeValue = static::makeAbsolutePath($node->nodeValue, dirname($conf));
