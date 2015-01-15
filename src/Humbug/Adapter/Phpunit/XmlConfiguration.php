@@ -99,6 +99,7 @@ class XmlConfiguration
                 && ($node->tagName == 'directory'
                 || $node->tagName == 'exclude'
                 || $node->tagName == 'file')) {
+                    $fullPath = $dir . '/' . $node->nodeValue;
                     if (0 === count(glob($node->nodeValue))) {
                         throw new RuntimeException('Unable to locate file specified in testsuites: ' . $node->nodeValue);
                     }
