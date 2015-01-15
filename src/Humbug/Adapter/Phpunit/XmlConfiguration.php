@@ -100,7 +100,7 @@ class XmlConfiguration
                 || $node->tagName == 'exclude'
                 || $node->tagName == 'file')) {
                     $fullPath = $dir . '/' . $node->nodeValue;
-                    if (0 === count(glob($node->nodeValue))) {
+                    if (0 === count(glob($fullPath))) {
                         throw new RuntimeException('Unable to locate file specified in testsuites: ' . $node->nodeValue);
                     }
 
