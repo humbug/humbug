@@ -84,14 +84,7 @@ class XmlConfiguration
         /**
          * On first runs collect a test log and also generate code coverage
          */
-        $oldLogs = self::$xpath->query('//logging');
-        foreach ($oldLogs as $oldLog) {
-            self::$root->removeElement($oldLog);
-        }
-        $oldFilters = self::$xpath->query('/phpunit/filter');
-        foreach ($oldFilters as $filter) {
-            self::$root->removeChild($filter);
-        }
+        static::handleElementReset();
         if ($log === true) {
             static::handleLogging();
         }
@@ -167,6 +160,37 @@ class XmlConfiguration
         }
         self::$root->setAttribute('bootstrap', sys_get_temp_dir() . '/humbug.phpunit.bootstrap.php');
         self::$root->setAttribute('cacheTokens', 'false');
+    }
+
+    private static function handleElementReset()
+    {
+        $oldLogs = self::$xpath->query('//logging');
+        foreach ($oldLogs as $oldLog) {
+            self::$root->removeElement($oldLog);
+        }
+        $oldFilters = self::$xpath->query('/phpunit/filter');
+        foreach ($oldFilters as $filter) {
+            self::$root->removeChild($filter);
+        }
+        $oldListeners = self::$xpath->query('//listeners');
+        foreach ($oldListeners as $listeners) {
+            self::$root->removeChild($listeners);
+        }
+
+        /**
+         * Add PHPUnit-Accelerator Listener
+         */
+        $listeners = self::$dom->createElement('listeners');
+        self::$root->appendChild($listeners);
+        $listener = self::$dom->createElement('listener');
+        $listeners->appendChild($listener);
+        $listener->setAttribute('class', '\MyBuilder\PhpunitAccelerator\TestListener');
+        $arguments = self::$dom->createElement('arguments');
+        $listener->appendChild($arguments);
+        $bool = self::$dom->createElement('boolean');
+        $arguments->appendChild($bool);
+        $bool->nodeValue = 'true';
+
     }
 
     private static function handleLogging()
