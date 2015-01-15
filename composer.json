@@ -15,14 +15,15 @@
     "support": {
         "issues": "https://github.com/padraic/humbug/issues"
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "require": {
         "php": ">=5.4.0",
         "phpunit/phpunit": "~4.4",
         "symfony/console": "~2.6",
         "symfony/finder": "~2.6",
         "symfony/process": "~2.6",
-        "sebastian/diff": "~1.1"
+        "sebastian/diff": "~1.1",
+        "padraic/phpunit-accelerator": "~1.0"
     },
     "require-dev": {
         "mockery/mockery": "~0.9",
