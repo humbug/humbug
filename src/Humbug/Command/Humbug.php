@@ -98,9 +98,10 @@ class Humbug extends Command
                 $process->clearOutput();
             } elseif (preg_match("%[\n\r]+not ok (\\d+).*$%", $process->getOutput(), $matches)) {
                 $hasFailure = true;
-                $process->stop();
+                break;
             }
         }
+        $process->stop();
         $progress->finish();
         $output->write(PHP_EOL.PHP_EOL);
         $exitCode = $process->getExitCode();
@@ -121,7 +122,7 @@ class Humbug extends Command
          * Check if the initial test run ended with a fatal error
          */
         if ($exitCode !== 0 || $hasFailure) {
-            $renderer->renderInitialRunFail($result);
+            $renderer->renderInitialRunFail($result, $exitCode, $hasFailure);
             $this->logText($input, $renderer);
             exit(1);
         }

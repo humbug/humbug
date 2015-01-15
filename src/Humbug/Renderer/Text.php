@@ -67,10 +67,16 @@ class Text
      *
      * @param array $result
      */
-    public function renderInitialRunFail(array &$result)
+    public function renderInitialRunFail(array &$result, $exitCode, $hasFailure)
     {
         $this->write('<warning>Tests must be in a fully passing state before Humbug is run.</warning>');
         $this->write('<warning>Incomplete, skipped or risky tests are allowed.</warning>');
+        if ($exitCode !== 0) {
+            $this->write('<warning>The testing framework reported an exit code of ' . $exitCode . '.</warning>');
+        }
+        if ($hasFailure) {
+            $this->write('<warning>The testing framework ran into a failure or error. Refer to out below.</warning>');
+        }
         if (!empty($result['stdout'])) {
             $this->write('<warning>Stdout: \n' . $this->indent($result['stdout']) . '\n</warning>');
         }
