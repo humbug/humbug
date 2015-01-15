@@ -71,7 +71,7 @@ class XmlConfiguration
          */
         $oldValue = libxml_disable_entity_loader(true);
         self::$dom = new \DOMDocument;
-        self::$dom->preserveWhitespace = false;
+        self::$dom->preserveWhiteSpace = false;
         self::$dom->formatOutput = true;
         self::$dom->loadXML(file_get_contents($conf));
         self::$root = self::$dom->documentElement;
@@ -87,6 +87,10 @@ class XmlConfiguration
         $oldLogs = self::$xpath->query('//logging');
         foreach ($oldLogs as $oldLog) {
             self::$root->removeElement($oldLog);
+        }
+        $oldFilters = self::$xpath->query('/phpunit/filter');
+        foreach ($oldFilters as $filter) {
+            self::$root->removeChild($filter);
         }
         if ($log === true) {
             static::handleLogging();
@@ -192,10 +196,6 @@ class XmlConfiguration
          * While we're here, reset code coverage filter to meet the known source
          * code constraints.
          */
-        $filters = self::$xpath->query('/phpunit/filter');
-        foreach ($filters as $filter) {
-            self::$root->removeChild($filter);
-        }
         $filter = self::$dom->createElement('filter');
         $whitelist = self::$dom->createElement('whitelist');
         self::$root->appendChild($filter);
