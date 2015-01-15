@@ -159,7 +159,7 @@ class Humbug extends Command
         /**
          * Message re Mutation Testing starting
          */
-        $renderer->renderMutationTestingStart();
+        $renderer->renderMutationTestingStart(count($mutables));
         $output->write(PHP_EOL);
         Performance::start();
         $this->logText($input, $renderer);

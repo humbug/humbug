@@ -110,9 +110,9 @@ class Text
      *
      * @param array $result
      */
-    public function renderMutationTestingStart()
+    public function renderMutationTestingStart($count)
     {
-        $this->write('Mutation Testing is commencing...');
+        $this->write('Mutation Testing is commencing on ' . $count . ' files...');
         $this->write(
             '(<options=bold>.</options=bold>: killed, '
             . '<fg=red;options=bold>M</fg=red;options=bold>: escaped, '
