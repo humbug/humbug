@@ -43,6 +43,7 @@ class Mutable
         '\Humbug\Mutator\Boolean\LogicalOr',
         '\Humbug\Mutator\Boolean\LogicalLowerAnd',
         '\Humbug\Mutator\Boolean\LogicalLowerOr',
+
         // Conditional Boundaries
         '\Humbug\Mutator\ConditionalBoundary\GreaterThan',
         '\Humbug\Mutator\ConditionalBoundary\GreaterThanOrEqualTo',
@@ -207,5 +208,9 @@ class Mutable
     {
         return $this->mutations;
     }
-    
+
+    public function getMutables()
+    {
+
+    }
 }
