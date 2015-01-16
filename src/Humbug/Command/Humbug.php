@@ -339,6 +339,18 @@ class Humbug extends Command
                 $out[] = $escaped->getDiff();
                 $out[] = PHP_EOL;
             }
+
+            if (count($mutantTimeouts) > 0) {
+                $out = array_merge($out, [PHP_EOL, '------', 'Timeouts', '------']);
+                foreach ($mutantTimeouts as $index => $timeouted) {
+                    $mutation = $timeouted->getMutation();
+                    $out[] = $index+1 . ') ' . $mutation['mutator'];
+                    $out[] = 'Diff on ' . $mutation['class'] . '::' . $mutation['method'] . '() in ' . $mutation['file'] . ':';
+                    $out[] = $timeouted->getDiff();
+                    $out[] = PHP_EOL;
+                }
+            }
+
             if (count($mutantErrors) > 0) {
                 $out = array_merge($out, [PHP_EOL, '------', 'Errors', '------']);
                 foreach ($mutantErrors as $index => $errored) {
