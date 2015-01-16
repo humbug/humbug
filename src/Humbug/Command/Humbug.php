@@ -451,6 +451,28 @@ class Humbug extends Command
         );
     }
 
+    protected function prepareFinder($directories, $excludes)
+    {
+        $finder = new Finder;
+        $finder->files()->name('*.php');
+
+        if ($directories) {
+            foreach ($directories as $directory) {
+                $finder->in($directory);
+            }
+        } else {
+            $finder->in('.');
+        }
+
+        if (isset($excludes)) {
+            foreach ($excludes as $exclude) {
+                $finder->exclude($exclude);
+            }
+        }
+
+        return $finder;
+    }
+
     protected function doConfiguration(OutputInterface $output)
     {
         if (!file_exists('humbug.json')) {
@@ -480,20 +502,10 @@ class Humbug extends Command
                 'You must set at least one source directory or exclude in the configuration file'
             );
         }
-        $this->finder = new Finder;
-        $this->finder->files()->name('*.php');
-        if (isset($config->source->directories)) {
-            foreach ($config->source->directories as $directory) {
-                $this->finder->in($directory);
-            }
-        } else {
-            $this->finder->in('.');
-        }
-        if (isset($config->source->excludes)) {
-            foreach ($config->source->excludes as $exclude) {
-                $this->finder->exclude($exclude);
-            }
-        }
+        $this->finder = $this->prepareFinder(
+            isset($config->source->directories)? $config->source->directories : null,
+            isset($config->source->excludes)? $config->source->excludes : null
+        );
         $this->container->setSourceList($config->source);
 
         /**
