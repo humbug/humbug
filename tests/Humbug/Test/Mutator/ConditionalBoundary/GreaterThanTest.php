@@ -19,12 +19,9 @@ class GreaterThanTest extends \PHPUnit_Framework_TestCase
     public function testReturnsTokenEquivalentToGreaterThanOrEqualTo()
     {
         $mutation = new Mutator\ConditionalBoundary\GreaterThan;
-        $this->assertEquals(
-            [
-                10 => [T_IS_GREATER_OR_EQUAL, '>=']
-            ],
-            $mutation->getMutation([], 10)
-        );
+        $tokens = [];
+        $mutation->getMutation($tokens, 10);
+        $this->assertEquals([10 => [T_IS_GREATER_OR_EQUAL, '>=']], $tokens);
     }
 
     public function testMutatesGreaterThanToGreaterThanOrEqualTo()

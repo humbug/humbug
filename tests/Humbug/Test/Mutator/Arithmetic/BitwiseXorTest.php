@@ -19,12 +19,9 @@ class BitwiseXorTest extends \PHPUnit_Framework_TestCase
     public function testReturnsTokenEquivalentToBitwiseAndOperator()
     {
         $mutation = new Mutator\Arithmetic\BitwiseXor;
-        $this->assertEquals(
-            [
-                10 => '&'
-            ],
-            $mutation->getMutation([], 10)
-        );
+        $tokens = [];
+        $mutation->getMutation($tokens, 10);
+        $this->assertEquals([10 => '&'], $tokens);
     }
 
     public function testMutatesBitwiseXorToBitwiseAnd()

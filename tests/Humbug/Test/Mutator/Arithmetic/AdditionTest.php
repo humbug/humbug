@@ -16,18 +16,15 @@ use Humbug\Mutator;
 class AdditionTest extends \PHPUnit_Framework_TestCase
 {
 
-    public function testReturnsTokenEquivalentToSubtractionOperator()
+    public function testReturnsTokenEquivalentToSubstractionOperator()
     {
         $mutation = new Mutator\Arithmetic\Addition;
-        $this->assertEquals(
-            [
-                10 => '-'
-            ],
-            $mutation->getMutation([], 10)
-        );
+        $tokens = [];
+        $mutation->getMutation($tokens, 10);
+        $this->assertEquals([10 => '-'], $tokens);
     }
 
-    public function testMutatesAdditionOperatorToSubtractionOperator()
+    public function testMutatesAdditionOperatorToSubstractionOperator()
     {
         $tokens = [10 => '+'];
 

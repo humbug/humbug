@@ -12,7 +12,7 @@ namespace Humbug\Mutator\Arithmetic;
 
 use Humbug\Mutator\MutatorAbstract;
 
-class Subtraction extends MutatorAbstract
+class Substraction extends MutatorAbstract
 {
 
     /**

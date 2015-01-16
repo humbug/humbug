@@ -19,12 +19,9 @@ class ModulusTest extends \PHPUnit_Framework_TestCase
     public function testReturnsTokenEquivalentToMultiplicationOperator()
     {
         $mutation = new Mutator\Arithmetic\Modulus;
-        $this->assertEquals(
-            [
-                10 => '*'
-            ],
-            $mutation->getMutation([], 10)
-        );
+        $tokens = [];
+        $mutation->getMutation($tokens, 10);
+        $this->assertEquals([10 => '*'], $tokens);
     }
 
     public function testMutatesModulusToMultiplication()

@@ -19,12 +19,9 @@ class NotTest extends \PHPUnit_Framework_TestCase
     public function testReturnsTokenEquivalentToWhitespace()
     {
         $mutation = new Mutator\Arithmetic\Not;
-        $this->assertEquals(
-            [
-                10 => [T_WHITESPACE, '']
-            ],
-            $mutation->getMutation([], 10)
-        );
+        $tokens = [];
+        $mutation->getMutation($tokens, 10);
+        $this->assertEquals([10 => [T_WHITESPACE, '']], $tokens);
     }
 
     public function testMutatesNotToWhitespace()

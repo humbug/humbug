@@ -19,12 +19,9 @@ class PowEqualTest extends \PHPUnit_Framework_TestCase
     public function testReturnsTokenEquivalentToDivEqualOperator()
     {
         $mutation = new Mutator\Arithmetic\PowEqual;
-        $this->assertEquals(
-            [
-                10 => [T_DIV_EQUAL, '/=']
-            ],
-            $mutation->getMutation([], 10)
-        );
+        $tokens = [];
+        $mutation->getMutation($tokens, 10);
+        $this->assertEquals([10 => [T_DIV_EQUAL, '/=']], $tokens);
     }
 
     public function testMutatesMulEqualToDivEqual()

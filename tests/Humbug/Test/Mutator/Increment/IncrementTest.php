@@ -19,18 +19,14 @@ class IncrementTest extends \PHPUnit_Framework_TestCase
     public function testReturnsTokenEquivalentToDecrementOperator()
     {
         $mutation = new Mutator\Increment\Increment;
-        $this->assertEquals(
-            [
-                10 => [T_DEC, '--']
-            ],
-            $mutation->getMutation([], 10)
-        );
+        $tokens = [];
+        $mutation->getMutation($tokens, 10);
+        $this->assertEquals([10 => [T_DEC, '--']], $tokens);
     }
 
     public function testMutatesIncrementToDecrement()
     {
         $tokens = [10 => [T_INC, '++']];
-
         $this->assertTrue(Mutator\Increment\Increment::mutates($tokens, 10));
 
         $tokens = [11 => [T_DEC, '--']];

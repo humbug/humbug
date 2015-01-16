@@ -39,8 +39,8 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
     {
         $container = m::mock('\Humbug\Container');
         $container->shouldReceive([
-            'getSourceDirectory'    => __DIR__ . '/_files/phpunit',
-            'getTestDirectory'      => __DIR__ . '/_files/phpunit',
+            'getSourceList'    => __DIR__ . '/_files/phpunit',
+            'getTestRunDirectory'      => __DIR__ . '/_files/phpunit',
             'getBaseDirectory'      => __DIR__ . '/_files/phpunit',
             'getTimeout'            => 1200,
             'getCacheDirectory'     => sys_get_temp_dir(),
@@ -50,19 +50,17 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
         ]);
 
         $adapter = new Phpunit;
-        $process = $adapter->runTests(
+        $process = $adapter->getProcess(
             $container,
-            true, 
+            true,
             true
         );
         $process->run();
 
         $result = $process->getOutput();
 
-        $this->assertStringStartsWith(
-            \PHPUnit_Runner_Version::getVersionString(),
-            $result
-        );
+        $this->assertStringStartsWith('TAP version', $result);
+        $this->assertTrue($adapter->ok($result));
     }
 
     public function testAdapterRunsPhpunitCommandWithAlltestsFileTarget()
@@ -70,8 +68,8 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
 
         $container = m::mock('\Humbug\Container');
         $container->shouldReceive([
-            'getSourceDirectory'    => __DIR__ . '/_files/phpunit2',
-            'getTestDirectory'      => __DIR__ . '/_files/phpunit2',
+            'getSourceList'    => __DIR__ . '/_files/phpunit2',
+            'getTestRunDirectory'      => __DIR__ . '/_files/phpunit2',
             'getBaseDirectory'      => __DIR__ . '/_files/phpunit2',
             'getTimeout'            => 1200,
             'getCacheDirectory'     => sys_get_temp_dir(),
@@ -81,27 +79,25 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
         ]);
 
         $adapter = new Phpunit;
-        $process = $adapter->runTests(
+        $process = $adapter->getProcess(
             $container,
-            true, 
+            true,
             true
         );
         $process->run();
 
         $result = $process->getOutput();
 
-        $this->assertStringStartsWith(
-            \PHPUnit_Runner_Version::getVersionString(),
-            $result
-        );
+        $this->assertStringStartsWith('TAP version', $result);
+        $this->assertTrue($adapter->ok($result));
     }
 
     public function testAdapterDetectsTestsPassing()
     {
         $container = m::mock('\Humbug\Container');
         $container->shouldReceive([
-            'getSourceDirectory'    => $this->root,
-            'getTestDirectory'      => $this->root,
+            'getSourceList'    => $this->root,
+            'getTestRunDirectory'      => $this->root,
             'getBaseDirectory'      => $this->root,
             'getTimeout'            => 1200,
             'getCacheDirectory'     => sys_get_temp_dir(),
@@ -109,18 +105,18 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
             'getBootstrap'          => '',
             'getAdapterConstraints' => 'PassTest'
         ]);
-        
+
         $adapter = new Phpunit;
-        $process = $adapter->runTests(
+        $process = $adapter->getProcess(
             $container,
-            true, 
+            true,
             true
         );
         $process->run();
 
         $result = $process->getOutput();
 
-        $this->assertTrue($adapter->processOutput($result));
+        $this->assertTrue($adapter->ok($result));
     }
 
     public function testAdapterDetectsTestsFailingFromTestFail()
@@ -128,8 +124,8 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
 
         $container = m::mock('\Humbug\Container');
         $container->shouldReceive([
-            'getSourceDirectory'    => $this->root,
-            'getTestDirectory'      => $this->root,
+            'getSourceList'    => $this->root,
+            'getTestRunDirectory'      => $this->root,
             'getBaseDirectory'      => $this->root,
             'getTimeout'            => 1200,
             'getCacheDirectory'     => sys_get_temp_dir(),
@@ -139,24 +135,24 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
         ]);
 
         $adapter = new Phpunit;
-        $process = $adapter->runTests(
+        $process = $adapter->getProcess(
             $container,
-            true, 
+            true,
             true
         );
         $process->run();
 
         $result = $process->getOutput();
 
-        $this->assertFalse($adapter->processOutput($result));
+        $this->assertFalse($adapter->ok($result));
     }
 
     public function testAdapterDetectsTestsFailingFromException()
     {
         $container = m::mock('\Humbug\Container');
         $container->shouldReceive([
-            'getSourceDirectory'    => $this->root,
-            'getTestDirectory'      => $this->root,
+            'getSourceList'    => $this->root,
+            'getTestRunDirectory'      => $this->root,
             'getBaseDirectory'      => $this->root,
             'getTimeout'            => 1200,
             'getCacheDirectory'     => sys_get_temp_dir(),
@@ -166,24 +162,24 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
         ]);
 
         $adapter = new Phpunit;
-        $process = $adapter->runTests(
+        $process = $adapter->getProcess(
             $container,
-            true, 
+            true,
             true
         );
         $process->run();
 
         $result = $process->getOutput();
 
-        $this->assertFalse($adapter->processOutput($result));
+        $this->assertFalse($adapter->ok($result));
     }
 
     public function testAdapterDetectsTestsFailingFromError()
     {
         $container = m::mock('\Humbug\Container');
         $container->shouldReceive([
-            'getSourceDirectory'    => $this->root,
-            'getTestDirectory'      => $this->root,
+            'getSourceList'    => $this->root,
+            'getTestRunDirectory'      => $this->root,
             'getBaseDirectory'      => $this->root,
             'getTimeout'            => 1200,
             'getCacheDirectory'     => sys_get_temp_dir(),
@@ -193,35 +189,33 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
         ]);
 
         $adapter = new Phpunit;
-        $process = $adapter->runTests(
+        $process = $adapter->getProcess(
             $container,
-            true, 
+            true,
             true
         );
         $process->run();
 
         $result = $process->getOutput();
 
-        $this->assertFalse($adapter->processOutput($result));
+        $this->assertFalse($adapter->ok($result));
     }
-    
+
     public function testAdapterOutputProcessingDetectsFailOverMultipleLinesWithNoDepOnFinalStatusReport()
     {
         $adapter = new Phpunit;
         $output = <<<OUTPUT
-PHPUnit 3.4.12 by Sebastian Bergmann.
+TAP version 13
+not ok 1 - Error: Humbug\Adapter\PhpunitTest::testAdapterRunsDefaultPhpunitCommand
+ok 78 - Humbug\Test\Mutator\ConditionalBoundary\LessThanOrEqualToTest::testReturnsTokenEquivalentToLessThanOrEqualTo
+ok 79 - Humbug\Test\Mutator\ConditionalBoundary\LessThanOrEqualToTest::testMutatesLessThanToLessThanOrEqualTo
+ok 80 - Humbug\Test\Mutator\ConditionalBoundary\LessThanTest::testReturnsTokenEquivalentToLessThanOrEqualTo
+ok 81 - Humbug\Test\Mutator\ConditionalBoundary\LessThanTest::testMutatesLessThanToLessThanOrEqualTo
+not ok 103 - Error: Humbug\Test\Utility\TestTimeAnalyserTest::testAnalysisOfJunitLogFormatShowsLeastTimeTestCaseFirst
+1..103
 
-............................................................ 60 / 300
-............................................................ 120 / 300
-............................................................ 180 / 300
-............................................................ 240 / 300
-...........................E................................ 300 / 300
-
-Time: 0 seconds, Memory: 11.00Mb
-
-OK (300 tests, 300 assertions)
 OUTPUT;
-        $this->assertFalse($adapter->processOutput($output));
+        $this->assertFalse($adapter->ok($output));
     }
 
 }

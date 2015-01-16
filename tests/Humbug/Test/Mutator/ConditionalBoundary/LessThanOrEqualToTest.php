@@ -19,12 +19,9 @@ class LessThanOrEqualToTest extends \PHPUnit_Framework_TestCase
     public function testReturnsTokenEquivalentToLessThanOrEqualTo()
     {
         $mutation = new Mutator\ConditionalBoundary\LessThanOrEqualTo;
-        $this->assertEquals(
-            [
-                10 => '<'
-            ],
-            $mutation->getMutation([], 10)
-        );
+        $tokens = [];
+        $mutation->getMutation($tokens, 10);
+        $this->assertEquals([10 => '<'], $tokens);
     }
 
     public function testMutatesLessThanToLessThanOrEqualTo()

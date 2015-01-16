@@ -19,12 +19,9 @@ class DecrementTest extends \PHPUnit_Framework_TestCase
     public function testReturnsTokenEquivalentToIncrementOperator()
     {
         $mutation = new Mutator\Increment\Decrement;
-        $this->assertEquals(
-            [
-                10 => [T_INC, '++']
-            ],
-            $mutation->getMutation([], 10)
-        );
+        $tokens = [];
+        $mutation->getMutation($tokens, 10);
+        $this->assertEquals([10 => [T_INC, '++']], $tokens);
     }
 
     public function testMutatesDecrementToIncrement()

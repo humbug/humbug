@@ -19,12 +19,9 @@ class LogicalOrTest extends \PHPUnit_Framework_TestCase
     public function testReturnsTokenEquivalentToBooleanAnd()
     {
         $mutation = new Mutator\Boolean\LogicalOr;
-        $this->assertEquals(
-            [
-                10 => [T_BOOLEAN_AND, '&&']
-            ],
-            $mutation->getMutation([], 10)
-        );
+        $tokens = [];
+        $mutation->getMutation($tokens, 10);
+        $this->assertEquals([10 => [T_BOOLEAN_AND, '&&']], $tokens);
     }
 
     public function testMutatesLogicalOrToLogicalAnd()
