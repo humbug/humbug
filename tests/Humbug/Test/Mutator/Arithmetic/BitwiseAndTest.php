@@ -19,12 +19,9 @@ class BitwiseAndTest extends \PHPUnit_Framework_TestCase
     public function testReturnsTokenEquivalentToBitwiseOrOperator()
     {
         $mutation = new Mutator\Arithmetic\BitwiseAnd;
-        $this->assertEquals(
-            [
-                10 => '|'
-            ],
-            $mutation->getMutation([], 10)
-        );
+        $tokens = [];
+        $mutation->getMutation($tokens, 10);
+        $this->assertEquals([10 => '|'], $tokens);
     }
 
     public function testMutatesBitwiseAndToBitwiseOr()

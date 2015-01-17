@@ -19,12 +19,9 @@ class ShiftRightTest extends \PHPUnit_Framework_TestCase
     public function testReturnsTokenEquivalentToShiftLeftOperator()
     {
         $mutation = new Mutator\Arithmetic\ShiftRight;
-        $this->assertEquals(
-            [
-                10 => [T_SL, '<<']
-            ],
-            $mutation->getMutation([], 10)
-        );
+        $tokens = [];
+        $mutation->getMutation($tokens, 10);
+        $this->assertEquals([10 => [T_SL, '<<']], $tokens);
     }
 
     public function testMutatesShiftRightToShiftLeft()

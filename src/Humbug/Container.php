@@ -242,12 +242,12 @@ class Container
      * Set a specific Generator of mutations (stuck with a subclass).
      * TODO Add interface
      *
-     * @param \Humbug\Generator
+     * @param \Humbug\Generator $generator
+     * @return $this
      */
     public function setGenerator(Generator $generator)
     {
         $this->generator = $generator;
-        $this->generator->setSourceDirectory($this->get('srcdir'));
         return $this;
     }
 

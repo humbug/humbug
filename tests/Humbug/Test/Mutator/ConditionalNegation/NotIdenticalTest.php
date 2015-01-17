@@ -19,12 +19,9 @@ class NotIdenticalTest extends \PHPUnit_Framework_TestCase
     public function testReturnsTokenEquivalentToIdentical()
     {
         $mutation = new Mutator\ConditionalNegation\NotIdentical;
-        $this->assertEquals(
-            [
-                10 => [T_IS_IDENTICAL, '===']
-            ],
-            $mutation->getMutation([], 10)
-        );
+        $tokens = [];
+        $mutation->getMutation($tokens, 10);
+        $this->assertEquals([10 => [T_IS_IDENTICAL, '===']], $tokens);
     }
 
     public function testMutatesNotIdenticalToIdentical()

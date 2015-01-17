@@ -19,12 +19,9 @@ class EqualTest extends \PHPUnit_Framework_TestCase
     public function testReturnsTokenEquivalentToNotEqual()
     {
         $mutation = new Mutator\ConditionalNegation\Equal;
-        $this->assertEquals(
-            [
-                10 => [T_IS_NOT_EQUAL, '!=']
-            ],
-            $mutation->getMutation([], 10)
-        );
+        $tokens = [];
+        $mutation->getMutation($tokens, 10);
+        $this->assertEquals([10 => [T_IS_NOT_EQUAL, '!=']], $tokens);
     }
 
     public function testMutatesEqualToNotEqual()

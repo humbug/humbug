@@ -50,7 +50,7 @@ class Mutable
         '\Humbug\Mutator\ConditionalBoundary\LessThanOrEqualTo',
         // Binary Arithmetic
         '\Humbug\Mutator\Arithmetic\Addition',
-        '\Humbug\Mutator\Arithmetic\Subtraction',
+        '\Humbug\Mutator\Arithmetic\Substraction',
         '\Humbug\Mutator\Arithmetic\Multiplication',
         '\Humbug\Mutator\Arithmetic\Division',
         '\Humbug\Mutator\Arithmetic\Modulus',

@@ -166,7 +166,7 @@ class XmlConfiguration
     {
         $oldLogs = self::$xpath->query('//logging');
         foreach ($oldLogs as $oldLog) {
-            self::$root->removeElement($oldLog);
+            self::$root->removeChild($oldLog);
         }
         $oldFilters = self::$xpath->query('/phpunit/filter');
         foreach ($oldFilters as $filter) {

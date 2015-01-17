@@ -25,9 +25,9 @@ class TestTimeAnalyserTest extends \PHPUnit_Framework_TestCase
     {
         $file = $this->root . '/testtimes.xml';
         $analyser = new TestTimeAnalyser($file);
-        $analysis = $analyser->process();
+        $analysis = $analyser->process()->getTestCases();
         $first = array_shift($analysis);
         $this->assertEquals('/home/sb/ArrayTest2.php', $first['file']);
     }
-    
+
 }

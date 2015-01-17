@@ -19,12 +19,9 @@ class PlusEqualTest extends \PHPUnit_Framework_TestCase
     public function testReturnsTokenEquivalentToMinusEqualOperator()
     {
         $mutation = new Mutator\Arithmetic\PlusEqual;
-        $this->assertEquals(
-            [
-                10 => [T_MINUS_EQUAL, '-=']
-            ],
-            $mutation->getMutation([], 10)
-        );
+        $tokens = [];
+        $mutation->getMutation($tokens, 10);
+        $this->assertEquals([10 => [T_MINUS_EQUAL, '-=']], $tokens);
     }
 
     public function testMutatesPlusEqualToMinusEqual()

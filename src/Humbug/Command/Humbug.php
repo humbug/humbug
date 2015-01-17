@@ -12,6 +12,7 @@ namespace Humbug\Command;
 
 use Humbug\Container;
 use Humbug\Adapter\Phpunit;
+use Humbug\Mutant;
 use Humbug\Utility\Performance;
 use Humbug\Utility\ParallelGroup;
 use Humbug\Utility\Tokenizer;
@@ -140,7 +141,6 @@ class Humbug extends Command
          *
          * TODO: Move to adapter eventually
          */
-        $orderedTestCases = null;
         $analyser = $container->getAdapter()->getLogAnalyser($container);
         $analyser->process();
         $coverage = $container->getAdapter()->getCoverageData($container, $analyser);
@@ -210,41 +210,19 @@ class Humbug extends Command
             }
 
             foreach ($batches as $batch) {
-                $processes = [];
                 $mutants = [];
-                $diffs = [];
+                $processes = [];
                 // Being utterly paranoid, track index using $tracker explicitly
                 // to ensure process->mutation indices are linked for reporting.
                 foreach ($batch as $tracker => $mutation) {
 
                     try {
-                        $orderedTestCases = $coverage->getOrderedTestCases(
-                            $mutation['file'],
-                            $mutation['line']
-                        );
-
                         /**
                          * Unleash the Mutant!
                          */
-                        $mutants[$tracker] = $this->container->getCacheDirectory() . '/humbug.mutant.' . uniqid() . '.php';
-                        $mutatorClass = $mutation['mutator'];
+                        $mutants[$tracker] = new Mutant($mutation, $container, $coverage);
 
-                        $originalFileContent = file_get_contents($mutation['file']);
-                        $tokens = Tokenizer::getTokens($originalFileContent);
-                        $mutatedFileContent = $mutatorClass::mutate(
-                            $tokens,
-                            $mutation['index']
-                        );
-                        file_put_contents($mutants[$tracker], $mutatedFileContent);
-                        $diffs[$tracker] = Diff::difference($originalFileContent, $mutatedFileContent);
-
-                        $processes[$tracker] = $container->getAdapter()->getProcess(
-                            $container,
-                            false,
-                            $mutation['file'], // file to intercept
-                            $mutants[$tracker], // mutated file to substitute
-                            $orderedTestCases
-                        );
+                        $processes[$tracker] = $mutants[$tracker]->getProcess();
 
                     } catch (NoCoveringTestsException $e) {
                         /**
@@ -269,7 +247,8 @@ class Humbug extends Command
                 $group = new ParallelGroup($processes);
                 $group->run();
 
-                foreach ($processes as $tracker => $process) {
+                foreach ($mutants as $tracker => $mutant) {
+                    $process = $mutant->getProcess();
 
                     /**
                      * Define the result for each process
@@ -296,34 +275,19 @@ class Humbug extends Command
                     $renderer->renderProgressMark($result, count($mutables), $i);
                     $this->logText($input, $renderer);
 
-                    /**
-                     * Prep for diff generation
-                     */
-                    $toLog = [
-                        'mutation'  => $batch[$tracker],
-                        'diff'      => $diffs[$tracker],
-                    ];
-
                     if ($result['timeout'] === true) {
                         $countMutantTimeouts++;
-                        //$mutantTimeouts[] = $toLog;
+                        $mutantTimeouts[] = $mutant;
                     } elseif (!$process->isSuccessful()) {
                         $countMutantErrors++;
-                        $toLog['stderr'] = $process->getErrorOutput();
-                        $mutantErrors[] = $toLog;
+                        $mutantErrors[] = $mutant;
                     } elseif ($result['passed'] === false) {
                         $countMutantKills++;
-                        //$mutantKills[] = $toLog;
+                        //$mutantKills[] = $mutant;
                     } else {
                         $countMutantEscapes++;
-                        $mutantEscapes[] = $toLog;
+                        $mutantEscapes[] = $mutant;
                     }
-                    unset($process);
-                }
-                $processes = [];
-
-                foreach ($mutants as $mutant) {
-                    if (file_exists($mutant)) unlink($mutant);
                 }
             }
 
@@ -369,24 +333,38 @@ class Humbug extends Command
             $this->logText($input, $renderer);
             $out = [PHP_EOL, '-------', 'Escapes', '-------'];
             foreach ($mutantEscapes as $index => $escaped) {
-                $out[] = $index+1 . ') ' . $escaped['mutation']['mutator'];
-                $out[] = 'Diff on ' . $escaped['mutation']['class'] . '::' . $escaped['mutation']['method'] . '() in ' . $escaped['mutation']['file'] . ':';
-                $out[] = $escaped['diff'];
+                $mutation = $escaped->getMutation();
+                $out[] = $index+1 . ') ' . $mutation['mutator'];
+                $out[] = 'Diff on ' . $mutation['class'] . '::' . $mutation['method'] . '() in ' . $mutation['file'] . ':';
+                $out[] = $escaped->getDiff();
                 $out[] = PHP_EOL;
             }
+
+            if (count($mutantTimeouts) > 0) {
+                $out = array_merge($out, [PHP_EOL, '------', 'Timeouts', '------']);
+                foreach ($mutantTimeouts as $index => $timeouted) {
+                    $mutation = $timeouted->getMutation();
+                    $out[] = $index+1 . ') ' . $mutation['mutator'];
+                    $out[] = 'Diff on ' . $mutation['class'] . '::' . $mutation['method'] . '() in ' . $mutation['file'] . ':';
+                    $out[] = $timeouted->getDiff();
+                    $out[] = PHP_EOL;
+                }
+            }
+
             if (count($mutantErrors) > 0) {
                 $out = array_merge($out, [PHP_EOL, '------', 'Errors', '------']);
-            }
-            foreach ($mutantErrors as $index => $errored) {
-                $out[] = $index+1 . ') ' . $errored['mutation']['mutator'];
-                $out[] = 'Diff on ' . $errored['mutation']['class'] . '::' . $errored['mutation']['method'] . '() in ' . $errored['mutation']['file'] . ':';
-                $out[] = $errored['diff'];
-                $out[] = PHP_EOL;
-                $out[] = 'The following output was received on stderr:';
-                $out[] = PHP_EOL;
-                $out[] = $errored['stderr'];
-                $out[] = PHP_EOL;
-                $out[] = PHP_EOL;
+                foreach ($mutantErrors as $index => $errored) {
+                    $mutation = $errored->getMutation();
+                    $out[] = $index+1 . ') ' . $mutation['mutator'];
+                    $out[] = 'Diff on ' . $mutation['class'] . '::' . $mutation['method'] . '() in ' . $mutation['file'] . ':';
+                    $out[] = $errored->getDiff();
+                    $out[] = PHP_EOL;
+                    $out[] = 'The following output was received on stderr:';
+                    $out[] = PHP_EOL;
+                    $out[] = $errored->getProcess()->getErrorOutput();
+                    $out[] = PHP_EOL;
+                    $out[] = PHP_EOL;
+                }
             }
             $this->logText($input, $renderer, implode(PHP_EOL, $out));
         }
@@ -434,21 +412,34 @@ class Humbug extends Command
             'escaped' => []
         ];
         foreach ($mutantEscapes as $escaped) {
-            $out['escaped'][] = [
-                'file'      => $escaped['mutation']['file'],
-                'mutator'   => $escaped['mutation']['mutator'],
-                'class'     => $escaped['mutation']['class'],
-                'method'    => $escaped['mutation']['method'],
-                'line'      => $escaped['mutation']['line'],
-                'diff'      => $escaped['diff'],
-                'stdout'    => (isset($escaped['stdout']) ? $escaped['stdout'] : ''), 
-                'stderr'    => (isset($escaped['stderr']) ? $escaped['stderr'] : '')
-            ];
+            $out['escaped'][] = $escaped->toArray();
         }
         file_put_contents(
             $this->jsonLogFile,
             json_encode($out, JSON_PRETTY_PRINT)
         );
+    }
+
+    protected function prepareFinder($directories, $excludes)
+    {
+        $finder = new Finder;
+        $finder->files()->name('*.php');
+
+        if ($directories) {
+            foreach ($directories as $directory) {
+                $finder->in($directory);
+            }
+        } else {
+            $finder->in('.');
+        }
+
+        if (isset($excludes)) {
+            foreach ($excludes as $exclude) {
+                $finder->exclude($exclude);
+            }
+        }
+
+        return $finder;
     }
 
     protected function doConfiguration(OutputInterface $output)
@@ -480,20 +471,10 @@ class Humbug extends Command
                 'You must set at least one source directory or exclude in the configuration file'
             );
         }
-        $this->finder = new Finder;
-        $this->finder->files()->name('*.php');
-        if (isset($config->source->directories)) {
-            foreach ($config->source->directories as $directory) {
-                $this->finder->in($directory);
-            }
-        } else {
-            $this->finder->in('.');
-        }
-        if (isset($config->source->excludes)) {
-            foreach ($config->source->excludes as $exclude) {
-                $this->finder->exclude($exclude);
-            }
-        }
+        $this->finder = $this->prepareFinder(
+            isset($config->source->directories)? $config->source->directories : null,
+            isset($config->source->excludes)? $config->source->excludes : null
+        );
         $this->container->setSourceList($config->source);
 
         /**

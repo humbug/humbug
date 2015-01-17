@@ -15,6 +15,7 @@ use Humbug\Generator;
 use Humbug\Mutable;
 use Humbug\FUTException;
 use Mockery as m;
+use Symfony\Component\Finder\Finder;
 
 class GeneratorTest extends \PHPUnit_Framework_TestCase
 {
@@ -30,50 +31,44 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function testShouldStoreSourceDirectoryValue()
-    {
-        $generator = new Generator;
-        $generator->setSourceDirectory($this->root . '/library');
-        $this->assertEquals($this->root . '/library', $generator->getSourceDirectory());
-    }
-
-    /**
-     * @expectedException \Humbug\FUTException
-     */
-    public function testShouldThrowExceptionOnNonexistingDirectory()
-    {
-        $generator = new Generator;
-        $generator->setSourceDirectory($this->badRoot);
-    }
-
     public function testShouldCollateAllFilesValidForMutationTesting()
     {
+        $finder = new Finder;
+        $finder->files()->name('*.php');
+        $finder->in($this->root);
+
         $generator = new Generator;
-        $generator->setSourceDirectory($this->root);
+        $generator->generate($finder);
         $this->assertEquals([
             $this->root . '/library/bool2.php',
             $this->root . '/library/bool1.php'
-        ],$generator->getFiles());
+        ],$generator->getMutables());
     }
 
     public function testShouldGenerateMutableFileObjects()
     {
+        $finder = new Finder;
+        $finder->files()->name('*.php');
+        $finder->in($this->root);
+
         $generator = new Generator;
-        $generator->setSourceDirectory($this->root);
         $mutable = m::mock('\\Humbug\\Mutable[generate]');
         $mutable->shouldReceive('setFilename');
         $mutable->shouldReceive('generate');
-        $generator->generate($mutable);
+        $generator->generate($finder, $mutable);
         $mutables = $generator->getMutables();
         $this->assertTrue($mutables[0] instanceof Mutable);
     }
 
     public function testShouldGenerateAMutableFileObjectPerDetectedFile()
     {
+        $finder = new Finder;
+        $finder->files()->name('*.php');
+        $finder->in($this->root);
+
         $generator = new Generator;
-        $generator->setSourceDirectory($this->root);
         $mutable = $this->getMock('Mutable', ['generate', 'setFilename']);
-        $generator->generate($mutable);
+        $generator->generate($finder, $mutable);
         $this->assertEquals(2, count($generator->getMutables()));
     }
 

@@ -19,12 +19,9 @@ class DivEqualTest extends \PHPUnit_Framework_TestCase
     public function testReturnsTokenEquivalentToMulEqualOperator()
     {
         $mutation = new Mutator\Arithmetic\DivEqual;
-        $this->assertEquals(
-            [
-                10 => [T_MUL_EQUAL, '*=']
-            ],
-            $mutation->getMutation([], 10)
-        );
+        $tokens = [];
+        $mutation->getMutation($tokens, 10);
+        $this->assertEquals([10 => [T_MUL_EQUAL, '*=']], $tokens);
     }
 
     public function testMutatesDivEqualToMulEqual()
