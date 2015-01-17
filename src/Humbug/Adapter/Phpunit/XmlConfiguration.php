@@ -190,7 +190,6 @@ class XmlConfiguration
         $bool = self::$dom->createElement('boolean');
         $arguments->appendChild($bool);
         $bool->nodeValue = 'true';
-
     }
 
     private static function handleLogging()
@@ -288,7 +287,7 @@ class XmlConfiguration
     private static function makeAbsolutePath($name, $workingDir)
     {
         // @see https://github.com/symfony/Config/blob/master/FileLocator.php#L83
-        if ('/' === $name[0] 
+        if ('/' === $name[0]
             || '\\' === $name[0]
             || (strlen($name) > 3 && ctype_alpha($name[0]) && $name[1] == ':' && ($name[2] == '\\' || $name[2] == '/'))
         ) {
@@ -306,5 +305,4 @@ class XmlConfiguration
 
         throw new InvalidArgumentException("Could not find file $name working from $workingDir");
     }
-
 }

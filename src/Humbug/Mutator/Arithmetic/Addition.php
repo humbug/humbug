@@ -35,5 +35,4 @@ class Addition extends MutatorAbstract
         }
         return false;
     }
-
 }

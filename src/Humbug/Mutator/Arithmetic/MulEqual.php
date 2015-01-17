@@ -38,5 +38,4 @@ class MulEqual extends MutatorAbstract
         }
         return false;
     }
-
 }

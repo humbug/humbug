@@ -38,5 +38,4 @@ class NotEqual extends MutatorAbstract
         }
         return false;
     }
-
 }

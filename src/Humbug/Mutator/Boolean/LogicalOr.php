@@ -15,7 +15,7 @@ use Humbug\Mutator\MutatorAbstract;
 class LogicalOr extends MutatorAbstract
 {
     /**
-     * Replace T_BOOLEAN_OR (||) with T_BOOLEAN_AND (&&) 
+     * Replace T_BOOLEAN_OR (||) with T_BOOLEAN_AND (&&)
      *
      * @param array $tokens
      * @param int $index
@@ -37,5 +37,4 @@ class LogicalOr extends MutatorAbstract
         }
         return false;
     }
-
 }

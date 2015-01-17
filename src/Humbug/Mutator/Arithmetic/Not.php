@@ -38,5 +38,4 @@ class Not extends MutatorAbstract
         }
         return false;
     }
-
 }

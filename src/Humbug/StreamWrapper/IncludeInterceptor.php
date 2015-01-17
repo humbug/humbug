@@ -217,7 +217,7 @@ class IncludeInterceptor
 
     public function stream_set_option($option, $arg1, $arg2)
     {
-         switch ($option) {
+        switch ($option) {
             case STREAM_OPTION_BLOCKING:
                 return stream_set_blocking($this->fp, $arg1);
             case STREAM_OPTION_READ_TIMEOUT:
@@ -268,5 +268,4 @@ class IncludeInterceptor
         self::enable();
         return $return;
     }
-    
 }

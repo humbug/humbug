@@ -38,5 +38,4 @@ class ModEqual extends MutatorAbstract
         }
         return false;
     }
-
 }

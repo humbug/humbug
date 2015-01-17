@@ -35,5 +35,4 @@ class Modulus extends MutatorAbstract
         }
         return false;
     }
-
 }

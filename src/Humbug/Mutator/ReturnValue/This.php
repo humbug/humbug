@@ -24,7 +24,7 @@ class This extends MutatorAbstract
      */
     public static function getMutation(array &$tokens, $index)
     {
-        for ($i=$index+1; $i < count($tokens); $i++) { 
+        for ($i=$index+1; $i < count($tokens); $i++) {
             if (is_array($tokens[$i]) && $tokens[$i][0] == T_WHITESPACE) {
                 continue;
             } elseif (is_array($tokens[$i]) && $tokens[$i][0] == T_VARIABLE && $tokens[$i][1] == '$this') {
@@ -43,7 +43,7 @@ class This extends MutatorAbstract
         if (is_array($t) && $t[0] == T_RETURN) {
             $hasThis = false;
             // effectively, we look for 'return $this;'. Anything else in there and we get out.
-            for ($i=$index+1; $i < count($tokens); $i++) { 
+            for ($i=$index+1; $i < count($tokens); $i++) {
                 if (is_array($tokens[$i]) && $tokens[$i][0] == T_WHITESPACE) {
                     continue;
                 } elseif (is_array($tokens[$i]) && $tokens[$i][0] == T_VARIABLE && $tokens[$i][1] == '$this') {
@@ -62,5 +62,4 @@ class This extends MutatorAbstract
         }
         return false;
     }
-
 }

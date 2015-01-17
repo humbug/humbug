@@ -10,7 +10,8 @@
 
 namespace Humbug\Utility;
 
-class Tokenizer {
+class Tokenizer
+{
 
     const T_NEWLINE = -1;
 
@@ -72,5 +73,4 @@ class Tokenizer {
         }
         return $str;
     }
-
 }

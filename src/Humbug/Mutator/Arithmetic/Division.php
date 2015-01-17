@@ -35,5 +35,4 @@ class Division extends MutatorAbstract
         }
         return false;
     }
-
 }

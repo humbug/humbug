@@ -38,5 +38,4 @@ class MinusEqual extends MutatorAbstract
         }
         return false;
     }
-
 }

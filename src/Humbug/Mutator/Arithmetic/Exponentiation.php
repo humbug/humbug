@@ -38,5 +38,4 @@ class Exponentiation extends MutatorAbstract
         }
         return false;
     }
-
 }

@@ -193,7 +193,6 @@ class Humbug extends Command
          * MUTATION TESTING!
          */
         foreach ($mutables as $i => $mutable) {
-
             $mutations = $mutable->generate()->getMutations();
             $batches = array_chunk($mutations, $parallels);
             unset($mutations);
@@ -215,7 +214,6 @@ class Humbug extends Command
                 // Being utterly paranoid, track index using $tracker explicitly
                 // to ensure process->mutation indices are linked for reporting.
                 foreach ($batch as $tracker => $mutation) {
-
                     try {
                         /**
                          * Unleash the Mutant!
@@ -223,7 +221,6 @@ class Humbug extends Command
                         $mutants[$tracker] = new Mutant($mutation, $container, $coverage);
 
                         $processes[$tracker] = $mutants[$tracker]->getProcess();
-
                     } catch (NoCoveringTestsException $e) {
                         /**
                          * No tests excercise the mutated line. We'll report
@@ -606,5 +603,4 @@ class Humbug extends Command
             }
         }
     }
-
 }

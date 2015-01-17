@@ -117,7 +117,6 @@ class Mutable
         $methodName = '???';
         $className = '???';
         foreach ($tokens as $index => $token) {
-
             if (is_array($token) && $token[0] == Tokenizer::T_NEWLINE) {
                 $lineNumber = $token[2] + 1;
                 continue;
@@ -207,5 +206,4 @@ class Mutable
     {
         return $this->mutations;
     }
-    
 }

@@ -154,5 +154,4 @@ class CoverageData
         fwrite($out, $buffer);
         fclose($out);
     }
-
 }

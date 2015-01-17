@@ -69,7 +69,6 @@ class Container
      */
     public function setTestRunDirectory($dir)
     {
-        
         $this->testRunDirectory = rtrim($dir, ' \\/');
         return $this;
     }
@@ -91,7 +90,6 @@ class Container
      */
     public function setBaseDirectory($dir)
     {
-        
         $this->baseDirectory = rtrim($dir, ' \\/');
         return $this;
     }
@@ -113,7 +111,6 @@ class Container
      */
     public function setSourceList(\stdClass $list)
     {
-        
         $this->srcList = $list;
         return $this;
     }
@@ -295,5 +292,4 @@ class Container
     {
         return $this->bootstrap;
     }
-
 }

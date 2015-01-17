@@ -24,7 +24,7 @@ class Integer extends MutatorAbstract
      */
     public static function getMutation(array &$tokens, $index)
     {
-        for ($i=$index+1; $i < count($tokens); $i++) { 
+        for ($i=$index+1; $i < count($tokens); $i++) {
             if (is_array($tokens[$i]) && $tokens[$i][0] == T_WHITESPACE) {
                 continue;
             } elseif (is_array($tokens[$i]) && $tokens[$i][0] == T_LNUMBER) {
@@ -49,7 +49,7 @@ class Integer extends MutatorAbstract
         $t = $tokens[$index];
         if (is_array($t) && $t[0] == T_RETURN) {
             $has = false;
-            for ($i=$index+1; $i < count($tokens); $i++) { 
+            for ($i=$index+1; $i < count($tokens); $i++) {
                 if (is_array($tokens[$i]) && $tokens[$i][0] == T_WHITESPACE) {
                     continue;
                 } elseif (is_array($tokens[$i]) && $tokens[$i][0] == T_LNUMBER) {
@@ -68,5 +68,4 @@ class Integer extends MutatorAbstract
         }
         return false;
     }
-
 }

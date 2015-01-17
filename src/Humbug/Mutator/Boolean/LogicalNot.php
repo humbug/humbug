@@ -35,5 +35,4 @@ class LogicalNot extends MutatorAbstract
         }
         return false;
     }
-
 }

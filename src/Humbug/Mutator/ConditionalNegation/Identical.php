@@ -38,5 +38,4 @@ class Identical extends MutatorAbstract
         }
         return false;
     }
-
 }

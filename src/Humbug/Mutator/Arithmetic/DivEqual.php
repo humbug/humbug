@@ -38,5 +38,4 @@ class DivEqual extends MutatorAbstract
         }
         return false;
     }
-
 }

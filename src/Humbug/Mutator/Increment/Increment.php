@@ -37,5 +37,4 @@ class Increment extends MutatorAbstract
         }
         return false;
     }
-
 }

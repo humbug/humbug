@@ -38,5 +38,4 @@ class GreaterThan extends MutatorAbstract
         }
         return false;
     }
-
 }

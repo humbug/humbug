@@ -38,5 +38,4 @@ class ShiftLeft extends MutatorAbstract
         }
         return false;
     }
-
 }

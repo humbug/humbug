@@ -60,5 +60,4 @@ Phpunit::main("{$args}");
 SCRIPT;
         return $script;
     }
-    
 }

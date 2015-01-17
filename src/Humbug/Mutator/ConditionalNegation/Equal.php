@@ -38,5 +38,4 @@ class Equal extends MutatorAbstract
         }
         return false;
     }
-
 }

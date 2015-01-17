@@ -38,5 +38,4 @@ class LessThan extends MutatorAbstract
         }
         return false;
     }
-
 }

@@ -47,5 +47,4 @@ class BitwiseAnd extends MutatorAbstract
         }
         return false;
     }
-
 }

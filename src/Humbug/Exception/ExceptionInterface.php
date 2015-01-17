@@ -11,5 +11,5 @@
 namespace Humbug\Exception;
 
 interface ExceptionInterface
-{    
+{
 }

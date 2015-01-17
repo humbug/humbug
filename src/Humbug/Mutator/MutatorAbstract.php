@@ -26,5 +26,4 @@ abstract class MutatorAbstract
         static::getMutation($tokens, $index);
         return Tokenizer::reconstructFromTokens($tokens);
     }
-
 }

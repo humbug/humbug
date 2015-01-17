@@ -53,5 +53,4 @@ class Generator
     {
         return $this->mutables;
     }
-
 }

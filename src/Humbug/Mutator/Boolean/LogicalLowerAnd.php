@@ -37,5 +37,4 @@ class LogicalLowerAnd extends MutatorAbstract
         }
         return false;
     }
-
 }

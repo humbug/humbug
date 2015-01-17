@@ -15,7 +15,7 @@ use Humbug\Mutator\MutatorAbstract;
 class Decrement extends MutatorAbstract
 {
     /**
-     * Replace T_DEC (--) with T_INC (++) 
+     * Replace T_DEC (--) with T_INC (++)
      *
      * @param array $tokens
      * @param int $index
@@ -37,5 +37,4 @@ class Decrement extends MutatorAbstract
         }
         return false;
     }
-
 }

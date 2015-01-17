@@ -27,12 +27,12 @@ class FunctionCall extends MutatorAbstract
     {
         $replace = [];
         $last = null;
-        for ($i=$index+1; $i < count($tokens); $i++) { 
+        for ($i=$index+1; $i < count($tokens); $i++) {
             if (is_array($tokens[$i]) && $tokens[$i][0] == T_WHITESPACE) {
                 continue;
             } elseif (is_array($tokens[$i]) && $tokens[$i][0] == T_FUNCTION) {
                 // collect statement tokens (skipping one whitespace after 'return')
-                for ($j=$index+2; $j < count($tokens); $j++) { 
+                for ($j=$index+2; $j < count($tokens); $j++) {
                     if (!is_array($tokens[$j]) && $tokens[$j] == ';') {
                         $last = $j - 1;
                         break;
@@ -67,7 +67,7 @@ class FunctionCall extends MutatorAbstract
         $t = $tokens[$index];
         if (is_array($t) && $t[0] == T_RETURN) {
             $has = false;
-            for ($i=$index+1; $i < count($tokens); $i++) { 
+            for ($i=$index+1; $i < count($tokens); $i++) {
                 if (is_array($tokens[$i]) && $tokens[$i][0] == T_WHITESPACE) {
                     continue;
                 } elseif (is_array($tokens[$i]) && $tokens[$i][0] == T_STRING) {
@@ -88,5 +88,4 @@ class FunctionCall extends MutatorAbstract
         }
         return false;
     }
-
 }

@@ -36,7 +36,9 @@ class Diff
         for ($i=0; $i < $max; $i++) {
             if ($string[$i] == $needle) {
                 $n++;
-                if ($n >= $nth) break;
+                if ($n >= $nth) {
+                    break;
+                }
             }
         }
         return substr($string, 0, $i);

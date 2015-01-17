@@ -41,5 +41,4 @@ class PowEqual extends MutatorAbstract
         }
         return false;
     }
-
 }

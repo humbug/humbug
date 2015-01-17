@@ -38,5 +38,4 @@ class PlusEqual extends MutatorAbstract
         }
         return false;
     }
-
 }

@@ -47,5 +47,4 @@ class Integer extends MutatorAbstract
         }
         return false;
     }
-
 }

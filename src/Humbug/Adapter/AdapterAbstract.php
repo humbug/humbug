@@ -43,5 +43,4 @@ abstract class AdapterAbstract
         $mutantFile = null,
         array $testCases = []
     );
-    
 }

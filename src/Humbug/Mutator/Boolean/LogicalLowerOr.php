@@ -15,7 +15,7 @@ use Humbug\Mutator\MutatorAbstract;
 class LogicalLowerOr extends MutatorAbstract
 {
     /**
-     * Replace (or) with (and) 
+     * Replace (or) with (and)
      *
      * @param array $tokens
      * @param int $index
@@ -37,5 +37,4 @@ class LogicalLowerOr extends MutatorAbstract
         }
         return false;
     }
-
 }

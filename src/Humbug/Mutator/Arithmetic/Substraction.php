@@ -35,5 +35,4 @@ class Substraction extends MutatorAbstract
         }
         return false;
     }
-
 }

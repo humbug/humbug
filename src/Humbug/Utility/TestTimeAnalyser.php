@@ -61,7 +61,7 @@ class TestTimeAnalyser
         $elements = $xpath->query('//testcase');
         foreach ($elements as $case) {
             // This may exclude data provision run data
-            if ($case->hasAttribute('class')) { 
+            if ($case->hasAttribute('class')) {
                 if (!isset($testCases[$case->getAttribute('class')])) {
                     $testCases[$case->getAttribute('class')] = [
                         'class' => $case->getAttribute('class'),
@@ -117,5 +117,4 @@ class TestTimeAnalyser
         }
         return $cases;
     }
-    
 }

@@ -35,5 +35,4 @@ class BitwiseXor extends MutatorAbstract
         }
         return false;
     }
-
 }

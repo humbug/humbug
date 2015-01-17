@@ -47,7 +47,6 @@ class Phpunit extends AdapterAbstract
         $mutantFile = null,
         array $testCases = [])
     {
-
         $jobopts = [
             'testdir'       => $container->getTestRunDirectory(),
             'basedir'       => $container->getBaseDirectory(),
@@ -141,7 +140,6 @@ class Phpunit extends AdapterAbstract
      */
     public static function main($arguments)
     {
-
         $arguments = unserialize(base64_decode($arguments));
 
         /**
@@ -154,9 +152,13 @@ class Phpunit extends AdapterAbstract
         $command = new \PHPUnit_TextUI_Command;
         try {
             $command->run($arguments['cliopts'], false);
-            if (getcwd() !== $originalWorkingDir) chdir($originalWorkingDir);
+            if (getcwd() !== $originalWorkingDir) {
+                chdir($originalWorkingDir);
+            }
         } catch (\Exception $e) {
-            if (getcwd() !== $originalWorkingDir) chdir($originalWorkingDir);
+            if (getcwd() !== $originalWorkingDir) {
+                chdir($originalWorkingDir);
+            }
             throw $e;
         }
     }
@@ -205,5 +207,4 @@ class Phpunit extends AdapterAbstract
         }
         return true;
     }
-
 }

@@ -49,5 +49,4 @@ class Float extends MutatorAbstract
         }
         return false;
     }
-
 }

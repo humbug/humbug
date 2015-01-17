@@ -18,8 +18,8 @@ class Application extends BaseApplication
 {
 
     private static $logo = '
- _  _            _              
-| || |_  _ _ __ | |__ _  _ __ _ 
+ _  _            _
+| || |_  _ _ __ | |__ _  _ __ _
 | __ | || | \'  \| \'_ \ || / _` |
 |_||_|\_,_|_|_|_|_.__/\_,_\__, |
                           |___/ ';
@@ -51,5 +51,4 @@ class Application extends BaseApplication
         $defaultCommands[] = new Humbug();
         return $defaultCommands;
     }
-
 }
