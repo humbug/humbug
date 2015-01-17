@@ -27,12 +27,43 @@ class Addition extends MutatorAbstract
         $tokens[$index] = '-';
     }
 
+    /**
+     * Not all additions can be mutated.
+     *
+     * The PHP language allows union of arrays : $var = ['foo' => true] + ['bar' => true]
+     * see http://php.net/manual/en/language.operators.array.php for details.
+     *
+     * So for this case, we can't create a mutation.
+     *
+     * @param array $tokens
+     * @param $index
+     * @return bool
+     */
     public static function mutates(array &$tokens, $index)
     {
         $t = $tokens[$index];
         if (!is_array($t) && $t == '+') {
-            return true;
+            for ($i = $index + 1; $i < count($tokens); $i++) {
+
+                // check for short array syntax
+                if (!is_array($tokens[$i]) && $tokens[$i][0] == '[') {
+                    return false;
+                }
+
+                // check for long array syntax
+                if (is_array($tokens[$i]) && $tokens[$i][0] == T_ARRAY && $tokens[$i][1] == 'array') {
+                    return false;
+                }
+
+                // if we're at the end of the array
+                // and we didn't see any array, we
+                // can probably mutate this addition
+                if (!is_array($tokens[$i]) && $tokens[$i] == ';') {
+                    return true;
+                }
+            }
         }
+
         return false;
     }
 }

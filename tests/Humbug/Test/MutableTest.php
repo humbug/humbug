@@ -162,6 +162,13 @@ class MutableTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('\Humbug\Mutator\ReturnValue\False', $return[0]['mutator']);
     }
 
+    public function testShoultNotGenerateMutableOnArrayConcatenation()
+    {
+        $file = new Mutable($this->root . '/array1.php');
+        $file->generate();
+        $this->assertEquals([], $file->getMutations());
+    }
+
     /**
      * Covers bug where Mutable may incorrectly parse a method and omit the first
      * opening bracket in an IF clause, leading to syntax errors when
