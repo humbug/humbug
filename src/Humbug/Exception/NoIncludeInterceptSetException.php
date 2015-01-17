@@ -10,8 +10,6 @@
 
 namespace Humbug\Exception;
 
-use Humbug\Exception\RuntimeException;
-
 class NoIncludeInterceptSetException extends RuntimeException
 {
 }
