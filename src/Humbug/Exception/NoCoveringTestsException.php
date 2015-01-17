@@ -10,8 +10,6 @@
 
 namespace Humbug\Exception;
 
-use Humbug\Exception\RuntimeException;
-
 class NoCoveringTestsException extends RuntimeException
 {
 }

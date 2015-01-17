@@ -20,6 +20,7 @@ abstract class MutatorAbstract
      *
      * @param array $tokens
      * @param int $index
+     * @return string
      */
     public static function mutate(array &$tokens, $index)
     {
