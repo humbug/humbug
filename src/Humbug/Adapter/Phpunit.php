@@ -24,8 +24,6 @@ use Symfony\Component\Process\PhpProcess;
 class Phpunit extends AdapterAbstract
 {
 
-    protected static $optimisedConfigFile;
-
     /**
      * Runs the tests suite according to Runner set options and the execution
      * order of test case (if any). It then returns an array of two elements.
@@ -188,23 +186,5 @@ class Phpunit extends AdapterAbstract
             $container->getCacheDirectory() . '/junitlog.humbug.xml'
         );
         return $analyser;
-    }
-
-    /**
-     * Parse the PHPUnit text result output to see if there were any failures.
-     * In the context of mutation testing, a test failure is good (i.e. the
-     * mutation was detected by the test suite).
-     *
-     * This assume the output is in Test Anywhere Protocol (TAP) format.
-     *
-     * @param string $output
-     * @return bool
-     */
-    public static function ok($output)
-    {
-        if (preg_match("%[\n\r]+not ok \\d+%", $output)) {
-            return false;
-        }
-        return true;
     }
 }

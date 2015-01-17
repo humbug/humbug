@@ -14,13 +14,6 @@ use Humbug\Container;
 
 abstract class AdapterAbstract
 {
-
-    /**
-     * Output from the test library in use
-     *
-     * @var string
-     */
-    protected $output = '';
     
     /**
      * Runs the tests suite according to Runner set options and the execution
@@ -43,4 +36,22 @@ abstract class AdapterAbstract
         $mutantFile = null,
         array $testCases = []
     );
+
+    /**
+     * Parse the test adapter result output to see if there were any failures.
+     * In the context of mutation testing, a test failure is good (i.e. the
+     * mutation was detected by the test suite).
+     *
+     * This assume the output is in Test Anywhere Protocol (TAP) format.
+     *
+     * @param string $output
+     * @return bool
+     */
+    public static function ok($output)
+    {
+        if (preg_match("%[\n\r]+not ok \\d+%", $output)) {
+            return false;
+        }
+        return true;
+    }
 }
