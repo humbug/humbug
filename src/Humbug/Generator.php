@@ -10,7 +10,6 @@
 
 namespace Humbug;
 
-use Humbug\Mutable;
 use Symfony\Component\Finder\Finder;
 
 class Generator

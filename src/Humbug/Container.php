@@ -11,7 +11,6 @@
 namespace Humbug;
 
 use Humbug\Adapter;
-use Humbug\Generator;
 use Humbug\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -269,7 +268,7 @@ class Container
     /**
      * Routed through Console Input class
      */
-    
+
     public function getTimeout()
     {
         if (!is_null($this->timeout)) {

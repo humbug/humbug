@@ -54,8 +54,6 @@ class Text
 
     /**
      * Render message preceeding the initial test run
-     *
-     * @param array $result
      */
     public function renderPreTestIntroduction()
     {
@@ -66,6 +64,8 @@ class Text
      * Render message where the initial test run didn't pass (excl. incomplete/skipped/risky tests)
      *
      * @param array $result
+     * @param int $exitCode
+     * @param bool $hasFailure
      */
     public function renderInitialRunFail(array &$result, $exitCode, $hasFailure)
     {
@@ -97,8 +97,6 @@ class Text
 
     /**
      * Render message that Humbug is analysing files.
-     *
-     * @param array $result
      */
     public function renderStaticAnalysisStart()
     {
@@ -108,7 +106,7 @@ class Text
     /**
      * Render message that mutation testing loop is starting
      *
-     * @param array $result
+     * @param int $count
      */
     public function renderMutationTestingStart($count)
     {
@@ -130,6 +128,9 @@ class Text
      *  .: The test run included a fail condition. The mutation was detected!!!
      *
      * @param array $result
+     * @param int $count
+     * @param int $current
+     * @param int $eolInterval
      */
     public function renderProgressMark(array &$result, $count, $current, $eolInterval = 60)
     {
@@ -156,7 +157,9 @@ class Text
      * Render a shadow marker, i.e. a mutation whose source code line is
      * not covered by any test based on current code coverage data.
      *
-     * @param array $result
+     * @param int $count
+     * @param int $current
+     * @param int $eolInterval
      */
     public function renderShadowMark($count, $current, $eolInterval = 60)
     {
@@ -174,6 +177,8 @@ class Text
     /**
      * Render performance data for the mutation testing run
      *
+     * @param string $time
+     * @param string $memory
      */
     public function renderPerformanceData($time, $memory)
     {
@@ -186,7 +191,12 @@ class Text
     /**
      * Render message that mutation testing loop is starting
      *
-     *
+     * @param int $total
+     * @param int $kills
+     * @param int $escapes
+     * @param int $errors
+     * @param int $timeouts
+     * @param int $shadows
      */
     public function renderSummaryReport($total, $kills, $escapes, $errors, $timeouts, $shadows)
     {
@@ -227,7 +237,7 @@ class Text
     /**
      * Render JSON logging message
      *
-     *
+     * @param string $log
      */
     public function renderLogToJson($log)
     {
@@ -237,7 +247,7 @@ class Text
     /**
      * Render JSON logging message
      *
-     *
+     * @param string $log
      */
     public function renderLogToText($log)
     {
