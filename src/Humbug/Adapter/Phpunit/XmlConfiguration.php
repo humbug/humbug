@@ -299,7 +299,7 @@ class XmlConfiguration
         }
 
         $relativePath = $workingDir.DIRECTORY_SEPARATOR.$name;
-        if (file_exists($relativePath)) {
+        if (file_exists($relativePath) || !empty(glob($relativePath))) {
             return realpath($relativePath);
         }
 
