@@ -16,14 +16,12 @@ Whereas Code Coverage can tell you what code your tests are executing, Mutation
 Testing is intended to help you judge how well your unit tests actually perform
 and where they could be improved.
 
+I've written in more detail about why Mutation Testing is worth having: [Lies, Damned Lies and Code Coverage: Towards Mutation Testing](http://blog.astrumfutura.com/2015/01/lies-damned-lies-and-code-coverage-towards-mutation-testing/)
+
 Usage
 -----
 
-Humbug is still under development so, to repeat, beware of rough edges. To ensure
-a smooth ride, you should be using PHPUnit 4. You should have your phpunit
-configuration file in the base of your project (same level as your source and tests
-directories). If the configuration file contains a whitelist for code coverage, it
-should at least cover your main source code.
+Humbug is still under development so, to repeat, beware of rough edges.
 
 In the base directory of your project create a humbug.json file:
 
@@ -67,7 +65,8 @@ directory where composer vendor and Tests directories are excluded):
 ```
 
 If, from your project's base directory, you must run tests from another directory
-then you can signal this also:
+then you can signal this also. You should not need to run Humbug from any directory
+other than your project's base directory.
 
 ```js
 {
@@ -80,6 +79,9 @@ then you can signal this also:
     }
 }
 ```
+
+Ensure that your tests are all in a passing state (imcomplete and skipped tests
+are allowed). Humbug will quit if any of your tests are failing.
 
 The magic command, while in your project's base directory (and assuming humbug
 was cloned at same level as your project directory):
@@ -141,16 +143,14 @@ Humbug results are being logged as TEXT to: log.txt
 Time: 2.26 minutes Memory: 8.75MB
 ```
 
-Mutation Testing has traditionally been a slow process, however Humbug implements a number
-of significant optimisations. It generates code coverage data so that only tests
-applicable to a specific mutated line of code are run. It runs any tests in order of their
-logged execution time (smallest first). It will not execute tests where code
-coverage for a mutated line is nil. You may also adjust the timeout setting (if
-too high for your project). The timeout exists to counteract infinite loops when
-created through the mutation process.
-
-These optimisations, while requiring some upfront execution time, make Humbug
-quite fast once it gets going.
+To explain the perhaps cryptic progress output, a killed mutant is a defect which
+was detected by the test suite, an escaped mutation is a defect that was never
+detected, an uncovered mutant is a mutation occuring on a line that Code Coverage
+indicates is not executed, a fatal error is anything which led to the adapter
+crashing (typically if a mutation creates a syntax or logical problem in the
+source code) and a timed out mutant is a mutation which took longer than your
+defined timeout to execute (perhaps an infinite loop which mutations will infrequently
+create in source code).
 
 The example summary results reported a number of statistics:
 * The headline news is that 68% of mutations which were covered by unit tests
@@ -312,19 +312,17 @@ Did I Say Rough Edges?
 
 This is a short list of known issues:
 
-* It makes assumptions about local directories which may be incorrect (read Usage).
-* Configuring Humbug is by command line; a configuration file is really needed.
-* PHP file parsing has a few bugs: it makes assumptions about whitespace and likely will
-explode when meeting a closure. This should never interrupt a MT run, however. At worst, it will report an "E".
-* An error is logged when source code references a function that does not exist (e.g. 3rd party module)
 * Humbug does initial test runs, logging and code coverage. Should allow user to do that optionally.
 * Test classes (not tests) are run in a specific order, fastest first. Interdependent test classes may
 therefore fail regularly which will skew the results.
-* Need to finalise reporting formats: text is easy, XML in progress.
 * Currently 100% PHPUnit specific, well 98.237%. There is an adapter where PHPUnit code is being shovelled.
-* The list of supported mutations is awaiting expansion. Yes, we need to make those unit tests scream ;).
-
-
+* Certain test suite may make assumptions about having sole access to resources like /tmp which
+will cause errors when Humbug tries using same.
+* Fine grained test ordering by speed (as opposed to large grained test class ordering) is awaiting
+implementation.
+* Should test classes be used to carry non-PHPUnit dependent testing code (e.g. register_shutdown_function()),
+it may create issues when combined with one or more of Humbugs optimisations which assume a finished
+test really is finished.
 
 Bah, Humbug!
 ============
