@@ -12,7 +12,6 @@
 namespace Humbug\Adapter;
 
 use Mockery as m;
-use Humbug\Adapter\Phpunit;
 
 class PhpunitTest extends \PHPUnit_Framework_TestCase
 {

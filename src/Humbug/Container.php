@@ -10,7 +10,6 @@
 
 namespace Humbug;
 
-use Humbug\Adapter;
 use Humbug\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

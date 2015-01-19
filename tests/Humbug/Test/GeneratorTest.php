@@ -13,7 +13,6 @@ namespace Humbug\Test;
 
 use Humbug\Generator;
 use Humbug\Mutable;
-use Humbug\FUTException;
 use Mockery as m;
 use Symfony\Component\Finder\Finder;
 

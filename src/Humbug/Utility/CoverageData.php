@@ -12,7 +12,6 @@ namespace Humbug\Utility;
 
 use Humbug\Exception\InvalidArgumentException;
 use Humbug\Exception\NoCoveringTestsException;
-use Humbug\Utility\TestTimeAnalyser;
 use Symfony\Component\Finder\Finder;
 
 class CoverageData
