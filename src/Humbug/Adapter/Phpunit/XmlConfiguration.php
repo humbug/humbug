@@ -89,21 +89,47 @@ class XmlConfiguration
             static::handleLogging();
         }
 
+        /** @var \DOMNode[] $nodesToRemove */
+        $nodesToRemove = array();
         $suites = self::$xpath->query('/phpunit/testsuites/testsuite');
         foreach ($suites as $suite) {
-            foreach ($suite->childNodes as $node) {
+            // DOMNodeList's Traversable implementation is a bit unpredictable.
+            // Iterate over the child nodes using a for loop rather than a
+            // foreach so that we can append new children without these being
+            // iterated over again.
+            $length = $suite->childNodes->length;
+            for ($i = 0; $i < $length; $i++) {
+                $node = $suite->childNodes->item($i);
                 if ($node instanceof \DOMElement
                 && ($node->tagName == 'directory'
                 || $node->tagName == 'exclude'
                 || $node->tagName == 'file')) {
                     $fullPath = $dir . '/' . $node->nodeValue;
-                    if (0 === count(glob($fullPath))) {
-                        throw new RuntimeException('Unable to locate file specified in testsuites: ' . $fullPath);
+                    // Check if the paths exist.
+                    $paths = glob($fullPath);
+                    if (0 === count($paths)) {
+                        // It's no problem if an exclude path is missing.
+                        if ($node->tagName !== 'exclude') {
+                            throw new RuntimeException('Unable to locate file specified in testsuites: ' . $fullPath);
+                        }
+                    } else {
+                        foreach ($paths as $path) {
+                            $clone = $node->cloneNode();
+                            $clone->nodeValue = static::makeAbsolutePath($path, dirname($conf));
+                            $node->parentNode->appendChild($clone);
+                        }
                     }
-
-                    $node->nodeValue = static::makeAbsolutePath($node->nodeValue, dirname($conf));
+                    // Mark the original unprocessed node to be removed.
+                    $nodesToRemove[] = $node;
                 }
             }
+        }
+
+        // Remove the original unprocessed nodes. This cannot be done inside the
+        // loop that processes the nodes since the removal of a node causes
+        // DOMNodeList to reset its internal array keys.
+        foreach ($nodesToRemove as $node) {
+            $node->parentNode->removeChild($node);
         }
 
         self::$xpath = new \DOMXPath(self::$dom);
