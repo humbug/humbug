@@ -6,6 +6,8 @@ so, while it does actually work quite well, it will have rough edges that a team
 of minions are slaving to hammer out. If it falls out of the gate, you have been
 warned ;).
 
+[![Build Status](https://travis-ci.org/padraic/humbug.svg)](https://travis-ci.org/padraic/humbug)
+
 Mutation Testing is, in a nutshell, giving your unit tests a run for their money.
 It involves injecting small defects into source code and then checking if the unit
 tests noticed. If they do, then your unit tests have "killed" the mutation. If not,
