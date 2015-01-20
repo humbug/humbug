@@ -28,9 +28,9 @@ class Job
             $replacingFile = addslashes($replacingFile);
             $prepend = <<<PREPEND
 <?php
-require_once "{$humbugBootstrap}";
+require_once '{$humbugBootstrap}';
 use Humbug\StreamWrapper\IncludeInterceptor;
-IncludeInterceptor::intercept("{$replacingFile}", "{$mutantFile}");
+IncludeInterceptor::intercept('{$replacingFile}', '{$mutantFile}');
 IncludeInterceptor::enable();
 PREPEND;
             if (!empty($bootstrap)) {
@@ -53,10 +53,10 @@ PREPEND;
         $script = <<<SCRIPT
 <?php
 namespace Humbug\\Env;
-require_once "{$humbugBootstrap}";
+require_once '{$humbugBootstrap}';
 error_reporting(error_reporting() & ~E_NOTICE);
 use Humbug\Adapter\Phpunit;
-Phpunit::main("{$args}");
+Phpunit::main('{$args}');
 SCRIPT;
         return $script;
     }
