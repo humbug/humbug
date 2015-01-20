@@ -35,12 +35,14 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
         $finder = new Finder;
         $finder->files()->name('*.php');
         $finder->in($this->root);
+        $finder->sortByName();
 
         $generator = new Generator;
         $generator->generate($finder);
         $mutables = $generator->getMutables();
-        $this->assertEquals($mutables[0]->getFilename(), $this->root . '/library/bool2.php');
-        $this->assertEquals($mutables[1]->getFilename(), $this->root . '/library/bool1.php');
+        
+        $this->assertEquals($mutables[0]->getFilename(), $this->root . '/library/bool1.php');
+        $this->assertEquals($mutables[1]->getFilename(), $this->root . '/library/bool2.php');
     }
 
     public function testShouldGenerateMutableFileObjects()
