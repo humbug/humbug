@@ -39,8 +39,8 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
         $generator = new Generator;
         $generator->generate($finder);
         $this->assertEquals([
-            $this->root . '/library/bool2.php',
-            $this->root . '/library/bool1.php'
+            new Mutable($this->root . '/library/bool1.php'),
+            new Mutable($this->root . '/library/bool2.php')
         ],$generator->getMutables());
     }
 
