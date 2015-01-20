@@ -63,14 +63,6 @@ class MutableTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals([], $file->getMutations());
     }
 
-    public function testShouldGenerateMutablesEvenIfMethodBodyIsNotViable()
-    {
-        $file = new Mutable($this->root . '/math000.php');
-        $file->generate();
-        $return = $file->getMutations();
-        $this->assertEquals(['file','class','method','args','tokens'],array_keys($return[0]));
-    }
-
     public function testShouldNotGenerateMutablesIfMethodBodyIsNotViable()
     {
         $file = new Mutable($this->root . '/math000.php');
@@ -167,35 +159,6 @@ class MutableTest extends \PHPUnit_Framework_TestCase
         $file = new Mutable($this->root . '/array1.php');
         $file->generate();
         $this->assertEquals([], $file->getMutations());
-    }
-
-    /**
-     * Covers bug where Mutable may incorrectly parse a method and omit the first
-     * opening bracket in an IF clause, leading to syntax errors when
-     * attempting to add the new method block via runkit
-     *
-     * @group MM1
-     */
-    public function testCreatesAccurateMapOfIfClausesSingleNonStaticMethod()
-    {
-        $file = new Mutable(dirname(__FILE__) . '/_files/IfClause.php');
-        $file->generate();
-        $mutations = $file->getMutations();
-        $mutation = $mutations[0];
-        $this->assertEquals(dirname(__FILE__) . '/_files/IfClause.php', $mutation['file']);
-        $this->assertEquals('\Some_Class_With_If_Clause_In_Method', $mutation['class']);
-        $this->assertEquals('_getSession', $mutation['method']);
-        $block = <<<BLOCK
-
-        static \$session = null;
-        if (\$session === null) {
-            \$session = new Zend_Session_Namespace(
-                \$this->getSessionNamespace(), true
-            );
-        }
-
-BLOCK;
-        $this->assertEquals($block, $this->_reconstructFromTokens($mutation['tokens']));
     }
 
     /**
