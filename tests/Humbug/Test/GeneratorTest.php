@@ -18,14 +18,14 @@ use Symfony\Component\Finder\Finder;
 
 class GeneratorTest extends \PHPUnit_Framework_TestCase
 {
+    private $searchDir;
 
-    public function setUp()
+    protected function setUp()
     {
-        $this->root = dirname(__FILE__) . '/_files/root/base1';
-        $this->badRoot = '/path/does/not/exist';
+        $this->searchDir = dirname(__FILE__) . '/_files/root/base1';
     }
 
-    public function teardown()
+    protected function tearDown()
     {
         m::close();
     }
@@ -34,22 +34,22 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
     {
         $finder = new Finder;
         $finder->files()->name('*.php');
-        $finder->in($this->root);
+        $finder->in($this->searchDir);
         $finder->sortByName();
 
         $generator = new Generator;
         $generator->generate($finder);
         $mutables = $generator->getMutables();
-        
-        $this->assertEquals($mutables[0]->getFilename(), $this->root . '/library/bool1.php');
-        $this->assertEquals($mutables[1]->getFilename(), $this->root . '/library/bool2.php');
+
+        $this->assertEquals($mutables[0]->getFilename(), $this->searchDir . '/library/bool1.php');
+        $this->assertEquals($mutables[1]->getFilename(), $this->searchDir . '/library/bool2.php');
     }
 
     public function testShouldGenerateMutableFileObjects()
     {
         $finder = new Finder;
         $finder->files()->name('*.php');
-        $finder->in($this->root);
+        $finder->in($this->searchDir);
 
         $generator = new Generator;
         $mutable = m::mock('\\Humbug\\Mutable[generate]');
@@ -64,7 +64,7 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
     {
         $finder = new Finder;
         $finder->files()->name('*.php');
-        $finder->in($this->root);
+        $finder->in($this->searchDir);
 
         $generator = new Generator;
         $mutable = $this->getMock('Mutable', ['generate', 'setFilename']);
