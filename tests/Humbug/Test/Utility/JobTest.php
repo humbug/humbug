@@ -23,10 +23,10 @@ class JobTest extends \PHPUnit_Framework_TestCase
         $expected = <<<EXPECTED
 <?php
 namespace Humbug\\Env;
-require_once "{$bootstrap}";
+require_once '{$bootstrap}';
 error_reporting(error_reporting() & ~E_NOTICE);
 use Humbug\Adapter\Phpunit;
-Phpunit::main("YTowOnt9");
+Phpunit::main('YTowOnt9');
 EXPECTED;
         $this->assertEquals($expected, $script);
     }
