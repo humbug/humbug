@@ -28,13 +28,12 @@ class CoverageData
      */
     public function __construct($file, TestTimeAnalyser $analyser)
     {
-        $file = realpath($file);
-        if (!file_exists($file)) {
+        if (!$path = realpath($file)) {
             throw new InvalidArgumentException(
                 'File does not exist: ' . $file
             );
         }
-        $this->process($file);
+        $this->process($path);
         $this->analyser = $analyser;
     }
 
