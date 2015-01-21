@@ -15,4 +15,4 @@ before_script:
     - travis_retry composer --prefer-source --dev install
 
 script:
-    - phpunit --coverage-text tests
+    - phpunit --coverage-text
