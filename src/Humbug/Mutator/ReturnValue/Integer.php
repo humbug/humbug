@@ -56,11 +56,7 @@ class Integer extends MutatorAbstract
                     $has = true;
                     continue;
                 } elseif (!is_array($tokens[$i]) && $tokens[$i] == ';') {
-                    // return statement terminated
-                    if ($has === true) {
-                        return true;
-                    }
-                    return false;
+                    return $has;
                 } else {
                     $has = false;
                 }
