@@ -115,7 +115,7 @@ class XmlConfiguration
                     } else {
                         foreach ($paths as $path) {
                             $clone = $node->cloneNode();
-                            $clone->nodeValue = static::makeAbsolutePath($path, dirname($conf));
+                            $clone->nodeValue = static::makeAbsolutePath($path, getcwd());
                             $node->parentNode->appendChild($clone);
                         }
                     }
