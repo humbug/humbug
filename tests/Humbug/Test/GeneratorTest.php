@@ -52,27 +52,6 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($mutables[1]->getFilename(), $this->searchDir . '/library/bool2.php');
     }
 
-    public function testShouldGenerateMutableFileObjects()
-    {
-        $generator = new Generator;
-        $mutable = m::mock('\\Humbug\\Mutable[]');
-
-        $generator->generate($this->finder, $mutable);
-        $mutables = $generator->getMutables();
-
-        $this->assertTrue($mutables[0] instanceof Mutable);
-    }
-
-    public function testShouldGenerateAMutableFileObjectPerDetectedFile()
-    {
-        $generator = new Generator;
-
-        $mutable = $this->getMock('Mutable', ['setFilename']);
-
-        $generator->generate($this->finder, $mutable);
-        $this->assertEquals(2, count($generator->getMutables()));
-    }
-
     private function createPhpFileFinder($searchDir)
     {
         $finder = new Finder;
