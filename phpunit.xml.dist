@@ -15,8 +15,8 @@
 
     <testsuites>
         <testsuite name="Humbug Test Suite">
-            <directory>./tests/Humbug/</directory>
-            <exclude>./tests/Humbug/Test/Adapter/_files</exclude>
+            <directory>tests/Humbug/</directory>
+            <exclude>tests/Humbug/Test/Adapter/_files</exclude>
         </testsuite>
     </testsuites>
 
