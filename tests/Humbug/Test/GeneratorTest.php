@@ -55,18 +55,20 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
     public function testShouldGenerateMutableFileObjects()
     {
         $generator = new Generator;
-        $mutable = m::mock('\\Humbug\\Mutable[generate]');
-        $mutable->shouldReceive('setFilename');
-        $mutable->shouldReceive('generate');
+        $mutable = m::mock('\\Humbug\\Mutable[]');
+
         $generator->generate($this->finder, $mutable);
         $mutables = $generator->getMutables();
+
         $this->assertTrue($mutables[0] instanceof Mutable);
     }
 
     public function testShouldGenerateAMutableFileObjectPerDetectedFile()
     {
         $generator = new Generator;
-        $mutable = $this->getMock('Mutable', ['generate', 'setFilename']);
+
+        $mutable = $this->getMock('Mutable', ['setFilename']);
+
         $generator->generate($this->finder, $mutable);
         $this->assertEquals(2, count($generator->getMutables()));
     }
@@ -79,5 +81,4 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
 
         return $finder;
     }
-
 }
