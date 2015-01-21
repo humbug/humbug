@@ -18,56 +18,67 @@ use Symfony\Component\Finder\Finder;
 
 class GeneratorTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var string
+     */
+    private $searchDir;
 
-    public function setUp()
+    /**
+     * @var Finder
+     */
+    private $finder;
+
+    protected function setUp()
     {
-        $this->root = dirname(__FILE__) . '/_files/root/base1';
-        $this->badRoot = '/path/does/not/exist';
+        $this->searchDir = dirname(__FILE__) . '/_files/root/base1';
+
+        $this->finder = $this->createPhpFileFinder($this->searchDir);
     }
 
-    public function teardown()
+    protected function tearDown()
     {
         m::close();
     }
 
     public function testShouldCollateAllFilesValidForMutationTesting()
     {
-        $finder = new Finder;
-        $finder->files()->name('*.php');
-        $finder->in($this->root);
+        $this->finder->sortByName();
 
         $generator = new Generator;
-        $generator->generate($finder);
+        $generator->generate($this->finder);
         $mutables = $generator->getMutables();
-        $this->assertEquals($mutables[0]->getFilename(), $this->root . '/library/bool2.php');
-        $this->assertEquals($mutables[1]->getFilename(), $this->root . '/library/bool1.php');
+
+        $this->assertEquals($mutables[0]->getFilename(), $this->searchDir . '/library/bool1.php');
+        $this->assertEquals($mutables[1]->getFilename(), $this->searchDir . '/library/bool2.php');
     }
 
     public function testShouldGenerateMutableFileObjects()
     {
-        $finder = new Finder;
-        $finder->files()->name('*.php');
-        $finder->in($this->root);
-
         $generator = new Generator;
-        $mutable = m::mock('\\Humbug\\Mutable[generate]');
-        $mutable->shouldReceive('setFilename');
-        $mutable->shouldReceive('generate');
-        $generator->generate($finder, $mutable);
+        $mutable = m::mock('\\Humbug\\Mutable[]');
+
+        $generator->generate($this->finder, $mutable);
         $mutables = $generator->getMutables();
+
         $this->assertTrue($mutables[0] instanceof Mutable);
     }
 
     public function testShouldGenerateAMutableFileObjectPerDetectedFile()
     {
-        $finder = new Finder;
-        $finder->files()->name('*.php');
-        $finder->in($this->root);
-
         $generator = new Generator;
-        $mutable = $this->getMock('Mutable', ['generate', 'setFilename']);
-        $generator->generate($finder, $mutable);
+
+        $mutable = $this->getMock('Mutable', ['setFilename']);
+
+        $generator->generate($this->finder, $mutable);
         $this->assertEquals(2, count($generator->getMutables()));
     }
 
+    private function createPhpFileFinder($searchDir)
+    {
+        $finder = new Finder;
+        $finder->files()->name('*.php');
+        $finder->in($searchDir);
+
+        return $finder;
+    }
 }
