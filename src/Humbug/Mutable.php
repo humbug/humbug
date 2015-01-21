@@ -50,7 +50,7 @@ class Mutable
         '\Humbug\Mutator\ConditionalBoundary\LessThanOrEqualTo',
         // Binary Arithmetic
         '\Humbug\Mutator\Arithmetic\Addition',
-        '\Humbug\Mutator\Arithmetic\Substraction',
+        '\Humbug\Mutator\Arithmetic\Subtraction',
         '\Humbug\Mutator\Arithmetic\Multiplication',
         '\Humbug\Mutator\Arithmetic\Division',
         '\Humbug\Mutator\Arithmetic\Modulus',
@@ -84,8 +84,6 @@ class Mutable
         '\Humbug\Mutator\Number\Float',
         // Return Values
         '\Humbug\Mutator\ReturnValue\This',
-        //'\Humbug\Mutator\ReturnValue\True',
-        //'\Humbug\Mutator\ReturnValue\False',
         '\Humbug\Mutator\ReturnValue\Integer',
         //'\Humbug\Mutator\ReturnValue\Float',
         '\Humbug\Mutator\ReturnValue\IntegerNegation',

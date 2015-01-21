@@ -16,7 +16,9 @@ class Integer extends MutatorAbstract
 {
 
     /**
-     * Replace (return $this;) with (return null;)
+     * Replace 0 with 1, 1 with 0 or otherwise 0.
+     * Intent being to cover any generic uses of positive values being equivalent
+     * to boolean TRUE or FALSE.
      *
      * @param array $tokens
      * @param int $index

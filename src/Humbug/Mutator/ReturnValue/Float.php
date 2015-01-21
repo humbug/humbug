@@ -16,7 +16,9 @@ class Float extends MutatorAbstract
 {
 
     /**
-     * Replace (return $this;) with (return null;)
+     * This is covered by the Number\Float mutator and currently disabled pending
+     * some checks on whether a returned literal float should be handled any
+     * differently.
      *
      * @param array $tokens
      * @param int $index

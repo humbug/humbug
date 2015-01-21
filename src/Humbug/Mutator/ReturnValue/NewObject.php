@@ -18,6 +18,8 @@ class NewObject extends MutatorAbstract
 
     /**
      * Replace (return new Something(anything);) with (new Something(anything); return null;)
+     * The object creation must be preserved or behaviour may change beyond the scope
+     * of the mutation.
      *
      * @param array $tokens
      * @param int $index

@@ -18,6 +18,7 @@ class FunctionCall extends MutatorAbstract
 
     /**
      * Replace (return function(anything);) with (function(anything); return null;)
+     * The actual function call must still be made.
      *
      * @param array $tokens
      * @param int $index

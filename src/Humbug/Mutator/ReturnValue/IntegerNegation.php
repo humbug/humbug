@@ -16,7 +16,7 @@ class IntegerNegation extends MutatorAbstract
 {
 
     /**
-     * Replace (return $this;) with (return null;)
+     * Replace any integer with its sign inverted (i.e. multiply by -1)
      *
      * @param array $tokens
      * @param int $index

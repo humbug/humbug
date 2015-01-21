@@ -16,7 +16,8 @@ class Float extends MutatorAbstract
 {
 
     /**
-     * Replace 1 with 0, 0 with 1, or increment.
+     * Replace 0.0 with 1.0, 1.0 with 0.0, and float between 1 and 2 is incremented
+     * by one, and any float greater than 2 is replaced with 1.0.
      *
      * @param array $tokens
      * @param int $index

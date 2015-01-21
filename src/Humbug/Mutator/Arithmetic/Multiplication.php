@@ -16,7 +16,7 @@ class Multiplication extends MutatorAbstract
 {
 
     /**
-     * Replace (/) with (*)
+     * Replace (*) with (/)
      *
      * @param array $tokens
      * @param int $index

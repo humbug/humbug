@@ -16,7 +16,7 @@ class FloatNegation extends MutatorAbstract
 {
 
     /**
-     * Replace (return $this;) with (return null;)
+     * Replace any float with its sign inverted (i.e. multiply by -1)
      *
      * @param array $tokens
      * @param int $index
