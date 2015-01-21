@@ -15,6 +15,7 @@ use Humbug\Adapter\Phpunit\XmlConfiguration;
 use Humbug\Utility\Job;
 use Humbug\Utility\TestTimeAnalyser;
 use Humbug\Utility\CoverageData;
+use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\PhpProcess;
 
 class Phpunit extends AdapterAbstract
@@ -114,7 +115,13 @@ class Phpunit extends AdapterAbstract
             $interceptFile
         );
 
+        $executableFinder = new PhpExecutableFinder();
+        $php = $executableFinder->find();
+
         $process = new PhpProcess($job, null, $_ENV);
+        if ($php !== false) {
+            $process->setCommandLine('exec '.$php);
+        }
         $process->setTimeout($timeout);
 
         return $process;
