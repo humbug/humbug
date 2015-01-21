@@ -25,11 +25,7 @@
         "padraic/phpunit-accelerator": "^1.0.2"
     },
     "require-dev": {
-        "mockery/mockery": "~0.9",
-        "ext-xdebug": "^2.1.4"
-    },
-    "suggest": {
-        "ext-xdebug": "^2.1.4"
+        "mockery/mockery": "~0.9"
     },
     "autoload": {
         "psr-0": { "Humbug\\": "src/" }

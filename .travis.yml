@@ -5,14 +5,18 @@ php:
   - 5.5
   - 5.4
   - hhvm
+  - hhvm-nightly
 
 matrix:
     allow_failures:
         - php: hhvm
+        - php: hhvm-nightly
+
+before_install:
+    - composer self-update
 
 before_script:
-    - travis_retry composer self-update
-    - travis_retry composer --prefer-source --dev install
+    - travis_retry composer install --no-interaction --prefer-source
 
 script:
-    - phpunit --coverage-text
+    - vendor/bin/phpunit --coverage-text
