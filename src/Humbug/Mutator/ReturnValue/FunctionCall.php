@@ -17,7 +17,7 @@ class FunctionCall extends MutatorAbstract
 {
 
     /**
-     * Replace (return new Something(anything);) with (new Something(anything); return null;)
+     * Replace (return function(anything);) with (function(anything); return null;)
      *
      * @param array $tokens
      * @param int $index
@@ -70,17 +70,11 @@ class FunctionCall extends MutatorAbstract
             for ($i=$index+1; $i < count($tokens); $i++) {
                 if (is_array($tokens[$i]) && $tokens[$i][0] == T_WHITESPACE) {
                     continue;
-                } elseif (is_array($tokens[$i]) && $tokens[$i][0] == T_FUNCTION) {
+                } elseif (is_array($tokens[$i]) && ($tokens[$i][0] == T_STRING && function_exists($tokens[$i][1]))) {
                     $has = true;
                     continue;
                 } elseif (!is_array($tokens[$i]) && $tokens[$i] == ';') {
-                    // return statement terminated
-                    if ($has === true) {
-                        return true;
-                    }
-                    return false;
-                } elseif (!is_array($tokens[$i]) && $tokens[$i] == '(' && $has === true) {
-                    continue;
+                    return $has;
                 } elseif ($has === false) {
                     return false;
                 }
