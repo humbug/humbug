@@ -115,13 +115,15 @@ class Phpunit extends AdapterAbstract
             $interceptFile
         );
 
-        $executableFinder = new PhpExecutableFinder();
-        $php = $executableFinder->find();
-
         $process = new PhpProcess($job, null, $_ENV);
-        if ($php !== false) {
-            $process->setCommandLine('exec '.$php);
+        if (!defined('PHP_WINDOWS_VERSION_BUILD')) {
+            $executableFinder = new PhpExecutableFinder();
+            $php = $executableFinder->find();
+            if ($php !== false) {
+                $process->setCommandLine('exec '.$php);
+            }
         }
+        
         $process->setTimeout($timeout);
 
         return $process;
