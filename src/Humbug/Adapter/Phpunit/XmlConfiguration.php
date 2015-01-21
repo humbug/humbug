@@ -325,7 +325,8 @@ class XmlConfiguration
         }
 
         $relativePath = $workingDir.DIRECTORY_SEPARATOR.$name;
-        if (file_exists($relativePath) || !empty(glob($relativePath))) {
+        $glob = glob($relativePath);
+        if (file_exists($relativePath) || !empty($glob)) {
             return realpath($relativePath);
         }
 
