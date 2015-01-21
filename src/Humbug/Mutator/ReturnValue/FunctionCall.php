@@ -30,7 +30,7 @@ class FunctionCall extends MutatorAbstract
         for ($i=$index+1; $i < count($tokens); $i++) {
             if (is_array($tokens[$i]) && $tokens[$i][0] == T_WHITESPACE) {
                 continue;
-            } elseif (is_array($tokens[$i]) && $tokens[$i][0] == T_FUNCTION) {
+            } elseif (is_array($tokens[$i]) && $tokens[$i][0] == T_STRING && function_exists($tokens[$i][1])) {
                 // collect statement tokens (skipping one whitespace after 'return')
                 for ($j=$index+2; $j < count($tokens); $j++) {
                     if (!is_array($tokens[$j]) && $tokens[$j] == ';') {
