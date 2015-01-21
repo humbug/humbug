@@ -119,7 +119,7 @@ class MutableTest extends \PHPUnit_Framework_TestCase
         $file = new Mutable($this->root . '/math2.php');
         $file->generate();
         $return = $file->getMutations();
-        $this->assertEquals('\Humbug\Mutator\Arithmetic\Substraction', $return[0]['mutator']);
+        $this->assertEquals('\Humbug\Mutator\Arithmetic\Subtraction', $return[0]['mutator']);
     }
 
     public function testShouldGenerateIncrementOperatorMutationWhenPostIncrementDetected()
