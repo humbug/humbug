@@ -12,15 +12,11 @@ namespace Humbug;
 
 use Humbug\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
 
 class Container
 {
-
     protected $input;
-
-    protected $output;
 
     protected $cache;
 
@@ -42,10 +38,9 @@ class Container
 
     protected $srcList;
 
-    public function __construct(InputInterface $input, OutputInterface $output)
+    public function __construct(InputInterface $input)
     {
         $this->input = $input;
-        $this->output = $output;
         $this->setAdapterOptionsFromString($this->input->getOption('options'));
     }
 
