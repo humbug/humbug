@@ -79,13 +79,15 @@ class Text
             $error[] = 'The testing framework reported an exit code of ' . $exitCode . '.';
         }
         if ($hasFailure) {
-            $error[] = 'The testing framework ran into a failure or error. Refer to out below.';
+            $error[] = 'The testing framework ran into a failure or error. Refer to output below.';
         }
         if (!empty($result['stdout'])) {
-            $error[] = 'Stdout: \n' . $this->indent($result['stdout']) . '\n';
+            $error[] = 'Stdout:';
+            $error = array_merge($error, $this->indent($result['stdout'], true));
         }
         if (!empty($result['stderr'])) {
-            $error[] = 'Stderr: \n' . $this->indent($result['stderr']) . '\n';
+            $error[] = 'Stderr:';
+            $error = array_merge($error, $this->indent($result['stderr'], true));
         }
         $formattedBlock = $this->formatterHelper->formatBlock($error, 'error');
         $this->write($formattedBlock);
@@ -266,12 +268,15 @@ class Text
      * @param string $output
      * @return string
      */
-    protected function indent($output)
+    protected function indent($output, $asArray = false)
     {
         $lines = explode("\n", $output);
         $out = [];
         foreach ($lines as $line) {
-            $out[] = '    > ' . $line;
+            $out[] = '   > ' . $line;
+        }
+        if ($asArray) {
+            return $out;
         }
         $return = implode("\n", $out);
         return $return;
