@@ -9,30 +9,29 @@
  * @license    https://github.com/padraic/humbug/blob/master/LICENSE New BSD License
  */
 
-namespace Humbug\Test\Mutator\Arithmetic;
+namespace Humbug\Test\Mutator\Boolean;
 
 use Humbug\Mutator;
 
-class NotTest extends \PHPUnit_Framework_TestCase
+class LogicalNotTest extends \PHPUnit_Framework_TestCase
 {
 
     public function testReturnsTokenEquivalentToWhitespace()
     {
-        $mutation = new Mutator\Arithmetic\Not;
+        $mutation = new Mutator\Boolean\LogicalNot;
         $tokens = [];
         $mutation->getMutation($tokens, 10);
         $this->assertEquals([10 => [T_WHITESPACE, '']], $tokens);
     }
 
-    public function testMutatesNotToWhitespace()
+    public function testMutatesLogicalNotToEmptyWhitespace()
     {
-        $tokens = [10 => '~'];
+        $tokens = [10 => '!'];
 
-        $this->assertTrue(Mutator\Arithmetic\Not::mutates($tokens, 10));
+        $this->assertTrue(Mutator\Boolean\LogicalNot::mutates($tokens, 10));
 
-        $tokens = [11 => '-'];
+        $tokens = [11 => '!!'];
 
-        $this->assertFalse(Mutator\Arithmetic\Not::mutates($tokens, 11));
+        $this->assertFalse(Mutator\Boolean\LogicalNot::mutates($tokens, 11));
     }
-
 }

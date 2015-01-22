@@ -24,7 +24,10 @@ class LogicalNot extends MutatorAbstract
      */
     public static function getMutation(array &$tokens, $index)
     {
-        $tokens[$index] = '';
+        $tokens[$index] = [
+            T_WHITESPACE,
+            ''
+        ];
     }
 
     public static function mutates(array &$tokens, $index)
