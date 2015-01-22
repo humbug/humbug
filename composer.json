@@ -28,10 +28,10 @@
         "mockery/mockery": "~0.9"
     },
     "autoload": {
-        "psr-0": { "Humbug\\": "src/" }
+        "psr-4": { "Humbug\\": "src/Humbug" }
     },
     "autoload-dev": {
-        "psr-0": { "Humbug\\Test\\": "tests/" }
+        "psr-4": { "Humbug\\Test\\": "tests/Humbug/Test" }
     },
     "bin": ["bin/humbug"],
     "extra": {
