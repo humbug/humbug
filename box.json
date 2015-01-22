@@ -1,0 +1,21 @@
+{
+    "chmod": "0755",
+    "directories": [
+        "src"
+    ],
+    "files": [
+        "LICENSE"
+    ],
+    "finder": [
+        {
+            "name": "*.php",
+            "exclude": ["tests"],
+            "in": "vendor"
+        }
+    ],
+    "main": "bin/humbug",
+    "output": "humbug.phar",
+    "stub": true,
+    "compactors": "Herrera\\Box\\Compactor\\Php",
+    "compression": "BZ2"
+}

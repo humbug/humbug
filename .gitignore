@@ -29,6 +29,7 @@ nb-configuration.xml
 /*.sublime-project
 *.sublime-workspace
 
+humbug.phar
 build
 composer.lock
 docs
