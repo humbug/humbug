@@ -34,5 +34,4 @@ class GreaterThanOrEqualToTest extends \PHPUnit_Framework_TestCase
 
         $this->assertFalse(Mutator\ConditionalNegation\GreaterThanOrEqualTo::mutates($tokens, 11));
     }
-
 }

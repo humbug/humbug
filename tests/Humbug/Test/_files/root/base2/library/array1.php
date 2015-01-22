@@ -1,6 +1,6 @@
 <?php
 
-class Array1
+class array1
 {
     public function arrayConcatenate($op1)
     {

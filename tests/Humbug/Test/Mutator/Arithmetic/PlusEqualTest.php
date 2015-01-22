@@ -34,5 +34,4 @@ class PlusEqualTest extends \PHPUnit_Framework_TestCase
 
         $this->assertFalse(Mutator\Arithmetic\PlusEqual::mutates($tokens, 11));
     }
-
 }

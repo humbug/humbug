@@ -34,5 +34,4 @@ class MinusEqualTest extends \PHPUnit_Framework_TestCase
 
         $this->assertFalse(Mutator\Arithmetic\MinusEqual::mutates($tokens, 11));
     }
-
 }

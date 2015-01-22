@@ -34,5 +34,4 @@ class ModulusTest extends \PHPUnit_Framework_TestCase
 
         $this->assertFalse(Mutator\Arithmetic\Modulus::mutates($tokens, 11));
     }
-
 }

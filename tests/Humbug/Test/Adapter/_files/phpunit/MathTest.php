@@ -11,6 +11,6 @@ class MM1_MathTest extends \PHPUnit_Framework_TestCase
     public function testAdds()
     {
         $math = new \Phpunit_MM1_Math;
-        $this->assertEquals(4, $math->add(2,2));
+        $this->assertEquals(4, $math->add(2, 2));
     }
 }

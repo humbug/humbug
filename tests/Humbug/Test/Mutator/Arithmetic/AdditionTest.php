@@ -34,5 +34,4 @@ class AdditionTest extends \PHPUnit_Framework_TestCase
 
         $this->assertFalse(Mutator\Arithmetic\Addition::mutates($tokens, 11));
     }
-
 }

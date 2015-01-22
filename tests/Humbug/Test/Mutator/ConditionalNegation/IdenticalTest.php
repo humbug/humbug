@@ -34,5 +34,4 @@ class IdenticalTest extends \PHPUnit_Framework_TestCase
 
         $this->assertFalse(Mutator\ConditionalNegation\Identical::mutates($tokens, 11));
     }
-
 }

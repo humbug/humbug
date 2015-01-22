@@ -34,5 +34,4 @@ class LessThanTest extends \PHPUnit_Framework_TestCase
 
         $this->assertFalse(Mutator\ConditionalBoundary\LessThan::mutates($tokens, 11));
     }
-
 }

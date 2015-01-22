@@ -7,5 +7,4 @@ class Phpunit_MM2_Math
     {
         return $op1 + $op2;
     }
-
 }

@@ -2,7 +2,7 @@
 
 class Math
 {
-    public function add() 
+    public function add()
     {
         return 'add';
     }

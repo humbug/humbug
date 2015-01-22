@@ -64,7 +64,6 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
 
     public function testAdapterRunsPhpunitCommandWithAlltestsFileTarget()
     {
-
         $container = m::mock('\Humbug\Container');
         $container->shouldReceive([
             'getSourceList'    => __DIR__ . '/_files/phpunit2',
@@ -120,7 +119,6 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
 
     public function testAdapterDetectsTestsFailingFromTestFail()
     {
-
         $container = m::mock('\Humbug\Container');
         $container->shouldReceive([
             'getSourceList'    => $this->root,
@@ -216,5 +214,4 @@ not ok 103 - Error: Humbug\Test\Utility\TestTimeAnalyserTest::testAnalysisOfJuni
 OUTPUT;
         $this->assertFalse($adapter->ok($output));
     }
-
 }

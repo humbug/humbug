@@ -9,6 +9,5 @@ class ErrorTest extends \PHPUnit_Framework_TestCase
     public function testSomeError()
     {
         trigger_error('error', E_USER_NOTICE);
-    }  
-
+    }
 }

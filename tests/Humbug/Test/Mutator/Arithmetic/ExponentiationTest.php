@@ -38,5 +38,4 @@ class ExponentiationTest extends \PHPUnit_Framework_TestCase
 
         $this->assertFalse(Mutator\Arithmetic\Exponentiation::mutates($tokens, 11));
     }
-
 }

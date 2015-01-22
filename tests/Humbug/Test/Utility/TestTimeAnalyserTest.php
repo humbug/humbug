@@ -29,5 +29,4 @@ class TestTimeAnalyserTest extends \PHPUnit_Framework_TestCase
         $first = array_shift($analysis);
         $this->assertEquals('/home/sb/ArrayTest2.php', $first['file']);
     }
-
 }

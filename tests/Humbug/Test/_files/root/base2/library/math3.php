@@ -2,7 +2,7 @@
 
 class Math
 {
-    public function increment($op1) 
+    public function increment($op1)
     {
         return $op1++;
     }

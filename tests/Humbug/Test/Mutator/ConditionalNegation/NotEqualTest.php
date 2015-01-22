@@ -34,5 +34,4 @@ class NotEqualTest extends \PHPUnit_Framework_TestCase
 
         $this->assertFalse(Mutator\ConditionalNegation\NotEqual::mutates($tokens, 11));
     }
-
 }

@@ -34,5 +34,4 @@ class DivisionTest extends \PHPUnit_Framework_TestCase
 
         $this->assertFalse(Mutator\Arithmetic\Division::mutates($tokens, 11));
     }
-
 }

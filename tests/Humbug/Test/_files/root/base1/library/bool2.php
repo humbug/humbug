@@ -1,9 +1,9 @@
 <?php
 
-class Bool2
+class bool2
 {
-    public function boolFalse($op1) 
+    public function boolFalse($op1)
     {
-        return FALSE;
+        return false;
     }
 }

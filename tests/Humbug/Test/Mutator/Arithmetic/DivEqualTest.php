@@ -34,5 +34,4 @@ class DivEqualTest extends \PHPUnit_Framework_TestCase
 
         $this->assertFalse(Mutator\Arithmetic\DivEqual::mutates($tokens, 11));
     }
-
 }

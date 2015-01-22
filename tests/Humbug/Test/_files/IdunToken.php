@@ -203,8 +203,7 @@ class Idun_Form_Helper_Token
      */
     public function addToken($token)
     {
-        if (!$this->hasToken($token))
-        {
+        if (!$this->hasToken($token)) {
             $session  = $this->_getSession();
             $tokens   = $session->tokens;
             $tokens[] = $token;

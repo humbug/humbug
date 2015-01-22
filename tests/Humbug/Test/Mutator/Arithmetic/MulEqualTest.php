@@ -34,5 +34,4 @@ class MulEqualTest extends \PHPUnit_Framework_TestCase
 
         $this->assertFalse(Mutator\Arithmetic\MulEqual::mutates($tokens, 11));
     }
-
 }

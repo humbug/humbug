@@ -34,5 +34,4 @@ class ShiftLeftTest extends \PHPUnit_Framework_TestCase
 
         $this->assertFalse(Mutator\Arithmetic\ShiftLeft::mutates($tokens, 11));
     }
-
 }

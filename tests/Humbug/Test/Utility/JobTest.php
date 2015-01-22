@@ -30,5 +30,4 @@ Phpunit::main('YTowOnt9');
 EXPECTED;
         $this->assertEquals($expected, $script);
     }
-
 }

@@ -34,5 +34,4 @@ class BitwiseOrTest extends \PHPUnit_Framework_TestCase
 
         $this->assertFalse(Mutator\Arithmetic\BitwiseOr::mutates($tokens, 11));
     }
-
 }

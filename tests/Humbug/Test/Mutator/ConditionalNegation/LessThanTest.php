@@ -34,5 +34,4 @@ class LessThanTest extends \PHPUnit_Framework_TestCase
 
         $this->assertFalse(Mutator\ConditionalNegation\LessThan::mutates($tokens, 11));
     }
-
 }
