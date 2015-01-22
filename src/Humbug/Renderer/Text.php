@@ -11,6 +11,7 @@
 namespace Humbug\Renderer;
 
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Helper\FormatterHelper;
 
 class Text
 {
@@ -21,16 +22,18 @@ class Text
 
     protected $type = OutputInterface::OUTPUT_NORMAL;
 
-
     protected $buffer;
 
-    public function __construct(OutputInterface $output, $buffer = false, $colors = true)
+    protected $formatterHelper;
+
+    public function __construct(OutputInterface $output, FormatterHelper $formatterHelper, $buffer = false, $colors = true)
     {
         $this->output = $output;
         if (!$colors) {
             $this->type = OutputInterface::OUTPUT_PLAIN;
         }
         $this->useBuffer = $buffer;
+        $this->formatterHelper = $formatterHelper;
     }
 
     public function write($string, $eol = true)
@@ -69,20 +72,23 @@ class Text
      */
     public function renderInitialRunFail(array &$result, $exitCode, $hasFailure)
     {
-        $this->write('<warning>Tests must be in a fully passing state before Humbug is run.</warning>');
-        $this->write('<warning>Incomplete, skipped or risky tests are allowed.</warning>');
+        $error = [];
+        $error[] = 'Tests must be in a fully passing state before Humbug is run.';
+        $error[] = 'Incomplete, skipped or risky tests are allowed.';
         if ($exitCode !== 0) {
-            $this->write('<warning>The testing framework reported an exit code of ' . $exitCode . '.</warning>');
+            $error[] = 'The testing framework reported an exit code of ' . $exitCode . '.';
         }
         if ($hasFailure) {
-            $this->write('<warning>The testing framework ran into a failure or error. Refer to out below.</warning>');
+            $error[] = 'The testing framework ran into a failure or error. Refer to out below.';
         }
         if (!empty($result['stdout'])) {
-            $this->write('<warning>Stdout: \n' . $this->indent($result['stdout']) . '\n</warning>');
+            $error[] = 'Stdout: \n' . $this->indent($result['stdout']) . '\n';
         }
         if (!empty($result['stderr'])) {
-            $this->write('<warning>Stderr: \n' . $this->indent($result['stderr']) . '\n</warning>');
+            $error[] = 'Stderr: \n' . $this->indent($result['stderr']) . '\n';
         }
+        $formattedBlock = $this->formatterHelper->formatBlock($error, 'error');
+        $this->write($formattedBlock);
     }
 
     /**

@@ -24,6 +24,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Helper\ProgressBar;
+use Symfony\Component\Console\Helper\FormatterHelper;
 use Symfony\Component\Finder\Finder;
 
 class Humbug extends Command
@@ -60,11 +61,11 @@ class Humbug extends Command
          */
         $this->doConfiguration($output);
 
-
+        $formatterHelper = new FormatterHelper;
         if ($this->logText === true) {
-            $renderer = new Text($output, true);
+            $renderer = new Text($output, $formatterHelper, true);
         } else {
-            $renderer = new Text($output);
+            $renderer = new Text($output, $formatterHelper);
         }
 
         $renderer->renderPreTestIntroduction();
@@ -95,6 +96,7 @@ class Humbug extends Command
                 $progress->setProgress((int) $matches[1]);
                 $process->clearOutput();
             } elseif (preg_match("%[\n\r]+not ok (\\d+).*$%", $process->getOutput(), $matches)) {
+                sleep(1);
                 $hasFailure = true;
                 break;
             }
