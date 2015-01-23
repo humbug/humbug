@@ -114,13 +114,15 @@ class Mutable
         $lineNumber = 1;
         $methodName = '???';
         $className = '???';
+        $namespace = '';
+        $inMethod = false;
+        $inMethodBlock = false;
+        $methodCurlyCount = 0;
         foreach ($tokens as $index => $token) {
             if (is_array($token) && $token[0] == Tokenizer::T_NEWLINE) {
                 $lineNumber = $token[2] + 1;
                 continue;
             }
-
-            $namespace = ''; // TODO: Looks to be well out of place...
 
             if (is_array($token) && $token[0] == T_NAMESPACE) {
                 for ($j=$index+1; $j<count($tokens); $j++) {
@@ -139,26 +141,54 @@ class Mutable
                 continue;
             }
 
+            //TODO: handle whitespace!
             if (is_array($token) && $token[0] == T_FUNCTION) {
                 if (!isset($tokens[$index+2][1])) {
                     continue; // ignore closure
                 }
                 $methodName = $tokens[$index+2][1];
+                $inMethod = true;
                 continue;
             }
 
-            foreach ($this->mutators as $mutator) {
-                if ($mutator::mutates($tokens, $index)) {
-                    $this->mutations[] = [
-                        'file'          => $this->getFilename(),
-                        'class'         => $className,
-                        'method'        => $methodName,
-                        'index'         => $index,
-                        'mutator'      => $mutator,
-                        'line'          => $lineNumber
-                    ];
+            /**
+             * Limit mutation generation to the interior of methods (for now!)
+             */
+            if (true === $inMethod && false === $inMethodBlock && $methodCurlyCount == 0
+            && !($token == '{' || (is_array($token) && $token[0] == T_CURLY_OPEN))) {
+                continue; //skip over argument list
+            }
+            if ($inMethod) {
+                if ($token == '{' || (is_array($token) && $token[0] == T_CURLY_OPEN)) {
+                    $methodCurlyCount += 1;
+                    $inMethodBlock = true;
+                    continue;
+                } elseif ($token == '}') {
+                    $methodCurlyCount -= 1;
+                    continue;
+                }
+                if ($methodCurlyCount == 0) {
+                    $inMethodBlock = false;
+                    $inMethod = false;
+                    continue;
                 }
             }
+
+            if (true === $inMethodBlock) {
+                foreach ($this->mutators as $mutator) {
+                    if ($mutator::mutates($tokens, $index)) {
+                        $this->mutations[] = [
+                            'file'          => $this->getFilename(),
+                            'class'         => $className,
+                            'method'        => $methodName,
+                            'index'         => $index,
+                            'mutator'       => $mutator,
+                            'line'          => $lineNumber
+                        ];
+                    }
+                }
+            }
+
         }
         return $this;
     }
