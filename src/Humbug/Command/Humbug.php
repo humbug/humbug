@@ -74,7 +74,7 @@ class Humbug extends Command
         /**
          * Log buffered renderer output to file if enabled
          */
-        $this->logText($input, $renderer);
+        $this->logText($renderer);
 
         /**
          * Make initial test run to ensure tests are in a starting passing state
@@ -123,7 +123,7 @@ class Humbug extends Command
          */
         if ($exitCode !== 0 || $hasFailure) {
             $renderer->renderInitialRunFail($result, $exitCode, $hasFailure);
-            $this->logText($input, $renderer);
+            $this->logText($renderer);
             exit(1);
         }
 
@@ -132,7 +132,7 @@ class Humbug extends Command
          */
         $renderer->renderInitialRunPass($result);
         $output->write(PHP_EOL);
-        $this->logText($input, $renderer);
+        $this->logText($renderer);
 
         /**
          * Analyse initial run logs to optimise future test runs by ordering
@@ -161,7 +161,7 @@ class Humbug extends Command
         $renderer->renderMutationTestingStart(count($mutables));
         $output->write(PHP_EOL);
         Performance::start();
-        $this->logText($input, $renderer);
+        $this->logText($renderer);
 
         /**
          * Iterate across all mutations. After each, run the test suite and
@@ -269,7 +269,7 @@ class Humbug extends Command
                     $countMutants++;
 
                     $renderer->renderProgressMark($result, count($mutables), $i);
-                    $this->logText($input, $renderer);
+                    $this->logText($renderer);
 
                     if ($result['timeout'] === true) {
                         $countMutantTimeouts++;
@@ -326,7 +326,7 @@ class Humbug extends Command
         }
         if ($this->logText === true) {
             $renderer->renderLogToText($this->textLogFile);
-            $this->logText($input, $renderer);
+            $this->logText($renderer);
             $out = [PHP_EOL, '-------', 'Escapes', '-------'];
             foreach ($mutantEscapes as $index => $escaped) {
                 $mutation = $escaped->getMutation();
@@ -362,7 +362,7 @@ class Humbug extends Command
                     $out[] = PHP_EOL;
                 }
             }
-            $this->logText($input, $renderer, implode(PHP_EOL, $out));
+            $this->logText($renderer, implode(PHP_EOL, $out));
         }
         if ($this->logJson === true || $this->logText === true) {
             $output->write(PHP_EOL);
@@ -372,7 +372,7 @@ class Humbug extends Command
          * Render performance data
          */
         $renderer->renderPerformanceData(Performance::getTimeString(), Performance::getMemoryUsageString());
-        $this->logText($input, $renderer);
+        $this->logText($renderer);
 
         Performance::downMemProfiler();
     }
@@ -584,22 +584,16 @@ class Humbug extends Command
         }
     }
 
-    protected function logText(InputInterface $input, Text $renderer, $output = null)
+    private function logText(Text $renderer, $output = null)
     {
         if ($this->logText === true) {
-            if (!is_null($output)) {
-                file_put_contents(
-                    $this->textLogFile,
-                    $output,
-                    FILE_APPEND
-                );
-            } else {
-                file_put_contents(
-                    $this->textLogFile,
-                    $renderer->getBuffer(),
-                    FILE_APPEND
-                );
-            }
+            $logText = !is_null($output) ? $output : $renderer->getBuffer();
+
+            file_put_contents(
+                $this->textLogFile,
+                $logText,
+                FILE_APPEND
+            );
         }
     }
 }
