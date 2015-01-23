@@ -54,7 +54,7 @@ class Humbug extends Command
         $output->writeln($this->getApplication()->getLongVersion() . PHP_EOL);
 
         $this->validate($input, $output);
-        $container = $this->container = new Container($input, $output);
+        $container = $this->container = new Container($input);
 
         /**
          * Setup source code finder and timeout if set
