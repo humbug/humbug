@@ -23,7 +23,9 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
 
     public function testShouldHaveAdapterOptionsAfterCreate()
     {
-        $input = $this->createInputMock();
+        $input = [
+            'options' => 'adapterOpt1 adapterOpt2'
+        ];
 
         $container = new Container($input);
 
@@ -41,9 +43,10 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
 
     public function testGetShouldReturnInputOption()
     {
-        $input = $this->createInputMock();
-
-        $input->expects($this->at(1))->method('getOption')->with('test')->willReturn('test-option');
+        $input = [
+            'options' => 'adapterOpt1 adapterOpt2',
+            'test' => 'test-option'
+        ];
 
         $container = new Container($input);
 
@@ -52,7 +55,9 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
 
     public function testGetShouldRiseExceptionForUnknownOption()
     {
-        $input = new ArgvInput([], new InputDefinition([new InputOption('options')]));
+        $input = [
+            'options' => null
+        ];
 
         $this->setExpectedException('\InvalidArgumentException');
 
