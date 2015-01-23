@@ -30,15 +30,12 @@ class Generator
      *
      * @return void
      */
-    public function generate(Finder $finder, $mutableObject = null)
+    public function generate(Finder $finder)
     {
         foreach ($finder as $file) {
-            if (is_null($mutableObject)) {
-                $mutable = new Mutable($file->getRealpath());
-            } else {
-                $mutable = new $mutableObject;
-                $mutable->setFilename($file->getRealpath());
-            }
+
+            $mutable = new Mutable($file->getRealpath());
+
             $this->mutables[] = $mutable;
         }
     }

@@ -11,16 +11,11 @@
 namespace Humbug;
 
 use Humbug\Exception\InvalidArgumentException;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
 
 class Container
 {
-
-    protected $input;
-
-    protected $output;
+    private $inputOptions;
 
     protected $cache;
 
@@ -42,11 +37,10 @@ class Container
 
     protected $srcList;
 
-    public function __construct(InputInterface $input, OutputInterface $output)
+    public function __construct(array $inputOptions)
     {
-        $this->input = $input;
-        $this->output = $output;
-        $this->setAdapterOptionsFromString($this->input->getOption('options'));
+        $this->inputOptions = $inputOptions;
+        $this->setAdapterOptionsFromString($this->inputOptions['options']);
     }
 
     /**
@@ -57,7 +51,11 @@ class Container
      */
     public function get($option)
     {
-        return $this->input->getOption($option);
+        if (!array_key_exists($option, $this->inputOptions)) {
+            throw new \InvalidArgumentException('Option "'. $option . ' not exists');
+        }
+
+        return $this->inputOptions[$option];
     }
 
     /**
