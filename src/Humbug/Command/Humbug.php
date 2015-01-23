@@ -53,7 +53,7 @@ class Humbug extends Command
         Performance::upMemProfiler();
         $output->writeln($this->getApplication()->getLongVersion() . PHP_EOL);
 
-        $this->validate($input, $output);
+        $this->validate($input);
         $container = $this->container = new Container($input->getOptions());
 
         /**
@@ -561,7 +561,7 @@ class Humbug extends Command
         ;
     }
 
-    protected function validate(InputInterface $input, OutputInterface $output)
+    private function validate(InputInterface $input)
     {
         /**
          * Adapter
