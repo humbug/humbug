@@ -470,32 +470,29 @@ class Humbug extends Command
             $this->container->setTestRunDirectory($chDir);
         }
 
+        $jsonLogsFile = $newConfig->getLogsJson();
+        $textLogsFile = $newConfig->getLogsText();
+
         /**
          * Check for logging config
          */
-        if (!isset($config->logs) || (!isset($config->logs->json) && !isset($config->logs->text))) {
+        if ($jsonLogsFile === null && $textLogsFile === null) {
             $output->writeln('<error>No log file is specified. Detailed results will not be available.</error>');
         } else {
-            if (isset($config->logs->json)) {
-                if (!file_exists(dirname($config->logs->json))) {
-                    throw new JsonConfigException(
-                        'Directory for json logging does not exist: ' . dirname($config->logs->json)
-                    );
-                }
+            if ($jsonLogsFile !== null) {
+
                 $this->logJson = true;
-                $this->jsonLogFile = $config->logs->json;
+                $this->jsonLogFile = $jsonLogsFile;
+
                 if (file_exists($this->jsonLogFile)) {
                     unlink($this->jsonLogFile);
                 }
             }
-            if (isset($config->logs->text)) {
-                if (!file_exists(dirname($config->logs->text))) {
-                    throw new JsonConfigException(
-                        'Directory for text logging does not exist: ' . dirname($config->logs->text)
-                    );
-                }
+
+            if ($textLogsFile !== null) {
+
                 $this->logText = true;
-                $this->textLogFile = $config->logs->text;
+                $this->textLogFile = $textLogsFile;
                 if (file_exists($this->textLogFile)) {
                     unlink($this->textLogFile);
                 }

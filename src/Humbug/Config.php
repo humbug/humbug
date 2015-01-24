@@ -64,4 +64,29 @@ class Config
 
         return $this->config->chdir;
     }
+
+    public function getLogsJson()
+    {
+        return $this->getLogs('json');
+    }
+
+    public function getLogsText()
+    {
+        return $this->getLogs('text');
+    }
+
+    private function getLogs($type)
+    {
+        if (!isset($this->config->logs->{$type})) {
+            return null;
+        }
+
+        if (!file_exists(dirname($this->config->logs->{$type}))) {
+            throw new JsonConfigException(
+                'Directory for ' . $type . ' logging does not exist: ' . dirname($this->config->logs->{$type})
+            );
+        }
+
+        return $this->config->logs->{$type};
+    }
 }

@@ -126,7 +126,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($config->getChDir());
     }
 
-    public function testShouldRiceExceptionWhenChDirNotExists()
+    public function testShouldRiseExceptionWhenChDirNotExists()
     {
         $configData = (object)[
             'chdir' => 'path/to/not-a-dir'
@@ -140,5 +140,69 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         );
 
         $config->getChDir();
+    }
+
+    public function testShouldHaveLogsJsonAndLogsText()
+    {
+        $logsJsonFile = __DIR__ . '/_files/logs/test.json';
+        $logsTextFile = __DIR__ . '/_files/logs/test.txt';
+
+        $configData = (object)[
+            'logs' => (object) [
+                'json' => $logsJsonFile,
+                'text' => $logsTextFile
+            ]
+        ];
+
+        $config = new Config($configData);
+
+        $this->assertEquals($logsJsonFile, $config->getLogsJson());
+        $this->assertEquals($logsTextFile, $config->getLogsText());
+    }
+
+    public function testShouldHaveEmptyLogsJsonAndLogsText()
+    {
+        $configData = new \stdClass();
+
+        $config = new Config($configData);
+
+        $this->assertNull($config->getLogsJson());
+        $this->assertNull($config->getLogsText());
+    }
+
+    public function testShouldRiseExceptionWhenLogsJsonDirNotExists()
+    {
+        $configData = (object)[
+            'logs' => (object)[
+                'json' => 'path/to/not-a-dir/logs.json'
+            ]
+        ];
+
+        $this->setExpectedExceptionRegExp(
+            'Humbug\Exception\JsonConfigException',
+            '/Directory for json logging does not exist: .+/'
+        );
+
+        $config = new Config($configData);
+
+        $config->getLogsJson();
+    }
+
+    public function testShouldRiseExceptionWhenTextJsonDirNotExists()
+    {
+        $configData = (object)[
+            'logs' => (object)[
+                'text' => 'path/to/not-a-dir/logs.txt'
+            ]
+        ];
+
+        $this->setExpectedExceptionRegExp(
+            'Humbug\Exception\JsonConfigException',
+            '/Directory for text logging does not exist: .+/'
+        );
+
+        $config = new Config($configData);
+
+        $config->getLogsText();
     }
 }
