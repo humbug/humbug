@@ -10,6 +10,7 @@
 
 namespace Humbug\Command;
 
+use Humbug\Config\JsonParser;
 use Humbug\Container;
 use Humbug\Adapter\Phpunit;
 use Humbug\Mutant;
@@ -441,19 +442,9 @@ class Humbug extends Command
 
     protected function doConfiguration(OutputInterface $output)
     {
-        if (!file_exists('humbug.json')) {
-            throw new JsonConfigException(
-                'Configuration file does not exist. Please create a humbug.json file.'
-            );
-        }
-        $config = json_decode(file_get_contents('humbug.json'));
-        if (null === $config || json_last_error() !== JSON_ERROR_NONE) {
-            throw new JsonConfigException(
-                'Error parsing configuration file JSON'
-                . (function_exists('json_last_error_msg') ? ': ' . json_last_error_msg() : '')
-            );
-        }
         $this->container->setBaseDirectory(getcwd());
+
+        $config = (new JsonParser())->parseFile('humbug.json');
 
         /**
          * Check for source code scanning config
