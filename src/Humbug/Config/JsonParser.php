@@ -20,21 +20,37 @@ class JsonParser
 {
     public function parseFile($file)
     {
+        $this->guardFileExists($file);
+
+        $config = json_decode(file_get_contents($file));
+
+        $this->guardDecodeErrors($config);
+
+        return $config;
+    }
+
+    /**
+     * @param $file
+     */
+    private function guardFileExists($file)
+    {
         if (!file_exists($file)) {
             throw new JsonConfigException(
                 'Configuration file does not exist. Please create a humbug.json file.'
             );
         }
+    }
 
-        $config = json_decode(file_get_contents($file));
-
+    /**
+     * @param $config
+     */
+    private function guardDecodeErrors($config)
+    {
         if (null === $config || json_last_error() !== JSON_ERROR_NONE) {
             throw new JsonConfigException(
                 'Error parsing configuration file JSON'
                 . (function_exists('json_last_error_msg') ? ': ' . json_last_error_msg() : '')
             );
         }
-
-        return $config;
     }
 }
