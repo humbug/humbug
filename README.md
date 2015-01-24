@@ -82,7 +82,7 @@ other than your project's base directory.
 }
 ```
 
-Ensure that your tests are all in a passing state (imcomplete and skipped tests
+Ensure that your tests are all in a passing state (incomplete and skipped tests
 are allowed). Humbug will quit if any of your tests are failing.
 
 The magic command, while in your project's base directory (and assuming humbug
@@ -195,7 +195,6 @@ following:
 and line on which the mutation was inserted.
 * It orders test classes to run so that the slowest go last (hopefully the faster
 tests will detect mutations early!).
-* We use Runkit because...writing many files is the opposite of fast.
 * If a mutation falls on a line not covered by any tests, well, we don't bother
 running any tests.
 * Performance may, depending on the source code, be significantly impacted by timeouts.
