@@ -24,7 +24,6 @@ class JobTest extends \PHPUnit_Framework_TestCase
 <?php
 namespace Humbug\\Env;
 require_once '{$bootstrap}';
-error_reporting(error_reporting() & ~E_NOTICE);
 use Humbug\Adapter\Phpunit;
 Phpunit::main('YTowOnt9');
 EXPECTED;
