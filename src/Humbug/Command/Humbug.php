@@ -464,16 +464,10 @@ class Humbug extends Command
             $this->container->setTimeout((int) $timeout);
         }
 
-        /**
-         * Check for change working directory config
-         */
-        if (isset($config->chdir)) {
-            if (!file_exists($config->chdir)) {
-                throw new JsonConfigException(
-                    'Directory in which to run tests does not exist: ' . $config->chdir
-                );
-            }
-            $this->container->setTestRunDirectory($config->chdir);
+        $chDir = $newConfig->getChDir();
+
+        if ($chDir !== null) {
+            $this->container->setTestRunDirectory($chDir);
         }
 
         /**

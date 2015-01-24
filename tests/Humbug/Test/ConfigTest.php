@@ -30,19 +30,19 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     public function validSourceDataProvider()
     {
         $sourceWithDirectories = (object)[
-            'source' => (object) [
+            'source' => (object)[
                 'directories' => []
             ]
         ];
 
         $sourceWithExcludes = (object)[
-            'source' => (object) [
+            'source' => (object)[
                 'excludes' => []
             ]
         ];
 
         $sourceWithDirectoriesAndExcludes = (object)[
-            'source' => (object) [
+            'source' => (object)[
                 'directories' => [],
                 'excludes' => []
             ]
@@ -103,5 +103,42 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $config = new Config($configData);
 
         $this->assertNull($config->getTimeout());
+    }
+
+    public function testShouldHaveChDir()
+    {
+        $dirPath = __DIR__ . '/_files';
+        $configData = (object)[
+            'chdir' => $dirPath
+        ];
+
+        $config = new Config($configData);
+
+        $this->assertEquals($dirPath, $config->getChDir());
+    }
+
+    public function testShouldHaveEmptyChDir()
+    {
+        $configData = new \stdClass();
+
+        $config = new Config($configData);
+
+        $this->assertNull($config->getChDir());
+    }
+
+    public function testShouldRiceExceptionWhenChDirNotExists()
+    {
+        $configData = (object)[
+            'chdir' => 'path/to/not-a-dir'
+        ];
+
+        $config = new Config($configData);
+
+        $this->setExpectedExceptionRegExp(
+            'Humbug\Exception\JsonConfigException',
+            '/Directory in which to run tests does not exist: .+/'
+        );
+
+        $config->getChDir();
     }
 }

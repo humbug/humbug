@@ -43,10 +43,25 @@ class Config
 
     public function getTimeout()
     {
-        if (isset($this->config->timeout)) {
-            return $this->config->timeout;
+        if (!isset($this->config->timeout)) {
+            return null;
         }
 
-        return null;
+        return $this->config->timeout;
+    }
+
+    public function getChDir()
+    {
+        if (!isset($this->config->chdir)) {
+            return null;
+        }
+
+        if (!file_exists($this->config->chdir)) {
+            throw new JsonConfigException(
+                'Directory in which to run tests does not exist: ' . $this->config->chdir
+            );
+        }
+
+        return $this->config->chdir;
     }
 }
