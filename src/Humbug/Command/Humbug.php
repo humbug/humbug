@@ -47,8 +47,8 @@ class Humbug extends Command
      * The text output, other than some newline management, is held within
      * Humbug\Renderer\Text.
      *
-     * @param   Symfony\Component\Console\Input\InputInterface
-     * @param   Symfony\Component\Console\Output\OutputInterface
+     * @param InputInterface $input
+     * @param OutputInterface $output
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -458,11 +458,10 @@ class Humbug extends Command
 
         $this->container->setSourceList($source);
 
-        /**
-         * Check for timeout config
-         */
-        if (isset($config->timeout)) {
-            $this->container->setTimeout((int) $config->timeout);
+        $timeout = $newConfig->getTimeout();
+
+        if ($timeout !== null) {
+            $this->container->setTimeout((int) $timeout);
         }
 
         /**

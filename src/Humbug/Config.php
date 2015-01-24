@@ -40,4 +40,13 @@ class Config
 
         return $this->config->source;
     }
+
+    public function getTimeout()
+    {
+        if (isset($this->config->timeout)) {
+            return $this->config->timeout;
+        }
+
+        return null;
+    }
 }

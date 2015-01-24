@@ -84,4 +84,24 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
         $config->getSource();
     }
+
+    public function testShouldHaveTimeout()
+    {
+        $configData = (object)[
+            'timeout' => 10
+        ];
+
+        $config = new Config($configData);
+
+        $this->assertEquals(10, $config->getTimeout());
+    }
+
+    public function testShouldHaveEmptyTimeout()
+    {
+        $configData = new \stdClass();
+
+        $config = new Config($configData);
+
+        $this->assertNull($config->getTimeout());
+    }
 }
