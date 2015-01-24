@@ -32,9 +32,9 @@ class Humbug extends Command
 {
     protected $finder;
 
-    protected $jsonLogFile;
+    private $jsonLogFile;
 
-    protected $textLogFile;
+    private $textLogFile;
 
     /**
      * Execute the command.
@@ -52,10 +52,13 @@ class Humbug extends Command
         $this->validate($input);
         $container = $this->container = new Container($input->getOptions());
 
-        /**
-         * Setup source code finder and timeout if set
-         */
-        $this->doConfiguration($output);
+        $this->doConfiguration();
+
+        if ($this->isLoggingEnabled()) {
+            $this->removeOldLogFiles();
+        } else {
+            $output->writeln('<error>No log file is specified. Detailed results will not be available.</error>');
+        }
 
         $formatterHelper = new FormatterHelper;
         if ($this->textLogFile) {
@@ -435,7 +438,7 @@ class Humbug extends Command
         return $finder;
     }
 
-    protected function doConfiguration(OutputInterface $output)
+    protected function doConfiguration()
     {
         $this->container->setBaseDirectory(getcwd());
 
@@ -464,32 +467,8 @@ class Humbug extends Command
             $this->container->setTestRunDirectory($chDir);
         }
 
-        $jsonLogsFile = $newConfig->getLogsJson();
-        $textLogsFile = $newConfig->getLogsText();
-
-        /**
-         * Check for logging config
-         */
-        if ($jsonLogsFile === null && $textLogsFile === null) {
-            $output->writeln('<error>No log file is specified. Detailed results will not be available.</error>');
-        } else {
-            if ($jsonLogsFile !== null) {
-
-                $this->jsonLogFile = $jsonLogsFile;
-
-                if (file_exists($this->jsonLogFile)) {
-                    unlink($this->jsonLogFile);
-                }
-            }
-
-            if ($textLogsFile !== null) {
-
-                $this->textLogFile = $textLogsFile;
-                if (file_exists($this->textLogFile)) {
-                    unlink($this->textLogFile);
-                }
-            }
-        }
+        $this->jsonLogFile = $newConfig->getLogsJson();
+        $this->textLogFile = $newConfig->getLogsText();
     }
 
     protected function configure()
@@ -562,5 +541,21 @@ class Humbug extends Command
                 FILE_APPEND
             );
         }
+    }
+
+    private function removeOldLogFiles()
+    {
+        if (file_exists($this->jsonLogFile)) {
+            unlink($this->jsonLogFile);
+        }
+
+        if (file_exists($this->textLogFile)) {
+            unlink($this->textLogFile);
+        }
+    }
+
+    private function isLoggingEnabled()
+    {
+        return $this->jsonLogFile !== null || $this->textLogFile !== null;
     }
 }
