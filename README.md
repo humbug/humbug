@@ -154,6 +154,10 @@ source code) and a timed out mutant is a mutation which took longer than your
 defined timeout to execute (perhaps an infinite loop which mutations will infrequently
 create in source code).
 
+Kills, errors and timeouts are all counted as detected mutations. We report errors
+in the logs on the off chance that Humbug itself encountered an internal error, i.e.
+a bug to be reported as an issue here!
+
 The example summary results reported a number of statistics:
 * The headline news is that 68% of mutations which were covered by unit tests
 were detected by your unit tests. Analysing the log may assist in improving that score.
