@@ -10,6 +10,7 @@
 
 namespace Humbug\Command;
 
+use Humbug\Config;
 use Humbug\Config\JsonParser;
 use Humbug\Container;
 use Humbug\Adapter\Phpunit;
@@ -446,24 +447,16 @@ class Humbug extends Command
 
         $config = (new JsonParser())->parseFile('humbug.json');
 
-        /**
-         * Check for source code scanning config
-         */
-        if (!isset($config->source)) {
-            throw new JsonConfigException(
-                'Source code data is not included in configuration file'
-            );
-        }
-        if (!isset($config->source->directories) && !isset($config->source->excludes)) {
-            throw new JsonConfigException(
-                'You must set at least one source directory or exclude in the configuration file'
-            );
-        }
+        $newConfig = new Config($config);
+
+        $source = $newConfig->getSource();
+
         $this->finder = $this->prepareFinder(
-            isset($config->source->directories)? $config->source->directories : null,
-            isset($config->source->excludes)? $config->source->excludes : null
+            isset($source->directories)? $source->directories : null,
+            isset($source->excludes)? $source->excludes : null
         );
-        $this->container->setSourceList($config->source);
+
+        $this->container->setSourceList($source);
 
         /**
          * Check for timeout config
