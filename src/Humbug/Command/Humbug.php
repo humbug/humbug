@@ -124,7 +124,8 @@ class Humbug extends Command
         if ($exitCode !== 0 || $hasFailure) {
             $renderer->renderInitialRunFail($result, $exitCode, $hasFailure);
             $this->logText($renderer);
-            exit(1);
+
+            return 1;
         }
 
         /**
