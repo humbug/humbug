@@ -54,7 +54,6 @@ PREPEND;
 <?php
 namespace Humbug\\Env;
 require_once '{$humbugBootstrap}';
-error_reporting(error_reporting() & ~E_NOTICE);
 use Humbug\Adapter\Phpunit;
 Phpunit::main('{$args}');
 SCRIPT;
