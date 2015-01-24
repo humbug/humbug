@@ -20,7 +20,6 @@ use Humbug\Utility\ParallelGroup;
 use Humbug\Renderer\Text;
 use Humbug\Exception\InvalidArgumentException;
 use Humbug\Exception\NoCoveringTestsException;
-use Humbug\Exception\JsonConfigException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -31,14 +30,9 @@ use Symfony\Component\Finder\Finder;
 
 class Humbug extends Command
 {
-
     protected $finder;
 
-    protected $logJson = false;
-
     protected $jsonLogFile;
-
-    protected $logText = false;
 
     protected $textLogFile;
 
@@ -64,7 +58,7 @@ class Humbug extends Command
         $this->doConfiguration($output);
 
         $formatterHelper = new FormatterHelper;
-        if ($this->logText === true) {
+        if ($this->textLogFile) {
             $renderer = new Text($output, $formatterHelper, true);
         } else {
             $renderer = new Text($output, $formatterHelper);
@@ -313,7 +307,7 @@ class Humbug extends Command
         /**
          * Do any detailed logging now
          */
-        if ($this->logJson === true) {
+        if ($this->jsonLogFile) {
             $renderer->renderLogToJson($this->jsonLogFile);
             $this->logJson(
                 $countMutants,
@@ -327,7 +321,7 @@ class Humbug extends Command
                 $this->jsonLogFile
             );
         }
-        if ($this->logText === true) {
+        if ($this->textLogFile) {
             $renderer->renderLogToText($this->textLogFile);
             $this->logText($renderer);
             $out = [PHP_EOL, '-------', 'Escapes', '-------'];
@@ -367,7 +361,7 @@ class Humbug extends Command
             }
             $this->logText($renderer, implode(PHP_EOL, $out));
         }
-        if ($this->logJson === true || $this->logText === true) {
+        if ($this->jsonLogFile || $this->textLogFile) {
             $output->write(PHP_EOL);
         }
 
@@ -481,7 +475,6 @@ class Humbug extends Command
         } else {
             if ($jsonLogsFile !== null) {
 
-                $this->logJson = true;
                 $this->jsonLogFile = $jsonLogsFile;
 
                 if (file_exists($this->jsonLogFile)) {
@@ -491,7 +484,6 @@ class Humbug extends Command
 
             if ($textLogsFile !== null) {
 
-                $this->logText = true;
                 $this->textLogFile = $textLogsFile;
                 if (file_exists($this->textLogFile)) {
                     unlink($this->textLogFile);
@@ -561,7 +553,7 @@ class Humbug extends Command
 
     private function logText(Text $renderer, $output = null)
     {
-        if ($this->logText === true) {
+        if ($this->textLogFile) {
             $logText = !is_null($output) ? $output : $renderer->getBuffer();
 
             file_put_contents(
