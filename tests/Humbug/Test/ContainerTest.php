@@ -14,13 +14,9 @@
 namespace Humbug\Test;
 
 use Humbug\Container;
-use Symfony\Component\Console\Input\ArgvInput;
-use Symfony\Component\Console\Input\InputDefinition;
-use Symfony\Component\Console\Input\InputOption;
 
 class ContainerTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testShouldHaveAdapterOptionsAfterCreate()
     {
         $input = [
@@ -30,15 +26,6 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $container = new Container($input);
 
         $this->assertSame(['adapterOpt1', 'adapterOpt2'], $container->getAdapterOptions());
-    }
-
-    private function createInputMock()
-    {
-        $input = $this->getMock('\Symfony\Component\Console\Input\InputInterface');
-
-        $input->expects($this->at(0))->method('getOption')->with('options')->willReturn('adapterOpt1 adapterOpt2');
-
-        return $input;
     }
 
     public function testGetShouldReturnInputOption()
@@ -65,5 +52,4 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
 
         $container->get('invalid-option');
     }
-
 }

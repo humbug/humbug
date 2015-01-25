@@ -10,6 +10,8 @@
 
 namespace Humbug\Command;
 
+use Humbug\Config;
+use Humbug\Config\JsonParser;
 use Humbug\Container;
 use Humbug\Adapter\Phpunit;
 use Humbug\Mutant;
@@ -18,7 +20,6 @@ use Humbug\Utility\ParallelGroup;
 use Humbug\Renderer\Text;
 use Humbug\Exception\InvalidArgumentException;
 use Humbug\Exception\NoCoveringTestsException;
-use Humbug\Exception\JsonConfigException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -29,24 +30,19 @@ use Symfony\Component\Finder\Finder;
 
 class Humbug extends Command
 {
-
     protected $finder;
 
-    protected $logJson = false;
+    private $jsonLogFile;
 
-    protected $jsonLogFile;
-
-    protected $logText = false;
-
-    protected $textLogFile;
+    private $textLogFile;
 
     /**
      * Execute the command.
      * The text output, other than some newline management, is held within
      * Humbug\Renderer\Text.
      *
-     * @param   Symfony\Component\Console\Input\InputInterface
-     * @param   Symfony\Component\Console\Output\OutputInterface
+     * @param InputInterface $input
+     * @param OutputInterface $output
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -56,13 +52,16 @@ class Humbug extends Command
         $this->validate($input);
         $container = $this->container = new Container($input->getOptions());
 
-        /**
-         * Setup source code finder and timeout if set
-         */
-        $this->doConfiguration($output);
+        $this->doConfiguration();
+
+        if ($this->isLoggingEnabled()) {
+            $this->removeOldLogFiles();
+        } else {
+            $output->writeln('<error>No log file is specified. Detailed results will not be available.</error>');
+        }
 
         $formatterHelper = new FormatterHelper;
-        if ($this->logText === true) {
+        if ($this->textLogFile) {
             $renderer = new Text($output, $formatterHelper, true);
         } else {
             $renderer = new Text($output, $formatterHelper);
@@ -311,7 +310,7 @@ class Humbug extends Command
         /**
          * Do any detailed logging now
          */
-        if ($this->logJson === true) {
+        if ($this->jsonLogFile) {
             $renderer->renderLogToJson($this->jsonLogFile);
             $this->logJson(
                 $countMutants,
@@ -325,7 +324,7 @@ class Humbug extends Command
                 $this->jsonLogFile
             );
         }
-        if ($this->logText === true) {
+        if ($this->textLogFile) {
             $renderer->renderLogToText($this->textLogFile);
             $this->logText($renderer);
             $out = [PHP_EOL, '-------', 'Escapes', '-------'];
@@ -365,7 +364,7 @@ class Humbug extends Command
             }
             $this->logText($renderer, implode(PHP_EOL, $out));
         }
-        if ($this->logJson === true || $this->logText === true) {
+        if ($this->jsonLogFile || $this->textLogFile) {
             $output->write(PHP_EOL);
         }
 
@@ -439,91 +438,37 @@ class Humbug extends Command
         return $finder;
     }
 
-    protected function doConfiguration(OutputInterface $output)
+    protected function doConfiguration()
     {
-        if (!file_exists('humbug.json')) {
-            throw new JsonConfigException(
-                'Configuration file does not exist. Please create a humbug.json file.'
-            );
-        }
-        $config = json_decode(file_get_contents('humbug.json'));
-        if (null === $config || json_last_error() !== JSON_ERROR_NONE) {
-            throw new JsonConfigException(
-                'Error parsing configuration file JSON'
-                . (function_exists('json_last_error_msg') ? ': ' . json_last_error_msg() : '')
-            );
-        }
         $this->container->setBaseDirectory(getcwd());
 
-        /**
-         * Check for source code scanning config
-         */
-        if (!isset($config->source)) {
-            throw new JsonConfigException(
-                'Source code data is not included in configuration file'
-            );
-        }
-        if (!isset($config->source->directories) && !isset($config->source->excludes)) {
-            throw new JsonConfigException(
-                'You must set at least one source directory or exclude in the configuration file'
-            );
-        }
+        $config = (new JsonParser())->parseFile('humbug.json');
+
+        $newConfig = new Config($config);
+
+        $source = $newConfig->getSource();
+
         $this->finder = $this->prepareFinder(
-            isset($config->source->directories)? $config->source->directories : null,
-            isset($config->source->excludes)? $config->source->excludes : null
+            isset($source->directories)? $source->directories : null,
+            isset($source->excludes)? $source->excludes : null
         );
-        $this->container->setSourceList($config->source);
 
-        /**
-         * Check for timeout config
-         */
-        if (isset($config->timeout)) {
-            $this->container->setTimeout((int) $config->timeout);
+        $this->container->setSourceList($source);
+
+        $timeout = $newConfig->getTimeout();
+
+        if ($timeout !== null) {
+            $this->container->setTimeout((int) $timeout);
         }
 
-        /**
-         * Check for change working directory config
-         */
-        if (isset($config->chdir)) {
-            if (!file_exists($config->chdir)) {
-                throw new JsonConfigException(
-                    'Directory in which to run tests does not exist: ' . $config->chdir
-                );
-            }
-            $this->container->setTestRunDirectory($config->chdir);
+        $chDir = $newConfig->getChDir();
+
+        if ($chDir !== null) {
+            $this->container->setTestRunDirectory($chDir);
         }
 
-        /**
-         * Check for logging config
-         */
-        if (!isset($config->logs) || (!isset($config->logs->json) && !isset($config->logs->text))) {
-            $output->writeln('<error>No log file is specified. Detailed results will not be available.</error>');
-        } else {
-            if (isset($config->logs->json)) {
-                if (!file_exists(dirname($config->logs->json))) {
-                    throw new JsonConfigException(
-                        'Directory for json logging does not exist: ' . dirname($config->logs->json)
-                    );
-                }
-                $this->logJson = true;
-                $this->jsonLogFile = $config->logs->json;
-                if (file_exists($this->jsonLogFile)) {
-                    unlink($this->jsonLogFile);
-                }
-            }
-            if (isset($config->logs->text)) {
-                if (!file_exists(dirname($config->logs->text))) {
-                    throw new JsonConfigException(
-                        'Directory for text logging does not exist: ' . dirname($config->logs->text)
-                    );
-                }
-                $this->logText = true;
-                $this->textLogFile = $config->logs->text;
-                if (file_exists($this->textLogFile)) {
-                    unlink($this->textLogFile);
-                }
-            }
-        }
+        $this->jsonLogFile = $newConfig->getLogsJson();
+        $this->textLogFile = $newConfig->getLogsText();
     }
 
     protected function configure()
@@ -587,7 +532,7 @@ class Humbug extends Command
 
     private function logText(Text $renderer, $output = null)
     {
-        if ($this->logText === true) {
+        if ($this->textLogFile) {
             $logText = !is_null($output) ? $output : $renderer->getBuffer();
 
             file_put_contents(
@@ -596,5 +541,21 @@ class Humbug extends Command
                 FILE_APPEND
             );
         }
+    }
+
+    private function removeOldLogFiles()
+    {
+        if (file_exists($this->jsonLogFile)) {
+            unlink($this->jsonLogFile);
+        }
+
+        if (file_exists($this->textLogFile)) {
+            unlink($this->textLogFile);
+        }
+    }
+
+    private function isLoggingEnabled()
+    {
+        return $this->jsonLogFile !== null || $this->textLogFile !== null;
     }
 }
