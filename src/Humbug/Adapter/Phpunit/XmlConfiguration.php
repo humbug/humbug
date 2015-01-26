@@ -22,6 +22,8 @@ class XmlConfiguration
 
     private static $root;
 
+    private static $listeners;
+
     private static $xpath;
 
     private static $container;
@@ -37,13 +39,13 @@ class XmlConfiguration
      *
      * @return string
      */
-    public static function assemble(Container $container, array $cases = [], $log = false, $addMissingTests = false)
+    public static function assemble(Container $container, $firstRun = false, array $testSuites = [])
     {
         self::$container = $container;
         self::$hasBootstrap = false;
 
         /**
-         * Basically a carbon copy of how PHPUnit finds its shit
+         * Basically a carbon copy of how PHPUnit finds its er...config file?
          */
         $conf = null;
         $dir = null;
@@ -85,8 +87,11 @@ class XmlConfiguration
          * On first runs collect a test log and also generate code coverage
          */
         static::handleElementReset();
-        if ($log === true) {
+        if ($firstRun === true) {
             static::handleLogging();
+            static::handleStartupListeners();
+        } else {
+            static::handleTestSuiteFilterListener($testSuites);
         }
 
         /** @var \DOMNode[] $nodesToRemove */
@@ -146,34 +151,29 @@ class XmlConfiguration
             $file->nodeValue = static::makeAbsolutePath($file->nodeValue, dirname($conf));
         }
 
-        if (!empty($cases)) {
-            // TODO: Handle > 1 suites (likely combine them?)
-            $suite1 = self::$xpath->query('/phpunit/testsuites/testsuite')->item(0);
-            if (is_a($suite1, 'DOMElement')) {
-                static::handleSuite($suite1, $conf, $cases, $addMissingTests);
-            }
-        } else {
-            // TODO: Handle >1 test suites
-            $suite1 = self::$xpath->query('/phpunit/testsuites/testsuite')->item(0);
-            if (is_a($suite1, 'DOMElement')) {
-                foreach ($suite1->childNodes as $child) {
-                    // phpunit.xml may omit bootstrap location but grab it if we can
-                    if (self::$hasBootstrap === false && $child instanceof \DOMElement && $child->tagName == 'directory') {
-                        $bootstrapDir = static::makeAbsolutePath($child->nodeValue, dirname($conf));
-                        if (file_exists($bootstrapDir . '/bootstrap.php')) {
-                            self::$root->setAttribute('bootstrap', $bootstrapDir . '/bootstrap.php');
-                            self::$container->setBootstrap($bootstrapDir . '/bootstrap.php');
-                            self::$hasBootstrap = true;
-                        }
-                    }
-                }
-            }
+        $suite1 = self::$xpath->query('/phpunit/testsuites/testsuite')->item(0);
+        if (is_a($suite1, 'DOMElement')) {
+            static::handleSuite($suite1, $conf);
         }
-
         
         $saveFile = self::$container->getCacheDirectory() . '/phpunit.humbug.xml';
         self::$dom->save($saveFile);
         return $saveFile;
+    }
+
+    private static function handleSuite(\DOMElement $suite, $configFile)
+    {
+        foreach ($suite->childNodes as $child) {
+            // phpunit.xml may omit bootstrap location but grab it automatically - include explicitly
+            if (self::$hasBootstrap === false && $child instanceof \DOMElement && $child->tagName == 'directory') {
+                $bootstrapDir = static::makeAbsolutePath($child->nodeValue, dirname($configFile));
+                if (file_exists($bootstrapDir . '/bootstrap.php')) {
+                    self::$root->setAttribute('bootstrap', $bootstrapDir . '/bootstrap.php');
+                    self::$container->setBootstrap($bootstrapDir . '/bootstrap.php');
+                    self::$hasBootstrap = true;
+                }
+            }
+        }
     }
 
     private static function handleRootAttributes($configFile)
@@ -206,10 +206,11 @@ class XmlConfiguration
         /**
          * Add PHPUnit-Accelerator Listener
          */
-        $listeners = self::$dom->createElement('listeners');
-        self::$root->appendChild($listeners);
+        self::$listeners = self::$dom->createElement('listeners');
+        self::$root->appendChild(self::$listeners);
+
         $listener = self::$dom->createElement('listener');
-        $listeners->appendChild($listener);
+        self::$listeners->appendChild($listener);
         $listener->setAttribute('class', '\MyBuilder\PhpunitAccelerator\TestListener');
         $arguments = self::$dom->createElement('arguments');
         $listener->appendChild($arguments);
@@ -223,15 +224,7 @@ class XmlConfiguration
         // add new logs as needed
         $logging = self::$dom->createElement('logging');
         self::$root->appendChild($logging);
-        // junit
-        $log = self::$dom->createElement('log');
-        $log->setAttribute('type', 'junit');
-        $log->setAttribute(
-            'target',
-            self::$container->getCacheDirectory() . '/junitlog.humbug.xml'
-        );
-        $log->setAttribute('logIncompleteSkipped', 'true');
-        $logging->appendChild($log);
+
         // php coverage
         $log = self::$dom->createElement('log');
         $log->setAttribute('type', 'coverage-php');
@@ -267,47 +260,56 @@ class XmlConfiguration
         }
     }
 
-    private static function handleSuite(\DOMElement $suite, $configFile, array &$cases, $addMissingTests)
+    private static function handleStartupListeners()
     {
-        foreach ($suite->childNodes as $child) {
-            // phpunit.xml may omit bootstrap location but grab it automatically - include explicitly
-            if (self::$hasBootstrap === false && $child instanceof \DOMElement && $child->tagName == 'directory') {
-                $bootstrapDir = static::makeAbsolutePath($child->nodeValue, dirname($configFile));
-                if (file_exists($bootstrapDir . '/bootstrap.php')) {
-                    self::$root->setAttribute('bootstrap', $bootstrapDir . '/bootstrap.php');
-                    self::$container->setBootstrap($bootstrapDir . '/bootstrap.php');
-                    self::$hasBootstrap = true;
-                }
-            }
-            // we only want file references in specific order + excludes (for now, we retain these)
-            if ($child instanceof \DOMElement && $child->tagName !== 'exclude') {
-                $suite->removeChild($child);
-            }
+        $listener = self::$dom->createElement('listener');
+        self::$listeners->appendChild($listener);
+        $listener->setAttribute('class', '\Humbug\Phpunit\Listener\TimeCollectorListener');
+        $arguments = self::$dom->createElement('arguments');
+        $listener->appendChild($arguments);
+        $jsonLogger = self::$dom->createElement('object');
+        $arguments->appendChild($jsonLogger);
+        $jsonLogger->setAttribute('class', '\Humbug\Phpunit\Logger\JsonLogger');
+        $jsonLoggerArgs = self::$dom->createElement('arguments');
+        $jsonLogger->appendChild($jsonLoggerArgs);
+        $string = self::$dom->createElement('string');
+        $jsonLoggerArgs->appendChild($string);
+        $string->nodeValue = self::$container->getCacheDirectory() . '/phpunit.times.humbug.json';
+    }
+
+    private static function handleTestSuiteFilterListener(array $testSuites)
+    {
+        $listener = self::$dom->createElement('listener');
+        self::$listeners->appendChild($listener);
+        $listener->setAttribute('class', '\Humbug\Phpunit\Listener\FilterListener');
+        $arguments = self::$dom->createElement('arguments');
+        $listener->appendChild($arguments);
+
+        /**
+         * Add the IncludeOnly Filter
+         */
+        $includeOnly = self::$dom->createElement('object');
+        $arguments->appendChild($includeOnly);
+        $includeOnly->setAttribute('class', '\Humbug\Phpunit\Filter\TestSuite\IncludeOnlyFilter');
+        $includeOnlyArgs = self::$dom->createElement('arguments');
+        $includeOnly->appendChild($includeOnlyArgs);
+        foreach ($testSuites as $testSuite) {
+            $string = self::$dom->createElement('string');
+            $includeOnlyArgs->appendChild($string);
+            $string->nodeValue = $testSuite;
         }
 
         /**
-         * Add test files explicitly in order given
+         * Add the FastestFirst Filter
          */
-        $files = [];
-        foreach ($cases as $case) {
-            $files[] = $case['file'];
-            $file = self::$dom->createElement('file', $case['file']);
-            $suite->appendChild($file);
-        }
-        /**
-         * JUnit logging excludes some immeasurable tests so we'll add those back.
-         */
-        if ($addMissingTests) {
-            $finder = new Finder;
-            $finder->name('*Test.php');
-            // TODO: Make sure this only ever includes tests!
-            foreach ($finder->in(self::$container->getBaseDirectory())->exclude('vendor') as $file) {
-                if (!in_array($file->getRealpath(), $files)) {
-                    $file = self::$dom->createElement('file', $file->getRealpath());
-                    $suite->appendChild($file);
-                }
-            }
-        }
+        $fastestFirst = self::$dom->createElement('object');
+        $arguments->appendChild($fastestFirst);
+        $fastestFirst->setAttribute('class', '\Humbug\Phpunit\Filter\TestSuite\FastestFirstFilter');
+        $fastestFirstArgs = self::$dom->createElement('arguments');
+        $fastestFirst->appendChild($fastestFirstArgs);
+        $string = self::$dom->createElement('string');
+        $fastestFirstArgs->appendChild($string);
+        $string->nodeValue = self::$container->getCacheDirectory() . '/phpunit.times.humbug.json';
     }
 
     private static function makeAbsolutePath($name, $workingDir)

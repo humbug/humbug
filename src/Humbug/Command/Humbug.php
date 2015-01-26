@@ -135,14 +135,10 @@ class Humbug extends Command
         $this->logText($renderer);
 
         /**
-         * Analyse initial run logs to optimise future test runs by ordering
-         * the test classes to uses fastest-first.
-         *
-         * TODO: Move to adapter eventually
+         * Get code coverage data so we can determine which test suites or
+         * or specifications need to be run for each mutation.
          */
-        $analyser = $container->getAdapter()->getLogAnalyser($container);
-        $analyser->process();
-        $coverage = $container->getAdapter()->getCoverageData($container, $analyser);
+        $coverage = $container->getAdapter()->getCoverageData($container);
 
         /**
          * Message re Static Analysis

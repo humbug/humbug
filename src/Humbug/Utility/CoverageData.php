@@ -19,14 +19,12 @@ class CoverageData
 
     protected $data;
 
-    protected $analyser;
-
     /**
      * The constructor processes the main coverage report into
      * a set of split files. A coverage data extract per source code file
      * available.
      */
-    public function __construct($file, TestTimeAnalyser $analyser)
+    public function __construct($file)
     {
         if (!$path = realpath($file)) {
             throw new InvalidArgumentException(
@@ -34,7 +32,6 @@ class CoverageData
             );
         }
         $this->process($path);
-        $this->analyser = $analyser;
     }
 
     public function loadCoverageFor($file)
@@ -63,13 +60,6 @@ class CoverageData
             return false;
         }
         return true;
-    }
-
-    public function getOrderedTestCases($file, $line)
-    {
-        return $this->analyser->getTestCasesFromClasses(
-            $this->getTestClasses($file, $line)
-        );
     }
 
     public function getTestClasses($file, $line)

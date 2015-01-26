@@ -13,7 +13,6 @@ namespace Humbug\Adapter;
 use Humbug\Container;
 use Humbug\Adapter\Phpunit\XmlConfiguration;
 use Humbug\Utility\Job;
-use Humbug\Utility\TestTimeAnalyser;
 use Humbug\Utility\CoverageData;
 use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\PhpProcess;
@@ -40,7 +39,7 @@ class Phpunit extends AdapterAbstract
         $firstRun = false,
         $interceptFile = null,
         $mutantFile = null,
-        array $testCases = [])
+        array $testSuites = [])
     {
         $jobopts = [
             'testdir'       => $container->getTestRunDirectory(),
@@ -71,23 +70,16 @@ class Phpunit extends AdapterAbstract
          *
          * TODO: Assemble config just once if no coverage data available!
          */
-        $configFile = null;
-        if (count($testCases) > 0) {
-            $configFile = XmlConfiguration::assemble($container, $testCases);
-        } elseif ($firstRun) {
-            $configFile = XmlConfiguration::assemble($container, [], true, true);
-        }
-        if (!is_null($configFile)) {
-            foreach ($jobopts['cliopts'] as $key => $value) {
-                if ($value == '--configuration' || $value == '-C') {
-                    unset($jobopts['cliopts'][$key]);
-                    unset($jobopts['cliopts'][$key+1]);
-                } elseif (preg_match('%\\-\\-configuration=%', $value)) {
-                    unset($jobopts['cliopts'][$key]);
-                }
+        $configFile = XmlConfiguration::assemble($container, $firstRun, $testSuites);
+        foreach ($jobopts['cliopts'] as $key => $value) {
+            if ($value == '--configuration' || $value == '-C') {
+                unset($jobopts['cliopts'][$key]);
+                unset($jobopts['cliopts'][$key+1]);
+            } elseif (preg_match('%\\-\\-configuration=%', $value)) {
+                unset($jobopts['cliopts'][$key]);
             }
-            array_unshift($jobopts['cliopts'], '--configuration=' . $configFile);
         }
+        array_unshift($jobopts['cliopts'], '--configuration=' . $configFile);
 
         /**
          * Initial command is expected, of course.
@@ -171,25 +163,11 @@ class Phpunit extends AdapterAbstract
      *
      * @return \Humbug\Utility\CoverageData
      */
-    public function getCoverageData(Container $container, TestTimeAnalyser $analyser)
+    public function getCoverageData(Container $container)
     {
         $coverage = new CoverageData(
-            $container->getCacheDirectory() . '/coverage.humbug.php',
-            $analyser
+            $container->getCacheDirectory() . '/coverage.humbug.php'
         );
         return $coverage;
-    }
-
-    /**
-     * Load coverage data from and return
-     *
-     * @return \Humbug\Utility\TestTimeAnalyser
-     */
-    public function getLogAnalyser(Container $container)
-    {
-        $analyser = new TestTimeAnalyser(
-            $container->getCacheDirectory() . '/junitlog.humbug.xml'
-        );
-        return $analyser;
     }
 }

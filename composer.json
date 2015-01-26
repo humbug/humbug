@@ -22,7 +22,8 @@
         "symfony/finder": "~2.6",
         "symfony/process": "~2.6",
         "sebastian/diff": "~1.1",
-        "padraic/phpunit-accelerator": "^1.0.2"
+        "padraic/phpunit-accelerator": "^1.0.2",
+        "padraic/phpunit-extensions": "~1.0@dev"
     },
     "require-dev": {
         "mockery/mockery": "~0.9"
@@ -41,5 +42,11 @@
     },
     "scripts": {
         "test": "phpunit"
-    }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "file:///home/padraic/projects/phpunit-extensions"
+        }
+    ]
 }

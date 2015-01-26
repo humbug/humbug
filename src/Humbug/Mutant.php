@@ -51,7 +51,7 @@ class Mutant
     public function __construct(array $mutation, Container $container, CoverageData $coverage)
     {
         $this->mutation = $mutation;
-        $this->tests = $coverage->getOrderedTestCases($mutation['file'], $mutation['line']);
+        $this->tests = $coverage->getTestClasses($mutation['file'], $mutation['line']);
         $this->container = $container;
 
         $this->file = $container->getCacheDirectory() . '/humbug.mutant.' . uniqid() . '.php';
