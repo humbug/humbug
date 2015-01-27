@@ -26,7 +26,6 @@ class Float extends MutatorAbstract
     public static function getMutation(array &$tokens, $index)
     {
         $num = (float) $tokens[$index][1];
-        $replace = null;
         if ($num == 0) {
             $replace = 1.0;
         } elseif ($num == 1) {

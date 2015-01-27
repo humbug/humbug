@@ -79,19 +79,19 @@ class XmlConfiguration
         self::$root = self::$dom->documentElement;
         libxml_disable_entity_loader($oldValue);
 
-        static::handleRootAttributes($conf);
+        self::handleRootAttributes($conf);
 
         self::$xpath = new \DOMXPath(self::$dom);
 
         /**
          * On first runs collect a test log and also generate code coverage
          */
-        static::handleElementReset();
+        self::handleElementReset();
         if ($firstRun === true) {
-            static::handleLogging();
-            static::handleStartupListeners();
+            self::handleLogging();
+            self::handleStartupListeners();
         } else {
-            static::handleTestSuiteFilterListener($testSuites);
+            self::handleTestSuiteFilterListener($testSuites);
         }
 
         /** @var \DOMNode[] $nodesToRemove */
@@ -120,7 +120,7 @@ class XmlConfiguration
                     } else {
                         foreach ($paths as $path) {
                             $clone = $node->cloneNode();
-                            $clone->nodeValue = static::makeAbsolutePath($path, getcwd());
+                            $clone->nodeValue = self::makeAbsolutePath($path, getcwd());
                             $node->parentNode->appendChild($clone);
                         }
                     }
@@ -144,16 +144,16 @@ class XmlConfiguration
          */
         $directories = self::$xpath->query('//directory');
         foreach ($directories as $directory) {
-            $directory->nodeValue = static::makeAbsolutePath($directory->nodeValue, dirname($conf));
+            $directory->nodeValue = self::makeAbsolutePath($directory->nodeValue, dirname($conf));
         }
         $files = self::$xpath->query('//file');
         foreach ($files as $file) {
-            $file->nodeValue = static::makeAbsolutePath($file->nodeValue, dirname($conf));
+            $file->nodeValue = self::makeAbsolutePath($file->nodeValue, dirname($conf));
         }
 
         $suite1 = self::$xpath->query('/phpunit/testsuites/testsuite')->item(0);
         if (is_a($suite1, 'DOMElement')) {
-            static::handleSuite($suite1, $conf);
+            self::handleSuite($suite1, $conf);
         }
         
         $saveFile = self::$container->getCacheDirectory() . '/phpunit.humbug.xml';
@@ -166,7 +166,7 @@ class XmlConfiguration
         foreach ($suite->childNodes as $child) {
             // phpunit.xml may omit bootstrap location but grab it automatically - include explicitly
             if (self::$hasBootstrap === false && $child instanceof \DOMElement && $child->tagName == 'directory') {
-                $bootstrapDir = static::makeAbsolutePath($child->nodeValue, dirname($configFile));
+                $bootstrapDir = self::makeAbsolutePath($child->nodeValue, dirname($configFile));
                 if (file_exists($bootstrapDir . '/bootstrap.php')) {
                     self::$root->setAttribute('bootstrap', $bootstrapDir . '/bootstrap.php');
                     self::$container->setBootstrap($bootstrapDir . '/bootstrap.php');
@@ -181,7 +181,7 @@ class XmlConfiguration
         if (self::$root->hasAttribute('bootstrap')) {
             self::$hasBootstrap = true;
             $bootstrap = self::$root->getAttribute('bootstrap');
-            $path = static::makeAbsolutePath($bootstrap, dirname($configFile));
+            $path = self::makeAbsolutePath($bootstrap, dirname($configFile));
             self::$container->setBootstrap($path);
         }
         self::$root->setAttribute('bootstrap', sys_get_temp_dir() . '/humbug.phpunit.bootstrap.php');

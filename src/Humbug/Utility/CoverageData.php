@@ -64,7 +64,6 @@ class CoverageData
 
     public function getTestClasses($file, $line)
     {
-        $this->filter = null;
         $file = realpath($file);
         if (!$this->hasTestClasses($file, $line)) {
             throw new NoCoveringTestsException(

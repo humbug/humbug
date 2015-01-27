@@ -130,7 +130,7 @@ class Humbug extends Command
         /**
          * Initial test run was a success!
          */
-        $renderer->renderInitialRunPass($result);
+        $renderer->renderInitialRunPass();
         $output->write(PHP_EOL);
         $this->logText($renderer);
 
@@ -373,7 +373,7 @@ class Humbug extends Command
         Performance::downMemProfiler();
     }
 
-    protected function logJson($total, $kills, $escapes, $errors, $timeouts, $shadows, array &$mutantEscapes, array $mutantShadows, $file)
+    protected function logJson($total, $kills, $escapes, $errors, $timeouts, $shadows, array &$mutantEscapes)
     {
         $vanquishedTotal = $kills + $timeouts + $errors;
         $measurableTotal = $total - $shadows;

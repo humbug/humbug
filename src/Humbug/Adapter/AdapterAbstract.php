@@ -11,6 +11,7 @@
 namespace Humbug\Adapter;
 
 use Humbug\Container;
+use Symfony\Component\Process\PhpProcess;
 
 abstract class AdapterAbstract
 {
@@ -27,7 +28,7 @@ abstract class AdapterAbstract
      * @param   null|string       $interceptFile
      * @param   null|string       $mutantFile
      * @param   array             $testCases
-     * @return  array
+     * @return  PhpProcess
      */
     abstract public function getProcess(
         Container $container,

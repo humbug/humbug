@@ -31,7 +31,6 @@ class Integer extends MutatorAbstract
                 continue;
             } elseif (is_array($tokens[$i]) && $tokens[$i][0] == T_LNUMBER) {
                 $num = (integer) $tokens[$i][1];
-                $replace = null;
                 if ($num == 0) {
                     $replace = 1;
                 } else {

@@ -25,7 +25,6 @@ class Integer extends MutatorAbstract
     public static function getMutation(array &$tokens, $index)
     {
         $num = (integer) $tokens[$index][1];
-        $replace = null;
         if ($num == 0) {
             $replace = 1;
         } elseif ($num == 1) {

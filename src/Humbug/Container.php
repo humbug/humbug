@@ -164,22 +164,6 @@ class Container
     }
 
     /**
-     * Set many options for adapter's underlying cli command
-     * @param array|string $options Array or serialized array of options
-     * @return self
-     */
-    public function setAdapterOptions($options)
-    {
-        if (!is_array($options)) {
-            $options = unserialize($options);
-        }
-        foreach ($options as $value) {
-            $this->setAdapterOption($value);
-        }
-        return $this;
-    }
-
-    /**
      * Get a space delimited string of testing tool options
      *
      * @return string

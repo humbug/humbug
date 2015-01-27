@@ -12,6 +12,7 @@ namespace Humbug\StreamWrapper;
 
 use Humbug\Exception\NoIncludeInterceptSetException;
 use Humbug\Exception\InvalidArgumentException;
+use Humbug\Exception\RuntimeException;
 
 /**
 * Customised copy of Ignas' original class modified to substitute mutated
@@ -200,6 +201,8 @@ class IncludeInterceptor
             case STREAM_META_ACCESS:
                 $return = chmod($path, $value);
                 break;
+            default:
+                throw new RuntimeException('Unknown stream_metadata option');
         }
         self::enable();
         return $return;

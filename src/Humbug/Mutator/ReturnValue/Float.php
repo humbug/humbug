@@ -31,6 +31,7 @@ class Float extends MutatorAbstract
                 continue;
             } elseif (is_array($tokens[$i]) && $tokens[$i][0] == T_DNUMBER) {
                 $num = (float) $tokens[$i][1];
+                $replace = 0.0;
                 if ($num == 0) {
                     $replace = 1.0;
                 } elseif ($num > 1) {

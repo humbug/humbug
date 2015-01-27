@@ -26,6 +26,8 @@ class Text
 
     protected $formatterHelper;
 
+    protected $useBuffer = false;
+
     public function __construct(OutputInterface $output, FormatterHelper $formatterHelper, $buffer = false, $colors = true)
     {
         $this->output = $output;
@@ -98,7 +100,7 @@ class Text
      *
      * @param array $result
      */
-    public function renderInitialRunPass(array $result)
+    public function renderInitialRunPass()
     {
         $this->write('Humbug has completed the initial test run successfully.');
     }

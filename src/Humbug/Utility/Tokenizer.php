@@ -25,16 +25,17 @@ class Tokenizer
     public static function getTokens(&$source)
     {
         $newline = 0;
+        $ntokens = [];
         $tokens = token_get_all($source);
         foreach ($tokens as $token) {
             $tname = is_array($token) ? $token[0] : null;
             $tdata = is_array($token) ? $token[1] : $token;
+            $split = preg_split("%(\r\n|\n)%", $tdata, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
             if ($tname == T_CONSTANT_ENCAPSED_STRING) {
                 $ntokens[] = [$tname, $tdata];
                 continue;
             } elseif (substr($tdata, 0, 2) == '/*') {
                 $ntokens[] = [$tname, $tdata];
-                $split = preg_split("%(\r\n|\n)%", $tdata, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
                 foreach ($split as $value) {
                     if ($value == "\r\n" || $value == "\n") {
                         $newline++;
@@ -42,7 +43,6 @@ class Tokenizer
                 }
                 continue;
             }
-            $split = preg_split("%(\r\n|\n)%", $tdata, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
             foreach ($split as $data) {
                 if ($data == "\r\n" || $data == "\n") {
                     $newline++;

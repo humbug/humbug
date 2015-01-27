@@ -32,7 +32,7 @@ class Phpunit extends AdapterAbstract
      * @param   null|string       $interceptFile
      * @param   null|string       $mutantFile
      * @param   array             $testSuites
-     * @return  array
+     * @return  PhpProcess
      */
     public function getProcess(
         Container $container,
