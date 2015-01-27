@@ -6,7 +6,7 @@ so, while it does actually work quite well, it will have rough edges that a team
 of minions are slaving to hammer out. If it falls out of the gate, you have been
 warned ;).
 
-[![Build Status](https://travis-ci.org/padraic/humbug.svg)](https://travis-ci.org/padraic/humbug)
+[![Build Status](https://travis-ci.org/padraic/humbug.svg)](https://travis-ci.org/padraic/humbug)[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/padraic/humbug/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/padraic/humbug/?branch=master)
 
 Mutation Testing is, in a nutshell, giving your unit tests a run for their money.
 It involves injecting small defects into source code and then checking if the unit
