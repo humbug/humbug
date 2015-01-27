@@ -19,4 +19,8 @@ if (!defined('HUMBUG_COMPOSER_INSTALL')) {
     fwrite(STDERR, 'You need to run "composer.phar install" to install Humbug.' . PHP_EOL);
     exit(1);
 }
+if (!defined('HHVM_VERSION') && !extension_loaded('xdebug')) {
+    fwrite(STDERR, 'You need to install and enable xdebug in order to allow for code coverage generation.' . PHP_EOL);
+    exit(1);
+}
 require_once HUMBUG_COMPOSER_INSTALL;
