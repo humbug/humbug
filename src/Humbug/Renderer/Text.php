@@ -34,7 +34,7 @@ class Text
         if (!$colors) {
             $this->type = OutputInterface::OUTPUT_PLAIN;
         }
-        $this->useBuffer = $buffer;
+        $this->buffer = $buffer;
         $this->formatterHelper = $formatterHelper;
     }
 
@@ -45,7 +45,7 @@ class Text
         } else {
             $this->output->write($string, false, $this->type);
         }
-        if ($this->useBuffer) {
+        if ($this->buffer) {
             $this->buffer .= strip_tags($string) . ($eol? PHP_EOL : '');
         }
     }
