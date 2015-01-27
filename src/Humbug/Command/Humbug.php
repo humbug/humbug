@@ -314,9 +314,7 @@ class Humbug extends Command
                 $countMutantErrors,
                 $countMutantTimeouts,
                 $countMutantErrors,
-                $mutantEscapes,
-                $mutantErrors,
-                $this->jsonLogFile
+                $mutantEscapes
             );
         }
         if ($this->textLogFile) {
