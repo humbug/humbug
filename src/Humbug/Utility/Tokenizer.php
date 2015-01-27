@@ -27,6 +27,7 @@ class Tokenizer
         $newline = 0;
         $ntokens = [];
         $tokens = token_get_all($source);
+        $ntokens = [];
         foreach ($tokens as $token) {
             $tname = is_array($token) ? $token[0] : null;
             $tdata = is_array($token) ? $token[1] : $token;
