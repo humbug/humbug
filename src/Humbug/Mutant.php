@@ -77,7 +77,7 @@ class Mutant
      * Return the test process
      * If it doesn't exist it will be created
      *
-     * @return \Symfony\Component\Process\PhpProcess\PhpProcess
+     * @return \Symfony\Component\Process\PhpProcess
      */
     public function getProcess()
     {
