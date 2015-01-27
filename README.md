@@ -140,7 +140,8 @@ Out of 779 total mutations, 53% were not covered by tests.
 
 Remember that some mutants will inevitably be harmless (i.e. false positives).
 
-Humbug results are being logged as TEXT to: log.txt
+Humbug results are being logged as JSON to: humbuglog.json
+Humbug results are being logged as TEXT to: humbuglog.txt
 
 Time: 2.26 minutes Memory: 8.75MB
 ```
