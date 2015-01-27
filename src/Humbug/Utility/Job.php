@@ -15,7 +15,10 @@ class Job
     /**
      * Generate a new Job script to be executed under a separate PHP process
      *
-     * @param array $mutation Mutation data and objects to be used
+     * @param null|string   $mutantFile
+     * @param array         $args
+     * @param string        $bootstrap
+     * @param null|string   $replacingFile
      * @return string
      */
     public static function generate($mutantFile = null, array $args = [], $bootstrap = '', $replacingFile = null)
