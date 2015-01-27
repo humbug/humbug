@@ -103,6 +103,7 @@ class Text
     public function renderInitialRunPass()
     {
         $this->write('Humbug has completed the initial test run successfully.');
+        return $result;
     }
 
     /**
