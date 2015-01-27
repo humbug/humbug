@@ -23,9 +23,9 @@ abstract class AdapterAbstract
      * output from the last test run.
      *
      * @param   \Humbug\container $container
-     * @param   bool              $useStdout
      * @param   bool              $firstRun
-     * @param   array             $mutation
+     * @param   null|string       $interceptFile
+     * @param   null|string       $mutantFile
      * @param   array             $testCases
      * @return  array
      */

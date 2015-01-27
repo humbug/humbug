@@ -103,7 +103,7 @@ class Container
     /**
      * Set the base directory.
      *
-     * @param string $dir
+     * @param \stdClass $list
      */
     public function setSourceList(\stdClass $list)
     {

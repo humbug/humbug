@@ -28,10 +28,10 @@ class Phpunit extends AdapterAbstract
      * output from the last test run.
      *
      * @param   \Humbug\container $container
-     * @param   bool              $useStdout
      * @param   bool              $firstRun
-     * @param   array             $mutation
-     * @param   array             $testCases
+     * @param   null|string       $interceptFile
+     * @param   null|string       $mutantFile
+     * @param   array             $testSuites
      * @return  array
      */
     public function getProcess(
