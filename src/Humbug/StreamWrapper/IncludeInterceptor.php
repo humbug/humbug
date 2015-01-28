@@ -69,7 +69,7 @@ class IncludeInterceptor
         stream_wrapper_restore('file');
     }
 
-    public function stream_open($path, $mode, $options, &$openedPath)
+    public function stream_open($path, $mode, $options)
     {
         self::disable();
         $including = (bool) ($options & self::STREAM_OPEN_FOR_INCLUDE);
@@ -95,7 +95,7 @@ class IncludeInterceptor
         return true;
     }
 
-    public function dir_opendir($path, $options)
+    public function dir_opendir($path)
     {
         self::disable();
         if (isset($this->context)) {
@@ -142,7 +142,7 @@ class IncludeInterceptor
         return $return;
     }
     
-    public function rmdir($path, $options)
+    public function rmdir($path)
     {
         self::disable();
         if (isset($this->context)) {
@@ -154,7 +154,7 @@ class IncludeInterceptor
         return $return;
     }
 
-    public function stream_cast($cast_as)
+    public function stream_cast()
     {
         return $this->fp;
     }
@@ -264,7 +264,7 @@ class IncludeInterceptor
         return $return;
     }
 
-    public function url_stat($path, $flags)
+    public function url_stat($path)
     {
         self::disable();
         $return = is_readable($path) ? stat($path) : false;

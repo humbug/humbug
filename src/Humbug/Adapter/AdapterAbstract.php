@@ -28,7 +28,7 @@ abstract class AdapterAbstract
      * @param   null|string       $interceptFile
      * @param   null|string       $mutantFile
      * @param   array             $testCases
-     * @return  PhpProcess
+     * @return  \Symfony\Component\Process\PhpProcess
      */
     abstract public function getProcess(
         Container $container,

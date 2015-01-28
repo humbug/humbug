@@ -30,6 +30,8 @@ use Symfony\Component\Finder\Finder;
 
 class Humbug extends Command
 {
+    protected $container;
+
     protected $finder;
 
     private $jsonLogFile;
@@ -170,11 +172,9 @@ class Humbug extends Command
         $countMutantErrors = 0;
         $countMutantTimeouts = 0;
         $countMutantShadows = 0;
-        $mutantKills = [];
         $mutantEscapes = [];
         $mutantErrors = [];
         $mutantTimeouts = [];
-        $mutantShadows = [];
 
         /**
          * We can do parallel runs, but typically two test runs will compete for
@@ -275,7 +275,6 @@ class Humbug extends Command
                         $mutantErrors[] = $mutant;
                     } elseif ($result['passed'] === false) {
                         $countMutantKills++;
-                        //$mutantKills[] = $mutant;
                     } else {
                         $countMutantEscapes++;
                         $mutantEscapes[] = $mutant;
@@ -315,9 +314,7 @@ class Humbug extends Command
                 $countMutantErrors,
                 $countMutantTimeouts,
                 $countMutantErrors,
-                $mutantEscapes,
-                $mutantErrors,
-                $this->jsonLogFile
+                $mutantEscapes
             );
         }
         if ($this->textLogFile) {
