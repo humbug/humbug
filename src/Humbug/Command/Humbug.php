@@ -314,7 +314,7 @@ class Humbug extends Command
                 $countMutantEscapes,
                 $countMutantErrors,
                 $countMutantTimeouts,
-                $countMutantErrors,
+                $countMutantShadows,
                 $mutantEscapes
             );
         }

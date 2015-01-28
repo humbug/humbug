@@ -22,7 +22,7 @@ class Text
 
     protected $type = OutputInterface::OUTPUT_NORMAL;
 
-    protected $buffer;
+    protected $buffer = '';
 
     protected $formatterHelper;
 
@@ -34,7 +34,7 @@ class Text
         if (!$colors) {
             $this->type = OutputInterface::OUTPUT_PLAIN;
         }
-        $this->buffer = $buffer;
+        $this->useBuffer = $buffer;
         $this->formatterHelper = $formatterHelper;
     }
 
@@ -45,7 +45,7 @@ class Text
         } else {
             $this->output->write($string, false, $this->type);
         }
-        if ($this->buffer) {
+        if ($this->useBuffer === true) {
             $this->buffer .= strip_tags($string) . ($eol? PHP_EOL : '');
         }
     }
