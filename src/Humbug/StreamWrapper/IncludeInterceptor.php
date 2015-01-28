@@ -181,7 +181,6 @@ class IncludeInterceptor
 
     public function stream_metadata($path, $option, $value)
     {
-        $return = false;
         self::disable();
         switch ($option) {
             case STREAM_META_TOUCH:

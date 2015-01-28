@@ -25,7 +25,6 @@ class Tokenizer
     public static function getTokens(&$source)
     {
         $newline = 0;
-        $ntokens = [];
         $tokens = token_get_all($source);
         $ntokens = [];
         foreach ($tokens as $token) {
