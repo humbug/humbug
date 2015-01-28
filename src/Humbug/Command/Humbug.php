@@ -246,9 +246,10 @@ class Humbug extends Command
                      * Define the result for each process
                      */
                     $result = [
-                        'passed'    => true,
-                        'timeout'   => false,
-                        'stderr'    => $process->getErrorOutput(),
+                        'passed'     => true,
+                        'successful' => $process->isSuccessful(),
+                        'timeout'    => false,
+                        'stderr'     => $process->getErrorOutput(),
                     ];
 
                     if ($group->timedOut($tracker)) {
@@ -270,7 +271,7 @@ class Humbug extends Command
                     if ($result['timeout'] === true) {
                         $countMutantTimeouts++;
                         $mutantTimeouts[] = $mutant;
-                    } elseif (!$process->isSuccessful()) {
+                    } elseif ($result['successful'] === false) {
                         $countMutantErrors++;
                         $mutantErrors[] = $mutant;
                     } elseif ($result['passed'] === false) {

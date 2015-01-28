@@ -147,7 +147,7 @@ class Text
         $this->progressCount++;
         if ($result['timeout'] === true) {
             $this->write('<fg=cyan;options=bold>T</fg=cyan;options=bold>', false);
-        } elseif (strlen($result['stderr']) > 0) {
+        } elseif ($result['successful'] === false) {
             $this->write('<fg=yellow;options=bold>E</fg=yellow;options=bold>', false);
         } elseif ($result['passed'] === true) {
             $this->write('<fg=red;options=bold>M</fg=red;options=bold>', false);
