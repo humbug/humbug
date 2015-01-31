@@ -111,7 +111,8 @@ class Humbug extends Command
             'passed'    => true,
             'timeout'   => false,
             'stdout'    => '',
-            'stderr'    => ''
+            'stderr'    => '',
+            'coverage'  => 0
         ];
         $result['stdout'] = $process->getOutput();
         $result['stderr'] = $process->getErrorOutput();
@@ -125,22 +126,23 @@ class Humbug extends Command
         if ($exitCode !== 0 || $hasFailure) {
             $renderer->renderInitialRunFail($result, $exitCode, $hasFailure);
             $this->logText($renderer);
-
             return 1;
         }
 
         /**
-         * Initial test run was a success!
-         */
-        $renderer->renderInitialRunPass();
-        $output->write(PHP_EOL);
-        $this->logText($renderer);
-
-        /**
+         * Capture headline line coverage %.
          * Get code coverage data so we can determine which test suites or
          * or specifications need to be run for each mutation.
          */
         $coverage = $container->getAdapter()->getCoverageData($container);
+        $result['coverage'] = $coverage->getLineCoverageFrom($container->getCacheDirectory() . '/coverage.humbug.txt');
+
+        /**
+         * Initial test run was a success!
+         */
+        $renderer->renderInitialRunPass($result, $progress->getProgress());
+        $output->write(PHP_EOL);
+        $this->logText($renderer);
 
         /**
          * Message re Static Analysis

@@ -11,6 +11,7 @@
 namespace Humbug\Utility;
 
 use Humbug\Exception\InvalidArgumentException;
+use Humbug\Exception\RuntimeException;
 use Humbug\Exception\NoCoveringTestsException;
 use Symfony\Component\Finder\Finder;
 
@@ -83,6 +84,23 @@ class CoverageData
         unset($line);
         $classes = array_unique($classes);
         return $classes;
+    }
+
+    public function getLineCoverageFrom($file)
+    {
+       $file = realpath($file);
+        if (!file_exists($file)) {
+            throw new InvalidArgumentException(
+                'File does not exist containing text code coverage: ' . $file
+            );
+        }
+        $text = file_get_contents($file);
+        if (preg_match("/Lines\\:[\s]*([\\d\\.]+)%/", $text, $matches)) {
+            return (float) $matches[1];
+        }
+        throw new RuntimeException(
+            'Text code coverage file could not be parsed from: ' . $file
+        );
     }
 
     public function cleanup()
