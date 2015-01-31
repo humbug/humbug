@@ -18,12 +18,15 @@
     "require": {
         "php": ">=5.4.0",
         "phpunit/phpunit": "~4.4",
+        "phpspec/phpspec": "~2.0",
         "symfony/console": "~2.6",
         "symfony/finder": "~2.6",
         "symfony/process": "~2.6",
+        "symfony/yaml": "~2.6",
         "sebastian/diff": "~1.1",
         "padraic/phpunit-accelerator": "^1.0.2",
-        "padraic/phpunit-extensions": "~1.0@dev"
+        "padraic/phpunit-extensions": "~1.0@dev",
+        "padraic/phpspec-extensions": "~1.0@dev"
     },
     "require-dev": {
         "mockery/mockery": "~0.9"
