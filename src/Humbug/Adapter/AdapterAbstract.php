@@ -43,7 +43,7 @@ abstract class AdapterAbstract
      * In the context of mutation testing, a test failure is good (i.e. the
      * mutation was detected by the test suite).
      *
-     * This assume the output is in Test Anywhere Protocol (TAP) format.
+     * This assumes the output is in Test Anywhere Protocol (TAP) format.
      *
      * @param string $output
      * @return bool
@@ -54,5 +54,22 @@ abstract class AdapterAbstract
             return false;
         }
         return true;
+    }
+
+    /**
+     * Parse the test adapter result output and count ok results.
+     *
+     * This assumes the output is in Test Anywhere Protocol (TAP) format.
+     *
+     * @param string $output
+     * @return bool|int
+     */
+    public function hasOks($output)
+    {
+        $result = preg_match("%[\n\r]+ok (\\d+).*$%", $output, $matches);
+        if ($result) {
+            return (int) $matches[1];
+        }
+        return false;
     }
 }

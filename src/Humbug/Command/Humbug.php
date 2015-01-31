@@ -93,10 +93,10 @@ class Humbug extends Command
         $hasFailure = false;
         while ($process->isRunning()) {
             usleep(2500);
-            if (preg_match("%[\n\r]+ok (\\d+).*$%", $process->getOutput(), $matches)) {
-                $progress->setProgress((int) $matches[1]);
+            if (($count = $container->getAdapter()->hasOks($process->getOutput()))) {
+                $progress->setProgress($count);
                 $process->clearOutput();
-            } elseif (preg_match("%[\n\r]+not ok (\\d+).*$%", $process->getOutput(), $matches)) {
+            } elseif (!$container->getAdapter()->ok($process->getOutput())) {
                 sleep(1);
                 $hasFailure = true;
                 break;
