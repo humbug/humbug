@@ -233,6 +233,13 @@ class XmlConfiguration
             self::$container->getCacheDirectory() . '/coverage.humbug.php'
         );
         $logging->appendChild($log);
+        $log2 = self::$dom->createElement('log');
+        $log2->setAttribute('type', 'coverage-text');
+        $log2->setAttribute(
+            'target',
+            self::$container->getCacheDirectory() . '/coverage.humbug.txt'
+        );
+        $logging->appendChild($log2);
 
         /**
          * While we're here, reset code coverage filter to meet the known source

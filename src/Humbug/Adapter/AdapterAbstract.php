@@ -48,7 +48,7 @@ abstract class AdapterAbstract
      * @param string $output
      * @return bool
      */
-    public static function ok($output)
+    public function ok($output)
     {
         if (preg_match("%[\n\r]+not ok \\d+%", $output)) {
             return false;
