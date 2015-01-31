@@ -8,7 +8,7 @@
  * @license    https://github.com/padraic/humbug/blob/master/LICENSE New BSD License
  */
 
-namespace Humbug\Utility;
+namespace Humbug\Adapter\Phpunit;
 
 class Job
 {
@@ -23,7 +23,7 @@ class Job
      */
     public static function generate($mutantFile = null, array $args = [], $bootstrap = '', $replacingFile = null)
     {
-        $humbugBootstrap = realpath(__DIR__ . '/../../bootstrap.php');
+        $humbugBootstrap = realpath(__DIR__ . '/../../../bootstrap.php');
         $file = sys_get_temp_dir() . '/humbug.phpunit.bootstrap.php';
 
         if (!is_null($mutantFile)) {

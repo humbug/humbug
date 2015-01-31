@@ -12,7 +12,7 @@ namespace Humbug\Adapter;
 
 use Humbug\Container;
 use Humbug\Adapter\Phpunit\XmlConfiguration;
-use Humbug\Utility\Job;
+use Humbug\Adapter\Phpunit\Job;
 use Humbug\Utility\CoverageData;
 use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\PhpProcess;
