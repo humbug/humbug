@@ -18,7 +18,7 @@
     "require": {
         "php": ">=5.4.0",
         "phpunit/phpunit": "~4.4",
-        "phpspec/phpspec": "~2.0",
+        "phpspec/phpspec": "~2.1@dev",
         "symfony/console": "~2.6",
         "symfony/finder": "~2.6",
         "symfony/process": "~2.6",
@@ -26,7 +26,8 @@
         "sebastian/diff": "~1.1",
         "padraic/phpunit-accelerator": "^1.0.2",
         "padraic/phpunit-extensions": "~1.0@dev",
-        "padraic/phpspec-extensions": "~1.0@dev"
+        "padraic/phpspec-extensions": "~1.0@dev",
+        "henrikbjorn/phpspec-code-coverage": "~1.0"
     },
     "require-dev": {
         "mockery/mockery": "~0.9"
