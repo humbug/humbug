@@ -11,11 +11,12 @@
 namespace Humbug\Adapter\Phpunit;
 
 use Humbug\Container;
+use Humbug\Adapter\ConfigurationAbstract;
 use Humbug\Exception\RuntimeException;
 use Humbug\Exception\InvalidArgumentException;
 use Symfony\Component\Finder\Finder;
 
-class XmlConfiguration
+class XmlConfiguration extends ConfigurationAbstract
 {
 
     private static $dom;
@@ -317,28 +318,5 @@ class XmlConfiguration
         $string = self::$dom->createElement('string');
         $fastestFirstArgs->appendChild($string);
         $string->nodeValue = self::$container->getCacheDirectory() . '/phpunit.times.humbug.json';
-    }
-
-    private static function makeAbsolutePath($name, $workingDir)
-    {
-        // @see https://github.com/symfony/Config/blob/master/FileLocator.php#L83
-        if ('/' === $name[0]
-            || '\\' === $name[0]
-            || (strlen($name) > 3 && ctype_alpha($name[0]) && $name[1] == ':' && ($name[2] == '\\' || $name[2] == '/'))
-        ) {
-            if (!file_exists($name)) {
-                throw new InvalidArgumentException("$name does not exist");
-            }
-
-            return realpath($name);
-        }
-
-        $relativePath = $workingDir.DIRECTORY_SEPARATOR.$name;
-        $glob = glob($relativePath);
-        if (file_exists($relativePath) || !empty($glob)) {
-            return realpath($relativePath);
-        }
-
-        throw new InvalidArgumentException("Could not find file $name working from $workingDir");
     }
 }
