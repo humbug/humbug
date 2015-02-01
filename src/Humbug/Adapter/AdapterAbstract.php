@@ -39,6 +39,13 @@ abstract class AdapterAbstract
     );
 
     /**
+     * Return adapter name
+     *
+     * @return string
+     */
+    abstract public function getName();
+
+    /**
      * Parse the test adapter result output to see if there were any failures.
      * In the context of mutation testing, a test failure is good (i.e. the
      * mutation was detected by the test suite).

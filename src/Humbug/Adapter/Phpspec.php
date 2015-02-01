@@ -117,15 +117,19 @@ class Phpspec extends AdapterAbstract
     }
 
     /**
+     * Return adapter name
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return 'phpspec';
+    }
+
+    /**
      * Executed in a separate process spawned from the execute() method above.
      *
-     * Uses an instance of PHPUnit_TextUI_Command to execute the PHPUnit
-     * tests and simulate any Humbug supported command line options suitable
-     * for PHPUnit. At present, we merely dissect a generic 'options' string
-     * equivalant to anything typed into a console after a normal 'phpunit'
-     * command. The adapter captures the TextUI output for further processing.
-     *
-     * @param string $arguments PHP serialised set of arguments to pass to PHPUnit
+     * @param string $arguments PHP serialised set of arguments to pass to phpspec
      * @return void
      */
     public static function main($arguments)
@@ -159,10 +163,10 @@ class Phpspec extends AdapterAbstract
      *
      * @return \Humbug\Utility\CoverageData
      */
-    public function getCoverageData(Container $container)
+    public function getSpecMap(Container $container)
     {
-        $coverage = new CoverageData(
-            $container->getCacheDirectory() . '/coverage.humbug.php'
+        $coverage = new SpecMapData(
+            $container->getCacheDirectory() . '/phpspec.specmap.humbug.json'
         );
         return $coverage;
     }

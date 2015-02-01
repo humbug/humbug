@@ -50,8 +50,8 @@ class YamlConfiguration extends ConfigurationAbstract
             self::handleTimeCollectorLogging();
         } else {
             self::handleFilteredResourceLoader();
-            self::handleFastestSpecFirstFilter();
             self::handleIncludeOnlySpecFilter($testSuites);
+            self::handleFastestSpecFirstFilter();
         }
 
         $saveFile = self::$container->getCacheDirectory() . '/phpspec.humbug.yml';
@@ -86,7 +86,9 @@ class YamlConfiguration extends ConfigurationAbstract
 
     protected static function handleIncludeOnlySpecFilter(array $specs)
     {
-
+        self::$config['humbug.filtered_resource_loader.filters'][] =
+            'Humbug\PhpSpec\Loader\Filter\Specification\IncludeOnlyFilter';
+        self::$config['humbug.filter.include_only.specs'] = $specs;
     }
 
     protected static function handleSpecMapLogging()

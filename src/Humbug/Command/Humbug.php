@@ -128,20 +128,22 @@ class Humbug extends Command
             return 1;
         }
 
-        exit;
-
         /**
          * Capture headline line coverage %.
          * Get code coverage data so we can determine which test suites or
          * or specifications need to be run for each mutation.
          */
-        $coverage = $container->getAdapter()->getCoverageData($container);
-        $result['coverage'] = $coverage->getLineCoverageFrom($container->getCacheDirectory() . '/coverage.humbug.txt');
+        if ($container->getAdapter()->getName() == 'phpunit') {
+            $coverage = $container->getAdapter()->getCoverageData($container);
+            $result['coverage'] = $coverage->getLineCoverageFrom($container->getCacheDirectory() . '/coverage.humbug.txt');
+        } else {
+            $specmap = $container->getAdapter()->getSpecMap();
+        }
 
         /**
          * Initial test run was a success!
          */
-        $renderer->renderInitialRunPass($result, $progress->getProgress());
+        $renderer->renderInitialRunPass($result, $progress->getProgress(), ($container->getAdapter()->getName() == 'phpunit'));
         $output->write(PHP_EOL);
         $this->logText($renderer);
 
@@ -196,7 +198,9 @@ class Humbug extends Command
             unset($mutations);
 
             try {
-                $coverage->loadCoverageFor($mutable->getFilename());
+                if ($container->getAdapter()->getName() == 'phpunit') {
+                    $coverage->loadCoverageFor($mutable->getFilename());
+                }
             } catch (NoCoveringTestsException $e) {
                 foreach ($batches as $batch) {
                     $countMutants++;
@@ -216,7 +220,13 @@ class Humbug extends Command
                         /**
                          * Unleash the Mutant!
                          */
-                        $mutants[$tracker] = new Mutant($mutation, $container, $coverage);
+                        $mutants[$tracker] = new Mutant($mutation, $container);
+
+                        if ($container->getAdapter()->getName() == 'phpunit') {
+                            $mutants[$tracker]->setCoverage($coverage);
+                        } else {
+                            $mutants[$tracker]->setSpecMap($specmap);
+                        }
 
                         $processes[$tracker] = $mutants[$tracker]->getProcess();
                     } catch (NoCoveringTestsException $e) {
@@ -289,7 +299,7 @@ class Humbug extends Command
             $mutable->cleanup();
         }
 
-        $coverage->cleanup();
+        if($container->getAdapter()->getName() == 'phpunit') $coverage->cleanup();
         Performance::stop();
 
         /**

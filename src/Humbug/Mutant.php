@@ -48,10 +48,9 @@ class Mutant
      */
     protected $process;
 
-    public function __construct(array $mutation, Container $container, CoverageData $coverage)
+    public function __construct(array $mutation, Container $container)
     {
         $this->mutation = $mutation;
-        $this->tests = $coverage->getTestClasses($mutation['file'], $mutation['line']);
         $this->container = $container;
 
         $this->file = $container->getCacheDirectory() . '/humbug.mutant.' . uniqid() . '.php';
@@ -64,6 +63,16 @@ class Mutant
         $mutatedFileContent = $mutatorClass::mutate($tokens, $mutation['index']);
 
         file_put_contents($this->file, $mutatedFileContent);
+    }
+
+    public function setCoverage(CoverageData $coverage)
+    {
+        $this->tests = $coverage->getTestClasses($mutation['file'], $mutation['line']);
+    }
+
+    public function setSpecMap($specMap)
+    {
+        $this->tests = $specMap->getSpecTitles($mutation['file']);
     }
 
     public function __destruct()

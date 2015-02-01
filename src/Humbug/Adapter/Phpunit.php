@@ -122,6 +122,16 @@ class Phpunit extends AdapterAbstract
     }
 
     /**
+     * Return adapter name
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return 'phpunit';
+    }
+
+    /**
      * Executed in a separate process spawned from the execute() method above.
      *
      * Uses an instance of PHPUnit_TextUI_Command to execute the PHPUnit
