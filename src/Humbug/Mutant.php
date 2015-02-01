@@ -67,12 +67,12 @@ class Mutant
 
     public function setCoverage(CoverageData $coverage)
     {
-        $this->tests = $coverage->getTestClasses($mutation['file'], $mutation['line']);
+        $this->tests = $coverage->getTestClasses($this->mutation['file'], $this->mutation['line']);
     }
 
     public function setSpecMap($specMap)
     {
-        $this->tests = $specMap->getSpecTitles($mutation['file']);
+        $this->tests = $specMap->getSpecTitles($this->mutation['file']);
     }
 
     public function __destruct()

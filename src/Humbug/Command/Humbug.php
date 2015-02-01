@@ -137,7 +137,7 @@ class Humbug extends Command
             $coverage = $container->getAdapter()->getCoverageData($container);
             $result['coverage'] = $coverage->getLineCoverageFrom($container->getCacheDirectory() . '/coverage.humbug.txt');
         } else {
-            $specmap = $container->getAdapter()->getSpecMap();
+            $specmap = $container->getAdapter()->getSpecMap($container);
         }
 
         /**

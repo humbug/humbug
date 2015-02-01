@@ -32,7 +32,7 @@ class SpecMapData
                 'File does not exist: ' . $file
             );
         }
-        $this->data = json_decode(file_get_contents($file));
+        $this->data = json_decode(file_get_contents($file), true);
     }
 
     public function getSpecTitles($file)

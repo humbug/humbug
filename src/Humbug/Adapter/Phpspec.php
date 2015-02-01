@@ -13,7 +13,7 @@ namespace Humbug\Adapter;
 use Humbug\Container;
 use Humbug\Adapter\Phpspec\YamlConfiguration;
 use Humbug\Adapter\Phpspec\Job;
-use Humbug\Utility\CoverageData;
+use Humbug\Utility\SpecMapData;
 use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\PhpProcess;
 use Symfony\Component\Console\Input\ArgvInput;
@@ -135,6 +135,14 @@ class Phpspec extends AdapterAbstract
     public static function main($arguments)
     {
         $arguments = unserialize(base64_decode($arguments));
+
+        /**
+         * Workaround for PhpSpec\Console\ContainerAssembler depending on this
+         * though it won't exist in this new process.
+         */
+        if (!isset($_SERVER['HOME'])) {
+            $_SERVER['HOME'] = sys_get_temp_dir();
+        }
 
         /**
          * Switch working directory to tests (if required) and execute the test suite

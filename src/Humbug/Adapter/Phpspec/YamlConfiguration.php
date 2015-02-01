@@ -41,6 +41,7 @@ class YamlConfiguration extends ConfigurationAbstract
         }
 
         self::$config['formatter.name'] = 'tap';
+        self::$config['code_generation'] = false;
         if (!isset(self::$config['extensions']) || !is_array(self::$config['extensions'])) {
             self::$config['extensions'] = [];
         }
