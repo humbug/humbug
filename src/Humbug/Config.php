@@ -65,6 +65,21 @@ class Config
         return $this->config->chdir;
     }
 
+    public function getAdapter()
+    {
+        if (!isset($this->config->adapter)) {
+            return 'phpunit';
+        }
+
+        if ($this->config->adapter !== 'phpunit' && $this->config->adapter !== 'phpspec') {
+            throw new JsonConfigException(
+                'Specified adapter does not exist: ' . $this->config->adapter
+            );
+        }
+
+        return $this->config->adapter;
+    }
+
     public function getLogsJson()
     {
         return $this->getLogs('json');
