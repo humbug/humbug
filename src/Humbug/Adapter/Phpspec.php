@@ -85,10 +85,12 @@ class Phpspec extends AdapterAbstract
          */
         $timeout = 0;
         if ($firstRun) {
-            $jobopts['cliopts'] = array_merge(
-                $jobopts['cliopts'],
-                explode(' ', $jobopts['constraints'])
-            );
+            if (!empty($jobopts['constraints'])) {
+                $jobopts['cliopts'] = array_merge(
+                    $jobopts['cliopts'],
+                    explode(' ', $jobopts['constraints'])
+                );
+            }
         } else {
             $timeout = $container->getTimeout();
         }
