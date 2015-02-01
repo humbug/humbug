@@ -128,6 +128,8 @@ class Humbug extends Command
             return 1;
         }
 
+        exit;
+
         /**
          * Capture headline line coverage %.
          * Get code coverage data so we can determine which test suites or
