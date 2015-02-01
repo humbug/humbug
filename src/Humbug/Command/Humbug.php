@@ -13,7 +13,6 @@ namespace Humbug\Command;
 use Humbug\Config;
 use Humbug\Config\JsonParser;
 use Humbug\Container;
-use Humbug\Adapter\Phpunit;
 use Humbug\Mutant;
 use Humbug\Utility\Performance;
 use Humbug\Utility\ParallelGroup;
@@ -508,9 +507,10 @@ class Humbug extends Command
         /**
          * Adapter
          */
-        if ($input->getOption('adapter') !== 'phpunit') {
+        if ($input->getOption('adapter') !== 'phpunit'
+        && $input->getOption('adapter') !== 'phpspec') {
             throw new InvalidArgumentException(
-                'Only a PHPUnit adapter is supported at this time. Sorry!'
+                'Only the phpunit or phpspec adapters are supported at this time. Sorry!'
             );
         }
         /**
