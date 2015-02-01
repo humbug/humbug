@@ -9,9 +9,9 @@
  * @license    https://github.com/padraic/humbug/blob/master/LICENSE New BSD License
  */
 
-namespace Humbug\Test\Utility;
+namespace Humbug\Test\Adapter\Phpunit;
 
-use Humbug\Utility\Job;
+use Humbug\Adapter\Phpunit\Job;
 
 class JobTest extends \PHPUnit_Framework_TestCase
 {
@@ -19,7 +19,7 @@ class JobTest extends \PHPUnit_Framework_TestCase
     public function testGenerateReturnsPHPScriptRenderedWithCurrentRunnersSettingsAndSerialisedMutationArray()
     {
         $script = Job::generate('the_file.php', [], '/path/to/bootstrap.php');
-        $bootstrap = realpath(__DIR__ . '/../../../../src/bootstrap.php');
+        $bootstrap = realpath(__DIR__ . '/../../../../../src/bootstrap.php');
         $expected = <<<EXPECTED
 <?php
 namespace Humbug\\Env;
