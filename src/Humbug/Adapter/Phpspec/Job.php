@@ -51,8 +51,6 @@ PREPEND;
             file_put_contents($file, $buffer);
         }
 
-        var_dump($args); exit;
-
         $args = base64_encode(serialize($args));
         
         $script = <<<SCRIPT

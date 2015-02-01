@@ -156,10 +156,12 @@ class Container
      */
     public function setAdapterOptionsFromString($optionString)
     {
-        $this->adapterOptions = array_merge(
-            $this->adapterOptions,
-            explode(' ', $optionString)
-        );
+        if (!empty($optionsString)) {
+            $this->adapterOptions = array_merge(
+                $this->adapterOptions,
+                explode(' ', $optionString)
+            );
+        }
         return $this;
     }
 
