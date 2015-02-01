@@ -9,8 +9,9 @@
  * @license    https://github.com/padraic/humbug/blob/master/LICENSE New BSD License
  */
 
-namespace Humbug\Adapter;
+namespace Humbug\Test\Adapter;
 
+use Humbug\Adapter\Phpunit;
 use Mockery as m;
 
 class PhpunitTest extends \PHPUnit_Framework_TestCase
