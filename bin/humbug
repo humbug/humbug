@@ -5,7 +5,7 @@ if (PHP_SAPI !== 'cli') {
     echo 'Warning: Humbug may only be invoked from a command line', PHP_EOL;
 }
 
-require_once __DIR__ . '/../src/bootstrap.php';
+require_once __DIR__ . '/../bootstrap.php';
 
 use Humbug\Console\Application;
 

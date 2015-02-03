@@ -15,14 +15,14 @@
 
     <testsuites>
         <testsuite name="Humbug Test Suite">
-            <directory>tests/Humbug/</directory>
-            <exclude>tests/Humbug/Test/Adapter/_files</exclude>
+            <directory>tests/</directory>
+            <exclude>tests/Adapter/_files</exclude>
         </testsuite>
     </testsuites>
 
     <filter>
         <whitelist>
-            <directory>./src/Humbug/</directory>
+            <directory>./src/</directory>
         </whitelist>
     </filter>
     
