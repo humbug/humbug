@@ -11,13 +11,15 @@
 namespace Humbug\Adapter;
 
 use Humbug\Container;
-use Humbug\Adapter\Phpunit\XmlConfiguration;
-use Humbug\Adapter\Phpunit\Job;
-use Humbug\Utility\CoverageData;
+use Humbug\Adapter\Phpspec\YamlConfiguration;
+use Humbug\Adapter\Phpspec\Job;
+use Humbug\Utility\SpecMapData;
 use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\PhpProcess;
+use Symfony\Component\Console\Input\ArgvInput;
+use PhpSpec\Console\Application as PhpspecApplication;
 
-class Phpunit extends AdapterAbstract
+class Phpspec extends AdapterAbstract
 {
 
     /**
@@ -50,11 +52,6 @@ class Phpunit extends AdapterAbstract
             'constraints'   => $container->getAdapterConstraints()
         ];
 
-        /**
-         * We like standardised easy to parse outout
-         */
-        array_unshift($jobopts['cliopts'], '--tap');
-
         /*
          * We only need a single fail!
          */
@@ -63,28 +60,24 @@ class Phpunit extends AdapterAbstract
         }
 
         /**
-         * Setup a PHPUnit XML config file for the purposes of explicitly setting
-         * test case order (this will preserve anything else from the original)
-         *
-         * On first runs we log to junit XML so we can sort tests by performance.
-         *
-         * TODO: Assemble config just once if no coverage data available!
+         * Handle any editing of the configuration
          */
-        $configFile = XmlConfiguration::assemble($container, $firstRun, $testSuites);
+        $configFile = YamlConfiguration::assemble($container, $firstRun, $testSuites);
         foreach ($jobopts['cliopts'] as $key => $value) {
-            if ($value == '--configuration' || $value == '-C') {
+            if ($value == '--config' || $value == '-c') {
                 unset($jobopts['cliopts'][$key]);
                 unset($jobopts['cliopts'][$key+1]);
-            } elseif (preg_match('%\\-\\-configuration=%', $value)) {
+            } elseif (preg_match('%\\-\\-config=%', $value)) {
                 unset($jobopts['cliopts'][$key]);
             }
         }
-        array_unshift($jobopts['cliopts'], '--configuration=' . $configFile);
+        array_unshift($jobopts['cliopts'], '--config=' . $configFile);
 
         /**
          * Initial command is expected, of course.
          */
-        array_unshift($jobopts['cliopts'], 'phpunit');
+        array_unshift($jobopts['cliopts'], 'run');
+        array_unshift($jobopts['cliopts'], 'phpspec');
 
         /**
          * Log the first run so we can analyse test times to make future
@@ -92,10 +85,12 @@ class Phpunit extends AdapterAbstract
          */
         $timeout = 0;
         if ($firstRun) {
-            $jobopts['cliopts'] = array_merge(
-                $jobopts['cliopts'],
-                explode(' ', $jobopts['constraints'])
-            );
+            if (!empty($jobopts['constraints'])) {
+                $jobopts['cliopts'] = array_merge(
+                    $jobopts['cliopts'],
+                    explode(' ', $jobopts['constraints'])
+                );
+            }
         } else {
             $timeout = $container->getTimeout();
         }
@@ -128,24 +123,26 @@ class Phpunit extends AdapterAbstract
      */
     public function getName()
     {
-        return 'phpunit';
+        return 'phpspec';
     }
 
     /**
      * Executed in a separate process spawned from the execute() method above.
      *
-     * Uses an instance of PHPUnit_TextUI_Command to execute the PHPUnit
-     * tests and simulate any Humbug supported command line options suitable
-     * for PHPUnit. At present, we merely dissect a generic 'options' string
-     * equivalant to anything typed into a console after a normal 'phpunit'
-     * command. The adapter captures the TextUI output for further processing.
-     *
-     * @param string $arguments PHP serialised set of arguments to pass to PHPUnit
+     * @param string $arguments PHP serialised set of arguments to pass to phpspec
      * @return void
      */
     public static function main($arguments)
     {
         $arguments = unserialize(base64_decode($arguments));
+
+        /**
+         * Workaround for PhpSpec\Console\ContainerAssembler depending on this
+         * though it won't exist in this new process.
+         */
+        if (!isset($_SERVER['HOME'])) {
+            $_SERVER['HOME'] = sys_get_temp_dir();
+        }
 
         /**
          * Switch working directory to tests (if required) and execute the test suite
@@ -154,9 +151,10 @@ class Phpunit extends AdapterAbstract
         if (isset($arguments['testdir']) && !empty($arguments['testdir'])) {
             chdir($arguments['testdir']);
         }
-        $command = new \PHPUnit_TextUI_Command;
+        $application = new PhpspecApplication('2.2.x-dev-humbug');
         try {
-            $command->run($arguments['cliopts'], false);
+            $argv = new ArgvInput($arguments['cliopts']);
+            $application->run($argv);
             if (getcwd() !== $originalWorkingDir) {
                 chdir($originalWorkingDir);
             }
@@ -173,10 +171,10 @@ class Phpunit extends AdapterAbstract
      *
      * @return \Humbug\Utility\CoverageData
      */
-    public function getCoverageData(Container $container)
+    public function getSpecMap(Container $container)
     {
-        $coverage = new CoverageData(
-            $container->getCacheDirectory() . '/coverage.humbug.php'
+        $coverage = new SpecMapData(
+            $container->getCacheDirectory() . '/phpspec.specmap.humbug.json'
         );
         return $coverage;
     }
