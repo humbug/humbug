@@ -19,7 +19,7 @@ class JobTest extends \PHPUnit_Framework_TestCase
     public function testGenerateReturnsPHPScriptRenderedWithCurrentRunnersSettingsAndSerialisedMutationArray()
     {
         $script = Job::generate('the_file.php', [], '/path/to/bootstrap.php');
-        $bootstrap = realpath(__DIR__ . '/../../../../../bootstrap.php');
+        $bootstrap = realpath(__DIR__ . '/../../../bootstrap.php');
         $expected = <<<EXPECTED
 <?php
 namespace Humbug\\Env;
