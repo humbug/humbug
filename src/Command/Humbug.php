@@ -16,6 +16,7 @@ use Humbug\Config\JsonParser;
 use Humbug\Container;
 use Humbug\Adapter\Phpunit;
 use Humbug\Mutant;
+use Humbug\ProcessRunner;
 use Humbug\Report\Text as TextReport;
 use Humbug\Utility\Performance;
 use Humbug\Utility\ParallelGroup;
@@ -539,27 +540,10 @@ class Humbug extends Command
         AdapterAbstract $testFrameworkAdapter,
         ProgressBar $progressBar
     ) {
-        $onProgress = function ($count) use ($progressBar) {
+        $setProgressBarProgressCallback = function ($count) use ($progressBar) {
             $progressBar->setProgress($count);
         };
 
-        $hasFailure = false;
-
-        $process->start();
-        usleep(1000);
-        while ($process->isRunning()) {
-            usleep(2500);
-            if (($count = $testFrameworkAdapter->hasOks($process->getOutput()))) {
-                $onProgress($count);
-                $process->clearOutput();
-            } elseif (!$testFrameworkAdapter->ok($process->getOutput())) {
-                sleep(1);
-                $hasFailure = true;
-                break;
-            }
-        }
-        $process->stop();
-
-        return $hasFailure;
+        return (new ProcessRunner())->run($process, $testFrameworkAdapter, $setProgressBarProgressCallback);
     }
 }
