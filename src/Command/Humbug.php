@@ -539,6 +539,10 @@ class Humbug extends Command
         AdapterAbstract $testFrameworkAdapter,
         ProgressBar $progressBar
     ) {
+        $onProgress = function ($count) use ($progressBar) {
+            $progressBar->setProgress($count);
+        };
+
         $hasFailure = false;
 
         $process->start();
@@ -546,7 +550,7 @@ class Humbug extends Command
         while ($process->isRunning()) {
             usleep(2500);
             if (($count = $testFrameworkAdapter->hasOks($process->getOutput()))) {
-                $progressBar->setProgress($count);
+                $onProgress($count);
                 $process->clearOutput();
             } elseif (!$testFrameworkAdapter->ok($process->getOutput())) {
                 sleep(1);
@@ -555,7 +559,7 @@ class Humbug extends Command
             }
         }
         $process->stop();
-        
+
         return $hasFailure;
     }
 }
