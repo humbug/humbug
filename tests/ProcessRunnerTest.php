@@ -13,29 +13,40 @@
 
 namespace Humbug\Test;
 
+use Humbug\Adapter\AdapterAbstract;
 use Humbug\Adapter\Phpunit;
 use Humbug\ProcessRunner;
 use Symfony\Component\Process\PhpProcess;
 
 class ProcessRunnerTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var ProcessRunner
+     */
+    private $processRunner;
+
+    /**
+     * @var AdapterAbstract
+     */
+    private $testFrameworkAdapter;
+
+    protected function setUp()
+    {
+        $this->processRunner = new ProcessRunner();
+        $this->testFrameworkAdapter = new Phpunit();
+    }
+
     public function testRunShouldNotFail()
     {
-        $processRunner = new ProcessRunner();
-        $testFrameworkAdapter = new Phpunit();
-
         $process = $this->createOkProcess();
 
-        $result = $processRunner->run($process , $testFrameworkAdapter);
+        $result = $this->processRunner->run($process , $this->testFrameworkAdapter);
 
         $this->assertFalse($result);
     }
 
     public function testRunShouldFail()
     {
-        $processRunner = new ProcessRunner();
-        $testFrameworkAdapter = new Phpunit();
-
         $process = new PhpProcess('<?php
 echo "TAP version 13\r\n";
 echo "not ok 82 - Humbug\Test\Mutator\ConditionalBoundary\LessThanOrEqualToTest::testMutatesLessThanToLessThanOrEqualTo\r\n";
@@ -46,16 +57,13 @@ echo "not ok 81 - Humbug\Test\Mutator\ConditionalBoundary\LessThanOrEqualToTest:
 echo "ok 81 - Humbug\Test\Mutator\ConditionalBoundary\LessThanOrEqualToTest::testMutatesLessThanToLessThanOrEqualTo\r\n";
         ');
 
-        $result = $processRunner->run($process , $testFrameworkAdapter);
+        $result = $this->processRunner->run($process , $this->testFrameworkAdapter);
 
         $this->assertTrue($result);
     }
 
     public function testShouldInvokeOnProgresCallback()
     {
-        $processRunner = new ProcessRunner();
-        $testFrameworkAdapter = new Phpunit();
-
         $executedCount = 0;
 
         $onProgressCallback = function() use (&$executedCount) {
@@ -64,7 +72,7 @@ echo "ok 81 - Humbug\Test\Mutator\ConditionalBoundary\LessThanOrEqualToTest::tes
 
         $process = $this->createOkProcess();
 
-        $processRunner->run($process , $testFrameworkAdapter, $onProgressCallback);
+        $this->processRunner->run($process , $this->testFrameworkAdapter, $onProgressCallback);
 
         $this->assertGreaterThan(0, $executedCount);
     }
