@@ -19,6 +19,13 @@ use Symfony\Component\Process\Process;
 
 class ProcessRunner
 {
+    /**
+     * @param PhpProcess $process
+     * @param AdapterAbstract $testFrameworkAdapter
+     * @param callable $onProgressCallback
+     *
+     * @return bool
+     */
     public function run(
         PhpProcess $process,
         AdapterAbstract $testFrameworkAdapter,
