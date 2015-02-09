@@ -40,29 +40,21 @@ class ProcessRunnerTest extends \PHPUnit_Framework_TestCase
     {
         $process = $this->createOkProcess();
 
-        $result = $this->processRunner->run($process , $this->testFrameworkAdapter);
+        $result = $this->runProcess($process);
 
         $this->assertFalse($result);
     }
 
     public function testRunShouldFail()
     {
-        $process = new PhpProcess('<?php
-echo "TAP version 13\r\n";
-echo "not ok 82 - Humbug\Test\Mutator\ConditionalBoundary\LessThanOrEqualToTest::testMutatesLessThanToLessThanOrEqualTo\r\n";
-echo "not ok 78 - Humbug\Test\Mutator\ConditionalBoundary\LessThanOrEqualToTest::testReturnsTokenEquivalentToLessThanOrEqualTo\r\n";
-echo "not ok 79 - Humbug\Test\Mutator\ConditionalBoundary\LessThanOrEqualToTest::testMutatesLessThanToLessThanOrEqualTo\r\n";
-echo "not ok 80 - Humbug\Test\Mutator\ConditionalBoundary\LessThanOrEqualToTest::testMutatesLessThanToLessThanOrEqualTo\r\n";
-echo "not ok 81 - Humbug\Test\Mutator\ConditionalBoundary\LessThanOrEqualToTest::testMutatesLessThanToLessThanOrEqualTo\r\n";
-echo "ok 81 - Humbug\Test\Mutator\ConditionalBoundary\LessThanOrEqualToTest::testMutatesLessThanToLessThanOrEqualTo\r\n";
-        ');
+        $process = $this->createNotOkProcess();
 
-        $result = $this->processRunner->run($process , $this->testFrameworkAdapter);
+        $result = $this->runProcess($process);
 
         $this->assertTrue($result);
     }
 
-    public function testShouldInvokeOnProgresCallback()
+    public function testShouldInvokeOnProgressCallback()
     {
         $executedCount = 0;
 
@@ -72,7 +64,7 @@ echo "ok 81 - Humbug\Test\Mutator\ConditionalBoundary\LessThanOrEqualToTest::tes
 
         $process = $this->createOkProcess();
 
-        $this->processRunner->run($process , $this->testFrameworkAdapter, $onProgressCallback);
+        $this->runProcess($process, $onProgressCallback);
 
         $this->assertGreaterThan(0, $executedCount);
     }
@@ -87,6 +79,29 @@ echo "TAP version 13\r\n";
 echo "ok 78 - Humbug\Test\Mutator\ConditionalBoundary\LessThanOrEqualToTest::testReturnsTokenEquivalentToLessThanOrEqualTo\r\n";
 echo "ok 79 - Humbug\Test\Mutator\ConditionalBoundary\LessThanOrEqualToTest::testMutatesLessThanToLessThanOrEqualTo\r\n";
 echo "ok 80 - Humbug\Test\Mutator\ConditionalBoundary\LessThanTest::testReturnsTokenEquivalentToLessThanOrEqualTo\r\n";
+        ');
+
+        return $process;
+    }
+
+    private function runProcess(PhpProcess $process, $onProgressCallback = null)
+    {
+        return $this->processRunner->run($process, $this->testFrameworkAdapter, $onProgressCallback);
+    }
+
+    /**
+     * @return PhpProcess
+     */
+    private function createNotOkProcess()
+    {
+        $process = new PhpProcess('<?php
+echo "TAP version 13\r\n";
+echo "not ok 82 - Humbug\Test\Mutator\ConditionalBoundary\LessThanOrEqualToTest::testMutatesLessThanToLessThanOrEqualTo\r\n";
+echo "not ok 78 - Humbug\Test\Mutator\ConditionalBoundary\LessThanOrEqualToTest::testReturnsTokenEquivalentToLessThanOrEqualTo\r\n";
+echo "not ok 79 - Humbug\Test\Mutator\ConditionalBoundary\LessThanOrEqualToTest::testMutatesLessThanToLessThanOrEqualTo\r\n";
+echo "not ok 80 - Humbug\Test\Mutator\ConditionalBoundary\LessThanOrEqualToTest::testMutatesLessThanToLessThanOrEqualTo\r\n";
+echo "not ok 81 - Humbug\Test\Mutator\ConditionalBoundary\LessThanOrEqualToTest::testMutatesLessThanToLessThanOrEqualTo\r\n";
+echo "ok 81 - Humbug\Test\Mutator\ConditionalBoundary\LessThanOrEqualToTest::testMutatesLessThanToLessThanOrEqualTo\r\n";
         ');
         return $process;
     }
