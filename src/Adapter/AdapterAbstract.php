@@ -50,7 +50,7 @@ abstract class AdapterAbstract
      */
     public function ok($output)
     {
-        if (preg_match("%[\n\r]+not ok \\d+%", $output)) {
+        if (preg_match("%not ok \\d+ - %", $output)) {
             return false;
         }
         return true;
@@ -68,7 +68,7 @@ abstract class AdapterAbstract
      */
     public function hasOks($output)
     {
-        $result = preg_match("%[\n\r]+ok (\\d+).*$%", $output, $matches);
+        $result = preg_match("%ok (\\d+) - .*$%", $output, $matches);
         if ($result) {
             return (int) $matches[1];
         }
