@@ -30,11 +30,6 @@ class Text
             $out = array_merge($out, [PHP_EOL, '------', 'Errors', '------']);
             foreach ($mutantErrors as $index => $errored) {
                 $out[] = $index + 1 . ') ' . $this->prepareReportForMutant($errored);
-                $out[] = 'The following output was received on stderr:';
-                $out[] = PHP_EOL;
-                $out[] = $errored->getProcess()->getErrorOutput();
-                $out[] = PHP_EOL;
-                $out[] = PHP_EOL;
             }
         }
 
@@ -45,10 +40,22 @@ class Text
     {
         $mutation = $mutant->getMutation();
 
-        return
+        $out =
             $mutation['mutator'] . PHP_EOL .
             'Diff on ' . $mutation['class'] . '::' . $mutation['method'] . '() in ' . $mutation['file'] . ':' . PHP_EOL .
             $mutant->getDiff() . PHP_EOL .
             PHP_EOL;
+
+        $errorOutput = $mutant->getProcess()->getErrorOutput();
+
+        if ($errorOutput) {
+            $out =
+                'The following output was received on stderr:' . PHP_EOL .
+                PHP_EOL .
+                $errorOutput . PHP_EOL .
+                PHP_EOL;
+        }
+
+        return $out;
     }
 }
