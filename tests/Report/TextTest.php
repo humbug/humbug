@@ -1,9 +1,18 @@
 <?php
 
+/**
+ * Humbug
+ *
+ * @category   Humbug
+ * @package    Humbug
+ * @copyright  Copyright (c) 2015 Pádraic Brady (http://blog.astrumfutura.com)
+ * @license    https://github.com/padraic/humbug/blob/master/LICENSE New BSD License
+ *
+ * @author     rafal.wartalski@gmail.com
+ */
 namespace Humbug\Test\Report;
 
 use Humbug\Report\Text;
-use Symfony\Component\Process\Process;
 
 class TextTest extends \PHPUnit_Framework_TestCase
 {
@@ -60,7 +69,7 @@ DIFF;
             $this->createMutant()
         ];
 
-        $textReport = $this->getMock(Text::class, ['prepareReportForMutant']);
+        $textReport = $this->getMock('Humbug\Report\Text', ['prepareReportForMutant']);
 
         $textReport->expects($this->at(0))->method('prepareReportForMutant')->with($mutants[0]);
         $textReport->expects($this->at(1))->method('prepareReportForMutant')->with($mutants[1]);
@@ -82,7 +91,7 @@ DIFF;
 
     private function createMutantStub($errorOutput)
     {
-        $process = $this->getMock(Process::class, [], [], '', false);
+        $process = $this->getMock('Symfony\Component\Process\Process', [], [], '', false);
         $process->expects($this->once())->method('getErrorOutput')->willReturn($errorOutput);
 
         $mutant = $this->createMutant();
