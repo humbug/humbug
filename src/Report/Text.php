@@ -14,23 +14,31 @@ class Text
      */
     public function prepare($mutantEscapes, $mutantTimeouts, $mutantErrors)
     {
-        $out = [PHP_EOL, '-------', 'Escapes', '-------'];
-        foreach ($mutantEscapes as $index => $escaped) {
-            $out[] = $index + 1 . ') ' . $this->prepareReportForMutant($escaped);
-        }
+        $out = $this->prepareMutantsReport($mutantEscapes, 'Escapes');
 
         if (count($mutantTimeouts) > 0) {
-            $out = array_merge($out, [PHP_EOL, '------', 'Timeouts', '------']);
-            foreach ($mutantTimeouts as $index => $timeouted) {
-                $out[] = $index + 1 . ') ' . $this->prepareReportForMutant($timeouted);
-            }
+            $out .= PHP_EOL . $this->prepareMutantsReport($mutantTimeouts, 'Timeouts');
         }
 
         if (count($mutantErrors) > 0) {
-            $out = array_merge($out, [PHP_EOL, '------', 'Errors', '------']);
-            foreach ($mutantErrors as $index => $errored) {
-                $out[] = $index + 1 . ') ' . $this->prepareReportForMutant($errored);
-            }
+            $out .= PHP_EOL . $this->prepareMutantsReport($mutantTimeouts, 'Errors');
+        }
+
+        return $out;
+    }
+
+    public function prepareMutantsReport(array $mutants, $mutantsGroupName)
+    {
+        $out = [];
+
+        $out[] =
+            '------' . PHP_EOL .
+            $mutantsGroupName . PHP_EOL .
+            '------' . PHP_EOL .
+            PHP_EOL;
+
+        foreach ($mutants as $index => $mutant) {
+            $out[] = $index + 1 . ') ' . $this->prepareReportForMutant($mutant);
         }
 
         return implode(PHP_EOL, $out);
@@ -49,7 +57,7 @@ class Text
         $errorOutput = $mutant->getProcess()->getErrorOutput();
 
         if ($errorOutput) {
-            $out =
+            $out .=
                 'The following output was received on stderr:' . PHP_EOL .
                 PHP_EOL .
                 $errorOutput . PHP_EOL .
