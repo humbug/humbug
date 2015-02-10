@@ -15,6 +15,7 @@ use Humbug\Config\JsonParser;
 use Humbug\Container;
 use Humbug\Adapter\Phpunit;
 use Humbug\Mutant;
+use Humbug\Report\Text as TextReport;
 use Humbug\Utility\Performance;
 use Humbug\Utility\ParallelGroup;
 use Humbug\Renderer\Text;
@@ -526,6 +527,18 @@ class Humbug extends Command
 
     private function prepareTextReport($mutantEscapes, $mutantTimeouts, $mutantErrors)
     {
-        return (new \Humbug\Report\Text())->prepare($mutantEscapes, $mutantTimeouts, $mutantErrors);
+        $textReport = new TextReport();
+
+        $out = $textReport->prepareMutantsReport($mutantEscapes, 'Escapes');
+
+        if (count($mutantTimeouts) > 0) {
+            $out .= PHP_EOL . $textReport->prepareMutantsReport($mutantTimeouts, 'Timeouts');
+        }
+
+        if (count($mutantErrors) > 0) {
+            $out .= PHP_EOL . $textReport->prepareMutantsReport($mutantErrors, 'Errors');
+        }
+
+        return $out;
     }
 }

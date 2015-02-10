@@ -7,26 +7,10 @@ use Humbug\Mutant;
 class Text
 {
     /**
-     * @param Mutant[] $mutantEscapes
-     * @param Mutant[] $mutantTimeouts
-     * @param Mutant[] $mutantErrors
+     * @param Mutant[] $mutants
+     * @param string $mutantsGroupName
      * @return string
      */
-    public function prepare($mutantEscapes, $mutantTimeouts, $mutantErrors)
-    {
-        $out = $this->prepareMutantsReport($mutantEscapes, 'Escapes');
-
-        if (count($mutantTimeouts) > 0) {
-            $out .= PHP_EOL . $this->prepareMutantsReport($mutantTimeouts, 'Timeouts');
-        }
-
-        if (count($mutantErrors) > 0) {
-            $out .= PHP_EOL . $this->prepareMutantsReport($mutantTimeouts, 'Errors');
-        }
-
-        return $out;
-    }
-
     public function prepareMutantsReport(array $mutants, $mutantsGroupName)
     {
         $out = [];
@@ -44,6 +28,10 @@ class Text
         return implode(PHP_EOL, $out);
     }
 
+    /**
+     * @param Mutant $mutant
+     * @return string
+     */
     public function prepareReportForMutant(Mutant $mutant)
     {
         $mutation = $mutant->getMutation();
