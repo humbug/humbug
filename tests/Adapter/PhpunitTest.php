@@ -16,8 +16,7 @@ use Mockery as m;
 
 class PhpunitTest extends \PHPUnit_Framework_TestCase
 {
-
-    protected $bootstrap = null;
+    private $root;
 
     public function setUp()
     {
