@@ -13,7 +13,6 @@ namespace Humbug\Adapter\Phpunit;
 use Humbug\Container;
 use Humbug\Exception\RuntimeException;
 use Humbug\Exception\InvalidArgumentException;
-use Symfony\Component\Finder\Finder;
 
 class XmlConfiguration
 {
