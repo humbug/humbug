@@ -15,6 +15,7 @@ use Humbug\Config\JsonParser;
 use Humbug\Container;
 use Humbug\Adapter\Phpunit;
 use Humbug\Mutant;
+use Humbug\Report\Text as TextReport;
 use Humbug\Utility\Performance;
 use Humbug\Utility\ParallelGroup;
 use Humbug\Renderer\Text;
@@ -320,46 +321,15 @@ class Humbug extends Command
                 $mutantEscapes
             );
         }
+
         if ($this->textLogFile) {
             $renderer->renderLogToText($this->textLogFile);
             $this->logText($renderer);
-            $out = [PHP_EOL, '-------', 'Escapes', '-------'];
-            foreach ($mutantEscapes as $index => $escaped) {
-                $mutation = $escaped->getMutation();
-                $out[] = $index+1 . ') ' . $mutation['mutator'];
-                $out[] = 'Diff on ' . $mutation['class'] . '::' . $mutation['method'] . '() in ' . $mutation['file'] . ':';
-                $out[] = $escaped->getDiff();
-                $out[] = PHP_EOL;
-            }
 
-            if (count($mutantTimeouts) > 0) {
-                $out = array_merge($out, [PHP_EOL, '------', 'Timeouts', '------']);
-                foreach ($mutantTimeouts as $index => $timeouted) {
-                    $mutation = $timeouted->getMutation();
-                    $out[] = $index+1 . ') ' . $mutation['mutator'];
-                    $out[] = 'Diff on ' . $mutation['class'] . '::' . $mutation['method'] . '() in ' . $mutation['file'] . ':';
-                    $out[] = $timeouted->getDiff();
-                    $out[] = PHP_EOL;
-                }
-            }
-
-            if (count($mutantErrors) > 0) {
-                $out = array_merge($out, [PHP_EOL, '------', 'Errors', '------']);
-                foreach ($mutantErrors as $index => $errored) {
-                    $mutation = $errored->getMutation();
-                    $out[] = $index+1 . ') ' . $mutation['mutator'];
-                    $out[] = 'Diff on ' . $mutation['class'] . '::' . $mutation['method'] . '() in ' . $mutation['file'] . ':';
-                    $out[] = $errored->getDiff();
-                    $out[] = PHP_EOL;
-                    $out[] = 'The following output was received on stderr:';
-                    $out[] = PHP_EOL;
-                    $out[] = $errored->getProcess()->getErrorOutput();
-                    $out[] = PHP_EOL;
-                    $out[] = PHP_EOL;
-                }
-            }
-            $this->logText($renderer, implode(PHP_EOL, $out));
+            $textReport = $this->prepareTextReport($mutantEscapes, $mutantTimeouts, $mutantErrors);
+            $this->logText($renderer, $textReport);
         }
+
         if ($this->jsonLogFile || $this->textLogFile) {
             $output->write(PHP_EOL);
         }
@@ -553,5 +523,22 @@ class Humbug extends Command
     private function isLoggingEnabled()
     {
         return $this->jsonLogFile !== null || $this->textLogFile !== null;
+    }
+
+    private function prepareTextReport($mutantEscapes, $mutantTimeouts, $mutantErrors)
+    {
+        $textReport = new TextReport();
+
+        $out = $textReport->prepareMutantsReport($mutantEscapes, 'Escapes');
+
+        if (count($mutantTimeouts) > 0) {
+            $out .= PHP_EOL . $textReport->prepareMutantsReport($mutantTimeouts, 'Timeouts');
+        }
+
+        if (count($mutantErrors) > 0) {
+            $out .= PHP_EOL . $textReport->prepareMutantsReport($mutantErrors, 'Errors');
+        }
+
+        return $out;
     }
 }
