@@ -17,10 +17,19 @@ use Mockery as m;
 class PhpunitTest extends \PHPUnit_Framework_TestCase
 {
     private $root;
+    private $tmpDir;
 
     public function setUp()
     {
         $this->root = dirname(__FILE__) . '/_files';
+
+        $tmpDir = sys_get_temp_dir() . '/' . rand(1000000, 9999999);
+
+        if (!is_dir($tmpDir)) {
+            mkdir($tmpDir);
+        }
+
+        $this->tmpDir = $tmpDir;
     }
 
     public function tearDown()
@@ -42,7 +51,7 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
             'getTestRunDirectory'      => __DIR__ . '/_files/phpunit',
             'getBaseDirectory'      => __DIR__ . '/_files/phpunit',
             'getTimeout'            => 1200,
-            'getCacheDirectory'     => sys_get_temp_dir(),
+            'getCacheDirectory'     => $this->tmpDir,
             'getAdapterOptions'     => [],
             'getBootstrap'          => '',
             'getAdapterConstraints' => 'MM1_MathTest MathTest.php'
@@ -70,7 +79,7 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
             'getTestRunDirectory'      => __DIR__ . '/_files/phpunit2',
             'getBaseDirectory'      => __DIR__ . '/_files/phpunit2',
             'getTimeout'            => 1200,
-            'getCacheDirectory'     => sys_get_temp_dir(),
+            'getCacheDirectory'     => $this->tmpDir,
             'getAdapterOptions'     => [],
             'getBootstrap'          => '',
             'getAdapterConstraints' => 'AllTests.php'
@@ -98,7 +107,7 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
             'getTestRunDirectory'      => $this->root,
             'getBaseDirectory'      => $this->root,
             'getTimeout'            => 1200,
-            'getCacheDirectory'     => sys_get_temp_dir(),
+            'getCacheDirectory'     => $this->tmpDir,
             'getAdapterOptions'     => [],
             'getBootstrap'          => '',
             'getAdapterConstraints' => 'PassTest'
@@ -125,7 +134,7 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
             'getTestRunDirectory'      => $this->root,
             'getBaseDirectory'      => $this->root,
             'getTimeout'            => 1200,
-            'getCacheDirectory'     => sys_get_temp_dir(),
+            'getCacheDirectory'     => $this->tmpDir,
             'getAdapterOptions'     => [],
             'getBootstrap'          => '',
             'getAdapterConstraints' => 'FailTest'
@@ -152,7 +161,7 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
             'getTestRunDirectory'      => $this->root,
             'getBaseDirectory'      => $this->root,
             'getTimeout'            => 1200,
-            'getCacheDirectory'     => sys_get_temp_dir(),
+            'getCacheDirectory'     => $this->tmpDir,
             'getAdapterOptions'     => [],
             'getBootstrap'          => '',
             'getAdapterConstraints' => 'ExceptionTest'
@@ -179,7 +188,7 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
             'getTestRunDirectory'      => $this->root,
             'getBaseDirectory'      => $this->root,
             'getTimeout'            => 1200,
-            'getCacheDirectory'     => sys_get_temp_dir(),
+            'getCacheDirectory'     => $this->tmpDir,
             'getAdapterOptions'     => [],
             'getBootstrap'          => '',
             'getAdapterConstraints' => 'ErrorTest'
