@@ -42,6 +42,18 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
             unlink($this->tmpDir . '/phpunit.times.humbug.json');
         }
 
+        if (file_exists($this->tmpDir . '/coverage.humbug.php')) {
+            unlink($this->tmpDir . '/coverage.humbug.php');
+        }
+
+        if (file_exists($this->tmpDir . '/coverage.humbug.txt')) {
+            unlink($this->tmpDir . '/coverage.humbug.txt');
+        }
+
+        if (file_exists($this->tmpDir . '/phpunit.humbug.xml')) {
+            unlink($this->tmpDir . '/phpunit.humbug.xml');
+        }
+
         if (file_exists($this->tmpDir)) {
             rmdir($this->tmpDir);
         }
