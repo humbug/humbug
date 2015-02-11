@@ -34,10 +34,6 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
 
     public function tearDown()
     {
-        if (file_exists(sys_get_temp_dir() . '/humbug.xml')) {
-            unlink(sys_get_temp_dir() . '/humbug.xml');
-        }
-
         if (file_exists($this->tmpDir . '/phpunit.times.humbug.json')) {
             unlink($this->tmpDir . '/phpunit.times.humbug.json');
         }
