@@ -63,7 +63,7 @@ class XmlConfiguration
         if ($xmlConfiguration->hasBootstrap()) {
             self::$hasBootstrap = true;
             $bootstrap = $xmlConfiguration->getBootstrap();
-            $path = self::makeAbsolutePath($bootstrap, dirname($configurationFile));
+            $path = self::makeAbsolutePath($bootstrap, $configurationDir);
 
             //@todo Get rid off this side effect...
             $container->setBootstrap($path);
