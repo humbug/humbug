@@ -114,4 +114,40 @@ class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(0, (new \DOMXPath($dom))->evaluate('count(/phpunit/' . $nodeName . ')'));
     }
-} 
+
+    public function testShouldAddListener()
+    {
+        $dom = $this->createBaseDomDocument();
+
+        $xmlConfiguration = new XmlConfiguration($dom);
+
+        $visitor = $this->getMock('Humbug\Adapter\Phpunit\XmlConfiguration\Visitor');
+
+        $visitor->expects($this->once())->method('visitElement')->with($this->isInstanceOf('\DOMElement'));
+
+        $xmlConfiguration->addListener($visitor);
+
+        $listeners = (new \DOMXPath($dom))->query('/phpunit/listeners/listener');
+
+        $this->assertEquals(1, $listeners->length);
+    }
+
+    public function testShouldAddTwoListeners()
+    {
+        $dom = $this->createBaseDomDocument();
+
+        $xmlConfiguration = new XmlConfiguration($dom);
+
+        $visitor = $this->getMock('Humbug\Adapter\Phpunit\XmlConfiguration\Visitor');
+
+        $visitor->expects($this->exactly(2))->method('visitElement')->with($this->isInstanceOf('\DOMElement'));
+
+        $xmlConfiguration->addListener($visitor);
+        $xmlConfiguration->addListener($visitor);
+
+        $xpath = (new \DOMXPath($dom));
+
+        $this->assertEquals(1, $xpath->query('/phpunit/listeners')->length);
+        $this->assertEquals(2, $xpath->query('/phpunit/listeners/listener')->length);
+    }
+}

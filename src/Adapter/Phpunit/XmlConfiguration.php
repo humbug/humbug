@@ -10,6 +10,8 @@
 
 namespace Humbug\Adapter\Phpunit;
 
+use Humbug\Adapter\Phpunit\XmlConfiguration\AcceleratorListener;
+use Humbug\Adapter\Phpunit\XmlConfiguration\Visitor;
 use Humbug\Container;
 use Humbug\Exception\RuntimeException;
 use Humbug\Exception\InvalidArgumentException;
@@ -88,12 +90,15 @@ class XmlConfiguration
         $xmlConfiguration->cleanupFilters();
         $xmlConfiguration->cleanupListeners();
 
+        $xmlConfiguration->addListener(new AcceleratorListener());
+
         $xpath = new \DOMXPath($dom);
+
+        self::$listeners = $xpath->query('/phpunit/listeners')->item(0);
 
         /**
          * On first runs collect a test log and also generate code coverage
          */
-        self::addAcceleratorListener($dom);
         if ($firstRun === true) {
             self::handleLogging($container, $dom);
             self::handleStartupListeners($container, $dom);
@@ -182,24 +187,6 @@ class XmlConfiguration
                 }
             }
         }
-    }
-
-    /**
-     * Add PHPUnit-Accelerator Listener
-     */
-    private static function addAcceleratorListener(\DOMDocument $dom)
-    {
-        self::$listeners = $dom->createElement('listeners');
-        $dom->documentElement->appendChild(self::$listeners);
-
-        $listener = $dom->createElement('listener');
-        self::$listeners->appendChild($listener);
-        $listener->setAttribute('class', '\MyBuilder\PhpunitAccelerator\TestListener');
-        $arguments = $dom->createElement('arguments');
-        $listener->appendChild($arguments);
-        $bool = $dom->createElement('boolean');
-        $arguments->appendChild($bool);
-        $bool->nodeValue = 'true';
     }
 
     private static function handleLogging(Container $container, \DOMDocument $dom)
@@ -390,5 +377,22 @@ class XmlConfiguration
         foreach ($nodes as $node) {
             $this->rootElement->removeChild($node);
         }
+    }
+
+    public function addListener(Visitor $visitor)
+    {
+        $listenersList = $this->xpath->query('/phpunit/listeners');
+
+        if ($listenersList->length) {
+            $listeners = $listenersList->item(0);
+        }else {
+            $listeners = $this->dom->createElement('listeners');
+            $this->rootElement->appendChild($listeners);
+        }
+
+        $listener = $this->dom->createElement('listener');
+        $listeners->appendChild($listener);
+
+        $visitor->visitElement($listener);
     }
 }
