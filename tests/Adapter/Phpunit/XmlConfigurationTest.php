@@ -16,21 +16,11 @@ use Humbug\Adapter\Phpunit\XmlConfiguration;
 
 class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @var XmlConfiguration
-     */
-    private $xmlConfiguration;
-
-    protected function setUp()
-    {
-        $this->xmlConfiguration = new XmlConfiguration();
-    }
-
     public function testShouldLocateConfiguration()
     {
         $directory = __DIR__ . '/../_files/phpunit-conf';
 
-        $configurationFile = $this->xmlConfiguration->findConfigurationFile($directory);
+        $configurationFile = (new XmlConfiguration($directory))->findConfigurationFile($directory);
 
         $expectedXmlPath = realpath($directory . '/phpunit.xml');
 
@@ -41,7 +31,7 @@ class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
     {
         $directory = __DIR__ . '/../_files/phpunit';
 
-        $configurationFile = $this->xmlConfiguration->findConfigurationFile($directory);
+        $configurationFile = (new XmlConfiguration($directory))->findConfigurationFile($directory);
 
         $expectedXmlPath = realpath($directory . '/phpunit.xml.dist');
 
@@ -54,6 +44,15 @@ class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
 
         $this->setExpectedException('\Humbug\Exception\RuntimeException');
 
-        $this->xmlConfiguration->findConfigurationFile($directory);
+        (new XmlConfiguration($directory))->findConfigurationFile($directory);
+    }
+
+    public function testShouldHaveConfigurationDir()
+    {
+        $configurationDir = 'path/to/configuration';
+
+        $xmlConfiguration = new XmlConfiguration($configurationDir);
+
+        $this->assertEquals($configurationDir, $xmlConfiguration->getConfigurationDir());
     }
 } 

@@ -30,6 +30,16 @@ class XmlConfiguration
     private static $hasBootstrap;
 
     /**
+     * @var string
+     */
+    private $configurationDir;
+
+    public function __construct($configurationDir)
+    {
+        $this->configurationDir = $configurationDir;
+    }
+
+    /**
      * Wrangle XML to create a PHPUnit configuration, based on the original, that
      * allows for more control over what tests are run, allows JUnit logging,
      * and ensures that Code Coverage (for Humbug use) whitelists all of the
@@ -54,7 +64,7 @@ class XmlConfiguration
             $configurationDir = $container->getBaseDirectory();
         }
 
-        $xmlConfiguration = new XmlConfiguration();
+        $xmlConfiguration = new XmlConfiguration($configurationDir);
 
         $conf = $xmlConfiguration->findConfigurationFile($configurationDir);
 
@@ -360,5 +370,10 @@ class XmlConfiguration
         }
 
         throw new RuntimeException('Unable to locate phpunit.xml(.dist) file. This is required by Humbug.');
+    }
+
+    public function getConfigurationDir()
+    {
+        return $this->configurationDir;
     }
 }
