@@ -33,6 +33,11 @@ class XmlConfiguration
      */
     private $_xpath;
 
+    /**
+     * @var \DOMElement
+     */
+    private $rootElement;
+
     public function __construct(\DOMDocument $dom)
     {
         if (!$dom->documentElement) {
@@ -41,6 +46,7 @@ class XmlConfiguration
 
         $this->dom = $dom;
         $this->_xpath = new \DOMXPath($this->dom);
+        $this->rootElement = $this->dom->documentElement;
     }
 
     /**
@@ -348,22 +354,22 @@ class XmlConfiguration
 
     public function hasBootstrap()
     {
-        return $this->dom->documentElement->hasAttribute('bootstrap');
+        return $this->rootElement->hasAttribute('bootstrap');
     }
 
     public function getBootstrap()
     {
-        return $this->dom->documentElement->getAttribute('bootstrap');
+        return $this->rootElement->getAttribute('bootstrap');
     }
 
     public function setBootstrap($bootstrap)
     {
-        return $this->dom->documentElement->setAttribute('bootstrap', $bootstrap);
+        return $this->rootElement->setAttribute('bootstrap', $bootstrap);
     }
 
     public function turnOffCacheTokens()
     {
-        return $this->dom->documentElement->setAttribute('cacheTokens', 'false');
+        return $this->rootElement->setAttribute('cacheTokens', 'false');
     }
 
     public function cleanupLoggers()
@@ -386,7 +392,7 @@ class XmlConfiguration
         $nodes = $this->_xpath->query('/phpunit/' . $name);
 
         foreach ($nodes as $node) {
-            $this->dom->documentElement->removeChild($node);
+            $this->rootElement->removeChild($node);
         }
     }
 }
