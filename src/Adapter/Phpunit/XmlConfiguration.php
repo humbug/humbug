@@ -16,8 +16,6 @@ use Humbug\Exception\InvalidArgumentException;
 
 class XmlConfiguration
 {
-    private static $root;
-
     private static $listeners;
 
     private static $xpath;
@@ -62,9 +60,7 @@ class XmlConfiguration
 
         $xmlConfiguration = new XmlConfiguration($dom);
 
-        self::$root = $dom->documentElement;
-
-        self::handleRootAttributes($configurationFile, $container);
+        self::handleRootAttributes($configurationFile, $container, $dom);
 
         self::$xpath = new \DOMXPath($dom);
 
@@ -138,7 +134,7 @@ class XmlConfiguration
 
         $suite1 = self::$xpath->query('/phpunit/testsuites/testsuite')->item(0);
         if (is_a($suite1, 'DOMElement')) {
-            self::handleSuite($suite1, $configurationFile, $container);
+            self::handleSuite($suite1, $configurationFile, $container, $dom);
         }
         
         $saveFile = $container->getCacheDirectory() . '/phpunit.humbug.xml';
@@ -147,14 +143,14 @@ class XmlConfiguration
         return $saveFile;
     }
 
-    private static function handleSuite(\DOMElement $suite, $configFile, Container $container)
+    private static function handleSuite(\DOMElement $suite, $configFile, Container $container, \DOMDocument $dom)
     {
         foreach ($suite->childNodes as $child) {
             // phpunit.xml may omit bootstrap location but grab it automatically - include explicitly
             if (self::$hasBootstrap === false && $child instanceof \DOMElement && $child->tagName == 'directory') {
                 $bootstrapDir = self::makeAbsolutePath($child->nodeValue, dirname($configFile));
                 if (file_exists($bootstrapDir . '/bootstrap.php')) {
-                    self::$root->setAttribute('bootstrap', $bootstrapDir . '/bootstrap.php');
+                    $dom->documentElement->setAttribute('bootstrap', $bootstrapDir . '/bootstrap.php');
 
                     //@todo Get rid off this side effect
                     $container->setBootstrap($bootstrapDir . '/bootstrap.php');
@@ -164,40 +160,40 @@ class XmlConfiguration
         }
     }
 
-    private static function handleRootAttributes($configFile, Container $container)
+    private static function handleRootAttributes($configFile, Container $container, \DOMDocument $dom)
     {
-        if (self::$root->hasAttribute('bootstrap')) {
+        if ($dom->documentElement->hasAttribute('bootstrap')) {
             self::$hasBootstrap = true;
-            $bootstrap = self::$root->getAttribute('bootstrap');
+            $bootstrap = $dom->documentElement->getAttribute('bootstrap');
             $path = self::makeAbsolutePath($bootstrap, dirname($configFile));
 
             //@todo Get rid off this side effect...
             $container->setBootstrap($path);
         }
-        self::$root->setAttribute('bootstrap', sys_get_temp_dir() . '/humbug.phpunit.bootstrap.php');
-        self::$root->setAttribute('cacheTokens', 'false');
+        $dom->documentElement->setAttribute('bootstrap', sys_get_temp_dir() . '/humbug.phpunit.bootstrap.php');
+        $dom->documentElement->setAttribute('cacheTokens', 'false');
     }
 
     private static function handleElementReset(\DOMDocument $dom)
     {
         $oldLogs = self::$xpath->query('//logging');
         foreach ($oldLogs as $oldLog) {
-            self::$root->removeChild($oldLog);
+            $dom->documentElement->removeChild($oldLog);
         }
         $oldFilters = self::$xpath->query('/phpunit/filter');
         foreach ($oldFilters as $filter) {
-            self::$root->removeChild($filter);
+            $dom->documentElement->removeChild($filter);
         }
         $oldListeners = self::$xpath->query('//listeners');
         foreach ($oldListeners as $listeners) {
-            self::$root->removeChild($listeners);
+            $dom->documentElement->removeChild($listeners);
         }
 
         /**
          * Add PHPUnit-Accelerator Listener
          */
         self::$listeners = $dom->createElement('listeners');
-        self::$root->appendChild(self::$listeners);
+        $dom->documentElement->appendChild(self::$listeners);
 
         $listener = $dom->createElement('listener');
         self::$listeners->appendChild($listener);
@@ -213,7 +209,7 @@ class XmlConfiguration
     {
         // add new logs as needed
         $logging = $dom->createElement('logging');
-        self::$root->appendChild($logging);
+        $dom->documentElement->appendChild($logging);
 
         // php coverage
         $log = $dom->createElement('log');
@@ -237,7 +233,7 @@ class XmlConfiguration
          */
         $filter = $dom->createElement('filter');
         $whitelist = $dom->createElement('whitelist');
-        self::$root->appendChild($filter);
+        $dom->documentElement->appendChild($filter);
         $filter->appendChild($whitelist);
         $source = $container->getSourceList();
         if (isset($source->directories)) {
@@ -345,5 +341,15 @@ class XmlConfiguration
         }
 
         return $configurationDir;
+    }
+
+    public function hasBootstrap()
+    {
+        return $this->dom->documentElement->hasAttribute('bootstrap');
+    }
+
+    public function getBootstrap()
+    {
+        return $this->dom->documentElement->getAttribute('bootstrap');
     }
 }

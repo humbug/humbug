@@ -13,4 +13,18 @@ class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame($dom, $xmlConfiguration->dom);
     }
+
+    public function testShouldHaveBootstrap()
+    {
+        $dom = new \DOMDocument();
+
+        $dom->appendChild($dom->createElement('phpunit'));
+
+        $dom->documentElement->setAttribute('bootstrap', '/test/bootstrap.php');
+
+        $xmlConfiguration = new XmlConfiguration($dom);
+
+        $this->assertTrue($xmlConfiguration->hasBootstrap());
+        $this->assertEquals('/test/bootstrap.php', $xmlConfiguration->getBootstrap());
+    }
 } 
