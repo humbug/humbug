@@ -45,17 +45,16 @@ class XmlConfiguration
         /**
          * Basically a carbon copy of how PHPUnit finds its er...config file?
          */
-        $conf = null;
-        $dir = null;
+        $configurationDir = null;
         $testDir = $container->getTestRunDirectory();
 
         if (!empty($testDir)) {
-            $dir = $testDir;
-            $conf = $dir . '/phpunit.xml';
+            $configurationDir = $testDir;
         } else {
-            $dir = $container->getBaseDirectory();
-            $conf = $dir . '/phpunit.xml';
+            $configurationDir = $container->getBaseDirectory();
         }
+
+        $conf = $configurationDir . '/phpunit.xml';
 
         if (file_exists($conf)) {
             $conf = realpath($conf);
@@ -65,8 +64,8 @@ class XmlConfiguration
             throw new RuntimeException('Unable to locate phpunit.xml(.dist) file. This is required by Humbug.');
         }
 
-        if (!empty($dir)) {
-            $dir .= '/';
+        if (!empty($configurationDir)) {
+            $configurationDir .= '/';
         }
 
         /**
@@ -110,7 +109,7 @@ class XmlConfiguration
                 && ($node->tagName == 'directory'
                 || $node->tagName == 'exclude'
                 || $node->tagName == 'file')) {
-                    $fullPath = $dir . '/' . $node->nodeValue;
+                    $fullPath = $configurationDir . '/' . $node->nodeValue;
                     // Check if the paths exist.
                     $paths = glob($fullPath);
                     if (0 === count($paths)) {
