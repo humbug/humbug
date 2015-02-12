@@ -1,4 +1,14 @@
 <?php
+/**
+ * Humbug
+ *
+ * @category   Humbug
+ * @package    Humbug
+ * @copyright  Copyright (c) 2015 Pádraic Brady (http://blog.astrumfutura.com)
+ * @license    https://github.com/padraic/humbug/blob/master/LICENSE New BSD License
+ *
+ * @author     rafal.wartalski@gmail.com
+ */
 
 namespace Humbug\Test\Adapter\Phpunit;
 
@@ -6,13 +16,21 @@ use Humbug\Adapter\Phpunit\XmlConfiguration;
 
 class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var XmlConfiguration
+     */
+    private $xmlConfiguration;
+
+    protected function setUp()
+    {
+        $this->xmlConfiguration = new XmlConfiguration();
+    }
+
     public function testShouldLocateConfiguration()
     {
         $directory = __DIR__ . '/../_files/phpunit-conf';
 
-        $xmlConfiguration = new XmlConfiguration();
-
-        $configurationFile = $xmlConfiguration->findConfigurationFile($directory);
+        $configurationFile = $this->xmlConfiguration->findConfigurationFile($directory);
 
         $expectedXmlPath = realpath($directory . '/phpunit.xml');
 
@@ -23,9 +41,7 @@ class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
     {
         $directory = __DIR__ . '/../_files/phpunit';
 
-        $xmlConfiguration = new XmlConfiguration();
-
-        $configurationFile = $xmlConfiguration->findConfigurationFile($directory);
+        $configurationFile = $this->xmlConfiguration->findConfigurationFile($directory);
 
         $expectedXmlPath = realpath($directory . '/phpunit.xml.dist');
 
@@ -38,6 +54,6 @@ class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
 
         $this->setExpectedException('\Humbug\Exception\RuntimeException');
 
-        (new XmlConfiguration())->findConfigurationFile($directory);
+        $this->xmlConfiguration->findConfigurationFile($directory);
     }
 } 

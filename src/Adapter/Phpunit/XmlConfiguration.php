@@ -343,6 +343,9 @@ class XmlConfiguration
 
     /**
      * @param $configurationDir
+     * @return string
+     *
+     * @throws RuntimeException
      */
     public function findConfigurationFile($configurationDir)
     {
@@ -350,10 +353,12 @@ class XmlConfiguration
 
         if (file_exists($conf)) {
             return realpath($conf);
-        } elseif (file_exists($conf . '.dist')) {
-            return realpath($conf . '.dist');
-        } else {
-            throw new RuntimeException('Unable to locate phpunit.xml(.dist) file. This is required by Humbug.');
         }
+
+        if (file_exists($conf . '.dist')) {
+            return realpath($conf . '.dist');
+        }
+
+        throw new RuntimeException('Unable to locate phpunit.xml(.dist) file. This is required by Humbug.');
     }
 }
