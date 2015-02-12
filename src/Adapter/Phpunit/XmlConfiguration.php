@@ -73,7 +73,22 @@ class XmlConfiguration
         $xmlConfiguration->turnOffCacheTokens();
 
 
-        self::$xpath = new \DOMXPath($dom);
+        $xpath = new \DOMXPath($dom);
+
+        $oldLogs = $xpath->query('//logging');
+        foreach ($oldLogs as $oldLog) {
+            $dom->documentElement->removeChild($oldLog);
+        }
+        $oldFilters = $xpath->query('/phpunit/filter');
+        foreach ($oldFilters as $filter) {
+            $dom->documentElement->removeChild($filter);
+        }
+        $oldListeners = $xpath->query('//listeners');
+        foreach ($oldListeners as $listeners) {
+            $dom->documentElement->removeChild($listeners);
+        }
+
+        self::$xpath = $xpath;
 
         /**
          * On first runs collect a test log and also generate code coverage
@@ -173,19 +188,6 @@ class XmlConfiguration
 
     private static function handleElementReset(\DOMDocument $dom)
     {
-        $oldLogs = self::$xpath->query('//logging');
-        foreach ($oldLogs as $oldLog) {
-            $dom->documentElement->removeChild($oldLog);
-        }
-        $oldFilters = self::$xpath->query('/phpunit/filter');
-        foreach ($oldFilters as $filter) {
-            $dom->documentElement->removeChild($filter);
-        }
-        $oldListeners = self::$xpath->query('//listeners');
-        foreach ($oldListeners as $listeners) {
-            $dom->documentElement->removeChild($listeners);
-        }
-
         /**
          * Add PHPUnit-Accelerator Listener
          */
