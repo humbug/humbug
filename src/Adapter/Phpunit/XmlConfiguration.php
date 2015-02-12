@@ -28,6 +28,11 @@ class XmlConfiguration
      */
     private $dom;
 
+    /**
+     * @var \DOMXPath
+     */
+    private $_xpath;
+
     public function __construct(\DOMDocument $dom)
     {
         if (!$dom->documentElement) {
@@ -35,6 +40,7 @@ class XmlConfiguration
         }
 
         $this->dom = $dom;
+        $this->_xpath = new \DOMXPath($this->dom);
     }
 
     /**
@@ -362,31 +368,25 @@ class XmlConfiguration
 
     public function cleanupLoggers()
     {
-        $xpath = new \DOMXPath($this->dom);
-
-        $oldLogs = $xpath->query('//logging');
-        foreach ($oldLogs as $oldLog) {
-            $this->dom->documentElement->removeChild($oldLog);
-        }
+        $this->removeDocumentChildElementsByName('logging');
     }
 
     public function cleanupFilters()
     {
-        $xpath = new \DOMXPath($this->dom);
-
-        $oldFilters = $xpath->query('/phpunit/filter');
-        foreach ($oldFilters as $filter) {
-            $this->dom->documentElement->removeChild($filter);
-        }
+        $this->removeDocumentChildElementsByName('filter');
     }
 
     public function cleanupListeners()
     {
-        $xpath = new \DOMXPath($this->dom);
+        $this->removeDocumentChildElementsByName('listeners');
+    }
 
-        $oldListeners = $xpath->query('//listeners');
-        foreach ($oldListeners as $listeners) {
-            $this->dom->documentElement->removeChild($listeners);
+    private function removeDocumentChildElementsByName($name)
+    {
+        $nodes = $this->_xpath->query('/phpunit/' . $name);
+
+        foreach ($nodes as $node) {
+            $this->dom->documentElement->removeChild($node);
         }
     }
 }

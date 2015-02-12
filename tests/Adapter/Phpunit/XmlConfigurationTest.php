@@ -76,7 +76,7 @@ class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
 
         (new XmlConfiguration($dom))->cleanupLoggers();
 
-        $this->assertEquals(0, (new \DOMXPath($dom))->evaluate('count(//logging)'));
+        $this->assertThatDomNodeIsNotPresent($dom, 'logging');
     }
 
     public function testShouldCleanupFilters()
@@ -85,7 +85,7 @@ class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
 
         (new XmlConfiguration($dom))->cleanupFilters();
 
-        $this->assertEquals(0, (new \DOMXPath($dom))->evaluate('count(/phpunit/filter)'));
+        $this->assertThatDomNodeIsNotPresent($dom, 'filter');
     }
 
     public function testShouldCleanupListeners()
@@ -94,10 +94,11 @@ class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
 
         (new XmlConfiguration($dom))->cleanupListeners();
 
-        $this->assertEquals(0, (new \DOMXPath($dom))->evaluate('count(//listeners)'));
+        $this->assertThatDomNodeIsNotPresent($dom, 'listeners');
     }
 
     /**
+     * @param $childElement
      * @return \DOMDocument
      */
     private function createDocumentWithChildElement($childElement)
@@ -107,5 +108,10 @@ class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
         $dom->documentElement->appendChild($dom->createElement($childElement));
 
         return $dom;
+    }
+
+    private function assertThatDomNodeIsNotPresent($dom, $nodeName)
+    {
+        $this->assertEquals(0, (new \DOMXPath($dom))->evaluate('count(/phpunit/' . $nodeName . ')'));
     }
 } 
