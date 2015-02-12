@@ -8,7 +8,7 @@ class ConfigurationLoaderTest extends \PHPUnit_Framework_TestCase
 {
     public function testShouldLoadDomDocument()
     {
-        $configFile = '';
+        $configFile = __DIR__ . '/../_files/phpunit.xml.dist';
 
         $loader = new ConfigurationLoader();
 
@@ -17,5 +17,7 @@ class ConfigurationLoaderTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('\DomDocument', $domDocument);
         $this->assertEquals(false, $domDocument->preserveWhiteSpace);
         $this->assertEquals(true, $domDocument->formatOutput);
+
+        $this->assertXmlStringEqualsXmlFile($configFile, $domDocument->saveXML());
     }
 } 

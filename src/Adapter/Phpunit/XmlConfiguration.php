@@ -58,15 +58,7 @@ class XmlConfiguration
             $configurationDir .= '/';
         }
 
-        /**
-         * Start the DOMmobile
-         */
-        $oldValue = libxml_disable_entity_loader(true);
-
         $dom = (new ConfigurationLoader())->load($configurationFile);
-
-        $dom->loadXML(file_get_contents($configurationFile));
-        libxml_disable_entity_loader($oldValue);
 
         $xmlConfiguration = new XmlConfiguration($dom);
 
