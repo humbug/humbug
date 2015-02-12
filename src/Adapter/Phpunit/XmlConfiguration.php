@@ -25,6 +25,19 @@ class XmlConfiguration
     private static $hasBootstrap;
 
     /**
+     * Temporary public...
+     * @todo make it private after refactor
+     *
+     * @var \DOMDocument
+     */
+    public $dom;
+
+    public function __construct(\DOMDocument $dom)
+    {
+        $this->dom = $dom;
+    }
+
+    /**
      * Wrangle XML to create a PHPUnit configuration, based on the original, that
      * allows for more control over what tests are run, allows JUnit logging,
      * and ensures that Code Coverage (for Humbug use) whitelists all of the
@@ -53,8 +66,9 @@ class XmlConfiguration
         $dom->preserveWhiteSpace = false;
         $dom->formatOutput = true;
         $dom->loadXML(file_get_contents($conf));
-        self::$root = $dom->documentElement;
         libxml_disable_entity_loader($oldValue);
+
+        self::$root = $dom->documentElement;
 
         self::handleRootAttributes($conf, $container);
 
