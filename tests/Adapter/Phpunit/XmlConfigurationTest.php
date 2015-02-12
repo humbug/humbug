@@ -72,41 +72,40 @@ class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
 
     public function testShouldCleanupLoggers()
     {
-        $dom = $this->createBaseDomDocument();
+        $dom = $this->createDocumentWithChildElement('logging');
 
-        $dom->documentElement->appendChild($dom->createElement('logging'));
-
-        $xmlConfiguration = new XmlConfiguration($dom);
-
-        $xmlConfiguration->cleanupLoggers();
+        (new XmlConfiguration($dom))->cleanupLoggers();
 
         $this->assertEquals(0, (new \DOMXPath($dom))->evaluate('count(//logging)'));
     }
 
     public function testShouldCleanupFilters()
     {
-        $dom = $this->createBaseDomDocument();
+        $dom = $this->createDocumentWithChildElement('filter');
 
-        $dom->documentElement->appendChild($dom->createElement('filter'));
-
-        $xmlConfiguration = new XmlConfiguration($dom);
-
-        $xmlConfiguration->cleanupFilters();
+        (new XmlConfiguration($dom))->cleanupFilters();
 
         $this->assertEquals(0, (new \DOMXPath($dom))->evaluate('count(/phpunit/filter)'));
     }
 
     public function testShouldCleanupListeners()
     {
-        $dom = $this->createBaseDomDocument();
+        $dom = $this->createDocumentWithChildElement('listeners');
 
-        $dom->documentElement->appendChild($dom->createElement('listeners'));
-
-        $xmlConfiguration = new XmlConfiguration($dom);
-
-        $xmlConfiguration->cleanupListeners();
+        (new XmlConfiguration($dom))->cleanupListeners();
 
         $this->assertEquals(0, (new \DOMXPath($dom))->evaluate('count(//listeners)'));
     }
 
+    /**
+     * @return \DOMDocument
+     */
+    private function createDocumentWithChildElement($childElement)
+    {
+        $dom = $this->createBaseDomDocument();
+
+        $dom->documentElement->appendChild($dom->createElement($childElement));
+
+        return $dom;
+    }
 } 
