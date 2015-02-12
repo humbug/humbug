@@ -70,4 +70,43 @@ class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('false', $dom->documentElement->getAttribute('cacheTokens'));
     }
 
+    public function testShouldCleanupLoggers()
+    {
+        $dom = $this->createBaseDomDocument();
+
+        $dom->documentElement->appendChild($dom->createElement('logging'));
+
+        $xmlConfiguration = new XmlConfiguration($dom);
+
+        $xmlConfiguration->cleanupLoggers();
+
+        $this->assertEquals(0, (new \DOMXPath($dom))->evaluate('count(//logging)'));
+    }
+
+    public function testShouldCleanupFilters()
+    {
+        $dom = $this->createBaseDomDocument();
+
+        $dom->documentElement->appendChild($dom->createElement('filter'));
+
+        $xmlConfiguration = new XmlConfiguration($dom);
+
+        $xmlConfiguration->cleanupFilters();
+
+        $this->assertEquals(0, (new \DOMXPath($dom))->evaluate('count(/phpunit/filter)'));
+    }
+
+    public function testShouldCleanupListeners()
+    {
+        $dom = $this->createBaseDomDocument();
+
+        $dom->documentElement->appendChild($dom->createElement('listeners'));
+
+        $xmlConfiguration = new XmlConfiguration($dom);
+
+        $xmlConfiguration->cleanupListeners();
+
+        $this->assertEquals(0, (new \DOMXPath($dom))->evaluate('count(//listeners)'));
+    }
+
 } 

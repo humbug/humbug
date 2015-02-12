@@ -72,23 +72,11 @@ class XmlConfiguration
         $xmlConfiguration->setBootstrap(self::getNewBootstrapPath());
         $xmlConfiguration->turnOffCacheTokens();
 
+        $xmlConfiguration->cleanupLoggers();
+        $xmlConfiguration->cleanupFilters();
+        $xmlConfiguration->cleanupListeners();
 
-        $xpath = new \DOMXPath($dom);
-
-        $oldLogs = $xpath->query('//logging');
-        foreach ($oldLogs as $oldLog) {
-            $dom->documentElement->removeChild($oldLog);
-        }
-        $oldFilters = $xpath->query('/phpunit/filter');
-        foreach ($oldFilters as $filter) {
-            $dom->documentElement->removeChild($filter);
-        }
-        $oldListeners = $xpath->query('//listeners');
-        foreach ($oldListeners as $listeners) {
-            $dom->documentElement->removeChild($listeners);
-        }
-
-        self::$xpath = $xpath;
+        self::$xpath = new \DOMXPath($dom);
 
         /**
          * On first runs collect a test log and also generate code coverage
@@ -368,5 +356,35 @@ class XmlConfiguration
     public function turnOffCacheTokens()
     {
         return $this->dom->documentElement->setAttribute('cacheTokens', 'false');
+    }
+
+    public function cleanupLoggers()
+    {
+        $xpath = new \DOMXPath($this->dom);
+
+        $oldLogs = $xpath->query('//logging');
+        foreach ($oldLogs as $oldLog) {
+            $this->dom->documentElement->removeChild($oldLog);
+        }
+    }
+
+    public function cleanupFilters()
+    {
+        $xpath = new \DOMXPath($this->dom);
+
+        $oldFilters = $xpath->query('/phpunit/filter');
+        foreach ($oldFilters as $filter) {
+            $this->dom->documentElement->removeChild($filter);
+        }
+    }
+
+    public function cleanupListeners()
+    {
+        $xpath = new \DOMXPath($this->dom);
+
+        $oldListeners = $xpath->query('//listeners');
+        foreach ($oldListeners as $listeners) {
+            $this->dom->documentElement->removeChild($listeners);
+        }
     }
 }
