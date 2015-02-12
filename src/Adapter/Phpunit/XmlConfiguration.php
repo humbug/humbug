@@ -52,17 +52,7 @@ class XmlConfiguration
     {
         self::$hasBootstrap = false;
 
-        /**
-         * Basically a carbon copy of how PHPUnit finds its er...config file?
-         */
-        $configurationDir = null;
-        $testDir = $container->getTestRunDirectory();
-
-        if (!empty($testDir)) {
-            $configurationDir = $testDir;
-        } else {
-            $configurationDir = $container->getBaseDirectory();
-        }
+        $configurationDir = self::resolveConfigurationDir($container);
 
         $xmlConfiguration = new XmlConfiguration($configurationDir);
 
@@ -349,6 +339,21 @@ class XmlConfiguration
         }
 
         throw new InvalidArgumentException("Could not find file $name working from $workingDir");
+    }
+
+    /**
+     * @param Container $container
+     * @return string
+     */
+    private static function resolveConfigurationDir(Container $container)
+    {
+        $configurationDir = $container->getTestRunDirectory();
+
+        if (empty($configurationDir)) {
+            $configurationDir = $container->getBaseDirectory();
+        }
+
+        return $configurationDir;
     }
 
     /**
