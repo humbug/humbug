@@ -16,11 +16,6 @@ use Humbug\Exception\InvalidArgumentException;
 
 class XmlConfiguration
 {
-    private static $dom;
-
-    /**
-     * @var \DOMElement
-     */
     private static $root;
 
     private static $listeners;
@@ -54,26 +49,26 @@ class XmlConfiguration
          * Start the DOMmobile
          */
         $oldValue = libxml_disable_entity_loader(true);
-        self::$dom = new \DOMDocument;
-        self::$dom->preserveWhiteSpace = false;
-        self::$dom->formatOutput = true;
-        self::$dom->loadXML(file_get_contents($conf));
-        self::$root = self::$dom->documentElement;
+        $dom = new \DOMDocument;
+        $dom->preserveWhiteSpace = false;
+        $dom->formatOutput = true;
+        $dom->loadXML(file_get_contents($conf));
+        self::$root = $dom->documentElement;
         libxml_disable_entity_loader($oldValue);
 
         self::handleRootAttributes($conf, $container);
 
-        self::$xpath = new \DOMXPath(self::$dom);
+        self::$xpath = new \DOMXPath($dom);
 
         /**
          * On first runs collect a test log and also generate code coverage
          */
-        self::handleElementReset();
+        self::handleElementReset($dom);
         if ($firstRun === true) {
-            self::handleLogging($container);
-            self::handleStartupListeners($container);
+            self::handleLogging($container, $dom);
+            self::handleStartupListeners($container, $dom);
         } else {
-            self::handleTestSuiteFilterListener($testSuites, $container);
+            self::handleTestSuiteFilterListener($testSuites, $container, $dom);
         }
 
         /** @var \DOMNode[] $nodesToRemove */
@@ -119,7 +114,7 @@ class XmlConfiguration
             $node->parentNode->removeChild($node);
         }
 
-        self::$xpath = new \DOMXPath(self::$dom);
+        self::$xpath = new \DOMXPath($dom);
 
         /**
          * Set any remaining file & directory references to realpaths
@@ -139,7 +134,7 @@ class XmlConfiguration
         }
         
         $saveFile = $container->getCacheDirectory() . '/phpunit.humbug.xml';
-        self::$dom->save($saveFile);
+        $dom->save($saveFile);
 
         return $saveFile;
     }
@@ -175,7 +170,7 @@ class XmlConfiguration
         self::$root->setAttribute('cacheTokens', 'false');
     }
 
-    private static function handleElementReset()
+    private static function handleElementReset(\DOMDocument $dom)
     {
         $oldLogs = self::$xpath->query('//logging');
         foreach ($oldLogs as $oldLog) {
@@ -193,34 +188,34 @@ class XmlConfiguration
         /**
          * Add PHPUnit-Accelerator Listener
          */
-        self::$listeners = self::$dom->createElement('listeners');
+        self::$listeners = $dom->createElement('listeners');
         self::$root->appendChild(self::$listeners);
 
-        $listener = self::$dom->createElement('listener');
+        $listener = $dom->createElement('listener');
         self::$listeners->appendChild($listener);
         $listener->setAttribute('class', '\MyBuilder\PhpunitAccelerator\TestListener');
-        $arguments = self::$dom->createElement('arguments');
+        $arguments = $dom->createElement('arguments');
         $listener->appendChild($arguments);
-        $bool = self::$dom->createElement('boolean');
+        $bool = $dom->createElement('boolean');
         $arguments->appendChild($bool);
         $bool->nodeValue = 'true';
     }
 
-    private static function handleLogging(Container $container)
+    private static function handleLogging(Container $container, \DOMDocument $dom)
     {
         // add new logs as needed
-        $logging = self::$dom->createElement('logging');
+        $logging = $dom->createElement('logging');
         self::$root->appendChild($logging);
 
         // php coverage
-        $log = self::$dom->createElement('log');
+        $log = $dom->createElement('log');
         $log->setAttribute('type', 'coverage-php');
         $log->setAttribute(
             'target',
             $container->getCacheDirectory() . '/coverage.humbug.php'
         );
         $logging->appendChild($log);
-        $log2 = self::$dom->createElement('log');
+        $log2 = $dom->createElement('log');
         $log2->setAttribute('type', 'coverage-text');
         $log2->setAttribute(
             'target',
@@ -232,63 +227,63 @@ class XmlConfiguration
          * While we're here, reset code coverage filter to meet the known source
          * code constraints.
          */
-        $filter = self::$dom->createElement('filter');
-        $whitelist = self::$dom->createElement('whitelist');
+        $filter = $dom->createElement('filter');
+        $whitelist = $dom->createElement('whitelist');
         self::$root->appendChild($filter);
         $filter->appendChild($whitelist);
         $source = $container->getSourceList();
         if (isset($source->directories)) {
             foreach ($source->directories as $d) {
-                $directory = self::$dom->createElement('directory', realpath($d));
+                $directory = $dom->createElement('directory', realpath($d));
                 $directory->setAttribute('suffix', '.php');
                 $whitelist->appendChild($directory);
             }
         }
         if (isset($source->excludes)) {
-            $exclude = self::$dom->createElement('exclude');
+            $exclude = $dom->createElement('exclude');
             foreach ($source->excludes as $d) {
-                $directory = self::$dom->createElement('directory', realpath($d));
+                $directory = $dom->createElement('directory', realpath($d));
                 $exclude->appendChild($directory);
             }
             $whitelist->appendChild($exclude);
         }
     }
 
-    private static function handleStartupListeners(Container $container)
+    private static function handleStartupListeners(Container $container, \DOMDocument $dom)
     {
-        $listener = self::$dom->createElement('listener');
+        $listener = $dom->createElement('listener');
         self::$listeners->appendChild($listener);
         $listener->setAttribute('class', '\Humbug\Phpunit\Listener\TimeCollectorListener');
-        $arguments = self::$dom->createElement('arguments');
+        $arguments = $dom->createElement('arguments');
         $listener->appendChild($arguments);
-        $jsonLogger = self::$dom->createElement('object');
+        $jsonLogger = $dom->createElement('object');
         $arguments->appendChild($jsonLogger);
         $jsonLogger->setAttribute('class', '\Humbug\Phpunit\Logger\JsonLogger');
-        $jsonLoggerArgs = self::$dom->createElement('arguments');
+        $jsonLoggerArgs = $dom->createElement('arguments');
         $jsonLogger->appendChild($jsonLoggerArgs);
-        $string = self::$dom->createElement('string');
+        $string = $dom->createElement('string');
         $jsonLoggerArgs->appendChild($string);
         $string->nodeValue = $container->getCacheDirectory() . '/phpunit.times.humbug.json';
     }
 
-    private static function handleTestSuiteFilterListener(array $testSuites, Container $container)
+    private static function handleTestSuiteFilterListener(array $testSuites, Container $container, \DOMDocument $dom)
     {
-        $listener = self::$dom->createElement('listener');
+        $listener = $dom->createElement('listener');
         self::$listeners->appendChild($listener);
         $listener->setAttribute('class', '\Humbug\Phpunit\Listener\FilterListener');
-        $arguments = self::$dom->createElement('arguments');
+        $arguments = $dom->createElement('arguments');
         $listener->appendChild($arguments);
 
         /**
          * Add the IncludeOnly Filter
          */
-        $includeOnly = self::$dom->createElement('object');
+        $includeOnly = $dom->createElement('object');
         $arguments->appendChild($includeOnly);
         $includeOnly->setAttribute('class', '\Humbug\Phpunit\Filter\TestSuite\IncludeOnlyFilter');
-        $includeOnlyArgs = self::$dom->createElement('arguments');
+        $includeOnlyArgs = $dom->createElement('arguments');
         $includeOnly->appendChild($includeOnlyArgs);
         foreach ($testSuites as $testSuite) {
-            $string = self::$dom->createElement('string');
+            $string = $dom->createElement('string');
             $includeOnlyArgs->appendChild($string);
             $string->nodeValue = $testSuite;
         }
@@ -296,12 +291,12 @@ class XmlConfiguration
         /**
          * Add the FastestFirst Filter
          */
-        $fastestFirst = self::$dom->createElement('object');
+        $fastestFirst = $dom->createElement('object');
         $arguments->appendChild($fastestFirst);
         $fastestFirst->setAttribute('class', '\Humbug\Phpunit\Filter\TestSuite\FastestFirstFilter');
-        $fastestFirstArgs = self::$dom->createElement('arguments');
+        $fastestFirstArgs = $dom->createElement('arguments');
         $fastestFirst->appendChild($fastestFirstArgs);
-        $string = self::$dom->createElement('string');
+        $string = $dom->createElement('string');
         $fastestFirstArgs->appendChild($string);
         $string->nodeValue = $container->getCacheDirectory() . '/phpunit.times.humbug.json';
     }
