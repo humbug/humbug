@@ -30,11 +30,6 @@ class XmlConfiguration
 
     private static $xpath;
 
-    /**
-     * @var Container
-     */
-    private static $container;
-
     private static $hasBootstrap;
 
     /**
@@ -48,7 +43,6 @@ class XmlConfiguration
      */
     public static function assemble(Container $container, $firstRun = false, array $testSuites = [])
     {
-        self::$container = $container;
         self::$hasBootstrap = false;
 
         /**
@@ -56,12 +50,12 @@ class XmlConfiguration
          */
         $conf = null;
         $dir = null;
-        $testDir = self::$container->getTestRunDirectory();
+        $testDir = $container->getTestRunDirectory();
         if (!empty($testDir)) {
             $dir = $testDir;
             $conf = $dir . '/phpunit.xml';
         } elseif (!file_exists($conf)) {
-            $dir = self::$container->getBaseDirectory();
+            $dir = $container->getBaseDirectory();
             $conf = $dir . '/phpunit.xml';
         }
         if (file_exists($conf)) {
@@ -86,7 +80,7 @@ class XmlConfiguration
         self::$root = self::$dom->documentElement;
         libxml_disable_entity_loader($oldValue);
 
-        self::handleRootAttributes($conf);
+        self::handleRootAttributes($conf, $container);
 
         self::$xpath = new \DOMXPath(self::$dom);
 
@@ -95,10 +89,10 @@ class XmlConfiguration
          */
         self::handleElementReset();
         if ($firstRun === true) {
-            self::handleLogging();
-            self::handleStartupListeners();
+            self::handleLogging($container);
+            self::handleStartupListeners($container);
         } else {
-            self::handleTestSuiteFilterListener($testSuites);
+            self::handleTestSuiteFilterListener($testSuites, $container);
         }
 
         /** @var \DOMNode[] $nodesToRemove */
@@ -160,15 +154,16 @@ class XmlConfiguration
 
         $suite1 = self::$xpath->query('/phpunit/testsuites/testsuite')->item(0);
         if (is_a($suite1, 'DOMElement')) {
-            self::handleSuite($suite1, $conf);
+            self::handleSuite($suite1, $conf, $container);
         }
         
-        $saveFile = self::$container->getCacheDirectory() . '/phpunit.humbug.xml';
+        $saveFile = $container->getCacheDirectory() . '/phpunit.humbug.xml';
         self::$dom->save($saveFile);
+
         return $saveFile;
     }
 
-    private static function handleSuite(\DOMElement $suite, $configFile)
+    private static function handleSuite(\DOMElement $suite, $configFile, Container $container)
     {
         foreach ($suite->childNodes as $child) {
             // phpunit.xml may omit bootstrap location but grab it automatically - include explicitly
@@ -176,20 +171,24 @@ class XmlConfiguration
                 $bootstrapDir = self::makeAbsolutePath($child->nodeValue, dirname($configFile));
                 if (file_exists($bootstrapDir . '/bootstrap.php')) {
                     self::$root->setAttribute('bootstrap', $bootstrapDir . '/bootstrap.php');
-                    self::$container->setBootstrap($bootstrapDir . '/bootstrap.php');
+
+                    //@todo Get rid off this side effect
+                    $container->setBootstrap($bootstrapDir . '/bootstrap.php');
                     self::$hasBootstrap = true;
                 }
             }
         }
     }
 
-    private static function handleRootAttributes($configFile)
+    private static function handleRootAttributes($configFile, Container $container)
     {
         if (self::$root->hasAttribute('bootstrap')) {
             self::$hasBootstrap = true;
             $bootstrap = self::$root->getAttribute('bootstrap');
             $path = self::makeAbsolutePath($bootstrap, dirname($configFile));
-            self::$container->setBootstrap($path);
+
+            //@todo Get rid off this side effect...
+            $container->setBootstrap($path);
         }
         self::$root->setAttribute('bootstrap', sys_get_temp_dir() . '/humbug.phpunit.bootstrap.php');
         self::$root->setAttribute('cacheTokens', 'false');
@@ -226,7 +225,7 @@ class XmlConfiguration
         $bool->nodeValue = 'true';
     }
 
-    private static function handleLogging()
+    private static function handleLogging(Container $container)
     {
         // add new logs as needed
         $logging = self::$dom->createElement('logging');
@@ -237,14 +236,14 @@ class XmlConfiguration
         $log->setAttribute('type', 'coverage-php');
         $log->setAttribute(
             'target',
-            self::$container->getCacheDirectory() . '/coverage.humbug.php'
+            $container->getCacheDirectory() . '/coverage.humbug.php'
         );
         $logging->appendChild($log);
         $log2 = self::$dom->createElement('log');
         $log2->setAttribute('type', 'coverage-text');
         $log2->setAttribute(
             'target',
-            self::$container->getCacheDirectory() . '/coverage.humbug.txt'
+            $container->getCacheDirectory() . '/coverage.humbug.txt'
         );
         $logging->appendChild($log2);
 
@@ -256,7 +255,7 @@ class XmlConfiguration
         $whitelist = self::$dom->createElement('whitelist');
         self::$root->appendChild($filter);
         $filter->appendChild($whitelist);
-        $source = self::$container->getSourceList();
+        $source = $container->getSourceList();
         if (isset($source->directories)) {
             foreach ($source->directories as $d) {
                 $directory = self::$dom->createElement('directory', realpath($d));
@@ -274,7 +273,7 @@ class XmlConfiguration
         }
     }
 
-    private static function handleStartupListeners()
+    private static function handleStartupListeners(Container $container)
     {
         $listener = self::$dom->createElement('listener');
         self::$listeners->appendChild($listener);
@@ -288,10 +287,10 @@ class XmlConfiguration
         $jsonLogger->appendChild($jsonLoggerArgs);
         $string = self::$dom->createElement('string');
         $jsonLoggerArgs->appendChild($string);
-        $string->nodeValue = self::$container->getCacheDirectory() . '/phpunit.times.humbug.json';
+        $string->nodeValue = $container->getCacheDirectory() . '/phpunit.times.humbug.json';
     }
 
-    private static function handleTestSuiteFilterListener(array $testSuites)
+    private static function handleTestSuiteFilterListener(array $testSuites, Container $container)
     {
         $listener = self::$dom->createElement('listener');
         self::$listeners->appendChild($listener);
@@ -323,7 +322,7 @@ class XmlConfiguration
         $fastestFirst->appendChild($fastestFirstArgs);
         $string = self::$dom->createElement('string');
         $fastestFirstArgs->appendChild($string);
-        $string->nodeValue = self::$container->getCacheDirectory() . '/phpunit.times.humbug.json';
+        $string->nodeValue = $container->getCacheDirectory() . '/phpunit.times.humbug.json';
     }
 
     private static function makeAbsolutePath($name, $workingDir)
