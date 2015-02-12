@@ -20,7 +20,7 @@ class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
     {
         $directory = __DIR__ . '/../_files/phpunit-conf';
 
-        $configurationFile = (new XmlConfiguration($directory))->findConfigurationFile($directory);
+        $configurationFile = (new XmlConfiguration($directory))->findConfigurationFile();
 
         $expectedXmlPath = realpath($directory . '/phpunit.xml');
 
@@ -31,7 +31,7 @@ class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
     {
         $directory = __DIR__ . '/../_files/phpunit';
 
-        $configurationFile = (new XmlConfiguration($directory))->findConfigurationFile($directory);
+        $configurationFile = (new XmlConfiguration($directory))->findConfigurationFile();
 
         $expectedXmlPath = realpath($directory . '/phpunit.xml.dist');
 
@@ -44,7 +44,7 @@ class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
 
         $this->setExpectedException('\Humbug\Exception\RuntimeException');
 
-        (new XmlConfiguration($directory))->findConfigurationFile($directory);
+        (new XmlConfiguration($directory))->findConfigurationFile();
     }
 
     public function testShouldHaveConfigurationDir()

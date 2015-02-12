@@ -66,7 +66,7 @@ class XmlConfiguration
 
         $xmlConfiguration = new XmlConfiguration($configurationDir);
 
-        $conf = $xmlConfiguration->findConfigurationFile($configurationDir);
+        $conf = $xmlConfiguration->findConfigurationFile();
 
         if (!empty($configurationDir)) {
             $configurationDir .= '/';
@@ -352,14 +352,13 @@ class XmlConfiguration
     }
 
     /**
-     * @param $configurationDir
      * @return string
      *
      * @throws RuntimeException
      */
-    public function findConfigurationFile($configurationDir)
+    public function findConfigurationFile()
     {
-        $conf = $configurationDir . '/phpunit.xml';
+        $conf = $this->configurationDir . '/phpunit.xml';
 
         if (file_exists($conf)) {
             return realpath($conf);
