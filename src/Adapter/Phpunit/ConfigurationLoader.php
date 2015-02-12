@@ -6,6 +6,8 @@ class ConfigurationLoader
 {
     public function load($configFile)
     {
-        return new XmlConfiguration(new \DOMDocument());
+        $dom = new \DOMDocument();
+
+        return $dom;
     }
 }

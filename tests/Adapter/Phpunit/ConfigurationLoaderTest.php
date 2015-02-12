@@ -6,14 +6,14 @@ use Humbug\Adapter\Phpunit\ConfigurationLoader;
 
 class ConfigurationLoaderTest extends \PHPUnit_Framework_TestCase
 {
-    public function testShouldLoadXmlConfiguration()
+    public function testShouldLoadDomDocument()
     {
         $configFile = '';
 
         $loader = new ConfigurationLoader();
 
-        $xmlConfiguration = $loader->load($configFile);
+        $domDocument = $loader->load($configFile);
 
-        $this->assertInstanceOf('Humbug\Adapter\Phpunit\XmlConfiguration', $xmlConfiguration);
+        $this->assertInstanceOf('\DomDocument', $domDocument);
     }
 } 

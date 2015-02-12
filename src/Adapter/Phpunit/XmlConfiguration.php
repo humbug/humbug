@@ -52,7 +52,7 @@ class XmlConfiguration
 
         $configurationDir = self::resolveConfigurationDir($container);
 
-        $conf = (new ConfigurationLocator())->locate($configurationDir);
+        $configurationFile = (new ConfigurationLocator())->locate($configurationDir);
 
         if (!empty($configurationDir)) {
             $configurationDir .= '/';
@@ -62,15 +62,17 @@ class XmlConfiguration
          * Start the DOMmobile
          */
         $oldValue = libxml_disable_entity_loader(true);
-        $dom = new \DOMDocument;
+        $dom = (new ConfigurationLoader())->load($configurationFile);
         $dom->preserveWhiteSpace = false;
         $dom->formatOutput = true;
-        $dom->loadXML(file_get_contents($conf));
+        $dom->loadXML(file_get_contents($configurationFile));
         libxml_disable_entity_loader($oldValue);
+
+        $xmlConfiguration = new XmlConfiguration($dom);
 
         self::$root = $dom->documentElement;
 
-        self::handleRootAttributes($conf, $container);
+        self::handleRootAttributes($configurationFile, $container);
 
         self::$xpath = new \DOMXPath($dom);
 
@@ -135,16 +137,16 @@ class XmlConfiguration
          */
         $directories = self::$xpath->query('//directory');
         foreach ($directories as $directory) {
-            $directory->nodeValue = self::makeAbsolutePath($directory->nodeValue, dirname($conf));
+            $directory->nodeValue = self::makeAbsolutePath($directory->nodeValue, dirname($configurationFile));
         }
         $files = self::$xpath->query('//file');
         foreach ($files as $file) {
-            $file->nodeValue = self::makeAbsolutePath($file->nodeValue, dirname($conf));
+            $file->nodeValue = self::makeAbsolutePath($file->nodeValue, dirname($configurationFile));
         }
 
         $suite1 = self::$xpath->query('/phpunit/testsuites/testsuite')->item(0);
         if (is_a($suite1, 'DOMElement')) {
-            self::handleSuite($suite1, $conf, $container);
+            self::handleSuite($suite1, $configurationFile, $container);
         }
         
         $saveFile = $container->getCacheDirectory() . '/phpunit.humbug.xml';
