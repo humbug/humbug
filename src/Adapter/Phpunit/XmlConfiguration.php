@@ -18,8 +18,6 @@ class XmlConfiguration
 {
     private static $listeners;
 
-    private static $xpath;
-
     private static $hasBootstrap;
 
     /**
@@ -31,7 +29,7 @@ class XmlConfiguration
     /**
      * @var \DOMXPath
      */
-    private $_xpath;
+    private $xpath;
 
     /**
      * @var \DOMElement
@@ -45,7 +43,7 @@ class XmlConfiguration
         }
 
         $this->dom = $dom;
-        $this->_xpath = new \DOMXPath($this->dom);
+        $this->xpath = new \DOMXPath($this->dom);
         $this->rootElement = $this->dom->documentElement;
     }
 
@@ -90,12 +88,12 @@ class XmlConfiguration
         $xmlConfiguration->cleanupFilters();
         $xmlConfiguration->cleanupListeners();
 
-        self::$xpath = new \DOMXPath($dom);
+        $xpath = new \DOMXPath($dom);
 
         /**
          * On first runs collect a test log and also generate code coverage
          */
-        self::handleElementReset($dom);
+        self::addAcceleratorListener($dom);
         if ($firstRun === true) {
             self::handleLogging($container, $dom);
             self::handleStartupListeners($container, $dom);
@@ -105,7 +103,7 @@ class XmlConfiguration
 
         /** @var \DOMNode[] $nodesToRemove */
         $nodesToRemove = array();
-        $suites = self::$xpath->query('/phpunit/testsuites/testsuite');
+        $suites = $xpath->query('/phpunit/testsuites/testsuite');
         foreach ($suites as $suite) {
             // DOMNodeList's Traversable implementation is a bit unpredictable.
             // Iterate over the child nodes using a for loop rather than a
@@ -146,21 +144,19 @@ class XmlConfiguration
             $node->parentNode->removeChild($node);
         }
 
-        self::$xpath = new \DOMXPath($dom);
-
         /**
          * Set any remaining file & directory references to realpaths
          */
-        $directories = self::$xpath->query('//directory');
+        $directories = $xpath->query('//directory');
         foreach ($directories as $directory) {
             $directory->nodeValue = self::makeAbsolutePath($directory->nodeValue, dirname($configurationFile));
         }
-        $files = self::$xpath->query('//file');
+        $files = $xpath->query('//file');
         foreach ($files as $file) {
             $file->nodeValue = self::makeAbsolutePath($file->nodeValue, dirname($configurationFile));
         }
 
-        $suite1 = self::$xpath->query('/phpunit/testsuites/testsuite')->item(0);
+        $suite1 = $xpath->query('/phpunit/testsuites/testsuite')->item(0);
         if (is_a($suite1, 'DOMElement')) {
             self::handleSuite($suite1, $configurationFile, $container, $dom);
         }
@@ -188,11 +184,11 @@ class XmlConfiguration
         }
     }
 
-    private static function handleElementReset(\DOMDocument $dom)
+    /**
+     * Add PHPUnit-Accelerator Listener
+     */
+    private static function addAcceleratorListener(\DOMDocument $dom)
     {
-        /**
-         * Add PHPUnit-Accelerator Listener
-         */
         self::$listeners = $dom->createElement('listeners');
         $dom->documentElement->appendChild(self::$listeners);
 
@@ -389,7 +385,7 @@ class XmlConfiguration
 
     private function removeDocumentChildElementsByName($name)
     {
-        $nodes = $this->_xpath->query('/phpunit/' . $name);
+        $nodes = $this->xpath->query('/phpunit/' . $name);
 
         foreach ($nodes as $node) {
             $this->rootElement->removeChild($node);
