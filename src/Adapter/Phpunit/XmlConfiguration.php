@@ -13,19 +13,26 @@ namespace Humbug\Adapter\Phpunit;
 use Humbug\Container;
 use Humbug\Exception\RuntimeException;
 use Humbug\Exception\InvalidArgumentException;
-use Symfony\Component\Finder\Finder;
 
 class XmlConfiguration
 {
-
+    /**
+     * @var \DOMDocument
+     */
     private static $dom;
 
+    /**
+     * @var \DOMElement
+     */
     private static $root;
 
     private static $listeners;
 
     private static $xpath;
 
+    /**
+     * @var Container
+     */
     private static $container;
 
     private static $hasBootstrap;
