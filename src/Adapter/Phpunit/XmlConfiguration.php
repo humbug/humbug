@@ -54,15 +54,9 @@ class XmlConfiguration
             $configurationDir = $container->getBaseDirectory();
         }
 
-        $conf = $configurationDir . '/phpunit.xml';
+        $xmlConfiguration = new XmlConfiguration();
 
-        if (file_exists($conf)) {
-            $conf = realpath($conf);
-        } elseif (file_exists($conf . '.dist')) {
-            $conf = realpath($conf . '.dist');
-        } else {
-            throw new RuntimeException('Unable to locate phpunit.xml(.dist) file. This is required by Humbug.');
-        }
+        $conf = $xmlConfiguration->findConfigurationFile($configurationDir);
 
         if (!empty($configurationDir)) {
             $configurationDir .= '/';
@@ -345,5 +339,21 @@ class XmlConfiguration
         }
 
         throw new InvalidArgumentException("Could not find file $name working from $workingDir");
+    }
+
+    /**
+     * @param $configurationDir
+     */
+    public function findConfigurationFile($configurationDir)
+    {
+        $conf = $configurationDir . '/phpunit.xml';
+
+        if (file_exists($conf)) {
+            return realpath($conf);
+        } elseif (file_exists($conf . '.dist')) {
+            return realpath($conf . '.dist');
+        } else {
+            throw new RuntimeException('Unable to locate phpunit.xml(.dist) file. This is required by Humbug.');
+        }
     }
 }
