@@ -15,5 +15,7 @@ class ConfigurationLoaderTest extends \PHPUnit_Framework_TestCase
         $domDocument = $loader->load($configFile);
 
         $this->assertInstanceOf('\DomDocument', $domDocument);
+        $this->assertEquals(false, $domDocument->preserveWhiteSpace);
+        $this->assertEquals(true, $domDocument->formatOutput);
     }
 } 

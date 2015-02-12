@@ -62,9 +62,9 @@ class XmlConfiguration
          * Start the DOMmobile
          */
         $oldValue = libxml_disable_entity_loader(true);
+
         $dom = (new ConfigurationLoader())->load($configurationFile);
-        $dom->preserveWhiteSpace = false;
-        $dom->formatOutput = true;
+
         $dom->loadXML(file_get_contents($configurationFile));
         libxml_disable_entity_loader($oldValue);
 
