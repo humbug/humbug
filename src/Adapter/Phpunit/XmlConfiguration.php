@@ -68,8 +68,9 @@ class XmlConfiguration
             //@todo Get rid off this side effect...
             $container->setBootstrap($path);
         }
-        $dom->documentElement->setAttribute('bootstrap', sys_get_temp_dir() . '/humbug.phpunit.bootstrap.php');
-        $dom->documentElement->setAttribute('cacheTokens', 'false');
+
+        $xmlConfiguration->setBootstrap(self::getNewBootstrapPath());
+        $xmlConfiguration->turnOffCacheTokens();
 
 
         self::$xpath = new \DOMXPath($dom);
@@ -339,6 +340,14 @@ class XmlConfiguration
         return $configurationDir;
     }
 
+    /**
+     * @return string
+     */
+    private static function getNewBootstrapPath()
+    {
+        return sys_get_temp_dir() . '/humbug.phpunit.bootstrap.php';
+    }
+
     public function hasBootstrap()
     {
         return $this->dom->documentElement->hasAttribute('bootstrap');
@@ -347,5 +356,15 @@ class XmlConfiguration
     public function getBootstrap()
     {
         return $this->dom->documentElement->getAttribute('bootstrap');
+    }
+
+    public function setBootstrap($bootstrap)
+    {
+        return $this->dom->documentElement->setAttribute('bootstrap', $bootstrap);
+    }
+
+    public function turnOffCacheTokens()
+    {
+        return $this->dom->documentElement->setAttribute('cacheTokens', 'false');
     }
 }
