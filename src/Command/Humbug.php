@@ -10,11 +10,13 @@
 
 namespace Humbug\Command;
 
+use Humbug\Adapter\AdapterAbstract;
 use Humbug\Config;
 use Humbug\Config\JsonParser;
 use Humbug\Container;
 use Humbug\Adapter\Phpunit;
 use Humbug\Mutant;
+use Humbug\ProcessRunner;
 use Humbug\Report\Text as TextReport;
 use Humbug\Utility\Performance;
 use Humbug\Utility\ParallelGroup;
@@ -28,6 +30,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Helper\FormatterHelper;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Process\PhpProcess;
 
 class Humbug extends Command
 {
@@ -83,28 +86,18 @@ class Humbug extends Command
          * and also log the results so test runs during the mutation phase can
          * be optimised.
          */
-        $process = $container->getAdapter()->getProcess($container, true);
-        $progress = new ProgressBar($output);
-        $progress->setFormat('verbose');
-        $progress->setBarWidth(58);
-        $progress->start();
+        $progressBar = new ProgressBar($output);
+        $progressBar->setFormat('verbose');
+        $progressBar->setBarWidth(58);
+        $progressBar->start();
 
-        $process->start();
-        usleep(1000);
-        $hasFailure = false;
-        while ($process->isRunning()) {
-            usleep(2500);
-            if (($count = $container->getAdapter()->hasOks($process->getOutput()))) {
-                $progress->setProgress($count);
-                $process->clearOutput();
-            } elseif (!$container->getAdapter()->ok($process->getOutput())) {
-                sleep(1);
-                $hasFailure = true;
-                break;
-            }
-        }
-        $process->stop();
-        $progress->finish();
+        $testFrameworkAdapter = $container->getAdapter();
+
+        $process = $testFrameworkAdapter->getProcess($container, true);
+
+        $hasFailure = $this->performInitailTestsRun($process, $testFrameworkAdapter, $progressBar);
+
+        $progressBar->finish();
         $output->write(PHP_EOL.PHP_EOL);
         $exitCode = $process->getExitCode();
 
@@ -141,7 +134,7 @@ class Humbug extends Command
         /**
          * Initial test run was a success!
          */
-        $renderer->renderInitialRunPass($result, $progress->getProgress());
+        $renderer->renderInitialRunPass($result, $progressBar->getProgress());
         $output->write(PHP_EOL);
         $this->logText($renderer);
 
@@ -540,5 +533,17 @@ class Humbug extends Command
         }
 
         return $out;
+    }
+
+    private function performInitailTestsRun(
+        PhpProcess $process,
+        AdapterAbstract $testFrameworkAdapter,
+        ProgressBar $progressBar
+    ) {
+        $setProgressBarProgressCallback = function ($count) use ($progressBar) {
+            $progressBar->setProgress($count);
+        };
+
+        return (new ProcessRunner())->run($process, $testFrameworkAdapter, $setProgressBarProgressCallback);
     }
 }
