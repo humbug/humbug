@@ -60,7 +60,17 @@ class XmlConfiguration
 
         $xmlConfiguration = new XmlConfiguration($dom);
 
-        self::handleRootAttributes($configurationFile, $container, $dom);
+        if ($xmlConfiguration->hasBootstrap()) {
+            self::$hasBootstrap = true;
+            $bootstrap = $xmlConfiguration->getBootstrap();
+            $path = self::makeAbsolutePath($bootstrap, dirname($configurationFile));
+
+            //@todo Get rid off this side effect...
+            $container->setBootstrap($path);
+        }
+        $dom->documentElement->setAttribute('bootstrap', sys_get_temp_dir() . '/humbug.phpunit.bootstrap.php');
+        $dom->documentElement->setAttribute('cacheTokens', 'false');
+
 
         self::$xpath = new \DOMXPath($dom);
 
@@ -158,20 +168,6 @@ class XmlConfiguration
                 }
             }
         }
-    }
-
-    private static function handleRootAttributes($configFile, Container $container, \DOMDocument $dom)
-    {
-        if ($dom->documentElement->hasAttribute('bootstrap')) {
-            self::$hasBootstrap = true;
-            $bootstrap = $dom->documentElement->getAttribute('bootstrap');
-            $path = self::makeAbsolutePath($bootstrap, dirname($configFile));
-
-            //@todo Get rid off this side effect...
-            $container->setBootstrap($path);
-        }
-        $dom->documentElement->setAttribute('bootstrap', sys_get_temp_dir() . '/humbug.phpunit.bootstrap.php');
-        $dom->documentElement->setAttribute('cacheTokens', 'false');
     }
 
     private static function handleElementReset(\DOMDocument $dom)
