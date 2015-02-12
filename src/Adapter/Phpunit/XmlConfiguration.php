@@ -16,9 +16,6 @@ use Humbug\Exception\InvalidArgumentException;
 
 class XmlConfiguration
 {
-    /**
-     * @var \DOMDocument
-     */
     private static $dom;
 
     /**
@@ -51,13 +48,15 @@ class XmlConfiguration
         $conf = null;
         $dir = null;
         $testDir = $container->getTestRunDirectory();
+
         if (!empty($testDir)) {
             $dir = $testDir;
             $conf = $dir . '/phpunit.xml';
-        } elseif (!file_exists($conf)) {
+        } else {
             $dir = $container->getBaseDirectory();
             $conf = $dir . '/phpunit.xml';
         }
+
         if (file_exists($conf)) {
             $conf = realpath($conf);
         } elseif (file_exists($conf . '.dist')) {
@@ -65,6 +64,7 @@ class XmlConfiguration
         } else {
             throw new RuntimeException('Unable to locate phpunit.xml(.dist) file. This is required by Humbug.');
         }
+
         if (!empty($dir)) {
             $dir .= '/';
         }
