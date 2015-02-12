@@ -6,12 +6,12 @@ use Humbug\Adapter\Phpunit\XmlConfiguration;
 
 class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
 {
-    public function testShouldHaveDom()
+    public function testShouldThrowExceptionIfNoDocumentElementIsPresent()
     {
-        $dom = new \DOMDocument();
-        $xmlConfiguration = new XmlConfiguration($dom);
+        $this->setExpectedException('\LogicException', 'No document element present. Document should not be empty!');
 
-        $this->assertSame($dom, $xmlConfiguration->dom);
+        $dom = new \DOMDocument();
+        new XmlConfiguration($dom);
     }
 
     public function testShouldHaveBootstrap()

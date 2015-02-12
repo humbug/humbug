@@ -23,15 +23,17 @@ class XmlConfiguration
     private static $hasBootstrap;
 
     /**
-     * Temporary public...
-     * @todo make it private after refactor
      *
      * @var \DOMDocument
      */
-    public $dom;
+    private $dom;
 
     public function __construct(\DOMDocument $dom)
     {
+        if (!$dom->documentElement) {
+            throw new \LogicException('No document element present. Document should not be empty!');
+        }
+
         $this->dom = $dom;
     }
 
