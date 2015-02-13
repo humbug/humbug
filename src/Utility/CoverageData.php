@@ -133,7 +133,7 @@ class CoverageData
                 if ($passthru === true) {
                     $this->wrapup($out);
                 }
-                $file = 'coverage.humbug.' . md5($matches[1]) . '.cache';
+                $file = 'coverage.humbug.' . md5(stripslashes($matches[1])) . '.cache';
                 $out = fopen(sys_get_temp_dir() . '/' . $file, 'w');
                 $buffer = '<?php'
                     . PHP_EOL . '$coverage = new PHP_CodeCoverage;'
