@@ -11,6 +11,7 @@
 namespace Humbug\Adapter\Phpunit;
 
 use Humbug\Adapter\Phpunit\XmlConfiguration\AcceleratorListener;
+use Humbug\Adapter\Phpunit\XmlConfiguration\TimeCollectorListener;
 use Humbug\Adapter\Phpunit\XmlConfiguration\Visitor;
 use Humbug\Container;
 use Humbug\Exception\RuntimeException;
@@ -101,7 +102,7 @@ class XmlConfiguration
          */
         if ($firstRun === true) {
             self::handleLogging($container, $dom);
-            self::handleStartupListeners($container, $dom);
+            $xmlConfiguration->addListener(new TimeCollectorListener(self::getPathToTimeCollectorFile($container)));
         } else {
             self::handleTestSuiteFilterListener($testSuites, $container, $dom);
         }
@@ -237,21 +238,9 @@ class XmlConfiguration
         }
     }
 
-    private static function handleStartupListeners(Container $container, \DOMDocument $dom)
+    private static function getPathToTimeCollectorFile(Container $container)
     {
-        $listener = $dom->createElement('listener');
-        self::$listeners->appendChild($listener);
-        $listener->setAttribute('class', '\Humbug\Phpunit\Listener\TimeCollectorListener');
-        $arguments = $dom->createElement('arguments');
-        $listener->appendChild($arguments);
-        $jsonLogger = $dom->createElement('object');
-        $arguments->appendChild($jsonLogger);
-        $jsonLogger->setAttribute('class', '\Humbug\Phpunit\Logger\JsonLogger');
-        $jsonLoggerArgs = $dom->createElement('arguments');
-        $jsonLogger->appendChild($jsonLoggerArgs);
-        $string = $dom->createElement('string');
-        $jsonLoggerArgs->appendChild($string);
-        $string->nodeValue = $container->getCacheDirectory() . '/phpunit.times.humbug.json';
+        return $container->getCacheDirectory() . '/phpunit.times.humbug.json';
     }
 
     private static function handleTestSuiteFilterListener(array $testSuites, Container $container, \DOMDocument $dom)
@@ -286,7 +275,7 @@ class XmlConfiguration
         $fastestFirst->appendChild($fastestFirstArgs);
         $string = $dom->createElement('string');
         $fastestFirstArgs->appendChild($string);
-        $string->nodeValue = $container->getCacheDirectory() . '/phpunit.times.humbug.json';
+        $string->nodeValue = self::getPathToTimeCollectorFile($container);
     }
 
     private static function makeAbsolutePath($name, $workingDir)

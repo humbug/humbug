@@ -6,20 +6,28 @@ use Humbug\Adapter\Phpunit\XmlConfiguration\AcceleratorListener;
 
 class AcceleratorListenerTest extends \PHPUnit_Framework_TestCase
 {
-    public function testShouldBeVisitor()
+    /**
+     * @var AcceleratorListener
+     */
+    private $acceleratorListener;
+
+    protected function setUp()
     {
-        $this->assertInstanceOf('Humbug\Adapter\Phpunit\XmlConfiguration\Visitor', new AcceleratorListener());
+        $this->acceleratorListener = new AcceleratorListener();
     }
 
-    public function testShouldUpdateDomNode()
+    public function testShouldBeVisitor()
+    {
+        $this->assertInstanceOf('Humbug\Adapter\Phpunit\XmlConfiguration\Visitor', $this->acceleratorListener);
+    }
+
+    public function testShouldUpdateDomElement()
     {
         $dom = new \DOMDocument();
         $domElement = $dom->createElement('listener');
         $dom->appendChild($domElement);
 
-        $acceleratorListener = new AcceleratorListener();
-
-        $acceleratorListener->visitElement($domElement);
+        $this->acceleratorListener->visitElement($domElement);
 
         $this->assertEquals('\MyBuilder\PhpunitAccelerator\TestListener', $domElement->getAttribute('class'));
 
