@@ -11,6 +11,7 @@
 namespace Humbug\Adapter\Phpunit;
 
 use Humbug\Adapter\Phpunit\XmlConfiguration\AcceleratorListener;
+use Humbug\Adapter\Phpunit\XmlConfiguration\FastestFirstFilter;
 use Humbug\Adapter\Phpunit\XmlConfiguration\IncludeOnlyFilter;
 use Humbug\Adapter\Phpunit\XmlConfiguration\TimeCollectorListener;
 use Humbug\Adapter\Phpunit\XmlConfiguration\Visitor;
@@ -260,18 +261,13 @@ class XmlConfiguration
 
         (new IncludeOnlyFilter($testSuites))->visitElement($includeOnly);
 
-           /**
+        /**
          * Add the FastestFirst Filter
          */
         $fastestFirst = $dom->createElement('object');
         $arguments->appendChild($fastestFirst);
 
-        $fastestFirst->setAttribute('class', '\Humbug\Phpunit\Filter\TestSuite\FastestFirstFilter');
-        $fastestFirstArgs = $dom->createElement('arguments');
-        $fastestFirst->appendChild($fastestFirstArgs);
-        $string = $dom->createElement('string');
-        $fastestFirstArgs->appendChild($string);
-        $string->nodeValue = self::getPathToTimeCollectorFile($container);
+        (new FastestFirstFilter(self::getPathToTimeCollectorFile($container)))->visitElement($fastestFirst);
     }
 
     private static function makeAbsolutePath($name, $workingDir)
