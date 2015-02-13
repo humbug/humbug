@@ -11,6 +11,7 @@
 namespace Humbug\Adapter\Phpunit;
 
 use Humbug\Adapter\Phpunit\XmlConfiguration\AcceleratorListener;
+use Humbug\Adapter\Phpunit\XmlConfiguration\IncludeOnlyFilter;
 use Humbug\Adapter\Phpunit\XmlConfiguration\TimeCollectorListener;
 use Humbug\Adapter\Phpunit\XmlConfiguration\Visitor;
 use Humbug\Container;
@@ -256,20 +257,15 @@ class XmlConfiguration
          */
         $includeOnly = $dom->createElement('object');
         $arguments->appendChild($includeOnly);
-        $includeOnly->setAttribute('class', '\Humbug\Phpunit\Filter\TestSuite\IncludeOnlyFilter');
-        $includeOnlyArgs = $dom->createElement('arguments');
-        $includeOnly->appendChild($includeOnlyArgs);
-        foreach ($testSuites as $testSuite) {
-            $string = $dom->createElement('string');
-            $includeOnlyArgs->appendChild($string);
-            $string->nodeValue = $testSuite;
-        }
 
-        /**
+        (new IncludeOnlyFilter($testSuites))->visitElement($includeOnly);
+
+           /**
          * Add the FastestFirst Filter
          */
         $fastestFirst = $dom->createElement('object');
         $arguments->appendChild($fastestFirst);
+
         $fastestFirst->setAttribute('class', '\Humbug\Phpunit\Filter\TestSuite\FastestFirstFilter');
         $fastestFirstArgs = $dom->createElement('arguments');
         $fastestFirst->appendChild($fastestFirstArgs);
