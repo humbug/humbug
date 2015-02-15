@@ -132,7 +132,7 @@ class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(1, $listeners->length);
     }
 
-    public function testShouldAddTwoListeners()
+    public function testShouldAddListeners()
     {
         $dom = $this->createBaseDomDocument();
 
@@ -150,4 +150,41 @@ class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(1, $xpath->query('/phpunit/listeners')->length);
         $this->assertEquals(2, $xpath->query('/phpunit/listeners/listener')->length);
     }
+
+    public function testShouldAddLogger()
+    {
+        $dom = $this->createBaseDomDocument();
+
+        $xmlConfiguration = new XmlConfiguration($dom);
+
+        $xmlConfiguration->addLogger('logger-type', '/path/to/target');
+
+        $xpath = (new \DOMXPath($dom));
+
+        $this->assertEquals(1, $xpath->evaluate('count(/phpunit/logging)'));
+
+        $logList = $xpath->query('/phpunit/logging/log');
+        $this->assertEquals(1, $logList->length);
+
+        $log = $logList->item(0);
+
+        $this->assertEquals('logger-type', $log->getAttribute('type'));
+        $this->assertEquals('/path/to/target', $log->getAttribute('target'));
+
+        //second logger
+        $xmlConfiguration->addLogger('type-2', '/target2');
+
+        $xpath = (new \DOMXPath($dom));
+
+        $this->assertEquals(1, $xpath->evaluate('count(/phpunit/logging)'));
+
+        $logList = $xpath->query('/phpunit/logging/log');
+        $this->assertEquals(2, $logList->length);
+
+        $log = $logList->item(1);
+
+        $this->assertEquals('type-2', $log->getAttribute('type'));
+        $this->assertEquals('/target2', $log->getAttribute('target'));
+    }
+
 }

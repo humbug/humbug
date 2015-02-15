@@ -98,6 +98,8 @@ class XmlConfiguration
          * On first runs collect a test log and also generate code coverage
          */
         if ($firstRun === true) {
+            $xmlConfiguration->addLogger('coverage-php', $container->getCacheDirectory() . '/coverage.humbug.php');
+            $xmlConfiguration->addLogger('coverage-text', $container->getCacheDirectory() . '/coverage.humbug.txt');
             self::handleLogging($container, $dom);
             $xmlConfiguration->addListener(new TimeCollectorListener(self::getPathToTimeCollectorFile($container)));
         } else {
@@ -195,26 +197,6 @@ class XmlConfiguration
 
     private static function handleLogging(Container $container, \DOMDocument $dom)
     {
-        // add new logs as needed
-        $logging = $dom->createElement('logging');
-        $dom->documentElement->appendChild($logging);
-
-        // php coverage
-        $log = $dom->createElement('log');
-        $log->setAttribute('type', 'coverage-php');
-        $log->setAttribute(
-            'target',
-            $container->getCacheDirectory() . '/coverage.humbug.php'
-        );
-        $logging->appendChild($log);
-        $log2 = $dom->createElement('log');
-        $log2->setAttribute('type', 'coverage-text');
-        $log2->setAttribute(
-            'target',
-            $container->getCacheDirectory() . '/coverage.humbug.txt'
-        );
-        $logging->appendChild($log2);
-
         /**
          * While we're here, reset code coverage filter to meet the known source
          * code constraints.
@@ -342,7 +324,7 @@ class XmlConfiguration
 
         if ($listenersList->length) {
             $listeners = $listenersList->item(0);
-        }else {
+        } else {
             $listeners = $this->dom->createElement('listeners');
             $this->rootElement->appendChild($listeners);
         }
@@ -351,5 +333,23 @@ class XmlConfiguration
         $listeners->appendChild($listener);
 
         $visitor->visitElement($listener);
+    }
+
+    public function addLogger($type, $target)
+    {
+        $loggingList = $this->xpath->query('/phpunit/logging');
+
+        if ($loggingList->length) {
+            $logging = $loggingList->item(0);
+        } else {
+            $logging = $this->dom->createElement('logging');
+            $this->rootElement->appendChild($logging);
+        }
+
+        $log = $this->dom->createElement('log');
+        $logging->appendChild($log);
+
+        $log->setAttribute('type', $type);
+        $log->setAttribute('target', $target);
     }
 }
