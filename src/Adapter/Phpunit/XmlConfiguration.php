@@ -22,8 +22,6 @@ use Humbug\Exception\InvalidArgumentException;
 
 class XmlConfiguration
 {
-    private static $listeners;
-
     private static $hasBootstrap;
 
     /**
@@ -96,10 +94,6 @@ class XmlConfiguration
 
         $xmlConfiguration->addListener(new AcceleratorListener());
 
-        $xpath = new \DOMXPath($dom);
-
-        self::$listeners = $xpath->query('/phpunit/listeners')->item(0);
-
         /**
          * On first runs collect a test log and also generate code coverage
          */
@@ -113,6 +107,8 @@ class XmlConfiguration
             ]);
             $xmlConfiguration->addListener($filterListener);
         }
+
+        $xpath = new \DOMXPath($dom);
 
         /** @var \DOMNode[] $nodesToRemove */
         $nodesToRemove = array();
