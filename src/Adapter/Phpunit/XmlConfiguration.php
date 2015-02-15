@@ -100,7 +100,14 @@ class XmlConfiguration
         if ($firstRun === true) {
             $xmlConfiguration->addLogger('coverage-php', $container->getCacheDirectory() . '/coverage.humbug.php');
             $xmlConfiguration->addLogger('coverage-text', $container->getCacheDirectory() . '/coverage.humbug.txt');
-            self::handleLogging($container, $dom);
+
+            $srcList = $container->getSourceList();
+
+            $whiteListSrc = isset($srcList->directories) ? self::getRealPathList($srcList->directories) : [];
+            $excludeDirs = isset($srcList->excludes) ? self::getRealPathList($srcList->excludes) : [];
+
+            $xmlConfiguration->addWhiteListFilter($whiteListSrc, $excludeDirs);
+
             $xmlConfiguration->addListener(new TimeCollectorListener(self::getPathToTimeCollectorFile($container)));
         } else {
             $filterListener = new FilterListener([
@@ -195,32 +202,9 @@ class XmlConfiguration
         }
     }
 
-    private static function handleLogging(Container $container, \DOMDocument $dom)
+    private static function getRealPathList($directories)
     {
-        /**
-         * While we're here, reset code coverage filter to meet the known source
-         * code constraints.
-         */
-        $filter = $dom->createElement('filter');
-        $whitelist = $dom->createElement('whitelist');
-        $dom->documentElement->appendChild($filter);
-        $filter->appendChild($whitelist);
-        $source = $container->getSourceList();
-        if (isset($source->directories)) {
-            foreach ($source->directories as $d) {
-                $directory = $dom->createElement('directory', realpath($d));
-                $directory->setAttribute('suffix', '.php');
-                $whitelist->appendChild($directory);
-            }
-        }
-        if (isset($source->excludes)) {
-            $exclude = $dom->createElement('exclude');
-            foreach ($source->excludes as $d) {
-                $directory = $dom->createElement('directory', realpath($d));
-                $exclude->appendChild($directory);
-            }
-            $whitelist->appendChild($exclude);
-        }
+        return array_map('realpath', $directories);
     }
 
     private static function getPathToTimeCollectorFile(Container $container)
@@ -351,5 +335,37 @@ class XmlConfiguration
 
         $log->setAttribute('type', $type);
         $log->setAttribute('target', $target);
+    }
+
+    public function addWhiteListFilter(array $whiteListDirectories, array $excludeDirectories = [])
+    {
+        if (empty($whiteListDirectories)) {
+            return;
+        }
+
+        $filter = $this->dom->createElement('filter');
+        $this->rootElement->appendChild($filter);
+
+        $whiteList = $this->dom->createElement('whitelist');
+        $filter->appendChild($whiteList);
+
+        foreach ($whiteListDirectories as $dirName) {
+            $directory = $this->dom->createElement('directory', $dirName);
+            $whiteList->appendChild($directory);
+            $directory->setAttribute('suffix', '.php');
+        }
+
+        if (empty($excludeDirectories)) {
+            return;
+        }
+
+        $exclude = $this->dom->createElement('exclude');
+        $whiteList->appendChild($exclude);
+
+        foreach ($excludeDirectories as $dirName) {
+            $directory = $this->dom->createElement('directory', $dirName);
+            $exclude->appendChild($directory);
+        }
+
     }
 }

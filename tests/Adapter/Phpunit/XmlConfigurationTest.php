@@ -187,4 +187,78 @@ class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('/target2', $log->getAttribute('target'));
     }
 
+    public function testShouldAddWhiteListDirsFilter()
+    {
+        $whiteList = [
+            '/src/lib',
+            '/src/common'
+        ];
+
+        $dom = $this->createBaseDomDocument();
+
+        $xmlConfiguration = new XmlConfiguration($dom);
+
+        $xmlConfiguration->addWhiteListFilter($whiteList);
+
+        $xpath = new \DOMXPath($dom);
+
+        $this->assertEquals(1, $xpath->evaluate('count(/phpunit/filter)'));
+        $this->assertEquals(1, $xpath->evaluate('count(/phpunit/filter/whitelist)'));
+        $this->assertEquals(0, $xpath->evaluate('count(/phpunit/filter/whitelist/exclude)'));
+
+        $actualDirList = $xpath->query('/phpunit/filter/whitelist/directory');
+
+        $this->assertEquals(2, $actualDirList->length);
+
+        $dir1 = $actualDirList->item(0);
+        $this->assertEquals('/src/lib', $dir1->nodeValue);
+        $this->assertEquals('.php', $dir1->getAttribute('suffix'));
+
+        $dir2 = $actualDirList->item(1);
+        $this->assertEquals('/src/common', $dir2->nodeValue);
+        $this->assertEquals('.php', $dir2->getAttribute('suffix'));
+    }
+
+    public function testShouldNotAddWhiteListDirsFilter()
+    {
+        $whiteList = [];
+
+        $dom = $this->createBaseDomDocument();
+
+        $xmlConfiguration = new XmlConfiguration($dom);
+
+        $xmlConfiguration->addWhiteListFilter($whiteList);
+
+        $this->assertEquals(0, (new \DOMXPath($dom))->evaluate('count(/phpunit/filter)'));
+    }
+
+    public function testShouldAddWhiteListDirsWithExcludes()
+    {
+        $whiteList = [
+            '/src',
+        ];
+
+        $excludeDirs = [
+            '/src/covers-nothing',
+            '/src/excluded',
+        ];
+
+        $dom = $this->createBaseDomDocument();
+
+        $xmlConfiguration = new XmlConfiguration($dom);
+
+        $xmlConfiguration->addWhiteListFilter($whiteList, $excludeDirs);
+
+        $xpath = new \DOMXPath($dom);
+
+        $this->assertEquals(1, $xpath->evaluate('count(/phpunit/filter/whitelist/directory)'));
+        $this->assertEquals(1, $xpath->evaluate('count(/phpunit/filter/whitelist/exclude)'));
+
+        $excludedList = $xpath->query('/phpunit/filter/whitelist/exclude/directory');
+
+        $this->assertEquals(2, $excludedList->length);
+
+        $this->assertEquals('/src/covers-nothing', $excludedList->item(0)->nodeValue);
+        $this->assertEquals('/src/excluded', $excludedList->item(1)->nodeValue);
+    }
 }
