@@ -12,6 +12,7 @@ namespace Humbug\Adapter\Phpunit;
 
 use Humbug\Adapter\Phpunit\XmlConfiguration\AcceleratorListener;
 use Humbug\Adapter\Phpunit\XmlConfiguration\FastestFirstFilter;
+use Humbug\Adapter\Phpunit\XmlConfiguration\FilterListener;
 use Humbug\Adapter\Phpunit\XmlConfiguration\IncludeOnlyFilter;
 use Humbug\Adapter\Phpunit\XmlConfiguration\TimeCollectorListener;
 use Humbug\Adapter\Phpunit\XmlConfiguration\Visitor;
@@ -106,7 +107,11 @@ class XmlConfiguration
             self::handleLogging($container, $dom);
             $xmlConfiguration->addListener(new TimeCollectorListener(self::getPathToTimeCollectorFile($container)));
         } else {
-            self::handleTestSuiteFilterListener($testSuites, $container, $dom);
+            $filterListener = new FilterListener([
+                new IncludeOnlyFilter($testSuites),
+                new FastestFirstFilter(self::getPathToTimeCollectorFile($container))
+            ]);
+            $xmlConfiguration->addListener($filterListener);
         }
 
         /** @var \DOMNode[] $nodesToRemove */
@@ -243,31 +248,6 @@ class XmlConfiguration
     private static function getPathToTimeCollectorFile(Container $container)
     {
         return $container->getCacheDirectory() . '/phpunit.times.humbug.json';
-    }
-
-    private static function handleTestSuiteFilterListener(array $testSuites, Container $container, \DOMDocument $dom)
-    {
-        $listener = $dom->createElement('listener');
-        self::$listeners->appendChild($listener);
-        $listener->setAttribute('class', '\Humbug\Phpunit\Listener\FilterListener');
-        $arguments = $dom->createElement('arguments');
-        $listener->appendChild($arguments);
-
-        /**
-         * Add the IncludeOnly Filter
-         */
-        $includeOnly = $dom->createElement('object');
-        $arguments->appendChild($includeOnly);
-
-        (new IncludeOnlyFilter($testSuites))->visitElement($includeOnly);
-
-        /**
-         * Add the FastestFirst Filter
-         */
-        $fastestFirst = $dom->createElement('object');
-        $arguments->appendChild($fastestFirst);
-
-        (new FastestFirstFilter(self::getPathToTimeCollectorFile($container)))->visitElement($fastestFirst);
     }
 
     private static function makeAbsolutePath($name, $workingDir)
