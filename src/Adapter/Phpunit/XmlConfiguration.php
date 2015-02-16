@@ -128,10 +128,7 @@ class XmlConfiguration
             $length = $suite->childNodes->length;
             for ($i = 0; $i < $length; $i++) {
                 $node = $suite->childNodes->item($i);
-                if ($node instanceof \DOMElement
-                && ($node->tagName == 'directory'
-                || $node->tagName == 'exclude'
-                || $node->tagName == 'file')) {
+                if ($node instanceof \DOMElement && $node->tagName == 'exclude') {
                     $node->nodeValue = self::makeAbsolutePath($node->nodeValue, $configurationDir);
                 }
             }
