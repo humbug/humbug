@@ -134,32 +134,9 @@ class XmlConfiguration
                 && ($node->tagName == 'directory'
                 || $node->tagName == 'exclude'
                 || $node->tagName == 'file')) {
-                    $fullPath = $configurationDir . '/' . $node->nodeValue;
-                    // Check if the paths exist.
-                    $paths = glob($fullPath);
-                    if (0 === count($paths)) {
-                        // It's no problem if an exclude path is missing.
-                        if ($node->tagName !== 'exclude') {
-                            throw new RuntimeException('Unable to locate file specified in testsuites: ' . $fullPath);
-                        }
-                    } else {
-                        foreach ($paths as $path) {
-                            $clone = $node->cloneNode();
-                            $clone->nodeValue = self::makeAbsolutePath($path, getcwd());
-                            $node->parentNode->appendChild($clone);
-                        }
-                    }
-                    // Mark the original unprocessed node to be removed.
-                    $nodesToRemove[] = $node;
+                    $node->nodeValue = self::makeAbsolutePath($node->nodeValue, $configurationDir);
                 }
             }
-        }
-
-        // Remove the original unprocessed nodes. This cannot be done inside the
-        // loop that processes the nodes since the removal of a node causes
-        // DOMNodeList to reset its internal array keys.
-        foreach ($nodesToRemove as $node) {
-            $node->parentNode->removeChild($node);
         }
 
         /**
@@ -366,6 +343,5 @@ class XmlConfiguration
             $directory = $this->dom->createElement('directory', $dirName);
             $exclude->appendChild($directory);
         }
-
     }
 }
