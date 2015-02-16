@@ -119,21 +119,10 @@ class XmlConfiguration
 
         $xpath = new \DOMXPath($dom);
 
-        $suites = $xpath->query('/phpunit/testsuites/testsuite');
-        foreach ($suites as $suite) {
-            // DOMNodeList's Traversable implementation is a bit unpredictable.
-            // Iterate over the child nodes using a for loop rather than a
-            // foreach so that we can append new children without these being
-            // iterated over again.
-            $length = $suite->childNodes->length;
-            for ($i = 0; $i < $length; $i++) {
-                $node = $suite->childNodes->item($i);
-                if ($node instanceof \DOMElement && $node->tagName == 'exclude') {
-                    $node->nodeValue = self::makeAbsolutePath($node->nodeValue, $configurationDir);
-                }
-            }
+        $suitesExcludes = $xpath->query('/phpunit/testsuites/testsuite/exclude');
+        foreach ($suitesExcludes as $exclude) {
+            $exclude->nodeValue = self::makeAbsolutePath($exclude->nodeValue, $configurationDir);
         }
-
         /**
          * Set any remaining file & directory references to realpaths
          */
