@@ -119,8 +119,6 @@ class XmlConfiguration
 
         $xpath = new \DOMXPath($dom);
 
-        /** @var \DOMNode[] $nodesToRemove */
-        $nodesToRemove = array();
         $suites = $xpath->query('/phpunit/testsuites/testsuite');
         foreach ($suites as $suite) {
             // DOMNodeList's Traversable implementation is a bit unpredictable.
@@ -144,11 +142,11 @@ class XmlConfiguration
          */
         $directories = $xpath->query('//directory');
         foreach ($directories as $directory) {
-            $directory->nodeValue = self::makeAbsolutePath($directory->nodeValue, dirname($configurationFile));
+            $directory->nodeValue = self::makeAbsolutePath($directory->nodeValue, $configurationDir);
         }
         $files = $xpath->query('//file');
         foreach ($files as $file) {
-            $file->nodeValue = self::makeAbsolutePath($file->nodeValue, dirname($configurationFile));
+            $file->nodeValue = self::makeAbsolutePath($file->nodeValue, $configurationDir);
         }
 
         $suite1 = $xpath->query('/phpunit/testsuites/testsuite')->item(0);
