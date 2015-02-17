@@ -2,6 +2,7 @@
 
 namespace Humbug\Test\Adapter\Phpunit;
 
+use Humbug\Adapter\Phpunit\ConfigurationLoader;
 use Humbug\Adapter\Phpunit\XmlConfiguration;
 
 class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
@@ -333,5 +334,57 @@ class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
     private function createDirectoryElement(\DOMDocument $dom, $directory)
     {
         return $dom->createElement('directory', $directory);
+    }
+
+    public function testShouldReplaceDirectoryPathsToAbsolutePathsInWholeDocument()
+    {
+        $configurationDir = realpath(__DIR__ . '/../_files/phpunit-conf');
+        $dom = (new ConfigurationLoader())->load($configurationDir . '/phpunit.xml');
+
+        $xmlConfiguration = new XmlConfiguration($dom);
+
+        $xmlConfiguration->replacePathsToAbsolutePaths($configurationDir);
+
+        $xpath = new \DOMXPath($dom);
+
+        $actualSuiteDirectory = $xpath->query('/phpunit/testsuites/testsuite/directory')->item(0)->nodeValue;
+        $this->assertEquals($configurationDir, $actualSuiteDirectory);
+
+        $actualWhiteListDirectory = $xpath->query('/phpunit/filter/whitelist/directory')->item(0)->nodeValue;
+        $this->assertEquals($configurationDir . '/white-list' , $actualWhiteListDirectory);
+
+        $actualWhiteListExcludeDirectory =
+            $xpath->query('/phpunit/filter/whitelist/exclude/directory')->item(0)->nodeValue;
+        $this->assertEquals($configurationDir . '/white-list/exclude' , $actualWhiteListExcludeDirectory);
+    }
+
+    public function testShouldReplaceFilePathsToAbsolutePaths()
+    {
+        $configurationDir = realpath(__DIR__ . '/../_files/phpunit-conf');
+        $dom = (new ConfigurationLoader())->load($configurationDir . '/phpunit.xml');
+
+        $xmlConfiguration = new XmlConfiguration($dom);
+
+        $xmlConfiguration->replacePathsToAbsolutePaths($configurationDir);
+
+        $xpath = new \DOMXPath($dom);
+
+        $actualSuiteDirectory = $xpath->query('/phpunit/testsuites/testsuite/file')->item(0)->nodeValue;
+        $this->assertEquals($configurationDir . '/file.php', $actualSuiteDirectory);
+    }
+
+    public function testShouldReplaceSuiteExcludesWithAbsolutePaths()
+    {
+        $configurationDir = realpath(__DIR__ . '/../_files/phpunit-conf');
+        $dom = (new ConfigurationLoader())->load($configurationDir . '/phpunit.xml');
+
+        $xmlConfiguration = new XmlConfiguration($dom);
+
+        $xmlConfiguration->replacePathsToAbsolutePaths($configurationDir);
+
+        $xpath = new \DOMXPath($dom);
+
+        $actualSuiteExclude = $xpath->query('/phpunit/testsuites/testsuite/exclude')->item(0)->nodeValue;
+        $this->assertEquals($configurationDir . '/excluded-tests', $actualSuiteExclude);
     }
 }

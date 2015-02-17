@@ -114,23 +114,8 @@ class XmlConfiguration
             $xmlConfiguration->addListener($filterListener);
         }
 
-        $xpath = new \DOMXPath($dom);
 
-        $suitesExcludes = $xpath->query('/phpunit/testsuites/testsuite/exclude');
-        foreach ($suitesExcludes as $exclude) {
-            $exclude->nodeValue = self::makeAbsolutePath($exclude->nodeValue, $configurationDir);
-        }
-        /**
-         * Set any remaining file & directory references to realpaths
-         */
-        $directories = $xpath->query('//directory');
-        foreach ($directories as $directory) {
-            $directory->nodeValue = self::makeAbsolutePath($directory->nodeValue, $configurationDir);
-        }
-        $files = $xpath->query('//file');
-        foreach ($files as $file) {
-            $file->nodeValue = self::makeAbsolutePath($file->nodeValue, $configurationDir);
-        }
+        $xmlConfiguration->replacePathsToAbsolutePaths($configurationDir);
 
         if (!$hasBootstrap) {
             $bootstrap = self::findBootstrapFileInDirectories(
@@ -338,5 +323,23 @@ class XmlConfiguration
         }
 
         return $directories;
+    }
+
+    public function replacePathsToAbsolutePaths($configurationDir)
+    {
+        $suitesExcludes = $this->xpath->query('/phpunit/testsuites/testsuite/exclude');
+        foreach ($suitesExcludes as $exclude) {
+            $exclude->nodeValue = self::makeAbsolutePath($exclude->nodeValue, $configurationDir);
+        }
+
+        $directories = $this->xpath->query('//directory');
+        foreach ($directories as $directory) {
+            $directory->nodeValue = self::makeAbsolutePath($directory->nodeValue, $configurationDir);
+        }
+
+        $files = $this->xpath->query('//file');
+        foreach ($files as $file) {
+            $file->nodeValue = self::makeAbsolutePath($file->nodeValue, $configurationDir);
+        }
     }
 }
