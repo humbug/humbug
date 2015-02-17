@@ -135,23 +135,12 @@ class XmlConfiguration
             $file->nodeValue = self::makeAbsolutePath($file->nodeValue, $configurationDir);
         }
 
-        $suite1 = $xpath->query('/phpunit/testsuites/testsuite')->item(0);
-        if (is_a($suite1, 'DOMElement')) {
-            self::handleSuite($suite1, $configurationFile, $container, $dom);
-        }
-        
-        $saveFile = $container->getCacheDirectory() . '/phpunit.humbug.xml';
-        $dom->save($saveFile);
+        $directoriesFromFirstSuite = $xpath->query('/phpunit/testsuites/testsuite[position()=1]/directory');
 
-        return $saveFile;
-    }
-
-    private static function handleSuite(\DOMElement $suite, $configFile, Container $container, \DOMDocument $dom)
-    {
-        foreach ($suite->childNodes as $child) {
+        foreach ($directoriesFromFirstSuite as $directory) {
             // phpunit.xml may omit bootstrap location but grab it automatically - include explicitly
-            if (self::$hasBootstrap === false && $child instanceof \DOMElement && $child->tagName == 'directory') {
-                $bootstrapDir = self::makeAbsolutePath($child->nodeValue, dirname($configFile));
+            if (self::$hasBootstrap === false) {
+                $bootstrapDir = self::makeAbsolutePath($directory->nodeValue, $configurationDir);
                 if (file_exists($bootstrapDir . '/bootstrap.php')) {
                     $dom->documentElement->setAttribute('bootstrap', $bootstrapDir . '/bootstrap.php');
 
@@ -161,6 +150,11 @@ class XmlConfiguration
                 }
             }
         }
+        
+        $saveFile = $container->getCacheDirectory() . '/phpunit.humbug.xml';
+        $dom->save($saveFile);
+
+        return $saveFile;
     }
 
     private static function getRealPathList($directories)
