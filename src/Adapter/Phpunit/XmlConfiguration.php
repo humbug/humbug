@@ -17,13 +17,10 @@ use Humbug\Adapter\Phpunit\XmlConfiguration\IncludeOnlyFilter;
 use Humbug\Adapter\Phpunit\XmlConfiguration\TimeCollectorListener;
 use Humbug\Adapter\Phpunit\XmlConfiguration\Visitor;
 use Humbug\Container;
-use Humbug\Exception\RuntimeException;
 use Humbug\Exception\InvalidArgumentException;
 
 class XmlConfiguration
 {
-    private static $hasBootstrap;
-
     /**
      *
      * @var \DOMDocument
@@ -62,7 +59,7 @@ class XmlConfiguration
      */
     public static function assemble(Container $container, $firstRun = false, array $testSuites = [])
     {
-        self::$hasBootstrap = false;
+        $hasBootstrap = false;
 
         $configurationDir = self::resolveConfigurationDir($container);
 
@@ -77,7 +74,7 @@ class XmlConfiguration
         $xmlConfiguration = new XmlConfiguration($dom);
 
         if ($xmlConfiguration->hasBootstrap()) {
-            self::$hasBootstrap = true;
+            $hasBootstrap = true;
             $bootstrap = $xmlConfiguration->getBootstrap();
             $path = self::makeAbsolutePath($bootstrap, $configurationDir);
 
@@ -139,14 +136,14 @@ class XmlConfiguration
 
         foreach ($directoriesFromFirstSuite as $directory) {
             // phpunit.xml may omit bootstrap location but grab it automatically - include explicitly
-            if (self::$hasBootstrap === false) {
+            if ($hasBootstrap === false) {
                 $bootstrapDir = self::makeAbsolutePath($directory->nodeValue, $configurationDir);
                 if (file_exists($bootstrapDir . '/bootstrap.php')) {
-                    $dom->documentElement->setAttribute('bootstrap', $bootstrapDir . '/bootstrap.php');
+                    $xmlConfiguration->setBootstrap($bootstrapDir . '/bootstrap.php');
 
                     //@todo Get rid off this side effect
                     $container->setBootstrap($bootstrapDir . '/bootstrap.php');
-                    self::$hasBootstrap = true;
+                    $hasBootstrap = true;
                 }
             }
         }
