@@ -132,19 +132,16 @@ class XmlConfiguration
             $file->nodeValue = self::makeAbsolutePath($file->nodeValue, $configurationDir);
         }
 
-        $directoriesFromFirstSuite = $xpath->query('/phpunit/testsuites/testsuite[position()=1]/directory');
+        if (!$hasBootstrap) {
+            $bootstrap = self::findBootstrapFileInDirectories(
+                $xmlConfiguration->getFirstSuiteDirectories(),
+                $configurationDir
+            );
+            if ($bootstrap) {
+                $xmlConfiguration->setBootstrap($bootstrap);
 
-        foreach ($directoriesFromFirstSuite as $directory) {
-            // phpunit.xml may omit bootstrap location but grab it automatically - include explicitly
-            if ($hasBootstrap === false) {
-                $bootstrapDir = self::makeAbsolutePath($directory->nodeValue, $configurationDir);
-                if (file_exists($bootstrapDir . '/bootstrap.php')) {
-                    $xmlConfiguration->setBootstrap($bootstrapDir . '/bootstrap.php');
-
-                    //@todo Get rid off this side effect
-                    $container->setBootstrap($bootstrapDir . '/bootstrap.php');
-                    $hasBootstrap = true;
-                }
+                //@todo Get rid off this side effect
+                $container->setBootstrap($bootstrap);
             }
         }
         
@@ -152,6 +149,17 @@ class XmlConfiguration
         $dom->save($saveFile);
 
         return $saveFile;
+    }
+
+    private static function findBootstrapFileInDirectories($directories, $configurationDir)
+    {
+        foreach ($directories as $directory) {
+            $bootstrap = self::makeAbsolutePath($directory, $configurationDir);
+            $bootstrap .= '/bootstrap.php';
+            if (file_exists($bootstrap)) {
+                return $bootstrap;
+            }
+        }
     }
 
     private static function getRealPathList($directories)
@@ -318,5 +326,17 @@ class XmlConfiguration
             $directory = $this->dom->createElement('directory', $dirName);
             $exclude->appendChild($directory);
         }
+    }
+
+    public function getFirstSuiteDirectories()
+    {
+        $directories = [];
+        $directoriesList = $this->xpath->query('/phpunit/testsuites/testsuite[position()=1]/directory');
+
+        foreach ($directoriesList as $directory) {
+            $directories[] = $directory->nodeValue;
+        }
+
+        return $directories;
     }
 }

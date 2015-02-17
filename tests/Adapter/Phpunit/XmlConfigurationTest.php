@@ -261,4 +261,77 @@ class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('/src/covers-nothing', $excludedList->item(0)->nodeValue);
         $this->assertEquals('/src/excluded', $excludedList->item(1)->nodeValue);
     }
+
+    public function testShouldHaveFirstSuiteDirectories()
+    {
+        $dom = $this->createDomWithFirstTestSuiteDirectories();
+
+        $xmlConfiguration = new XmlConfiguration($dom);
+
+        $directories = $xmlConfiguration->getFirstSuiteDirectories();
+
+        $this->assertInternalType('array', $directories);
+        $this->assertContainsOnly('string', $directories);
+        $this->assertCount(2, $directories);
+
+        $expectedDirectories = [
+            'first/suite/first/dir',
+            'first/suite/second/dir',
+        ];
+
+        $this->assertEquals($expectedDirectories, $directories);
+    }
+
+    public function testShouldNotHaveFirstSuiteDirectories()
+    {
+        $dom = $this->createDomWithSecondTestSuiteDirectoriesOnly();
+
+        $xmlConfiguration = new XmlConfiguration($dom);
+
+        $directories = $xmlConfiguration->getFirstSuiteDirectories();
+
+        $this->assertInternalType('array', $directories);
+        $this->assertEmpty($directories);
+    }
+
+    private function createDomWithFirstTestSuiteDirectories()
+    {
+        $dom = $this->createBaseDomDocument();
+
+        $testSuites = $dom->createElement('testsuites');
+        $dom->documentElement->appendChild($testSuites);
+
+        $testSuite = $dom->createElement('testsuite');
+        $testSuites->appendChild($testSuite);
+
+        $testSuite->appendChild($this->createDirectoryElement($dom, 'first/suite/first/dir'));
+        $testSuite->appendChild($this->createDirectoryElement($dom, 'first/suite/second/dir'));
+
+        return $dom;
+    }
+
+    private function createDomWithSecondTestSuiteDirectoriesOnly()
+    {
+        $dom = $this->createBaseDomDocument();
+
+        $testSuites = $dom->createElement('testsuites');
+        $dom->documentElement->appendChild($testSuites);
+
+        $testSuite = $dom->createElement('testsuite');
+        $testSuites->appendChild($testSuite);
+
+        $testSuite->appendChild($dom->createElement('file', '/path/to/file'));
+
+        $testSuite = $dom->createElement('testsuite');
+        $testSuites->appendChild($testSuite);
+
+        $testSuite->appendChild($this->createDirectoryElement($dom, 'second/suite/first/dir'));
+
+        return $dom;
+    }
+
+    private function createDirectoryElement(\DOMDocument $dom, $directory)
+    {
+        return $dom->createElement('directory', $directory);
+    }
 }
