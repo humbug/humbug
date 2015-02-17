@@ -65,10 +65,6 @@ class XmlConfiguration
 
         $configurationFile = (new ConfigurationLocator())->locate($configurationDir);
 
-        if (!empty($configurationDir)) {
-            $configurationDir .= '/';
-        }
-
         $dom = (new ConfigurationLoader())->load($configurationFile);
 
         $xmlConfiguration = new XmlConfiguration($dom);
