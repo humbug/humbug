@@ -15,6 +15,11 @@ namespace Humbug\Adapter\Phpunit\XmlConfiguration;
 
 class TimeCollectorListener implements Visitor
 {
+    /**
+     * @var string
+     */
+    private $pathToTimesHumbugJson;
+
     public function __construct($pathToTimesHumbugJson)
     {
         $this->pathToTimesHumbugJson = $pathToTimesHumbugJson;

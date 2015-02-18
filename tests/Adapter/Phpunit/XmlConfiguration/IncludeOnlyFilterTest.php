@@ -57,4 +57,4 @@ class IncludeOnlyFilterTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('FirstSuiteTest',  $xpath->query('/object/arguments/string')->item(0)->nodeValue);
         $this->assertEquals('SecondSuiteTest',  $xpath->query('/object/arguments/string')->item(1)->nodeValue);
     }
-} 
+}

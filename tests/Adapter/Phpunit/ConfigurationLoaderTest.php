@@ -30,4 +30,4 @@ class ConfigurationLoaderTest extends \PHPUnit_Framework_TestCase
 
         $this->assertXmlStringEqualsXmlFile($configFile, $domDocument->saveXML());
     }
-} 
+}

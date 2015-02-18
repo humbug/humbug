@@ -35,4 +35,4 @@ class ConfigurationLocator
 
         throw new RuntimeException('Unable to locate phpunit.xml(.dist) file. This is required by Humbug.');
     }
-} 
+}

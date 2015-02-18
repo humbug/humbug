@@ -47,4 +47,4 @@ class ConfigurationLocatorTest extends \PHPUnit_Framework_TestCase
 
         (new ConfigurationLocator())->locate($directory);
     }
-} 
+}

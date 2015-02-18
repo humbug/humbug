@@ -14,6 +14,11 @@ namespace Humbug\Adapter\Phpunit\XmlConfiguration;
 
 class FastestFirstFilter implements Visitor
 {
+    /**
+     * @var string
+     */
+    private $pathToStats;
+
     public function __construct($pathToStats)
     {
         $this->pathToStats = $pathToStats;
