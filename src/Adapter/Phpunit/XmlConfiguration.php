@@ -10,12 +10,7 @@
 
 namespace Humbug\Adapter\Phpunit;
 
-use Humbug\Adapter\Phpunit\XmlConfiguration\AcceleratorListener;
-use Humbug\Adapter\Phpunit\XmlConfiguration\FastestFirstFilter;
-use Humbug\Adapter\Phpunit\XmlConfiguration\FilterListener;
-use Humbug\Adapter\Phpunit\XmlConfiguration\IncludeOnlyFilter;
 use Humbug\Adapter\Phpunit\XmlConfiguration\ObjectVisitor;
-use Humbug\Adapter\Phpunit\XmlConfiguration\TimeCollectorListener;
 use Humbug\Adapter\Phpunit\XmlConfiguration\Visitor;
 use Humbug\Container;
 use Humbug\Exception\InvalidArgumentException;
@@ -86,7 +81,7 @@ class XmlConfiguration
         $xmlConfiguration->cleanupFilters();
         $xmlConfiguration->cleanupListeners();
 
-        $xmlConfiguration->addListener(new AcceleratorListener());
+        $xmlConfiguration->addListener(new ObjectVisitor('\MyBuilder\PhpunitAccelerator\TestListener', [true]));
 
         /**
          * On first runs collect a test log and also generate code coverage
@@ -102,9 +97,13 @@ class XmlConfiguration
 
             $xmlConfiguration->addWhiteListFilter($whiteListSrc, $excludeDirs);
 
-            $xmlConfiguration->addListener(new TimeCollectorListener(self::getPathToTimeCollectorFile($container)));
+            $timeCollectionListener = new ObjectVisitor('\Humbug\Phpunit\Listener\TimeCollectorListener', [
+                new ObjectVisitor('\Humbug\Phpunit\Logger\JsonLogger', [self::getPathToTimeCollectorFile($container)])
+            ]);
+
+            $xmlConfiguration->addListener($timeCollectionListener);
         } else {
-            $filterListener = new FilterListener([
+            $filterListener = new ObjectVisitor('\Humbug\Phpunit\Listener\FilterListener', [
                 new ObjectVisitor('\Humbug\Phpunit\Filter\TestSuite\IncludeOnlyFilter', $testSuites),
                 new ObjectVisitor('\Humbug\Phpunit\Filter\TestSuite\FastestFirstFilter', [self::getPathToTimeCollectorFile($container)])
             ]);
