@@ -37,12 +37,6 @@ class TimeCollectorListener implements Visitor
         $loggerObject = $domDocument->createElement('object');
         $arguments->appendChild($loggerObject);
 
-        $loggerObject->setAttribute('class', '\Humbug\Phpunit\Logger\JsonLogger');
-
-        $loggerArguments = $domDocument->createElement('arguments');
-        $loggerObject->appendChild($loggerArguments);
-
-        $stringLoggerArgument = $domDocument->createElement('string', $this->pathToTimesHumbugJson);
-        $loggerArguments->appendChild($stringLoggerArgument);
+        (new ObjectVisitor('\Humbug\Phpunit\Logger\JsonLogger', [$this->pathToTimesHumbugJson]))->visitElement($loggerObject);
     }
 }

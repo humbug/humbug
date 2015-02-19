@@ -54,7 +54,11 @@ class FilterListenerTest extends \PHPUnit_Framework_TestCase
 
     private function createArgument()
     {
-        $argument = $this->getMock('Humbug\Adapter\Phpunit\XmlConfiguration\Visitor');
+        $argument =
+            $this->getMockBuilder('Humbug\Adapter\Phpunit\XmlConfiguration\ObjectVisitor')
+                ->disableOriginalConstructor()
+                ->getMock();
+
         $argument->expects($this->once())->method('visitElement')->with($this->isInstanceOf('\DOMElement'));
 
         return $argument;

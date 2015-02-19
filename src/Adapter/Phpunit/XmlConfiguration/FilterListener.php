@@ -26,21 +26,6 @@ class FilterListener implements Visitor
 
     public function visitElement(\DOMElement $domElement)
     {
-        $domDocument = $domElement->ownerDocument;
-
-        $domElement->setAttribute('class', '\Humbug\Phpunit\Listener\FilterListener');
-
-        if (empty($this->arguments)) {
-            return;
-        }
-
-        $arguments = $domDocument->createElement('arguments');
-        $domElement->appendChild($arguments);
-
-        foreach($this->arguments as $argument) {
-            $object = $domDocument->createElement('object');
-            $arguments->appendChild($object);
-            $argument->visitElement($object);
-        }
+        (new ObjectVisitor('\Humbug\Phpunit\Listener\FilterListener', $this->arguments))->visitElement($domElement);
     }
 }

@@ -14,6 +14,7 @@ use Humbug\Adapter\Phpunit\XmlConfiguration\AcceleratorListener;
 use Humbug\Adapter\Phpunit\XmlConfiguration\FastestFirstFilter;
 use Humbug\Adapter\Phpunit\XmlConfiguration\FilterListener;
 use Humbug\Adapter\Phpunit\XmlConfiguration\IncludeOnlyFilter;
+use Humbug\Adapter\Phpunit\XmlConfiguration\ObjectVisitor;
 use Humbug\Adapter\Phpunit\XmlConfiguration\TimeCollectorListener;
 use Humbug\Adapter\Phpunit\XmlConfiguration\Visitor;
 use Humbug\Container;
@@ -104,12 +105,11 @@ class XmlConfiguration
             $xmlConfiguration->addListener(new TimeCollectorListener(self::getPathToTimeCollectorFile($container)));
         } else {
             $filterListener = new FilterListener([
-                new IncludeOnlyFilter($testSuites),
-                new FastestFirstFilter(self::getPathToTimeCollectorFile($container))
+                new ObjectVisitor('\Humbug\Phpunit\Filter\TestSuite\IncludeOnlyFilter', $testSuites),
+                new ObjectVisitor('\Humbug\Phpunit\Filter\TestSuite\FastestFirstFilter', [self::getPathToTimeCollectorFile($container)])
             ]);
             $xmlConfiguration->addListener($filterListener);
         }
-
 
         $xmlConfiguration->replacePathsToAbsolutePaths($configurationDir);
 

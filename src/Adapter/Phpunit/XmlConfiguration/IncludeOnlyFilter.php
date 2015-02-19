@@ -26,15 +26,6 @@ class IncludeOnlyFilter implements Visitor
 
     public function visitElement(\DOMElement $domElement)
     {
-        $domDocument = $domElement->ownerDocument;
-
-        $domElement->setAttribute('class', '\Humbug\Phpunit\Filter\TestSuite\IncludeOnlyFilter');
-
-        $arguments = $domDocument->createElement('arguments');
-        $domElement->appendChild($arguments);
-
-        foreach ($this->testSuites as $suite) {
-            $arguments->appendChild($domDocument->createElement('string', $suite));
-        }
+        (new ObjectVisitor('\Humbug\Phpunit\Filter\TestSuite\IncludeOnlyFilter', $this->testSuites))->visitElement($domElement);
     }
 }

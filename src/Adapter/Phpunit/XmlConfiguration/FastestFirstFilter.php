@@ -26,13 +26,6 @@ class FastestFirstFilter implements Visitor
 
     public function visitElement(\DOMElement $domElement)
     {
-        $domDocument = $domElement->ownerDocument;
-
-        $domElement->setAttribute('class', '\Humbug\Phpunit\Filter\TestSuite\FastestFirstFilter');
-
-        $arguments = $domDocument->createElement('arguments');
-        $domElement->appendChild($arguments);
-
-        $arguments->appendChild($domDocument->createElement('string', $this->pathToStats));
+        (new ObjectVisitor('\Humbug\Phpunit\Filter\TestSuite\FastestFirstFilter', [$this->pathToStats]))->visitElement($domElement);
     }
 }

@@ -33,8 +33,7 @@ class IncludeOnlyFilterTest extends \PHPUnit_Framework_TestCase
 
         $xpath = new \DOMXPath($dom);
 
-        $this->assertEquals(1, $xpath->evaluate('count(/object/arguments)'));
-        $this->assertEquals(0, $xpath->evaluate('count(/object/arguments/*)'));
+        $this->assertEquals(0, $xpath->evaluate('count(/object/arguments)'));
     }
 
     public function testShouldUpdateArgumentNodesWithBatchOfStringNodes()
