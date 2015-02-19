@@ -51,7 +51,7 @@ class XmlConfiguration
      * relevant source code.
      *
      *
-     * @return string
+     * @return XmlConfiguration
      */
     public static function assemble(Container $container, $firstRun = false, array $testSuites = [])
     {
@@ -124,11 +124,8 @@ class XmlConfiguration
                 $container->setBootstrap($bootstrap);
             }
         }
-        
-        $saveFile = $container->getCacheDirectory() . '/phpunit.humbug.xml';
-        $dom->save($saveFile);
 
-        return $saveFile;
+        return $xmlConfiguration;
     }
 
     private static function findBootstrapFileInDirectories($directories, $configurationDir)
@@ -336,5 +333,10 @@ class XmlConfiguration
         foreach ($files as $file) {
             $file->nodeValue = self::makeAbsolutePath($file->nodeValue, $configurationDir);
         }
+    }
+
+    public function generateXML()
+    {
+        return $this->dom->saveXML();
     }
 }

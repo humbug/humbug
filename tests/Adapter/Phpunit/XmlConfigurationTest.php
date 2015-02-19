@@ -397,4 +397,14 @@ class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
         $actualSuiteExclude = $xpath->query('/phpunit/testsuites/testsuite/exclude')->item(0)->nodeValue;
         $this->assertEquals($configurationDir . '/excluded-tests', $actualSuiteExclude);
     }
+
+    public function testShouldGenerateXml()
+    {
+        $configurationDir = realpath(__DIR__ . '/../_files/phpunit-conf');
+        $dom = (new ConfigurationLoader())->load($configurationDir . '/phpunit.xml');
+
+        $xmlConfiguration = new XmlConfiguration($dom);
+
+        $this->assertXmlStringEqualsXmlFile($configurationDir . '/phpunit.xml', $xmlConfiguration->generateXML());
+    }
 }

@@ -70,7 +70,12 @@ class Phpunit extends AdapterAbstract
          *
          * TODO: Assemble config just once if no coverage data available!
          */
-        $configFile = XmlConfiguration::assemble($container, $firstRun, $testSuites);
+        $xmlConfiguration = XmlConfiguration::assemble($container, $firstRun, $testSuites);
+
+        $configFile = $container->getCacheDirectory() . '/phpunit.humbug.xml';
+
+        file_put_contents($configFile, $xmlConfiguration->generateXML());
+
         foreach ($jobopts['cliopts'] as $key => $value) {
             if ($value == '--configuration' || $value == '-C') {
                 unset($jobopts['cliopts'][$key]);
