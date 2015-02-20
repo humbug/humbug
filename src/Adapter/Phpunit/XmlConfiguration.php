@@ -33,6 +33,11 @@ class XmlConfiguration
      */
     private $rootElement;
 
+    /**
+     * @var string
+     */
+    private $originalBootstrap;
+
     public function __construct(\DOMDocument $dom)
     {
         if (!$dom->documentElement) {
@@ -55,27 +60,9 @@ class XmlConfiguration
      */
     public static function assemble(Container $container, $firstRun = false, array $testSuites = [])
     {
-        $hasBootstrap = false;
-
         $configurationDir = self::resolveConfigurationDir($container);
 
-        $configurationFile = (new ConfigurationLocator())->locate($configurationDir);
-
-        $dom = (new ConfigurationLoader())->load($configurationFile);
-
-        $xmlConfiguration = new XmlConfiguration($dom);
-
-        if ($xmlConfiguration->hasBootstrap()) {
-            $hasBootstrap = true;
-            $bootstrap = $xmlConfiguration->getBootstrap();
-            $path = self::makeAbsolutePath($bootstrap, $configurationDir);
-
-            //@todo Get rid off this side effect...
-            $container->setBootstrap($path);
-        }
-
-        $xmlConfiguration->setBootstrap(self::getNewBootstrapPath());
-        $xmlConfiguration->turnOffCacheTokens();
+        $xmlConfiguration = (new XmlConfigurationBuilder())->build($configurationDir);
 
         $xmlConfiguration->cleanupLoggers();
         $xmlConfiguration->cleanupFilters();
@@ -112,7 +99,15 @@ class XmlConfiguration
 
         $xmlConfiguration->replacePathsToAbsolutePaths($configurationDir);
 
-        if (!$hasBootstrap) {
+        if ($xmlConfiguration->hasOriginalBootstrap()) {
+            $bootstrap = $xmlConfiguration->getOriginalBootstrap();
+            $path = self::makeAbsolutePath($bootstrap, $configurationDir);
+
+            //@todo Get rid off this side effect...
+            $container->setBootstrap($path);
+        }
+
+        if (!($xmlConfiguration->hasOriginalBootstrap())) {
             $bootstrap = self::findBootstrapFileInDirectories(
                 $xmlConfiguration->getFirstSuiteDirectories(),
                 $configurationDir
@@ -207,7 +202,26 @@ class XmlConfiguration
 
     public function setBootstrap($bootstrap)
     {
+        if (null === $this->originalBootstrap) {
+            $actualBootstrap = $this->getBootstrap();
+            $this->originalBootstrap = $actualBootstrap ?: false;
+        }
+
         return $this->rootElement->setAttribute('bootstrap', $bootstrap);
+    }
+
+    public function hasOriginalBootstrap()
+    {
+        return ($this->getOriginalBootstrap() !== null);
+    }
+
+    public function getOriginalBootstrap()
+    {
+        if (null !== $this->originalBootstrap) {
+            return $this->originalBootstrap ?: null;
+        }
+
+        return $this->getBootstrap() ?: null;
     }
 
     public function turnOffCacheTokens()

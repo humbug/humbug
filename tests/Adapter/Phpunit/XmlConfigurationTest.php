@@ -35,6 +35,38 @@ class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('/test/bootstrap.php', $xmlConfiguration->getBootstrap());
     }
 
+    public function testShouldHaveOriginalBootstrap()
+    {
+        $dom = $this->createDomWithBootstrap();
+
+        $xmlConfiguration = new XmlConfiguration($dom);
+
+        $this->assertTrue($xmlConfiguration->hasOriginalBootstrap());
+        $this->assertEquals('/test/bootstrap.php', $xmlConfiguration->getOriginalBootstrap());
+
+        $xmlConfiguration->setBootstrap('/new/test/bootstrap.php');
+
+        $this->assertEquals('/test/bootstrap.php', $xmlConfiguration->getOriginalBootstrap());
+
+        $xmlConfiguration->setBootstrap('/newest/test/bootstrap.php');
+
+        $this->assertEquals('/test/bootstrap.php', $xmlConfiguration->getOriginalBootstrap());
+    }
+
+    public function testShouldHaveOriginalEmptyBootstrap()
+    {
+        $dom = $this->createBaseDomDocument();
+
+        $xmlConfiguration = new XmlConfiguration($dom);
+
+        $this->assertFalse($xmlConfiguration->hasOriginalBootstrap());
+        $this->assertNull($xmlConfiguration->getOriginalBootstrap());
+
+        $xmlConfiguration->setBootstrap('/new/bootstrap');
+
+        $this->assertNull($xmlConfiguration->getOriginalBootstrap());
+    }
+
     public function testShouldUpdateBootstrap()
     {
         $dom = $this->createDomWithBootstrap();
