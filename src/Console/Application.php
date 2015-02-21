@@ -13,6 +13,7 @@ namespace Humbug\Console;
 use Symfony\Component\Console\Application as BaseApplication;
 use Symfony\Component\Console\Input\InputInterface;
 use Humbug\Command\Humbug;
+use Humbug\Command\SelfUpdate;
 
 class Application extends BaseApplication
 {
@@ -49,6 +50,9 @@ class Application extends BaseApplication
     {
         $defaultCommands = parent::getDefaultCommands();
         $defaultCommands[] = new Humbug();
+        if ('phar:' === substr(__FILE__, 0, 5)) {
+            $defaultCommands[] = new SelfUpdate();
+        }
         return $defaultCommands;
     }
 }

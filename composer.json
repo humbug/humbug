@@ -23,7 +23,8 @@
         "symfony/process": "~2.6",
         "sebastian/diff": "~1.1",
         "padraic/phpunit-accelerator": "^1.0.2",
-        "padraic/phpunit-extensions": "~1.0@dev"
+        "padraic/phpunit-extensions": "~1.0@dev",
+        "padraic/humbug_get_contents": "~1.0"
     },
     "require-dev": {
         "mockery/mockery": "~0.9"

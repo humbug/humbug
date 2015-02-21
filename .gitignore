@@ -30,6 +30,9 @@ nb-configuration.xml
 *.sublime-workspace
 
 humbug.phar
+humbug.phar.temp
+humbug-*.phar.old
+humbug.version
 build
 composer.lock
 docs

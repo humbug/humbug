@@ -4,12 +4,13 @@
         "src"
     ],
     "files": [
-        "LICENSE"
+        "LICENSE",
+        "bootstrap.php"
     ],
     "finder": [
         {
             "name": "*.php",
-            "exclude": ["tests"],
+            "exclude": ["tests", "bin/version"],
             "in": "vendor"
         }
     ],

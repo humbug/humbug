@@ -1,0 +1,2 @@
+#!/bin/bash
+sha1sum humbug.phar > humbug.version

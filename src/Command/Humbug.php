@@ -26,6 +26,8 @@ use Humbug\Exception\NoCoveringTestsException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\ArrayInput as EmptyInput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Helper\FormatterHelper;
@@ -52,6 +54,16 @@ class Humbug extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        /**
+         * Humbug is a single command app. We run secondary commands indirectly.
+         * Currently self-update is the only one necessary.
+         */
+        if ($input->getArgument('subcommand') == 'self-update') {
+            $command = $this->getApplication()->find('self-update');
+            $noinput = new EmptyInput([]);
+            return $command->run($noinput, $output);
+        }
+
         Performance::upMemProfiler();
         $output->writeln($this->getApplication()->getLongVersion() . PHP_EOL);
 
@@ -462,6 +474,12 @@ class Humbug extends Command
                InputOption::VALUE_REQUIRED,
                'Sets a timeout applied for each test run to combat infinite loop mutations.',
                 10
+            )
+            ->addArgument(
+                'subcommand',
+                InputArgument::OPTIONAL,
+                'Run a secondary command, typically self-update!',
+                null
             )
         ;
     }
