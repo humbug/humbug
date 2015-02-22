@@ -37,8 +37,8 @@ If you don't want to track the master branch directly, you can install the Humbu
 phar as follows:
 
 ```sh
-curl -sS https://padraic.github.io/humbug/downloads/humbug.phar
-curl -sS https://padraic.github.io/humbug/downloads/humbug.phar.pubkey
+wget https://padraic.github.io/humbug/downloads/humbug.phar
+wget https://padraic.github.io/humbug/downloads/humbug.phar.pubkey
 ```
 
 The phar is signed with an openssl private key. You will need the pubkey file
