@@ -20,6 +20,44 @@ and where they could be improved.
 
 I've written in more detail about why Mutation Testing is worth having: [Lies, Damned Lies and Code Coverage: Towards Mutation Testing](http://blog.astrumfutura.com/2015/01/lies-damned-lies-and-code-coverage-towards-mutation-testing/)
 
+Installation
+------------
+
+You can clone and install Humbug's dependencies using Composer:
+
+```sh
+git clone https://github.com/padraic/humbug.git
+cd humbug
+/path/to/composer.phar install
+```
+
+The humbug command is now at bin/humbug. Humbug will currently work on PHP 5.4 or greater.
+
+If you don't want to track the master branch directly, you can install the Humbug
+phar as follows:
+
+```sh
+curl -sS https://padraic.github.io/humbug/downloads/humbug.phar
+curl -sS https://padraic.github.io/humbug/downloads/humbug.phar.pubkey
+```
+
+The phar is signed with an openssl private key. You will need the pubkey file
+to be stored beside the phar file at all times in order to use it.
+
+The phar releases are currently done manually so they will not be updated with the
+same frequency as git master. To update your current phar, just run:
+
+```sh
+./humbug.phar self-update
+```
+
+Note: This will mean that fixes may take longer to reach your version, but there's
+more assurance that of having a stable development version.
+
+Due to Humbug's dependencies being pegged to recent versions, adding Humbug to your
+composer.json may give rise to conflicts. The above two methods if installation are
+preferred where this occurs.
+
 Usage
 -----
 
@@ -173,46 +211,6 @@ proof that Code Coverage is, ahem, unreliable.
 Interpreting these results requires some context. The logs will list all undetected
 mutations as diffs against the original source code. Examining these will provide
 further insight as to what specific mutations went undetected.
-
-Installation
-------------
-
-You can clone and install Humbug's dependencies using Composer:
-
-```sh
-git clone https://github.com/padraic/humbug.git
-cd humbug
-/path/to/composer.phar install
-```
-
-The humbug command is now at bin/humbug.
-
-Humbug will currently work on PHP 5.4 or greater.
-
-If you don't want to track the master branch directly, you can install the Humbug
-phar as follows:
-
-```sh
-curl -sS https://padraic.github.io/humbug/downloads/humbug.phar
-curl -sS https://padraic.github.io/humbug/downloads/humbug.phar.pubkey
-```
-
-The phar is signed with an openssl private key. You will need the pubkey file
-to be stored beside the phar file at all times in order to use it.
-
-The phar releases are currently done manually so they will not be updated with the
-same frequency as git master. To update your current phar, just run:
-
-```sh
-./humbug.phar self-update
-```
-
-Note: This will mean that fixes may take longer to reach your version, but there's
-more assurance that of having a stable development version.
-
-Due to Humbug's dependencies being pegged to recent versions, adding Humbug to your
-composer.json may give rise to conflicts. The above two methods if installation are
-preferred where this occurs.
 
 Performance
 -----------
