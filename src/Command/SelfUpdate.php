@@ -36,12 +36,11 @@ class SelfUpdate extends Command
         $localFile = realpath($_SERVER['argv'][0]) ?: $_SERVER['argv'][0];
 
         $version = @humbug_get_contents(self::VERSION);
-        if (empty($version) || !preg_match('%^[a-z0-9]{40}\s+humbug\.phar$%', $version)) {
+        if (empty($version) || !preg_match('%^[a-z0-9]{40}%', $version, $matches)) {
             $output->writeln('Current version check has failed. Please try again.');
             return 1;
         }
-        $parts = explode('  ', $version);
-        $newVersion = $parts[0];
+        $newVersion = $matches[0];
 
         $oldVersion = sha1_file($localFile);
 
@@ -58,6 +57,10 @@ class SelfUpdate extends Command
     {
         
         $tmpDir = dirname($localFile);
+        $tmpFile = $tmpDir . '/' . basename($localFile, '.phar') . '.phar.temp';
+        $tmpPubKey = $tmpDir . '/' . basename($localFile, '.phar') . '.phar.temp.pubkey';
+        $localPubKey = $localFile . '.pubkey';
+
         if (!is_writable($tmpDir)) {
             throw new FilesystemException(
                 'Directory for file download not writeable: ' . $tmpDir
@@ -68,7 +71,12 @@ class SelfUpdate extends Command
                 'Current phar file is not writeable and cannot be replaced: ' . $localFile
             );
         }
-        $tmpFile = $tmpDir . '/' . basename($localFile, '.phar') . '.phar.temp';
+        if (!file_exists($localPubKey)) {
+            throw new FilesystemException(
+                'Unable to locate matching public key for this version'
+            );
+        }
+        
         $output->writeln('Downloading new Humbug version');
 
         try {
@@ -81,12 +89,17 @@ class SelfUpdate extends Command
                     'Download failed for unknown reason'
                 );
             }
-            if (sha1_file($tmpFile) !== $newVersion) {
+            $tmpVersion = sha1_file($tmpFile);
+            if ($tmpVersion !== $newVersion) {
+                @unlink($tmpFile);
                 $output->writeln('Downloaded file was corrupted. SHA-1 version hash does not match file.');
                 $output->writeln('Please try again.');
+                $output->writeln('Expected SHA-1: ' . $newVersion);
+                $output->writeln('Received SHA-1: ' . $tmpVersion);
                 return 1;
             }
         } catch (\Exception $e) {
+            @unlink($tmpFile);
             if ($e instanceof FilesystemException) {
                 throw $e;
             }
@@ -95,11 +108,13 @@ class SelfUpdate extends Command
         }
 
         try {
+            @copy($localPubKey, $tmpPubKey);
             @chmod($tmpFile, fileperms($localFile));
             if (!ini_get('phar.readonly')) {
                 $phar = new \Phar($tmpFile);
                 unset($phar);
             }
+            @unlink($tmpPubKey);
             $backupFile = sprintf(
                 'humbug-%s.phar.old',
                 $oldVersion
@@ -108,10 +123,11 @@ class SelfUpdate extends Command
             rename($tmpFile, $localFile);
         } catch (\Exception $e) {
             @unlink($backupFile);
-            if (!$e instanceof \UnexpectedValueException && !$e instanceof \PharException) {
+            @unlink($tmpFile);
+            if (!$e instanceof \UnexpectedValueException) {
                 throw $e;
             }
-            if ($e instanceof \UnexpectedValueException || $e instanceof \PharException) {
+            if ($e instanceof \UnexpectedValueException) {
                 $output->writeln('Downloaded file was corrupted. Please try again.');
                 return 1;
             }

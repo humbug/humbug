@@ -29,9 +29,7 @@ nb-configuration.xml
 /*.sublime-project
 *.sublime-workspace
 
-build/humbug.phar
-build/humbug-*.phar.old
-build/humbug.version
+build
 composer.lock
 docs
 vendor
@@ -48,3 +46,4 @@ privkey.*
 private.*
 priv.*
 key.*
+box.json

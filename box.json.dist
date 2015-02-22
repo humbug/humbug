@@ -9,9 +9,16 @@
     ],
     "finder": [
         {
-            "name": "*.php",
-            "exclude": ["tests", "bin/version"],
-            "in": "vendor"
+            "name": [
+                "*.php"
+            ],
+            "exclude": [
+                "tests",
+                "mockery"
+            ],
+            "in": [
+                "vendor"
+            ]
         }
     ],
     "main": "bin/humbug",
