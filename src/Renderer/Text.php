@@ -91,7 +91,7 @@ class Text
             $error[] = 'Stderr:';
             $error = array_merge($error, $this->indent($result['stderr'], true));
         }
-        $formattedBlock = $this->formatterHelper->formatBlock($error, 'error');
+        $formattedBlock = $this->formatterHelper->formatBlock($error, 'fg=red', false);
         $this->write($formattedBlock);
     }
 

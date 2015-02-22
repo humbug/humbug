@@ -23,7 +23,11 @@ class Job
      */
     public static function generate($mutantFile = null, array $args = [], $bootstrap = '', $replacingFile = null)
     {
-        $humbugBootstrap = realpath(__DIR__ . '/../../../bootstrap.php');
+        if ('phar:' === substr(__FILE__, 0, 5)) {
+            $humbugBootstrap = \Phar::running() . '/bootstrap.php';
+        } else {
+            $humbugBootstrap = realpath(__DIR__ . '/../../../bootstrap.php');
+        }
         $file = sys_get_temp_dir() . '/humbug.phpunit.bootstrap.php';
 
         if (!is_null($mutantFile)) {
