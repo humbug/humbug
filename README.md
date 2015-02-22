@@ -56,7 +56,8 @@ same frequency as git master. To update your current phar, just run:
 ```
 
 Note: This will mean that fixes may take longer to reach your version, but there's
-more assurance that of having a stable development version.
+more assurance that of having a stable development version. The public key is
+downloaded only once. It is re-used by self-update to verify future phar releases.
 
 Due to Humbug's dependencies being pegged to recent versions, adding Humbug to your
 composer.json may give rise to conflicts. The above two methods if installation are
