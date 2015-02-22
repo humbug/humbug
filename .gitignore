@@ -29,11 +29,9 @@ nb-configuration.xml
 /*.sublime-project
 *.sublime-workspace
 
-humbug.phar
-humbug.phar.temp
-humbug-*.phar.old
-humbug.version
-build
+build/humbug.phar
+build/humbug-*.phar.old
+build/humbug.version
 composer.lock
 docs
 vendor
@@ -44,3 +42,9 @@ phpunit.xml
 .vagrant
 Vagrantfile
 test.php
+
+#Avoid any unfortunate accidents
+privkey.*
+private.*
+priv.*
+key.*

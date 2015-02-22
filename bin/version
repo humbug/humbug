@@ -1,2 +1,2 @@
 #!/bin/bash
-sha1sum humbug.phar > humbug.version
+sha1sum build/humbug.phar > build/humbug.version

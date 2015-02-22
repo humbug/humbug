@@ -15,7 +15,7 @@
         }
     ],
     "main": "bin/humbug",
-    "output": "humbug.phar",
+    "output": "build/humbug.phar",
     "stub": true,
     "compactors": "Herrera\\Box\\Compactor\\Php",
     "compression": "BZ2"
