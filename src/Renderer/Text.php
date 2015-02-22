@@ -24,8 +24,6 @@ class Text
 
     protected $buffer = '';
 
-    protected $formatterHelper;
-
     protected $useBuffer = false;
 
     public function __construct(OutputInterface $output, FormatterHelper $formatterHelper, $buffer = false, $colors = true)
@@ -35,7 +33,6 @@ class Text
             $this->type = OutputInterface::OUTPUT_PLAIN;
         }
         $this->useBuffer = $buffer;
-        $this->formatterHelper = $formatterHelper;
     }
 
     public function write($string, $eol = true)
@@ -91,8 +88,9 @@ class Text
             $error[] = 'Stderr:';
             $error = array_merge($error, $this->indent($result['stderr'], true));
         }
-        $formattedBlock = $this->formatterHelper->formatBlock($error, 'fg=red', false);
-        $this->write($formattedBlock);
+        foreach ($error as $err) {
+            $this->write('<fg=red>' . $err . '</fg=red>');
+        }
     }
 
     /**
