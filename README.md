@@ -23,6 +23,8 @@ I've written in more detail about why Mutation Testing is worth having: [Lies, D
 Installation
 ------------
 
+### Git
+
 You can clone and install Humbug's dependencies using Composer:
 
 ```sh
@@ -31,7 +33,9 @@ cd humbug
 /path/to/composer.phar install
 ```
 
-The humbug command is now at bin/humbug. Humbug will currently work on PHP 5.4 or greater.
+The humbug command is now at bin/humbug.
+
+### Phar
 
 If you don't want to track the master branch directly, you can install the Humbug
 phar as follows:
@@ -55,13 +59,17 @@ same frequency as git master. To update your current phar, just run:
 ./humbug.phar self-update
 ```
 
-Note: This will mean that fixes may take longer to reach your version, but there's
-more assurance that of having a stable development version. The public key is
+Note: Using a phar means that fixes may take longer to reach your version, but there's
+more assurance of having a stable development version. The public key is
 downloaded only once. It is re-used by self-update to verify future phar releases.
 
-Due to Humbug's dependencies being pegged to recent versions, adding Humbug to your
-composer.json may give rise to conflicts. The above two methods if installation are
+### Composer
+
+Due to Humbug's dependencies being pegged to recent versions, adding Humbug to
+composer.json may give rise to conflicts. The above two methods of installation are
 preferred where this occurs.
+
+Humbug currently works on PHP 5.4 or greater.
 
 Usage
 -----
