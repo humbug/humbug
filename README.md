@@ -39,6 +39,8 @@ phar as follows:
 ```sh
 wget https://padraic.github.io/humbug/downloads/humbug.phar
 wget https://padraic.github.io/humbug/downloads/humbug.phar.pubkey
+# If you wish to make humbug.phar directly executable
+chmod +x humbug.phar
 ```
 
 The phar is signed with an openssl private key. You will need the pubkey file
