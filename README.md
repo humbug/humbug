@@ -44,7 +44,9 @@ chmod +x humbug.phar
 ```
 
 The phar is signed with an openssl private key. You will need the pubkey file
-to be stored beside the phar file at all times in order to use it.
+to be stored beside the phar file at all times in order to use it. If you rename
+`humbug.phar` to `humbug`, for example, then also rename the key from
+`humbug.phar.pubkey` to `humbug.pubkey`.
 
 The phar releases are currently done manually so they will not be updated with the
 same frequency as git master. To update your current phar, just run:
