@@ -23,7 +23,7 @@ I've written in more detail about why Mutation Testing is worth having: [Lies, D
 Installation
 ------------
 
-### Git
+#### Git
 
 You can clone and install Humbug's dependencies using Composer:
 
@@ -35,7 +35,7 @@ cd humbug
 
 The humbug command is now at bin/humbug.
 
-### Phar
+#### Phar
 
 If you don't want to track the master branch directly, you can install the Humbug
 phar as follows:
@@ -63,7 +63,7 @@ Note: Using a phar means that fixes may take longer to reach your version, but t
 more assurance of having a stable development version. The public key is
 downloaded only once. It is re-used by self-update to verify future phar releases.
 
-### Composer
+#### Composer
 
 Due to Humbug's dependencies being pegged to recent versions, adding Humbug to
 composer.json may give rise to conflicts. The above two methods of installation are
