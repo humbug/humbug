@@ -28,5 +28,7 @@
             </exclude>
         </whitelist>
     </filter>
+    <logging></logging>
+    <listeners></listeners>
 
 </phpunit>

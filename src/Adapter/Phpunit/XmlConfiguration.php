@@ -62,42 +62,18 @@ class XmlConfiguration
     {
         $configurationDir = self::resolveConfigurationDir($container);
 
-        $xmlConfiguration = (new XmlConfigurationBuilder())->build($configurationDir);
+        $xmlConfigurationBuilder = new XmlConfigurationBuilder($configurationDir);
 
-        $xmlConfiguration->cleanupLoggers();
-        $xmlConfiguration->cleanupFilters();
-        $xmlConfiguration->cleanupListeners();
-
-        $xmlConfiguration->addListener(new ObjectVisitor('\MyBuilder\PhpunitAccelerator\TestListener', [true]));
-
-        /**
-         * On first runs collect a test log and also generate code coverage
-         */
-        if ($firstRun === true) {
-            $xmlConfiguration->addLogger('coverage-php', $container->getCacheDirectory() . '/coverage.humbug.php');
-            $xmlConfiguration->addLogger('coverage-text', $container->getCacheDirectory() . '/coverage.humbug.txt');
-
-            $srcList = $container->getSourceList();
-
-            $whiteListSrc = isset($srcList->directories) ? self::getRealPathList($srcList->directories) : [];
-            $excludeDirs = isset($srcList->excludes) ? self::getRealPathList($srcList->excludes) : [];
-
-            $xmlConfiguration->addWhiteListFilter($whiteListSrc, $excludeDirs);
-
-            $timeCollectionListener = new ObjectVisitor('\Humbug\Phpunit\Listener\TimeCollectorListener', [
-                new ObjectVisitor('\Humbug\Phpunit\Logger\JsonLogger', [self::getPathToTimeCollectorFile($container)])
-            ]);
-
-            $xmlConfiguration->addListener($timeCollectionListener);
+        if ($firstRun) {
+            $xmlConfigurationBuilder->setPhpCoverage($container->getCacheDirectory() . '/coverage.humbug.php');
+            $xmlConfigurationBuilder->setTextCoverage($container->getCacheDirectory() . '/coverage.humbug.txt');
+            $xmlConfigurationBuilder->setCoverageFilter(self::getWhiteListSrc($container), self::getExcludeDirs($container));
+            $xmlConfigurationBuilder->setTimeCollectionListener(self::getPathToTimeCollectorFile($container));
         } else {
-            $filterListener = new ObjectVisitor('\Humbug\Phpunit\Listener\FilterListener', [
-                new ObjectVisitor('\Humbug\Phpunit\Filter\TestSuite\IncludeOnlyFilter', $testSuites),
-                new ObjectVisitor('\Humbug\Phpunit\Filter\TestSuite\FastestFirstFilter', [self::getPathToTimeCollectorFile($container)])
-            ]);
-            $xmlConfiguration->addListener($filterListener);
+            $xmlConfigurationBuilder->setFilterListener($testSuites, self::getPathToTimeCollectorFile($container));
         }
 
-        $xmlConfiguration->replacePathsToAbsolutePaths($configurationDir);
+        $xmlConfiguration = $xmlConfigurationBuilder->build();
 
         if ($xmlConfiguration->hasOriginalBootstrap()) {
             $bootstrap = $xmlConfiguration->getOriginalBootstrap();
@@ -107,6 +83,10 @@ class XmlConfiguration
             $container->setBootstrap($path);
         }
 
+        //todo get some information about what this listener is for
+        $xmlConfiguration->addListener(new ObjectVisitor('\MyBuilder\PhpunitAccelerator\TestListener', [true]));
+
+        //todo get some information about what tha hack is that
         if (!($xmlConfiguration->hasOriginalBootstrap())) {
             $bootstrap = self::findBootstrapFileInDirectories(
                 $xmlConfiguration->getFirstSuiteDirectories(),
@@ -183,11 +163,25 @@ class XmlConfiguration
     }
 
     /**
-     * @return string
+     * @param Container $container
+     * @return array
      */
-    private static function getNewBootstrapPath()
+    protected static function getWhiteListSrc(Container $container)
     {
-        return sys_get_temp_dir() . '/humbug.phpunit.bootstrap.php';
+        $srcList = $container->getSourceList();
+
+        return isset($srcList->directories) ? self::getRealPathList($srcList->directories) : [];
+    }
+
+    /**
+     * @param Container $container
+     * @return array
+     */
+    protected static function getExcludeDirs(Container $container)
+    {
+        $srcList = $container->getSourceList();
+
+        return isset($srcList->excludes) ? self::getRealPathList($srcList->excludes) : [];
     }
 
     public function hasBootstrap()
