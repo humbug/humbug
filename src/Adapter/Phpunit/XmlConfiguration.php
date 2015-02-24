@@ -12,7 +12,6 @@ namespace Humbug\Adapter\Phpunit;
 
 use Humbug\Adapter\Locator;
 use Humbug\Adapter\Phpunit\XmlConfiguration\Visitor;
-use Humbug\Container;
 
 class XmlConfiguration
 {
@@ -46,118 +45,6 @@ class XmlConfiguration
         $this->dom = $dom;
         $this->xpath = new \DOMXPath($this->dom);
         $this->rootElement = $this->dom->documentElement;
-    }
-
-    /**
-     * Wrangle XML to create a PHPUnit configuration, based on the original, that
-     * allows for more control over what tests are run, allows JUnit logging,
-     * and ensures that Code Coverage (for Humbug use) whitelists all of the
-     * relevant source code.
-     *
-     *
-     * @return XmlConfiguration
-     */
-    public static function assemble(Container $container, $firstRun = false, array $testSuites = [])
-    {
-        $configurationDir = self::resolveConfigurationDir($container);
-
-        $xmlConfigurationBuilder = new XmlConfigurationBuilder($configurationDir);
-
-        if ($firstRun) {
-            $xmlConfigurationBuilder->setPhpCoverage($container->getCacheDirectory() . '/coverage.humbug.php');
-            $xmlConfigurationBuilder->setTextCoverage($container->getCacheDirectory() . '/coverage.humbug.txt');
-            $xmlConfigurationBuilder->setCoverageFilter(self::getWhiteListSrc($container), self::getExcludeDirs($container));
-            $xmlConfigurationBuilder->setTimeCollectionListener(self::getPathToTimeCollectorFile($container));
-        } else {
-            $xmlConfigurationBuilder->setFilterListener($testSuites, self::getPathToTimeCollectorFile($container));
-        }
-
-        $xmlConfigurationBuilder->setAcceleratorListener();
-
-        $xmlConfiguration = $xmlConfigurationBuilder->getConfiguration();
-
-        if ($xmlConfiguration->hasOriginalBootstrap()) {
-            $bootstrap = $xmlConfiguration->getOriginalBootstrap();
-            $path = (new Locator($configurationDir))->locate($bootstrap);
-
-            //@todo Get rid off this side effect...
-            $container->setBootstrap($path);
-        }
-
-        //todo get some information about what tha hack is that
-        if (!($xmlConfiguration->hasOriginalBootstrap())) {
-            $bootstrap = self::findBootstrapFileInDirectories(
-                $xmlConfiguration->getFirstSuiteDirectories(),
-                $configurationDir
-            );
-            if ($bootstrap) {
-                $xmlConfiguration->setBootstrap($bootstrap);
-
-                //@todo Get rid off this side effect
-                $container->setBootstrap($bootstrap);
-            }
-        }
-
-        return $xmlConfiguration;
-    }
-
-    private static function findBootstrapFileInDirectories($directories, $configurationDir)
-    {
-        $locator = new Locator($configurationDir);
-        foreach ($directories as $directory) {
-            $bootstrap = $locator->locate($directory);
-            $bootstrap .= '/bootstrap.php';
-            if (file_exists($bootstrap)) {
-                return $bootstrap;
-            }
-        }
-    }
-
-    private static function getRealPathList($directories)
-    {
-        return array_map('realpath', $directories);
-    }
-
-    private static function getPathToTimeCollectorFile(Container $container)
-    {
-        return $container->getCacheDirectory() . '/phpunit.times.humbug.json';
-    }
-
-    /**
-     * @param Container $container
-     * @return string
-     */
-    private static function resolveConfigurationDir(Container $container)
-    {
-        $configurationDir = $container->getTestRunDirectory();
-
-        if (empty($configurationDir)) {
-            $configurationDir = $container->getBaseDirectory();
-        }
-
-        return $configurationDir;
-    }
-
-    /**
-     * @param Container $container
-     * @return array
-     */
-    protected static function getWhiteListSrc(Container $container)
-    {
-        $srcList = $container->getSourceList();
-
-        return isset($srcList->directories) ? self::getRealPathList($srcList->directories) : [];
-    }
-
-    /**
-     * @param Container $container
-     * @return array
-     */
-    protected static function getExcludeDirs(Container $container)
-    {
-        $srcList = $container->getSourceList();
-
-        return isset($srcList->excludes) ? self::getRealPathList($srcList->excludes) : [];
     }
 
     public function hasBootstrap()
