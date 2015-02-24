@@ -188,7 +188,7 @@ class XmlConfiguration
         return $directories;
     }
 
-    public function replacePathsToAbsolutePaths($configurationDir)
+    public function replacePathsToAbsolutePaths(Visitor $visitor)
     {
         $replaceQuery =
             '/phpunit/testsuites/testsuite/exclude'.
@@ -199,10 +199,8 @@ class XmlConfiguration
 
         $replaceNodes = $this->xpath->query($replaceQuery);
 
-        $locator = new Locator($configurationDir);
-
         foreach ($replaceNodes as $exclude) {
-            $exclude->nodeValue = $locator->locate($exclude->nodeValue);
+            $visitor->visitElement($exclude);
         }
     }
 

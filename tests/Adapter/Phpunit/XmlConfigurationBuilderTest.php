@@ -12,6 +12,7 @@
 
 namespace Humbug\Test\Adapter\Phpunit;
 
+use Humbug\Adapter\Locator;
 use Humbug\Adapter\Phpunit\XmlConfiguration;
 use Humbug\Adapter\Phpunit\XmlConfiguration\ObjectVisitor;
 use Humbug\Adapter\Phpunit\XmlConfigurationBuilder;
@@ -50,7 +51,9 @@ class XmlConfigurationBuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('false', $cacheTokens->item(0)->nodeValue);
         $this->assertEquals(0, $xpath->evaluate('count(/phpunit/logging|/phpunit/filter|/phpunit/listeners)'));
 
-        $xmlConfiguration->wasCalledWith('replacePathsToAbsolutePaths', [$this->configurationDir]);
+        $expectedVisitor = new XmlConfiguration\ReplacePathVisitor(new Locator($this->configurationDir));
+
+        $xmlConfiguration->wasCalledWith('replacePathsToAbsolutePaths', [$expectedVisitor]);
     }
 
     public function testShouldBuildConfigurationWithAcceleratorListener()
@@ -160,7 +163,7 @@ class FakeConfiguration extends XmlConfiguration
         $this->calls[][__FUNCTION__] = func_get_args();
     }
 
-    public function replacePathsToAbsolutePaths($configurationDir)
+    public function replacePathsToAbsolutePaths(XmlConfiguration\Visitor $visitor)
     {
         $this->calls[][__FUNCTION__] = func_get_args();
     }

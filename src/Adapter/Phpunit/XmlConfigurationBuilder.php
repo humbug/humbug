@@ -14,6 +14,7 @@ namespace Humbug\Adapter\Phpunit;
 
 use Humbug\Adapter\Locator;
 use Humbug\Adapter\Phpunit\XmlConfiguration\ObjectVisitor;
+use Humbug\Adapter\Phpunit\XmlConfiguration\ReplacePathVisitor;
 
 class XmlConfigurationBuilder
 {
@@ -122,6 +123,7 @@ class XmlConfigurationBuilder
      */
     private function initializeConfiguration(XmlConfiguration $xmlConfiguration)
     {
+
         $xmlConfiguration->setBootstrap($this->getNewBootstrapPath());
         $xmlConfiguration->turnOffCacheTokens();
 
@@ -144,7 +146,8 @@ class XmlConfigurationBuilder
 
     private function finalizeConfiguration(XmlConfiguration $xmlConfiguration)
     {
-        $xmlConfiguration->replacePathsToAbsolutePaths($this->configurationDir);
+        $replacePathVisitor = new ReplacePathVisitor(new Locator($this->configurationDir));
+        $xmlConfiguration->replacePathsToAbsolutePaths($replacePathVisitor);
     }
 
     public function setAcceleratorListener()

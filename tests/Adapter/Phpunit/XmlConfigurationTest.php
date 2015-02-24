@@ -12,6 +12,7 @@
 
 namespace Humbug\Test\Adapter\Phpunit;
 
+use Humbug\Adapter\Locator;
 use Humbug\Adapter\Phpunit\ConfigurationLoader;
 use Humbug\Adapter\Phpunit\XmlConfiguration;
 
@@ -385,7 +386,9 @@ class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
 
         $xmlConfiguration = new XmlConfiguration($dom);
 
-        $xmlConfiguration->replacePathsToAbsolutePaths($configurationDir);
+        $replacePathVisitor = new XmlConfiguration\ReplacePathVisitor(new Locator($configurationDir));
+
+        $xmlConfiguration->replacePathsToAbsolutePaths($replacePathVisitor);
 
         $xpath = new \DOMXPath($dom);
 
@@ -407,7 +410,9 @@ class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
 
         $xmlConfiguration = new XmlConfiguration($dom);
 
-        $xmlConfiguration->replacePathsToAbsolutePaths($configurationDir);
+        $replacePathVisitor = new XmlConfiguration\ReplacePathVisitor(new Locator($configurationDir));
+
+        $xmlConfiguration->replacePathsToAbsolutePaths($replacePathVisitor);
 
         $xpath = new \DOMXPath($dom);
 
@@ -422,7 +427,9 @@ class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
 
         $xmlConfiguration = new XmlConfiguration($dom);
 
-        $xmlConfiguration->replacePathsToAbsolutePaths($configurationDir);
+        $replacePathVisitor = new XmlConfiguration\ReplacePathVisitor(new Locator($configurationDir));
+
+        $xmlConfiguration->replacePathsToAbsolutePaths($replacePathVisitor);
 
         $xpath = new \DOMXPath($dom);
 
