@@ -10,7 +10,6 @@
 
 namespace Humbug\Adapter\Phpunit;
 
-use Humbug\Adapter\Phpunit\XmlConfiguration\ObjectVisitor;
 use Humbug\Adapter\Phpunit\XmlConfiguration\Visitor;
 use Humbug\Container;
 use Humbug\Exception\InvalidArgumentException;
@@ -73,6 +72,8 @@ class XmlConfiguration
             $xmlConfigurationBuilder->setFilterListener($testSuites, self::getPathToTimeCollectorFile($container));
         }
 
+        $xmlConfigurationBuilder->setAcceleratorListener();
+
         $xmlConfiguration = $xmlConfigurationBuilder->build();
 
         if ($xmlConfiguration->hasOriginalBootstrap()) {
@@ -82,9 +83,6 @@ class XmlConfiguration
             //@todo Get rid off this side effect...
             $container->setBootstrap($path);
         }
-
-        //todo get some information about what this listener is for
-        $xmlConfiguration->addListener(new ObjectVisitor('\MyBuilder\PhpunitAccelerator\TestListener', [true]));
 
         //todo get some information about what tha hack is that
         if (!($xmlConfiguration->hasOriginalBootstrap())) {

@@ -16,6 +16,8 @@ use Humbug\Adapter\Phpunit\XmlConfiguration\ObjectVisitor;
 
 class XmlConfigurationBuilder
 {
+    protected $xmlConfigurationClass = '\Humbug\Adapter\Phpunit\XmlConfiguration';
+
     /**
      * @var string
      */
@@ -56,6 +58,11 @@ class XmlConfigurationBuilder
      */
     private $coverageExcludeDirs;
 
+    /**
+     * @var bool
+     */
+    private $acceleratorListener = false;
+
     public function __construct($configurationDir)
     {
         $this->configurationDir = $configurationDir;
@@ -77,6 +84,11 @@ class XmlConfigurationBuilder
 
         if (!empty($this->coverageWhiteListDirs) || !empty($this->coverageExcludeDirs)) {
             $xmlConfiguration->addWhiteListFilter($this->coverageWhiteListDirs, $this->coverageExcludeDirs);
+        }
+
+        if ($this->acceleratorListener) {
+            $acceleratorListener = new ObjectVisitor('\MyBuilder\PhpunitAccelerator\TestListener', [true]);
+            $xmlConfiguration->addListener($acceleratorListener);
         }
 
         if ($this->pathToTimeStats) {
@@ -120,18 +132,23 @@ class XmlConfigurationBuilder
     /**
      * @return XmlConfiguration
      */
-    private function createXmlConfiguration()
+    protected function createXmlConfiguration()
     {
         $configurationFile = (new ConfigurationLocator())->locate($this->configurationDir);
 
         $dom = (new ConfigurationLoader())->load($configurationFile);
 
-        return new XmlConfiguration($dom);
+        return new $this->xmlConfigurationClass($dom);
     }
 
     private function finalizeConfiguration(XmlConfiguration $xmlConfiguration)
     {
         $xmlConfiguration->replacePathsToAbsolutePaths($this->configurationDir);
+    }
+
+    public function setAcceleratorListener()
+    {
+        $this->acceleratorListener = true;
     }
 
     public function setPhpCoverage($phpCoveragePath)
