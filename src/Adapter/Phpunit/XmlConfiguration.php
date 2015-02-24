@@ -175,18 +175,6 @@ class XmlConfiguration
         }
     }
 
-    public function getFirstSuiteDirectories()
-    {
-        $directories = [];
-        $directoriesList = $this->xpath->query('/phpunit/testsuites/testsuite[position()=1]/directory');
-
-        foreach ($directoriesList as $directory) {
-            $directories[] = $directory->nodeValue;
-        }
-
-        return $directories;
-    }
-
     public function replacePathsToAbsolutePaths(Visitor $visitor)
     {
         $replacePaths = [

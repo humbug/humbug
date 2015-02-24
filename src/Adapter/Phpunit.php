@@ -209,33 +209,7 @@ class Phpunit extends AdapterAbstract
             $container->setBootstrap($xmlConfiguration->getOriginalBootstrap());
         }
 
-        //todo get some information about what tha hack is that
-        if (!($xmlConfiguration->hasOriginalBootstrap())) {
-            $bootstrap = self::findBootstrapFileInDirectories(
-                $xmlConfiguration->getFirstSuiteDirectories(),
-                $configurationDir
-            );
-            if ($bootstrap) {
-                $xmlConfiguration->setBootstrap($bootstrap);
-
-                //@todo Get rid off this side effect
-                $container->setBootstrap($bootstrap);
-            }
-        }
-
         return $xmlConfiguration;
-    }
-
-    private static function findBootstrapFileInDirectories($directories, $configurationDir)
-    {
-        $locator = new Locator($configurationDir);
-        foreach ($directories as $directory) {
-            $bootstrap = $locator->locate($directory);
-            $bootstrap .= '/bootstrap.php';
-            if (file_exists($bootstrap)) {
-                return $bootstrap;
-            }
-        }
     }
 
     private static function getRealPathList($directories)
