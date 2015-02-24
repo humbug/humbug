@@ -189,12 +189,14 @@ class XmlConfiguration
 
     public function replacePathsToAbsolutePaths(Visitor $visitor)
     {
-        $replaceQuery =
-            '/phpunit/testsuites/testsuite/exclude'.
-            '|' .
-            '//directory' .
-            '|' .
-            '//file';
+        $replacePaths = [
+            '/phpunit/testsuites/testsuite/exclude',
+            '//directory',
+            '//file',
+            '/phpunit/@bootstrap'
+        ];
+
+        $replaceQuery = implode('|', $replacePaths);
 
         $replaceNodes = $this->xpath->query($replaceQuery);
 

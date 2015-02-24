@@ -30,7 +30,7 @@ class ObjectVisitor implements Visitor
         $this->arguments = $arguments;
     }
 
-    public function visitElement(\DOMElement $domElement)
+    public function visitElement(\DOMNode $domElement)
     {
         $domElement->setAttribute('class', $this->className);
 

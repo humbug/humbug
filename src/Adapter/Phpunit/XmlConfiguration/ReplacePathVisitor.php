@@ -16,7 +16,7 @@ class ReplacePathVisitor implements Visitor
         $this->locator = $locator;
     }
 
-    public function visitElement(\DOMElement $domElement)
+    public function visitElement(\DOMNode $domElement)
     {
         $domElement->nodeValue = $this->locator->locate($domElement->nodeValue);
     }

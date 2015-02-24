@@ -10,7 +10,8 @@
          convertWarningsToExceptions="true"
          processIsolation="false"
          stopOnFailure="false"
-         syntaxCheck="false">
+         syntaxCheck="false"
+         bootstrap="file.php">
 
     <testsuites>
         <testsuite name="Test Suite">

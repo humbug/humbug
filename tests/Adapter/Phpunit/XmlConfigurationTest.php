@@ -437,6 +437,41 @@ class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($configurationDir . '/excluded-tests', $actualSuiteExclude);
     }
 
+    public function testShouldReplaceBootstrapWithAbsolutePath()
+    {
+        $configurationDir = realpath(__DIR__ . '/../_files/phpunit-conf');
+        $dom = (new ConfigurationLoader())->load($configurationDir . '/phpunit.xml');
+
+        $xmlConfiguration = new XmlConfiguration($dom);
+
+        $replacePathVisitor = new XmlConfiguration\ReplacePathVisitor(new Locator($configurationDir));
+
+        $xmlConfiguration->replacePathsToAbsolutePaths($replacePathVisitor);
+
+        $xpath = new \DOMXPath($dom);
+
+        $actualBootstrapPath = $xpath->query('/phpunit/@bootstrap')->item(0)->nodeValue;
+        $this->assertEquals($configurationDir . '/file.php', $actualBootstrapPath);
+    }
+
+    public function testShouldNotReplaceBootstrapWithAbsolutePath()
+    {
+        $configurationDir = realpath(__DIR__ . '/../_files/phpunit-conf');
+        $dom = (new ConfigurationLoader())->load($configurationDir . '/phpunit.xml');
+        $xpath = new \DOMXPath($dom);
+
+        $xpath->query('/phpunit')->item(0)->removeAttribute('bootstrap');
+
+        $xmlConfiguration = new XmlConfiguration($dom);
+
+        $replacePathVisitor = new XmlConfiguration\ReplacePathVisitor(new Locator($configurationDir));
+
+        $xmlConfiguration->replacePathsToAbsolutePaths($replacePathVisitor);
+
+        $actualBootstrapPath = $xpath->query('/phpunit/@bootstrap');
+        $this->assertEquals(0, $actualBootstrapPath->length);
+    }
+
     public function testShouldGenerateXml()
     {
         $configurationDir = realpath(__DIR__ . '/../_files/phpunit-conf');
