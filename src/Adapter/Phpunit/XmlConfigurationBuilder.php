@@ -12,6 +12,7 @@
 
 namespace Humbug\Adapter\Phpunit;
 
+use Humbug\Adapter\Locator;
 use Humbug\Adapter\Phpunit\XmlConfiguration\ObjectVisitor;
 
 class XmlConfigurationBuilder
@@ -68,7 +69,7 @@ class XmlConfigurationBuilder
         $this->configurationDir = $configurationDir;
     }
 
-    public function build()
+    public function getConfiguration()
     {
         $xmlConfiguration = $this->createXmlConfiguration();
 

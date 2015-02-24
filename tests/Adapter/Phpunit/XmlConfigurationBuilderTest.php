@@ -34,7 +34,7 @@ class XmlConfigurationBuilderTest extends \PHPUnit_Framework_TestCase
 
     public function testShouldBuildXmlConfigurationFromConfigurationDirectory()
     {
-        $xmlConfiguration = $this->builder->build();
+        $xmlConfiguration = $this->builder->getConfiguration();
 
         $this->assertInstanceOf('Humbug\Adapter\Phpunit\XmlConfiguration', $xmlConfiguration);
 
@@ -57,7 +57,7 @@ class XmlConfigurationBuilderTest extends \PHPUnit_Framework_TestCase
     {
         $this->builder->setAcceleratorListener();
 
-        $xmlConfiguration = $this->builder->build();
+        $xmlConfiguration = $this->builder->getConfiguration();
 
         $acceleratorListener = new ObjectVisitor('\MyBuilder\PhpunitAccelerator\TestListener', [true]);
 
@@ -68,7 +68,7 @@ class XmlConfigurationBuilderTest extends \PHPUnit_Framework_TestCase
     {
         $this->builder->setPhpCoverage('file/coverage.php');
 
-        $xmlConfiguration = $this->builder->build();
+        $xmlConfiguration = $this->builder->getConfiguration();
 
         $xmlConfiguration->wasCalledWith('addLogger', ['coverage-php', 'file/coverage.php']);
     }
@@ -77,7 +77,7 @@ class XmlConfigurationBuilderTest extends \PHPUnit_Framework_TestCase
     {
         $this->builder->setTextCoverage('file/coverage.txt');
 
-        $xmlConfiguration = $this->builder->build();
+        $xmlConfiguration = $this->builder->getConfiguration();
 
         $xmlConfiguration->wasCalledWith('addLogger', ['coverage-text', 'file/coverage.txt']);
     }
@@ -86,7 +86,7 @@ class XmlConfigurationBuilderTest extends \PHPUnit_Framework_TestCase
     {
         $this->builder->setTimeCollectionListener('path/to/stats.json');
 
-        $xmlConfiguration = $this->builder->build();
+        $xmlConfiguration = $this->builder->getConfiguration();
 
         $timeCollectionListener = new ObjectVisitor('\Humbug\Phpunit\Listener\TimeCollectorListener', [
             new ObjectVisitor('\Humbug\Phpunit\Logger\JsonLogger', ['path/to/stats.json'])
@@ -103,7 +103,7 @@ class XmlConfigurationBuilderTest extends \PHPUnit_Framework_TestCase
 
         $this->builder->setFilterListener($testSuites, 'path/to/stats.json');
 
-        $xmlConfiguration = $this->builder->build();
+        $xmlConfiguration = $this->builder->getConfiguration();
 
         $filterListener = new ObjectVisitor('\Humbug\Phpunit\Listener\FilterListener', [
             new ObjectVisitor('\Humbug\Phpunit\Filter\TestSuite\IncludeOnlyFilter', $testSuites),
@@ -127,14 +127,14 @@ class XmlConfigurationBuilderTest extends \PHPUnit_Framework_TestCase
 
         $this->builder->setCoverageFilter($whiteList, $exclude);
 
-        $xmlConfiguration = $this->builder->build();
+        $xmlConfiguration = $this->builder->getConfiguration();
 
         $xmlConfiguration->wasCalledWith('addWhiteListFilter', [$whiteList, $exclude]);
     }
 }
 
 /**
- * @method FakeConfiguration build
+ * @method FakeConfiguration getConfiguration
  */
 class FakeConfigurationBuilder extends XmlConfigurationBuilder
 {

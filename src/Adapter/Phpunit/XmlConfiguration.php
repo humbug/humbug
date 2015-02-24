@@ -10,9 +10,9 @@
 
 namespace Humbug\Adapter\Phpunit;
 
+use Humbug\Adapter\Locator;
 use Humbug\Adapter\Phpunit\XmlConfiguration\Visitor;
 use Humbug\Container;
-use Humbug\Exception\InvalidArgumentException;
 
 class XmlConfiguration
 {
@@ -74,11 +74,11 @@ class XmlConfiguration
 
         $xmlConfigurationBuilder->setAcceleratorListener();
 
-        $xmlConfiguration = $xmlConfigurationBuilder->build();
+        $xmlConfiguration = $xmlConfigurationBuilder->getConfiguration();
 
         if ($xmlConfiguration->hasOriginalBootstrap()) {
             $bootstrap = $xmlConfiguration->getOriginalBootstrap();
-            $path = self::makeAbsolutePath($bootstrap, $configurationDir);
+            $path = (new Locator($configurationDir))->locate($bootstrap);
 
             //@todo Get rid off this side effect...
             $container->setBootstrap($path);
@@ -103,8 +103,9 @@ class XmlConfiguration
 
     private static function findBootstrapFileInDirectories($directories, $configurationDir)
     {
+        $locator = new Locator($configurationDir);
         foreach ($directories as $directory) {
-            $bootstrap = self::makeAbsolutePath($directory, $configurationDir);
+            $bootstrap = $locator->locate($directory);
             $bootstrap .= '/bootstrap.php';
             if (file_exists($bootstrap)) {
                 return $bootstrap;
@@ -120,29 +121,6 @@ class XmlConfiguration
     private static function getPathToTimeCollectorFile(Container $container)
     {
         return $container->getCacheDirectory() . '/phpunit.times.humbug.json';
-    }
-
-    private static function makeAbsolutePath($name, $workingDir)
-    {
-        // @see https://github.com/symfony/Config/blob/master/FileLocator.php#L83
-        if ('/' === $name[0]
-            || '\\' === $name[0]
-            || (strlen($name) > 3 && ctype_alpha($name[0]) && $name[1] == ':' && ($name[2] == '\\' || $name[2] == '/'))
-        ) {
-            if (!file_exists($name)) {
-                throw new InvalidArgumentException("$name does not exist");
-            }
-
-            return realpath($name);
-        }
-
-        $relativePath = $workingDir.DIRECTORY_SEPARATOR.$name;
-        $glob = glob($relativePath);
-        if (file_exists($relativePath) || !empty($glob)) {
-            return realpath($relativePath);
-        }
-
-        throw new InvalidArgumentException("Could not find file $name working from $workingDir");
     }
 
     /**
@@ -325,19 +303,19 @@ class XmlConfiguration
 
     public function replacePathsToAbsolutePaths($configurationDir)
     {
-        $suitesExcludes = $this->xpath->query('/phpunit/testsuites/testsuite/exclude');
-        foreach ($suitesExcludes as $exclude) {
-            $exclude->nodeValue = self::makeAbsolutePath($exclude->nodeValue, $configurationDir);
-        }
+        $replaceQuery =
+            '/phpunit/testsuites/testsuite/exclude'.
+            '|' .
+            '//directory' .
+            '|' .
+            '//file';
 
-        $directories = $this->xpath->query('//directory');
-        foreach ($directories as $directory) {
-            $directory->nodeValue = self::makeAbsolutePath($directory->nodeValue, $configurationDir);
-        }
+        $replaceNodes = $this->xpath->query($replaceQuery);
 
-        $files = $this->xpath->query('//file');
-        foreach ($files as $file) {
-            $file->nodeValue = self::makeAbsolutePath($file->nodeValue, $configurationDir);
+        $locator = new Locator($configurationDir);
+
+        foreach ($replaceNodes as $exclude) {
+            $exclude->nodeValue = $locator->locate($exclude->nodeValue);
         }
     }
 
