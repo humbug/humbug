@@ -206,11 +206,7 @@ class Phpunit extends AdapterAbstract
         $xmlConfiguration = $xmlConfigurationBuilder->getConfiguration();
 
         if ($xmlConfiguration->hasOriginalBootstrap()) {
-            $bootstrap = $xmlConfiguration->getOriginalBootstrap();
-            $path = (new Locator($configurationDir))->locate($bootstrap);
-
-            //@todo Get rid off this side effect...
-            $container->setBootstrap($path);
+            $container->setBootstrap($xmlConfiguration->getOriginalBootstrap());
         }
 
         //todo get some information about what tha hack is that
