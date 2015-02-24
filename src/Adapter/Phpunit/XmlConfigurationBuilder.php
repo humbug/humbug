@@ -108,8 +108,6 @@ class XmlConfigurationBuilder
             $xmlConfiguration->addListener($filterListener);
         }
 
-        $this->finalizeConfiguration($xmlConfiguration);
-
         return $xmlConfiguration;
     }
 
@@ -119,10 +117,13 @@ class XmlConfigurationBuilder
     }
 
     /**
+     * @param XmlConfiguration $xmlConfiguration
      * @return XmlConfiguration
      */
     private function initializeConfiguration(XmlConfiguration $xmlConfiguration)
     {
+        $replacePathVisitor = new ReplacePathVisitor(new Locator($this->configurationDir));
+        $xmlConfiguration->replacePathsToAbsolutePaths($replacePathVisitor);
 
         $xmlConfiguration->setBootstrap($this->getNewBootstrapPath());
         $xmlConfiguration->turnOffCacheTokens();
@@ -142,12 +143,6 @@ class XmlConfigurationBuilder
         $dom = (new ConfigurationLoader())->load($configurationFile);
 
         return new $this->xmlConfigurationClass($dom);
-    }
-
-    private function finalizeConfiguration(XmlConfiguration $xmlConfiguration)
-    {
-        $replacePathVisitor = new ReplacePathVisitor(new Locator($this->configurationDir));
-        $xmlConfiguration->replacePathsToAbsolutePaths($replacePathVisitor);
     }
 
     public function setAcceleratorListener()

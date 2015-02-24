@@ -53,7 +53,7 @@ class XmlConfigurationBuilderTest extends \PHPUnit_Framework_TestCase
 
         $expectedVisitor = new XmlConfiguration\ReplacePathVisitor(new Locator($this->configurationDir));
 
-        $xmlConfiguration->wasCalledWith('replacePathsToAbsolutePaths', [$expectedVisitor]);
+        $xmlConfiguration->wasCalledWith('replacePathsToAbsolutePaths', [$expectedVisitor], 0);
     }
 
     public function testShouldBuildConfigurationWithAcceleratorListener()
@@ -168,7 +168,7 @@ class FakeConfiguration extends XmlConfiguration
         $this->calls[][__FUNCTION__] = func_get_args();
     }
 
-    public function wasCalledWith($function, $arguments, $at = 0)
+    public function wasCalledWith($function, $arguments, $at = 1)
     {
         \PHPUnit_Framework_Assert::assertTrue(isset($this->calls[$at][$function]));
         \PHPUnit_Framework_Assert::assertEquals($arguments, $this->calls[$at][$function]);

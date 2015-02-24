@@ -10,7 +10,6 @@
 
 namespace Humbug\Adapter\Phpunit;
 
-use Humbug\Adapter\Locator;
 use Humbug\Adapter\Phpunit\XmlConfiguration\Visitor;
 
 class XmlConfiguration
