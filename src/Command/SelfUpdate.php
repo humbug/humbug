@@ -35,9 +35,13 @@ class SelfUpdate extends Command
     {
         $localFile = realpath($_SERVER['argv'][0]) ?: $_SERVER['argv'][0];
 
-        $version = @humbug_get_contents(self::VERSION);
-        if (empty($version) || !preg_match('%^[a-z0-9]{40}%', $version, $matches)) {
-            $output->writeln('Current version check has failed. Please try again.');
+        $version = humbug_get_contents(self::VERSION);
+        if (empty($version)) {
+            $output->writeln('Incorrect version check response received. Please try again.');
+            return 1;
+        }
+        if (!preg_match('%^[a-z0-9]{40}%', $version, $matches)) {
+            $output->writeln('Unexpected version format received. Please try again.');
             return 1;
         }
         $newVersion = $matches[0];
