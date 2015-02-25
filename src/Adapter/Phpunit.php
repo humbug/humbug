@@ -71,7 +71,7 @@ class Phpunit extends AdapterAbstract
          *
          * TODO: Assemble config just once if no coverage data available!
          */
-        $xmlConfiguration = self::assemble($container, $firstRun, $testSuites);
+        $xmlConfiguration = $this->assembleXmlConfiguration($container, $firstRun, $testSuites);
 
         $configFile = $container->getCacheDirectory() . '/phpunit.humbug.xml';
 
@@ -186,19 +186,23 @@ class Phpunit extends AdapterAbstract
      *
      * @return XmlConfiguration
      */
-    public static function assemble(Container $container, $firstRun = false, array $testSuites = [])
+    private function assembleXmlConfiguration(Container $container, $firstRun = false, array $testSuites = [])
     {
-        $configurationDir = self::resolveConfigurationDir($container);
+        $configurationDir = $this->resolveConfigurationDir($container);
 
         $xmlConfigurationBuilder = new XmlConfigurationBuilder($configurationDir);
 
         if ($firstRun) {
             $xmlConfigurationBuilder->setPhpCoverage($container->getCacheDirectory() . '/coverage.humbug.php');
             $xmlConfigurationBuilder->setTextCoverage($container->getCacheDirectory() . '/coverage.humbug.txt');
-            $xmlConfigurationBuilder->setCoverageFilter(self::getWhiteListSrc($container), self::getExcludeDirs($container));
-            $xmlConfigurationBuilder->setTimeCollectionListener(self::getPathToTimeCollectorFile($container));
+
+            $whiteListSrc = $this->getWhiteListSrc($container);
+            $excludeDirs = $this->getExcludeDirs($container);
+            $xmlConfigurationBuilder->setCoverageFilter($whiteListSrc, $excludeDirs);
+
+            $xmlConfigurationBuilder->setTimeCollectionListener($this->getPathToTimeCollectorFile($container));
         } else {
-            $xmlConfigurationBuilder->setFilterListener($testSuites, self::getPathToTimeCollectorFile($container));
+            $xmlConfigurationBuilder->setFilterListener($testSuites, $this->getPathToTimeCollectorFile($container));
         }
 
         $xmlConfigurationBuilder->setAcceleratorListener();
@@ -212,12 +216,7 @@ class Phpunit extends AdapterAbstract
         return $xmlConfiguration;
     }
 
-    private static function getRealPathList($directories)
-    {
-        return array_map('realpath', $directories);
-    }
-
-    private static function getPathToTimeCollectorFile(Container $container)
+    private function getPathToTimeCollectorFile(Container $container)
     {
         return $container->getCacheDirectory() . '/phpunit.times.humbug.json';
     }
@@ -226,7 +225,7 @@ class Phpunit extends AdapterAbstract
      * @param Container $container
      * @return string
      */
-    private static function resolveConfigurationDir(Container $container)
+    private function resolveConfigurationDir(Container $container)
     {
         $configurationDir = $container->getTestRunDirectory();
 
@@ -241,21 +240,30 @@ class Phpunit extends AdapterAbstract
      * @param Container $container
      * @return array
      */
-    protected static function getWhiteListSrc(Container $container)
+    private function getWhiteListSrc(Container $container)
     {
         $srcList = $container->getSourceList();
 
-        return isset($srcList->directories) ? self::getRealPathList($srcList->directories) : [];
+        return isset($srcList->directories) ? $this->getRealPathList($srcList->directories) : [];
     }
 
     /**
      * @param Container $container
      * @return array
      */
-    protected static function getExcludeDirs(Container $container)
+    private function getExcludeDirs(Container $container)
     {
         $srcList = $container->getSourceList();
 
-        return isset($srcList->excludes) ? self::getRealPathList($srcList->excludes) : [];
+        return isset($srcList->excludes) ? $this->getRealPathList($srcList->excludes) : [];
+    }
+
+    /**
+     * @param array $directories
+     * @return array
+     */
+    private function getRealPathList(array $directories)
+    {
+        return array_map('realpath', $directories);
     }
 }
