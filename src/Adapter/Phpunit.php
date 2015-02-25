@@ -10,6 +10,7 @@
 
 namespace Humbug\Adapter;
 
+use Humbug\Adapter\Phpunit\XmlConfigurationBuilder;
 use Humbug\Container;
 use Humbug\Adapter\Phpunit\XmlConfiguration;
 use Humbug\Adapter\Phpunit\Job;
@@ -70,7 +71,12 @@ class Phpunit extends AdapterAbstract
          *
          * TODO: Assemble config just once if no coverage data available!
          */
-        $configFile = XmlConfiguration::assemble($container, $firstRun, $testSuites);
+        $xmlConfiguration = $this->assembleXmlConfiguration($container, $firstRun, $testSuites);
+
+        $configFile = $container->getCacheDirectory() . '/phpunit.humbug.xml';
+
+        file_put_contents($configFile, $xmlConfiguration->generateXML());
+
         foreach ($jobopts['cliopts'] as $key => $value) {
             if ($value == '--configuration' || $value == '-C') {
                 unset($jobopts['cliopts'][$key]);
@@ -169,5 +175,95 @@ class Phpunit extends AdapterAbstract
             $container->getCacheDirectory() . '/coverage.humbug.php'
         );
         return $coverage;
+    }
+
+    /**
+     * Wrangle XML to create a PHPUnit configuration, based on the original, that
+     * allows for more control over what tests are run, allows JUnit logging,
+     * and ensures that Code Coverage (for Humbug use) whitelists all of the
+     * relevant source code.
+     *
+     *
+     * @return XmlConfiguration
+     */
+    private function assembleXmlConfiguration(Container $container, $firstRun = false, array $testSuites = [])
+    {
+        $configurationDir = $this->resolveConfigurationDir($container);
+
+        $xmlConfigurationBuilder = new XmlConfigurationBuilder($configurationDir);
+
+        if ($firstRun) {
+            $xmlConfigurationBuilder->setPhpCoverage($container->getCacheDirectory() . '/coverage.humbug.php');
+            $xmlConfigurationBuilder->setTextCoverage($container->getCacheDirectory() . '/coverage.humbug.txt');
+
+            $whiteListSrc = $this->getWhiteListSrc($container);
+            $excludeDirs = $this->getExcludeDirs($container);
+            $xmlConfigurationBuilder->setCoverageFilter($whiteListSrc, $excludeDirs);
+
+            $xmlConfigurationBuilder->setTimeCollectionListener($this->getPathToTimeCollectorFile($container));
+        } else {
+            $xmlConfigurationBuilder->setFilterListener($testSuites, $this->getPathToTimeCollectorFile($container));
+        }
+
+        $xmlConfigurationBuilder->setAcceleratorListener();
+
+        $xmlConfiguration = $xmlConfigurationBuilder->getConfiguration();
+
+        if ($xmlConfiguration->hasOriginalBootstrap()) {
+            $container->setBootstrap($xmlConfiguration->getOriginalBootstrap());
+        }
+
+        return $xmlConfiguration;
+    }
+
+    private function getPathToTimeCollectorFile(Container $container)
+    {
+        return $container->getCacheDirectory() . '/phpunit.times.humbug.json';
+    }
+
+    /**
+     * @param Container $container
+     * @return string
+     */
+    private function resolveConfigurationDir(Container $container)
+    {
+        $configurationDir = $container->getTestRunDirectory();
+
+        if (empty($configurationDir)) {
+            $configurationDir = $container->getBaseDirectory();
+        }
+
+        return $configurationDir;
+    }
+
+    /**
+     * @param Container $container
+     * @return array
+     */
+    private function getWhiteListSrc(Container $container)
+    {
+        $srcList = $container->getSourceList();
+
+        return isset($srcList->directories) ? $this->getRealPathList($srcList->directories) : [];
+    }
+
+    /**
+     * @param Container $container
+     * @return array
+     */
+    private function getExcludeDirs(Container $container)
+    {
+        $srcList = $container->getSourceList();
+
+        return isset($srcList->excludes) ? $this->getRealPathList($srcList->excludes) : [];
+    }
+
+    /**
+     * @param array $directories
+     * @return array
+     */
+    private function getRealPathList(array $directories)
+    {
+        return array_map('realpath', $directories);
     }
 }
