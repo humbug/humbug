@@ -43,4 +43,4 @@ class Locator
 
         throw new InvalidArgumentException("Could not find file $name working from $this->workingDir");
     }
-} 
+}
