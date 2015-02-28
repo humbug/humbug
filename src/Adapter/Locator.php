@@ -43,4 +43,11 @@ class Locator
 
         throw new InvalidArgumentException("Could not find file $name working from $this->workingDir");
     }
+
+    public function locateDirectories($name)
+    {
+        $glob = glob($this->workingDir . '/' . $name, GLOB_ONLYDIR);
+
+        return array_map([$this, 'locate'], $glob);
+    }
 }

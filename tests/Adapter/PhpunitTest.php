@@ -240,4 +240,35 @@ not ok 103 - Error: Humbug\Test\Utility\TestTimeAnalyserTest::testAnalysisOfJuni
 OUTPUT;
         $this->assertFalse($adapter->ok($output));
     }
+
+    public function testShouldNotNotifyRegressionWhileRunningProcess()
+    {
+        $directory = __DIR__ . '/_files/regression/wildcard-dirs';
+
+        $container = m::mock('\Humbug\Container');
+        $container->shouldReceive([
+            'getSourceList'    => $directory,
+            'getTestRunDirectory'   => $directory,
+            'getBaseDirectory'      => $directory,
+            'getTimeout'            => 1200,
+            'getCacheDirectory'     => $this->tmpDir,
+            'getAdapterOptions'     => [],
+            'getBootstrap'          => '',
+            'getAdapterConstraints' => ''
+        ]);
+
+        $adapter = new Phpunit;
+        $process = $adapter->getProcess(
+            $container,
+            true,
+            true
+        );
+        $process->run();
+
+        $result = $process->getOutput();
+
+        $this->assertEquals(2, $adapter->hasOks($result));
+        $this->assertStringStartsWith('TAP version', $result);
+        $this->assertTrue($adapter->ok($result), "Regression output: \n" . $result);
+    }
 }

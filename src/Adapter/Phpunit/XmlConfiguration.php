@@ -175,7 +175,7 @@ class XmlConfiguration
         }
     }
 
-    public function replacePathsToAbsolutePaths(Visitor $visitor)
+    public function replacePathsToAbsolutePaths(Visitor $pathVisitor, Visitor $wildcardVisitor)
     {
         $replacePaths = [
             '/phpunit/testsuites/testsuite/exclude',
@@ -188,8 +188,12 @@ class XmlConfiguration
 
         $replaceNodes = $this->xpath->query($replaceQuery);
 
-        foreach ($replaceNodes as $exclude) {
-            $visitor->visitElement($exclude);
+        foreach ($replaceNodes as $replace) {
+            if (false !== strpos($replace->nodeValue, '*')) {
+                $wildcardVisitor->visitElement($replace);
+            } else {
+                $pathVisitor->visitElement($replace);
+            }
         }
     }
 

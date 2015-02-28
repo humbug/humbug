@@ -313,9 +313,11 @@ class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
 
         $xmlConfiguration = new XmlConfiguration($dom);
 
-        $replacePathVisitor = new XmlConfiguration\ReplacePathVisitor(new Locator($configurationDir));
+        $locator = new Locator($configurationDir);
+        $replacePathVisitor = new XmlConfiguration\ReplacePathVisitor($locator);
+        $replaceWildCardVisitor = new XmlConfiguration\ReplaceWildcardVisitor($locator);
 
-        $xmlConfiguration->replacePathsToAbsolutePaths($replacePathVisitor);
+        $xmlConfiguration->replacePathsToAbsolutePaths($replacePathVisitor, $replaceWildCardVisitor);
 
         $xpath = new \DOMXPath($dom);
 
@@ -337,9 +339,11 @@ class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
 
         $xmlConfiguration = new XmlConfiguration($dom);
 
-        $replacePathVisitor = new XmlConfiguration\ReplacePathVisitor(new Locator($configurationDir));
+        $locator = new Locator($configurationDir);
+        $replacePathVisitor = new XmlConfiguration\ReplacePathVisitor($locator);
+        $replaceWildCardVisitor = new XmlConfiguration\ReplaceWildcardVisitor($locator);
 
-        $xmlConfiguration->replacePathsToAbsolutePaths($replacePathVisitor);
+        $xmlConfiguration->replacePathsToAbsolutePaths($replacePathVisitor, $replaceWildCardVisitor);
 
         $xpath = new \DOMXPath($dom);
 
@@ -354,9 +358,11 @@ class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
 
         $xmlConfiguration = new XmlConfiguration($dom);
 
-        $replacePathVisitor = new XmlConfiguration\ReplacePathVisitor(new Locator($configurationDir));
+        $locator = new Locator($configurationDir);
+        $replacePathVisitor = new XmlConfiguration\ReplacePathVisitor($locator);
+        $replaceWildCardVisitor = new XmlConfiguration\ReplaceWildcardVisitor($locator);
 
-        $xmlConfiguration->replacePathsToAbsolutePaths($replacePathVisitor);
+        $xmlConfiguration->replacePathsToAbsolutePaths($replacePathVisitor, $replaceWildCardVisitor);
 
         $xpath = new \DOMXPath($dom);
 
@@ -371,14 +377,43 @@ class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
 
         $xmlConfiguration = new XmlConfiguration($dom);
 
-        $replacePathVisitor = new XmlConfiguration\ReplacePathVisitor(new Locator($configurationDir));
+        $locator = new Locator($configurationDir);
+        $replacePathVisitor = new XmlConfiguration\ReplacePathVisitor($locator);
+        $replaceWildCardVisitor = new XmlConfiguration\ReplaceWildcardVisitor($locator);
 
-        $xmlConfiguration->replacePathsToAbsolutePaths($replacePathVisitor);
+        $xmlConfiguration->replacePathsToAbsolutePaths($replacePathVisitor, $replaceWildCardVisitor);
 
         $xpath = new \DOMXPath($dom);
 
         $actualBootstrapPath = $xpath->query('/phpunit/@bootstrap')->item(0)->nodeValue;
         $this->assertEquals($configurationDir . '/file.php', $actualBootstrapPath);
+    }
+
+    public function testShouldReplaceWildcardsWithAbsolutePaths()
+    {
+        $configurationDir = realpath(__DIR__ . '/../_files/regression/wildcard-dirs');
+        $dom = (new ConfigurationLoader())->load($configurationDir . '/phpunit.xml');
+
+        $xmlConfiguration = new XmlConfiguration($dom);
+
+        $locator = new Locator($configurationDir);
+
+        $replacePathVisitor = new XmlConfiguration\ReplacePathVisitor($locator);
+        $replaceWildCardVisitor = new XmlConfiguration\ReplaceWildcardVisitor($locator);
+
+        $xmlConfiguration->replacePathsToAbsolutePaths($replacePathVisitor, $replaceWildCardVisitor);
+
+        $xpath = new \DOMXPath($dom);
+
+        $firstSuitePath = realpath($configurationDir . '/suite-first/Tests');
+        $firstReplaced = $xpath->query('/phpunit/testsuites/testsuite[@name="Test Suite"]/directory[text()="' . $firstSuitePath . '"]');
+
+        $this->assertEquals(1, $firstReplaced->length);
+
+        $secondSuitePath = realpath($configurationDir . '/second-suite/Tests');
+        $secondReplaced = $xpath->query('/phpunit/testsuites/testsuite[@name="Test Suite"]/directory[text()="' . $secondSuitePath . '"]');
+
+        $this->assertEquals(1, $secondReplaced->length);
     }
 
     public function testShouldNotReplaceBootstrapWithAbsolutePath()
@@ -391,9 +426,11 @@ class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
 
         $xmlConfiguration = new XmlConfiguration($dom);
 
-        $replacePathVisitor = new XmlConfiguration\ReplacePathVisitor(new Locator($configurationDir));
+        $locator = new Locator($configurationDir);
+        $replacePathVisitor = new XmlConfiguration\ReplacePathVisitor($locator);
+        $replaceWildCardVisitor = new XmlConfiguration\ReplaceWildcardVisitor($locator);
 
-        $xmlConfiguration->replacePathsToAbsolutePaths($replacePathVisitor);
+        $xmlConfiguration->replacePathsToAbsolutePaths($replacePathVisitor, $replaceWildCardVisitor);
 
         $actualBootstrapPath = $xpath->query('/phpunit/@bootstrap');
         $this->assertEquals(0, $actualBootstrapPath->length);
