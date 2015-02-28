@@ -51,9 +51,10 @@ class XmlConfigurationBuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('false', $cacheTokens->item(0)->nodeValue);
         $this->assertEquals(0, $xpath->evaluate('count(/phpunit/logging|/phpunit/filter|/phpunit/listeners)'));
 
-        $expectedVisitor = new XmlConfiguration\ReplacePathVisitor(new Locator($this->configurationDir));
+        $expectedPathVisitor = new XmlConfiguration\ReplacePathVisitor(new Locator($this->configurationDir));
+        $expectedWildcardVisitor = new XmlConfiguration\ReplaceWildcardVisitor(new Locator($this->configurationDir));
 
-        $xmlConfiguration->wasCalledWith('replacePathsToAbsolutePaths', [$expectedVisitor], 0);
+        $xmlConfiguration->wasCalledWith('replacePathsToAbsolutePaths', [$expectedPathVisitor, $expectedWildcardVisitor], 0);
     }
 
     public function testShouldBuildConfigurationWithAcceleratorListener()
@@ -163,7 +164,7 @@ class FakeConfiguration extends XmlConfiguration
         $this->calls[][__FUNCTION__] = func_get_args();
     }
 
-    public function replacePathsToAbsolutePaths(XmlConfiguration\Visitor $visitor)
+    public function replacePathsToAbsolutePaths(XmlConfiguration\Visitor $pathVisitor, XmlConfiguration\Visitor $wildcardVisitor)
     {
         $this->calls[][__FUNCTION__] = func_get_args();
     }

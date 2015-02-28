@@ -68,9 +68,9 @@ abstract class AdapterAbstract
      */
     public function hasOks($output)
     {
-        $result = preg_match("%ok (\\d+) - .*$%", $output, $matches);
+        $result = preg_match_all("%ok (\\d+) - .*%m", $output, $matches);
         if ($result) {
-            return (int) $matches[1];
+            return (int) end($matches[1]);
         }
         return false;
     }
