@@ -233,7 +233,7 @@ class Phpunit extends AdapterAbstract
             $configurationDir = $container->getBaseDirectory();
         }
 
-        return $configurationDir;
+        return realpath($configurationDir);
     }
 
     /**
