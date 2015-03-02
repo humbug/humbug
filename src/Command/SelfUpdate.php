@@ -54,12 +54,10 @@ class SelfUpdate extends Command
             $output->writeln('Humbug is currently up to date.');
             $output->writeln('Current SHA-1 hash is: ' . $oldVersion . '.');
         }
-
     }
 
     private function replacePhar($localFile, $oldVersion, $newVersion, OutputInterface $output)
     {
-        
         $tmpDir = dirname($localFile);
         $tmpFile = $tmpDir . '/' . basename($localFile, '.phar') . '.phar.temp';
         $tmpPubKey = $tmpDir . '/' . basename($localFile, '.phar') . '.phar.temp.pubkey';

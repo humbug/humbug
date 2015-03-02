@@ -106,7 +106,6 @@ class ObjectVisitorTest extends \PHPUnit_Framework_TestCase
         $objectList = $this->xpath->query('/object/arguments/object');
 
         $this->assertEquals(1, $objectList->length);
-
     }
 
     public function testShouldAddManyDifferentArguments()

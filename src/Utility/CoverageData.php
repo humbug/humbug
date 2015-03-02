@@ -88,7 +88,7 @@ class CoverageData
 
     public function getLineCoverageFrom($file)
     {
-       $file = realpath($file);
+        $file = realpath($file);
         if (!file_exists($file)) {
             throw new InvalidArgumentException(
                 'File does not exist containing text code coverage: ' . $file

@@ -33,7 +33,6 @@ class Generator
     public function generate(Finder $finder)
     {
         foreach ($finder as $file) {
-
             $mutable = new Mutable($file->getRealpath());
 
             $this->mutables[] = $mutable;

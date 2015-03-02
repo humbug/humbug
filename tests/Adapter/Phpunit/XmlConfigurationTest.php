@@ -325,11 +325,11 @@ class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($configurationDir, $actualSuiteDirectory);
 
         $actualWhiteListDirectory = $xpath->query('/phpunit/filter/whitelist/directory')->item(0)->nodeValue;
-        $this->assertEquals($configurationDir . '/white-list' , $actualWhiteListDirectory);
+        $this->assertEquals($configurationDir . '/white-list', $actualWhiteListDirectory);
 
         $actualWhiteListExcludeDirectory =
             $xpath->query('/phpunit/filter/whitelist/exclude/directory')->item(0)->nodeValue;
-        $this->assertEquals($configurationDir . '/white-list/exclude' , $actualWhiteListExcludeDirectory);
+        $this->assertEquals($configurationDir . '/white-list/exclude', $actualWhiteListExcludeDirectory);
     }
 
     public function testShouldReplaceFilePathsToAbsolutePaths()
