@@ -241,10 +241,11 @@ OUTPUT;
         $this->assertFalse($adapter->ok($output));
     }
 
-    public function testShouldNotNotifyRegressionWhileRunningProcess()
+    /**
+     * @dataProvider directoriesList
+     */
+    public function testShouldNotNotifyRegressionWhileRunningProcess($directory)
     {
-        $directory = __DIR__ . '/_files/regression/wildcard-dirs';
-
         $container = m::mock('\Humbug\Container');
         $container->shouldReceive([
             'getSourceList'    => $directory,
@@ -270,5 +271,13 @@ OUTPUT;
         $this->assertEquals(2, $adapter->hasOks($result));
         $this->assertStringStartsWith('TAP version', $result);
         $this->assertTrue($adapter->ok($result), "Regression output: \n" . $result);
+    }
+
+    public function directoriesList()
+    {
+        return [
+            [__DIR__ . '/_files/regression/wildcard-dirs'],
+            ['tests/Adapter/_files/regression/wildcard-dirs']
+        ];
     }
 }
