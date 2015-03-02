@@ -33,8 +33,7 @@ class ProcessRunner
     ) {
         $hasFailure = false;
 
-        $process->run(function($out, $data)
-            use (
+        $process->run(function ($out, $data) use (
                 $process,
                 $testFrameworkAdapter,
                 $onProgressCallback,

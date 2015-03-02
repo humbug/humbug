@@ -188,7 +188,6 @@ class Mutable
                     }
                 }
             }
-
         }
         return $this;
     }

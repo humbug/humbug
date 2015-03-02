@@ -58,7 +58,7 @@ class ProcessRunnerTest extends \PHPUnit_Framework_TestCase
     {
         $executedCount = 0;
 
-        $onProgressCallback = function() use (&$executedCount) {
+        $onProgressCallback = function () use (&$executedCount) {
             $executedCount++;
         };
 

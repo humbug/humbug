@@ -22,4 +22,4 @@ class LocatorTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($expected, $actual);
     }
-} 
+}
