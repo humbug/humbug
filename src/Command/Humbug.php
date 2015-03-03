@@ -101,6 +101,9 @@ class Humbug extends Command
         $progressBar = new ProgressBar($output);
         $progressBar->setFormat('verbose');
         $progressBar->setBarWidth(58);
+        if (!$output->isDecorated()) {
+            $progressBar->setRedrawFrequency(60);
+        }
         $progressBar->start();
 
         $testFrameworkAdapter = $container->getAdapter();
