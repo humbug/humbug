@@ -136,7 +136,7 @@ class Mutant
     public function toArray()
     {
         return [
-            'file' => $this->mutation['file'],
+            'file' => $this->getMutationFileRelativePath(),
             'mutator' => $this->mutation['mutator'],
             'class' => $this->mutation['class'],
             'method' => $this->mutation['method'],
@@ -146,5 +146,13 @@ class Mutant
             'stderr' => $this->getProcess()->getErrorOutput(),
             'tests' => $this->getTests()
         ];
+    }
+
+    private function getMutationFileRelativePath()
+    {
+        $path = explode(DIRECTORY_SEPARATOR, $this->mutation['file']);
+        $baseDirectory = explode(DIRECTORY_SEPARATOR, $this->container->getBaseDirectory());
+
+        return join(DIRECTORY_SEPARATOR, array_diff($path, $baseDirectory));
     }
 }
