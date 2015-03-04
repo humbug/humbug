@@ -20,4 +20,31 @@ if (function_exists('ini_set')) {
 }
 
 $application = new Application();
-$application->run();
+$application->add(new \Humbug\Command\Configure());
+$application->add(new \Humbug\Command\Humbug());
+
+if ('phar:' === substr(__FILE__, 0, 5)) {
+    $application->add(new \Humbug\Command\SelfUpdate());
+}
+
+function prepareArgv()
+{
+    $argv = $_SERVER['argv'];
+
+    $found = false;
+
+    while (next($argv)) {
+        $value = current($argv);
+        if (!$value || '-' !== $value[0]) {
+            $found = true;
+        }
+    }
+
+    if (!$found) {
+        $argv[] = 'run';
+    }
+
+    return $argv;
+}
+
+$application->run(new \Symfony\Component\Console\Input\ArgvInput(prepareArgv()));

@@ -11,13 +11,9 @@
 namespace Humbug\Console;
 
 use Symfony\Component\Console\Application as BaseApplication;
-use Symfony\Component\Console\Input\InputInterface;
-use Humbug\Command\Humbug;
-use Humbug\Command\SelfUpdate;
 
 class Application extends BaseApplication
 {
-
     private static $logo = '
  _  _            _
 | || |_  _ _ __ | |__ _  _ __ _
@@ -32,27 +28,5 @@ class Application extends BaseApplication
     public function __construct()
     {
         parent::__construct(self::$logo.PHP_EOL.self::NAME, self::VERSION);
-    }
-
-    public function getDefinition()
-    {
-        $inputDefinition = parent::getDefinition();
-        $inputDefinition->setArguments();
-        return $inputDefinition;
-    }
-
-    protected function getCommandName(InputInterface $input)
-    {
-        return 'humbug';
-    }
-
-    protected function getDefaultCommands()
-    {
-        $defaultCommands = parent::getDefaultCommands();
-        $defaultCommands[] = new Humbug();
-        if ('phar:' === substr(__FILE__, 0, 5)) {
-            $defaultCommands[] = new SelfUpdate();
-        }
-        return $defaultCommands;
     }
 }
