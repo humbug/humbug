@@ -11,6 +11,7 @@
 namespace Humbug\Command;
 
 use Humbug\Adapter\AdapterAbstract;
+use Humbug\Collector;
 use Humbug\Config;
 use Humbug\Config\JsonParser;
 use Humbug\Container;
@@ -177,15 +178,8 @@ class Humbug extends Command
          * collect data on how tests handled the mutations. We use ext/runkit
          * to dynamically alter included (in-memory) classes on the fly.
          */
-        $countMutants = 0;
-        $countMutantKills = 0;
-        $countMutantEscapes = 0;
-        $countMutantErrors = 0;
-        $countMutantTimeouts = 0;
         $countMutantShadows = 0;
-        $mutantEscapes = [];
-        $mutantErrors = [];
-        $mutantTimeouts = [];
+        $collector = new Collector();
 
         /**
          * We can do parallel runs, but typically two test runs will compete for
@@ -207,8 +201,7 @@ class Humbug extends Command
                 $coverage->loadCoverageFor($mutable->getFilename());
             } catch (NoCoveringTestsException $e) {
                 foreach ($batches as $batch) {
-                    $countMutants++;
-                    $countMutantShadows++;
+                    $collector->collectShadow();
                     $renderer->renderShadowMark(count($mutables), $i);
                 }
                 continue;
@@ -233,8 +226,7 @@ class Humbug extends Command
                          * the uncovered mutants separately and omit them
                          * from final score.
                          */
-                        $countMutants++;
-                        $countMutantShadows++;
+                        $collector->collectShadow();
                         $renderer->renderShadowMark(count($mutables), $i);
                     }
                 }
@@ -257,40 +249,22 @@ class Humbug extends Command
                      * Define the result for each process
                      */
                     $result = [
-                        'passed'     => true,
+                        'passed'     => $container->getAdapter()->ok($process->getOutput()),
                         'successful' => $process->isSuccessful(),
-                        'timeout'    => false,
+                        'timeout'    => $group->timedOut($tracker),
                         'stderr'     => $process->getErrorOutput(),
                     ];
 
-                    if ($group->timedOut($tracker)) {
-                        $result['timeout'] = true;
-                    }
-                    if (!$container->getAdapter()->ok($process->getOutput())) {
-                        $result['passed'] = false;
-                    }
                     $process->clearOutput();
 
                     /**
                      * Handle the defined result for each process
                      */
-                    $countMutants++;
 
                     $renderer->renderProgressMark($result, count($mutables), $i);
                     $this->logText($renderer);
 
-                    if ($result['timeout'] === true) {
-                        $countMutantTimeouts++;
-                        $mutantTimeouts[] = $mutant;
-                    } elseif ($result['successful'] === false) {
-                        $countMutantErrors++;
-                        $mutantErrors[] = $mutant;
-                    } elseif ($result['passed'] === false) {
-                        $countMutantKills++;
-                    } else {
-                        $countMutantEscapes++;
-                        $mutantEscapes[] = $mutant;
-                    }
+                    $collector->collect($mutant, $result);
                 }
             }
 
@@ -304,14 +278,7 @@ class Humbug extends Command
          * Render summary report with stats
          */
         $output->write(PHP_EOL);
-        $renderer->renderSummaryReport(
-            $countMutants,
-            $countMutantKills,
-            $countMutantEscapes,
-            $countMutantErrors,
-            $countMutantTimeouts,
-            $countMutantShadows
-        );
+        $renderer->renderSummaryReport($collector);
         $output->write(PHP_EOL);
 
         /**
@@ -319,22 +286,14 @@ class Humbug extends Command
          */
         if ($this->jsonLogFile) {
             $renderer->renderLogToJson($this->jsonLogFile);
-            $this->logJson(
-                $countMutants,
-                $countMutantKills,
-                $countMutantEscapes,
-                $countMutantErrors,
-                $countMutantTimeouts,
-                $countMutantShadows,
-                $mutantEscapes
-            );
+            $this->logJson($collector);
         }
 
         if ($this->textLogFile) {
             $renderer->renderLogToText($this->textLogFile);
             $this->logText($renderer);
 
-            $textReport = $this->prepareTextReport($mutantEscapes, $mutantTimeouts, $mutantErrors);
+            $textReport = $this->prepareTextReport($collector);
             $this->logText($renderer, $textReport);
         }
 
@@ -351,39 +310,41 @@ class Humbug extends Command
         Performance::downMemProfiler();
     }
 
-    protected function logJson($total, $kills, $escapes, $errors, $timeouts, $shadows, array &$mutantEscapes)
+    protected function logJson(Collector $collector)
     {
-        $vanquishedTotal = $kills + $timeouts + $errors;
-        $measurableTotal = $total - $shadows;
+        $vanquishedTotal = $collector->getVanquishedTotal();
+        $measurableTotal = $collector->getMeasurableTotal();
+
         if ($measurableTotal !== 0) {
             $detectionRateTested  = round(100 * ($vanquishedTotal / $measurableTotal));
         } else {
             $detectionRateTested  = 0;
         }
-        if ($total !== 0) {
-            $uncoveredRate = round(100 * ($shadows / $total));
-            $detectionRateAll = round(100 * ($vanquishedTotal / $total));
+
+        if ($collector->getTotalCount() !== 0) {
+            $uncoveredRate = round(100 * ($collector->getShadowCount() / $collector->getTotalCount()));
+            $detectionRateAll = round(100 * ($collector->getVanquishedTotal() / $collector->getTotalCount()));
         } else {
             $uncoveredRate = 0;
             $detectionRateAll = 0;
         }
         $out = [
             'summary' => [
-                'total' => $total,
-                'kills' => $kills,
-                'escapes' => $escapes,
-                'errors' => $errors,
-                'timeouts' => $timeouts,
-                'notests' => $shadows,
+                'total' => $collector->getTotalCount(),
+                'kills' => $collector->getKilledCount(),
+                'escapes' => $collector->getEscapeCount(),
+                'errors' => $collector->getErrorCount(),
+                'timeouts' => $collector->getTimeoutCount(),
+                'notests' => $collector->getShadowCount(),
                 'covered_score' => $detectionRateTested,
                 'combined_score' => $detectionRateAll,
                 'mutation_coverage' => (100 - $uncoveredRate)
             ],
             'escaped' => []
         ];
-        foreach ($mutantEscapes as $escaped) {
-            $out['escaped'][] = $escaped->toArray();
-        }
+
+        $out = array_merge($out, $collector->toGroupedMutantArray());
+
         file_put_contents(
             $this->jsonLogFile,
             json_encode($out, JSON_PRETTY_PRINT)
@@ -539,18 +500,18 @@ class Humbug extends Command
         return $this->jsonLogFile !== null || $this->textLogFile !== null;
     }
 
-    private function prepareTextReport($mutantEscapes, $mutantTimeouts, $mutantErrors)
+    private function prepareTextReport(Collector $collector)
     {
         $textReport = new TextReport();
 
-        $out = $textReport->prepareMutantsReport($mutantEscapes, 'Escapes');
+        $out = $textReport->prepareMutantsReport($collector->getEscaped(), 'Escapes');
 
-        if (count($mutantTimeouts) > 0) {
-            $out .= PHP_EOL . $textReport->prepareMutantsReport($mutantTimeouts, 'Timeouts');
+        if ($collector->getTimeoutCount() > 0) {
+            $out .= PHP_EOL . $textReport->prepareMutantsReport($collector->getTimeouts(), 'Timeouts');
         }
 
-        if (count($mutantErrors) > 0) {
-            $out .= PHP_EOL . $textReport->prepareMutantsReport($mutantErrors, 'Errors');
+        if ($collector->getErrorCount() > 0) {
+            $out .= PHP_EOL . $textReport->prepareMutantsReport($collector->getErrors(), 'Errors');
         }
 
         return $out;
