@@ -2,30 +2,72 @@
 
 namespace Humbug;
 
+/**
+ * Class collecting all mutants and their results.
+ *
+ * @package Humbug
+ * @author Thibaud Fabre
+ */
 class Collector
 {
 
+    /**
+     * @var int Total mutant count collected
+     */
     private $totalCount = 0;
 
+    /**
+     * @var int Count of mutants not covered by a test case.
+     */
     private $shadowCount = 0;
 
+    /**
+     * @var int Count of mutants killed by a test case.
+     */
     private $killedCount = 0;
 
+    /**
+     * @var Mutant[] Mutants killed by a test case.
+     */
     private $killed = [];
 
+    /**
+     * @var int Count of mutants that timed out.
+     */
     private $timeoutCount = 0;
 
+    /**
+     * @var Mutant[] Mutants that resulted in a timeout.
+     */
     private $timeouts = [];
 
+    /**
+     * @var int Count of mutants that triggered an error.
+     */
     private $errorCount = 0;
 
+    /**
+     * @var Mutant[] Mutants that triggered an error.
+     */
     private $errors = [];
 
+    /**
+     * @var int Count of mutants that escaped tests.
+     */
     private $escapeCount = 0;
 
+    /**
+     * @var Mutant[] Mutants that escaped tests.
+     */
     private $escaped = [];
 
-    public function collect(Mutant $mutant, $result)
+    /**
+     * Collects a result associated with a mutant.
+     *
+     * @param Mutant $mutant
+     * @param array $result
+     */
+    public function collect(Mutant $mutant, array $result)
     {
         $this->totalCount++;
 
@@ -44,6 +86,9 @@ class Collector
         }
     }
 
+    /**
+     * Collects a shadow mutant.
+     */
     public function collectShadow()
     {
         $this->totalCount++;
@@ -51,25 +96,31 @@ class Collector
     }
 
     /**
-     * @return int
+     * @return int Total count of collected mutants.
      */
     public function getTotalCount()
     {
         return $this->totalCount;
     }
 
+    /**
+     * @return int Measurable count of mutants.
+     */
     public function getMeasurableTotal()
     {
         return $this->totalCount - $this->shadowCount;
     }
 
+    /**
+     * @return int Count of mutants that were covered by a test.
+     */
     public function getVanquishedTotal()
     {
         return $this->killedCount + $this->timeoutCount + $this->errorCount;
     }
 
     /**
-     * @return int
+     * @return int Count of mutants that were not covered by a test
      */
     public function getShadowCount()
     {
@@ -77,15 +128,7 @@ class Collector
     }
 
     /**
-     * @return array
-     */
-    public function getShadows()
-    {
-        return $this->shadows;
-    }
-
-    /**
-     * @return int
+     * @return int Count of mutants successfully killed by tests.
      */
     public function getKilledCount()
     {
@@ -93,7 +136,7 @@ class Collector
     }
 
     /**
-     * @return array
+     * @return Mutant[] List of mutants successfully killed by tests.
      */
     public function getKilled()
     {
@@ -101,7 +144,7 @@ class Collector
     }
 
     /**
-     * @return int
+     * @return int Count of mutants that resulted in a timeout.
      */
     public function getTimeoutCount()
     {
@@ -109,7 +152,7 @@ class Collector
     }
 
     /**
-     * @return array
+     * @return Mutant[] List of mutants that resulted in a timeout.
      */
     public function getTimeouts()
     {
@@ -117,7 +160,7 @@ class Collector
     }
 
     /**
-     * @return int
+     * @return int Count of mutants that resulted in an error.
      */
     public function getErrorCount()
     {
@@ -125,7 +168,7 @@ class Collector
     }
 
     /**
-     * @return array
+     * @return Mutant[] List of mutants that triggered an error.
      */
     public function getErrors()
     {
@@ -133,7 +176,7 @@ class Collector
     }
 
     /**
-     * @return int
+     * @return int Count of mutants that escaped test cases.
      */
     public function getEscapeCount()
     {
@@ -141,13 +184,18 @@ class Collector
     }
 
     /**
-     * @return array
+     * @return Mutant[] List of mutants that escaped test cases.
      */
     public function getEscaped()
     {
         return $this->escaped;
     }
 
+    /**
+     * Returns all collected mutants as arrays, grouped by their result status.
+     *
+     * @return array
+     */
     public function toGroupedMutantArray()
     {
         return [
