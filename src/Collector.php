@@ -163,7 +163,12 @@ class Collector
         $group = [];
 
         foreach ($mutants as $mutant) {
-            $group[] = $mutant->toArray();
+            $mutantData = $mutant->toArray();
+
+            $stderr = explode(PHP_EOL, $mutantData['stderr'], 2);
+            $mutantData['stderr'] = $stderr[0];
+
+            $group[] = $mutantData;
         }
 
         return $group;
