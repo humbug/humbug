@@ -10,6 +10,7 @@
 
 namespace Humbug\Renderer;
 
+use Humbug\Collector;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Helper\FormatterHelper;
 
@@ -210,38 +211,38 @@ class Text
      * @param int $timeouts
      * @param int $shadows
      */
-    public function renderSummaryReport($total, $kills, $escapes, $errors, $timeouts, $shadows)
+    public function renderSummaryReport(Collector $collector)
     {
-        $pkills = str_pad($kills, 8, ' ', STR_PAD_LEFT);
-        $pescapes = str_pad($escapes, 8, ' ', STR_PAD_LEFT);
-        $perrors = str_pad($errors, 8, ' ', STR_PAD_LEFT);
-        $ptimeouts = str_pad($timeouts, 8, ' ', STR_PAD_LEFT);
-        $pshadows = str_pad($shadows, 8, ' ', STR_PAD_LEFT);
+        $pkills = str_pad($collector->getKilledCount(), 8, ' ', STR_PAD_LEFT);
+        $pescapes = str_pad($collector->getEscapeCount(), 8, ' ', STR_PAD_LEFT);
+        $perrors = str_pad($collector->getErrorCount(), 8, ' ', STR_PAD_LEFT);
+        $ptimeouts = str_pad($collector->getTimeoutCount(), 8, ' ', STR_PAD_LEFT);
+        $pshadows = str_pad($collector->getShadowCount(), 8, ' ', STR_PAD_LEFT);
         $this->write(PHP_EOL, false);
-        $this->write($total . ' mutations were generated:');
+        $this->write($collector->getTotalCount() . ' mutations were generated:');
         $this->write($pkills . ' mutants were killed');
         $this->write($pshadows . ' mutants were not covered by tests');
         $this->write($pescapes . ' covered mutants were not detected');
         $this->write($perrors . ' fatal errors were encountered');
         $this->write($ptimeouts . ' time outs were encountered');
         $this->write(PHP_EOL, false);
-        $vanquishedTotal = $kills + $timeouts + $errors;
-        $measurableTotal = $total - $shadows;
+        $vanquishedTotal = $collector->getVanquishedTotal();
+        $measurableTotal = $collector->getMeasurableTotal();
         if ($measurableTotal !== 0) {
             $detectionRateTested  = round(100 * ($vanquishedTotal / $measurableTotal));
         } else {
             $detectionRateTested  = 0;
         }
-        if ($total !== 0) {
-            $coveredRate = round(100 * (($total - $shadows) / $total));
-            $detectionRateAll = round(100 * ($vanquishedTotal / $total));
+        if ($collector->getTotalCount() !== 0) {
+            $coveredRate = round(100 * (($measurableTotal) / $collector->getTotalCount()));
+            $detectionRateAll = round(100 * ($vanquishedTotal / $collector->getTotalCount()));
         } else {
             $coveredRate = 0;
             $detectionRateAll = 0;
         }
-        $this->write('Out of ' . ($total - $shadows) . ' test covered mutations, <options=bold>' . $detectionRateTested . '%</options=bold> were detected.');
-        $this->write('Out of ' . $total . ' total mutations, <options=bold>' . $detectionRateAll . '%</options=bold> were detected.');
-        $this->write('Out of ' . $total . ' total mutations, <options=bold>' . $coveredRate . '%</options=bold> were covered by tests.');
+        $this->write('Out of ' . ($measurableTotal) . ' test covered mutations, <options=bold>' . $detectionRateTested . '%</options=bold> were detected.');
+        $this->write('Out of ' . $collector->getTotalCount() . ' total mutations, <options=bold>' . $detectionRateAll . '%</options=bold> were detected.');
+        $this->write('Out of ' . $collector->getTotalCount() . ' total mutations, <options=bold>' . $coveredRate . '%</options=bold> were covered by tests.');
         $this->write(PHP_EOL, false);
         $this->write('Remember that some mutants will inevitably be harmless (i.e. false positives).');
     }
