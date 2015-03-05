@@ -68,8 +68,7 @@ class TestSuiteResult
 
         if (! $adapter->ok($this->stdOut) || $process->getExitCode() !== 0) {
             $this->status = self::ERROR;
-        }
-        else {
+        } else {
             /**
              * Capture headline line coverage %.
              * Get code coverage data so we can determine which test suites or
@@ -126,6 +125,8 @@ class TestSuiteResult
      * @return string
      */
     public function getStdErr()
+
+
     {
         return $this->stdErr;
     }
@@ -145,6 +146,4 @@ class TestSuiteResult
     {
         return $this->stdOut;
     }
-
-
 }
