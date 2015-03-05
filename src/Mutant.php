@@ -101,27 +101,24 @@ class Mutant
     }
 
     /**
-     * @param $container
-     * @param $group
-     * @param $tracker
-     *
+     * @param bool $timeoutFlag
      * @return MutantResult
      *
      * @throws LogicException when the test process is not terminated.
      */
-    public function getResult($container, $group, $tracker)
+    public function getResult($timeoutFlag)
     {
         if (! $this->result) {
             $process = $this->getProcess();
 
             if (! $process->isTerminated()) {
-                throw new LogicException('Process is not ready.');
+                throw new LogicException('Process is not terminated yet.');
             }
 
             $this->result = new MutantResult(
-                $container->getAdapter()->ok($process->getOutput()),
+                $this->container->getAdapter()->ok($process->getOutput()),
                 $process->isSuccessful(),
-                $group->timedOut($tracker),
+                $timeoutFlag,
                 $process->getOutput(),
                 $process->getErrorOutput()
             );

@@ -213,7 +213,7 @@ class Humbug extends Command
                     /**
                      * Handle the defined result for each process
                      */
-                    $result = $mutant->getResult($container, $group, $tracker);
+                    $result = $mutant->getResult($group->timedOut($tracker));
 
                     $mutant->getProcess()->clearOutput();
                     $renderer->renderProgressMark($result, count($mutables), $i);

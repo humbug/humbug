@@ -125,8 +125,6 @@ class TestSuiteResult
      * @return string
      */
     public function getStdErr()
-
-
     {
         return $this->stdErr;
     }
