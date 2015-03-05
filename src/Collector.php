@@ -65,22 +65,22 @@ class Collector
     private $escaped = [];
 
     /**
-     * Collects a result associated with a mutant.
+     * Collects a mutant and its result.
      *
      * @param Mutant $mutant
-     * @param array $result
+     * @param MutantResult $result
      */
-    public function collect(Mutant $mutant, array $result)
+    public function collect(Mutant $mutant, MutantResult $result)
     {
         $this->totalCount++;
 
-        if ($result['timeout'] === true) {
+        if ($result->isTimeout()) {
             $this->timeoutCount++;
             $this->timeouts[] = $mutant;
-        } elseif ($result['successful'] === false) {
+        } elseif ($result->isError()) {
             $this->errorCount++;
             $this->errors[] = $mutant;
-        } elseif ($result['passed'] === false) {
+        } elseif ($result->isKill()) {
             $this->killedCount++;
             $this->killed[] = $mutant;
         } else {

@@ -129,6 +129,15 @@ class Mutant
         return $this->tests;
     }
 
+
+    /**
+     * @return array
+     */
+    public function getTestMethods()
+    {
+        return $this->testMethods;
+    }
+
     /**
      * For debug and logging purposes
      * @return array

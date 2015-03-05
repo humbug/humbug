@@ -16,8 +16,10 @@ use Humbug\Config;
 use Humbug\Config\JsonParser;
 use Humbug\Container;
 use Humbug\Mutant;
+use Humbug\MutantResult;
 use Humbug\ProcessRunner;
 use Humbug\Report\Text as TextReport;
+use Humbug\TestSuiteResult;
 use Humbug\Utility\Performance;
 use Humbug\Utility\ParallelGroup;
 use Humbug\Renderer\Text;
@@ -48,6 +50,7 @@ class Humbug extends Command
      *
      * @param InputInterface $input
      * @param OutputInterface $output
+     * @return void
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -87,50 +90,29 @@ class Humbug extends Command
         $progressBar = new ProgressBar($output);
         $progressBar->setFormat('verbose');
         $progressBar->setBarWidth(58);
+
         if (!$output->isDecorated()) {
             $progressBar->setRedrawFrequency(60);
         }
+
         $progressBar->start();
-
         $testFrameworkAdapter = $container->getAdapter();
-
         $process = $testFrameworkAdapter->getProcess($container, true);
-
-        $hasFailure = $this->performInitailTestsRun($process, $testFrameworkAdapter, $progressBar);
+        $hasFailure = $this->performInitialTestsRun($process, $testFrameworkAdapter, $progressBar);
 
         $progressBar->finish();
         $output->write(PHP_EOL.PHP_EOL);
-        $exitCode = $process->getExitCode();
 
-        $result = [ // default values
-            'passed'    => true,
-            'timeout'   => false,
-            'stdout'    => '',
-            'stderr'    => '',
-            'coverage'  => 0
-        ];
-        $result['stdout'] = $process->getOutput();
-        $result['stderr'] = $process->getErrorOutput();
-        if (!$container->getAdapter()->ok($result['stdout'])) {
-            $result['passed'] = false;
-        }
+        $result = new TestSuiteResult($process, $container, '/coverage.humbug.txt');
 
         /**
          * Check if the initial test run ended with a fatal error
          */
-        if ($exitCode !== 0 || $hasFailure) {
-            $renderer->renderInitialRunFail($result, $exitCode, $hasFailure);
+        if ($result->isFailure() || $hasFailure) {
+            $renderer->renderInitialRunFail($result, $hasFailure);
             $this->logText($renderer);
             return 1;
         }
-
-        /**
-         * Capture headline line coverage %.
-         * Get code coverage data so we can determine which test suites or
-         * or specifications need to be run for each mutation.
-         */
-        $coverage = $container->getAdapter()->getCoverageData($container);
-        $result['coverage'] = $coverage->getLineCoverageFrom($container->getCacheDirectory() . '/coverage.humbug.txt');
 
         /**
          * Initial test run was a success!
@@ -148,6 +130,7 @@ class Humbug extends Command
         /**
          * Examine all source code files and collect up mutations to apply
          */
+        $coverage = $result->getCoverage();
         $mutables = $container->getMutableFiles($this->finder);
 
         /**
@@ -232,12 +215,13 @@ class Humbug extends Command
                     /**
                      * Define the result for each process
                      */
-                    $result = [
-                        'passed'     => $container->getAdapter()->ok($process->getOutput()),
-                        'successful' => $process->isSuccessful(),
-                        'timeout'    => $group->timedOut($tracker),
-                        'stderr'     => $process->getErrorOutput(),
-                    ];
+                    $result = new MutantResult(
+                        $container->getAdapter()->ok($process->getOutput()),
+                        $process->isSuccessful(),
+                        $group->timedOut($tracker),
+                        $process->getOutput(),
+                        $process->getErrorOutput()
+                    );
 
                     $process->clearOutput();
 
@@ -521,4 +505,15 @@ class Humbug extends Command
         return $out;
     }
 
+    private function performInitialTestsRun(
+        PhpProcess $process,
+        AdapterAbstract $testFrameworkAdapter,
+        ProgressBar $progressBar
+    ) {
+        $setProgressBarProgressCallback = function ($count) use ($progressBar) {
+            $progressBar->setProgress($count);
+        };
+
+        return (new ProcessRunner())->run($process, $testFrameworkAdapter, $setProgressBarProgressCallback);
+    }
 }

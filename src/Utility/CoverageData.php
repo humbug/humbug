@@ -85,7 +85,7 @@ class CoverageData
         $classes = array_unique($classes);
         return $classes;
     }
-
+    
     public function getLineCoverageFrom($file)
     {
         $file = realpath($file);
