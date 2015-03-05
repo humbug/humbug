@@ -34,4 +34,24 @@ class BitwiseAndTest extends \PHPUnit_Framework_TestCase
 
         $this->assertFalse(Mutator\Arithmetic\BitwiseAnd::mutates($tokens, 11));
     }
+
+    public function getByRefContexts()
+    {
+        return [
+            [ [ '=', T_WHITESPACE, '&', T_FUNCTION ], 2 ],
+            [ [ '=', T_WHITESPACE, T_WHITESPACE, '&', T_FUNCTION ], 3 ],
+            [ [ '=', T_WHITESPACE, '&', T_WHITESPACE, T_FUNCTION ], 2 ],
+            [ [ '=', '&', T_WHITESPACE, T_FUNCTION ], 1 ],
+            [ [ '=', '&', T_WHITESPACE, T_WHITESPACE, T_FUNCTION ], 1 ],
+
+        ];
+    }
+
+    /**
+     * @dataProvider getByRefContexts
+     */
+    public function testDoesNotMutateByRefAssignments(array $tokens, $index)
+    {
+        $this->assertFalse(Mutator\Arithmetic\BitwiseAnd::mutates($tokens, $index));
+    }
 }

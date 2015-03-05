@@ -30,17 +30,18 @@ class BitwiseAnd extends MutatorAbstract
     public static function mutates(array &$tokens, $index)
     {
         $t = $tokens[$index];
+
         if (!is_array($t) && $t == '&') {
             /**
              * Exclude likely uses of ampersand for references
              */
-            if (isset($tokens[$index+1]) && is_array($tokens[$index+1]) && $tokens[$index+1][0] == T_VARIABLE) {
+            if (self::getNextToken($tokens, $index, [ T_WHITESPACE ]) === T_VARIABLE) {
                 return false;
             }
-            if (isset($tokens[$index+1]) && is_array($tokens[$index+1]) && $tokens[$index+1][0] == T_FUNCTION) {
+            if (self::getNextToken($tokens, $index, [ T_WHITESPACE ]) === T_FUNCTION) {
                 return false;
             }
-            if (isset($tokens[$index-1]) && !is_array($tokens[$index-1]) && $tokens[$index-1] == '=') {
+            if (self::getPreviousToken($tokens, $index, [ T_WHITESPACE ]) === '=') {
                 return false;
             }
             return true;
