@@ -41,7 +41,7 @@ class SelfUpdate extends Command
         try {
             $result = $updater->update();
             if ($result) {
-                $output->writeln('Humbug has been updated.');
+                $output->writeln('<fg=green>Humbug has been updated.</fg=green>');
                 $output->writeln(sprintf(
                     '<fg=green>Current SHA-1 hash is:</fg=green> <options=bold>%s</options=bold>.',
                     $updater->getNewVersion()
@@ -51,7 +51,7 @@ class SelfUpdate extends Command
                     $updater->getOldVersion()
                 ));
             } else {
-                $output->writeln('Humbug is currently up to date.');
+                $output->writeln('<fg=green>Humbug is currently up to date.</fg=green>');
                 $output->writeln(sprintf(
                     '<fg=green>Current SHA-1 hash is:</fg=green> <options=bold>%s</options=bold>.',
                     $updater->getOldVersion()
