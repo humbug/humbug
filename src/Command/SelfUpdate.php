@@ -34,7 +34,6 @@ class SelfUpdate extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-
         $updater = new Updater;
         $updater->setPharUrl(self::PHAR);
         $updater->setVersionUrl(self::VERSION);
