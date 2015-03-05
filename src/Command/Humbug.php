@@ -55,16 +55,6 @@ class Humbug extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        /**
-         * Humbug is a single command app. We run secondary commands indirectly.
-         * Currently self-update is the only one necessary.
-         */
-        if ($input->getArgument('subcommand') == 'self-update') {
-            $command = $this->getApplication()->find('self-update');
-            $noinput = new EmptyInput([]);
-            return $command->run($noinput, $output);
-        }
-
         Performance::upMemProfiler();
         $output->writeln($this->getApplication()->getLongVersion() . PHP_EOL);
 
@@ -409,7 +399,7 @@ class Humbug extends Command
     protected function configure()
     {
         $this
-            ->setName('humbug')
+            ->setName('run')
             ->setDescription('Run Humbug for target tests')
             ->addOption(
                'adapter',
@@ -438,14 +428,7 @@ class Humbug extends Command
                InputOption::VALUE_REQUIRED,
                'Sets a timeout applied for each test run to combat infinite loop mutations.',
                 10
-            )
-            ->addArgument(
-                'subcommand',
-                InputArgument::OPTIONAL,
-                'Run a secondary command, typically self-update!',
-                null
-            )
-        ;
+            );
     }
 
     private function validate(InputInterface $input)
