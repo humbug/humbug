@@ -210,25 +210,12 @@ class Humbug extends Command
                 $group->run();
 
                 foreach ($mutants as $tracker => $mutant) {
-                    $process = $mutant->getProcess();
-
-                    /**
-                     * Define the result for each process
-                     */
-                    $result = new MutantResult(
-                        $container->getAdapter()->ok($process->getOutput()),
-                        $process->isSuccessful(),
-                        $group->timedOut($tracker),
-                        $process->getOutput(),
-                        $process->getErrorOutput()
-                    );
-
-                    $process->clearOutput();
-
                     /**
                      * Handle the defined result for each process
                      */
+                    $result = $mutant->getResult($container, $group, $tracker);
 
+                    $mutant->getProcess()->clearOutput();
                     $renderer->renderProgressMark($result, count($mutables), $i);
                     $this->logText($renderer);
 

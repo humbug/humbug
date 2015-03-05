@@ -10,6 +10,7 @@
 
 namespace Humbug;
 
+use Humbug\Exception\LogicException;
 use Humbug\Utility\CoverageData;
 use Humbug\Utility\Diff;
 use Humbug\Utility\Tokenizer;
@@ -47,6 +48,11 @@ class Mutant
      * @var PhpProcess
      */
     protected $process;
+
+    /**
+     * @var MutantResult
+     */
+    protected $result;
 
     public function __construct(array $mutation, Container $container, CoverageData $coverage)
     {
@@ -95,6 +101,36 @@ class Mutant
     }
 
     /**
+     * @param $container
+     * @param $group
+     * @param $tracker
+     *
+     * @return MutantResult
+     *
+     * @throws LogicException when the test process is not terminated.
+     */
+    public function getResult($container, $group, $tracker)
+    {
+        if (! $this->result) {
+            $process = $this->getProcess();
+
+            if (! $process->isTerminated()) {
+                throw new LogicException('Process is not ready.');
+            }
+
+            $this->result = new MutantResult(
+                $container->getAdapter()->ok($process->getOutput()),
+                $process->isSuccessful(),
+                $group->timedOut($tracker),
+                $process->getOutput(),
+                $process->getErrorOutput()
+            );
+        }
+
+        return $this->result;
+    }
+
+    /**
      * @return string
      */
     public function getDiff()
@@ -127,15 +163,6 @@ class Mutant
     public function getTests()
     {
         return $this->tests;
-    }
-
-
-    /**
-     * @return array
-     */
-    public function getTestMethods()
-    {
-        return $this->testMethods;
     }
 
     /**
