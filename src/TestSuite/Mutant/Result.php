@@ -1,7 +1,5 @@
 <?php
 
-namespace Humbug;
-
 /**
  * Status of an executed mutant
  *
@@ -11,8 +9,9 @@ namespace Humbug;
  * @license    https://github.com/padraic/humbug/blob/master/LICENSE New BSD License
  * @author     Thibaud Fabre
  */
+namespace Humbug\TestSuite\Mutant;
 
-class MutantResult
+class Result
 {
 
     const KILL = 0;
@@ -29,14 +28,14 @@ class MutantResult
 
     public static function getStatusCode($passFlag, $successFlag, $timeoutFlag)
     {
-        $status = MutantResult::ESCAPE;
+        $status = Result::ESCAPE;
 
         if ($timeoutFlag === true) {
-            $status = MutantResult::TIMEOUT;
+            $status = Result::TIMEOUT;
         } elseif ($successFlag === false) {
-            $status = MutantResult::ERROR;
+            $status = Result::ERROR;
         } elseif ($passFlag === false) {
-            $status = MutantResult::KILL;
+            $status = Result::KILL;
         }
 
         return $status;

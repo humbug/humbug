@@ -15,11 +15,11 @@ use Humbug\Container;
 use Humbug\Adapter\Phpunit;
 use Humbug\Config\JsonParser;
 use Humbug\Exception\InvalidArgumentException;
-use Humbug\MutantTestSuiteBuilder;
 use Humbug\Renderer\Text;
-use Humbug\TestSuiteObservers\LoggingObserver as TestSuiteLoggingObserver;
-use Humbug\TestSuiteObservers\ProgressBarObserver;
-use Humbug\TestSuiteRunner;
+use Humbug\TestSuite\Mutant\Builder as MutantBuilder;
+use Humbug\TestSuite\Unit\Observers\LoggingObserver;
+use Humbug\TestSuite\Unit\Observers\ProgressBarObserver;
+use Humbug\TestSuite\Unit\Runner as UnitTestRunner;
 use Humbug\Utility\Performance;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -76,13 +76,13 @@ class Humbug extends Command
          * and also log the results so test runs during the mutation phase can
          * be optimised.
          */
-        $testSuiteRunner = new TestSuiteRunner(
+        $testSuiteRunner = new UnitTestRunner(
             $container->getAdapter(),
             $container->getAdapter()->getProcess($container, true),
-            '/coverage.humbug.txt'
+            $container->getCacheDirectory() . '/coverage.humbug.txt'
         );
 
-        $testSuiteRunner->addObserver(new TestSuiteLoggingObserver(
+        $testSuiteRunner->addObserver(new LoggingObserver(
             $renderer,
             $output,
             new ProgressBarObserver($output)
@@ -141,7 +141,7 @@ class Humbug extends Command
         $this->jsonLogFile = $newConfig->getLogsJson();
         $this->textLogFile = $newConfig->getLogsText();
 
-        $this->builder = new MutantTestSuiteBuilder(
+        $this->builder = new MutantBuilder(
             isset($source->directories)? $source->directories : null,
             isset($source->excludes)? $source->excludes : null
         );

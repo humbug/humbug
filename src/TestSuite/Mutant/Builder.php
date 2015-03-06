@@ -1,16 +1,25 @@
 <?php
 
-namespace Humbug;
+/**
+ *
+ * @category   Humbug
+ * @package    Humbug
+ * @copyright  Copyright (c) 2015 Pádraic Brady (http://blog.astrumfutura.com)
+ * @license    https://github.com/padraic/humbug/blob/master/LICENSE New BSD License
+ * @author     Thibaud Fabre
+ */
+namespace Humbug\TestSuite\Mutant;
 
-use Humbug\MutantObservers\JsonLoggingObserver;
-use Humbug\MutantObservers\LoggingObserver;
-use Humbug\MutantObservers\PerformanceObserver;
-use Humbug\MutantObservers\TextLoggingObserver;
+use Humbug\Container;
 use Humbug\Renderer\Text;
+use Humbug\TestSuite\Mutant\Observers\JsonLoggingObserver;
+use Humbug\TestSuite\Mutant\Observers\LoggingObserver;
+use Humbug\TestSuite\Mutant\Observers\PerformanceObserver;
+use Humbug\TestSuite\Mutant\Observers\TextLoggingObserver;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
 
-class MutantTestSuiteBuilder
+class Builder
 {
 
     /**
@@ -76,7 +85,7 @@ class MutantTestSuiteBuilder
          *
          * TODO: Move PHPUnit specific stuff to adapter...
          */
-        $testSuite = new MutantTestSuite($mutables, 1);
+        $testSuite = new Runner($mutables, 1);
 
         $testSuite->addObserver(new LoggingObserver($renderer, $output));
         $testSuite->addObserver(new PerformanceObserver($renderer));

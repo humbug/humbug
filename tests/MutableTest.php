@@ -75,7 +75,8 @@ class MutableTest extends \PHPUnit_Framework_TestCase
         $file = new Mutable($this->root . '/math1.php');
         $file->generate();
         $return = $file->getMutations();
-        $this->assertEquals(['file', 'class', 'method', 'index', 'mutator', 'line'], array_keys($return[0]));
+        $this->assertArrayHasKey(0, $return);
+        $this->assertInstanceOf('\Humbug\Mutation', $return[0]);
     }
 
     public function testShouldReturnMutationsAsMutantObjectWrappers()

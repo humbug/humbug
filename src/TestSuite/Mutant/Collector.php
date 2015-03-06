@@ -1,6 +1,8 @@
 <?php
 
-namespace Humbug;
+namespace Humbug\TestSuite\Mutant;
+
+use Humbug\Mutant;
 
 /**
  * Class collecting all mutants and their results.
@@ -68,9 +70,9 @@ class Collector
      * Collects a mutant and its result.
      *
      * @param Mutant $mutant
-     * @param MutantResult $result
+     * @param Result $result
      */
-    public function collect(Mutant $mutant, MutantResult $result)
+    public function collect(Mutant $mutant, Result $result)
     {
         $this->totalCount++;
 

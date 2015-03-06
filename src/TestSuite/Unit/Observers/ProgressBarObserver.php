@@ -1,13 +1,13 @@
 <?php
 
-namespace Humbug\TestSuiteObservers;
+namespace Humbug\TestSuite\Unit\Observers;
 
-use Humbug\TestSuiteObserver;
-use Humbug\TestSuiteResult;
+use Humbug\TestSuite\Unit\Result;
+use Humbug\TestSuite\Unit\Observer;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ProgressBarObserver implements TestSuiteObserver
+class ProgressBarObserver implements Observer
 {
 
     private $progressBar;
@@ -35,7 +35,7 @@ class ProgressBarObserver implements TestSuiteObserver
         $this->progressBar->setProgress($count);
     }
 
-    public function onStopSuite(TestSuiteResult $result)
+    public function onStopSuite(Result $result)
     {
         $this->progressBar->finish();
     }

@@ -1,13 +1,22 @@
 <?php
 
-namespace Humbug;
+/**
+ *
+ * @category   Humbug
+ * @package    Humbug
+ * @copyright  Copyright (c) 2015 Pádraic Brady (http://blog.astrumfutura.com)
+ * @license    https://github.com/padraic/humbug/blob/master/LICENSE New BSD License
+ * @author     Thibaud Fabre
+ */
+namespace Humbug\TestSuite\Mutant;
 
+use Humbug\Container;
 use Humbug\Exception\NoCoveringTestsException;
-use Humbug\Renderer\Text;
+use Humbug\Mutant;
 use Humbug\Utility\CoverageData;
 use Humbug\Utility\ParallelGroup;
 
-class MutantTestSuite
+class Runner
 {
 
     private $mutables;
@@ -17,7 +26,7 @@ class MutantTestSuite
     private $threadCount;
 
     /**
-     * @var MutantTestSuiteObserver[]
+     * @var Observer[]
      */
     private $observers = [];
 
@@ -38,7 +47,7 @@ class MutantTestSuite
         return $this->mutables;
     }
 
-    public function addObserver(MutantTestSuiteObserver $observer)
+    public function addObserver(Observer $observer)
     {
         $this->observers[] = $observer;
     }
@@ -151,7 +160,7 @@ class MutantTestSuite
         }
     }
 
-    private function onMutantDone(Mutant $mutant, MutantResult $result, $index)
+    private function onMutantDone(Mutant $mutant, Result $result, $index)
     {
         foreach ($this->observers as $observer) {
             $observer->onMutantDone($this, $mutant, $result, $index);

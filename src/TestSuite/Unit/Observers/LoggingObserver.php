@@ -1,13 +1,13 @@
 <?php
 
-namespace Humbug\TestSuiteObservers;
+namespace Humbug\TestSuite\Unit\Observers;
 
 use Humbug\Renderer\Text;
-use Humbug\TestSuiteObserver;
-use Humbug\TestSuiteResult;
+use Humbug\TestSuite\Unit\Observer;
+use Humbug\TestSuite\Unit\Result;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class LoggingObserver implements TestSuiteObserver
+class LoggingObserver implements Observer
 {
 
     private $totalCount = 0;
@@ -18,7 +18,7 @@ class LoggingObserver implements TestSuiteObserver
 
     private $progressObserver;
 
-    public function __construct(Text $renderer, OutputInterface $output, TestSuiteObserver $progressObserver)
+    public function __construct(Text $renderer, OutputInterface $output, Observer $progressObserver)
     {
         $this->renderer = $renderer;
         $this->output = $output;
@@ -38,7 +38,7 @@ class LoggingObserver implements TestSuiteObserver
         $this->progressObserver->onProgress($count);
     }
 
-    public function onStopSuite(TestSuiteResult $result)
+    public function onStopSuite(Result $result)
     {
         $this->progressObserver->onStopSuite($result);
         $this->output->write(PHP_EOL . PHP_EOL);

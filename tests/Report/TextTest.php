@@ -12,6 +12,7 @@
  */
 namespace Humbug\Test\Report;
 
+use Humbug\Mutation;
 use Humbug\Report\Text;
 
 class TextTest extends \PHPUnit_Framework_TestCase
@@ -28,12 +29,12 @@ class TextTest extends \PHPUnit_Framework_TestCase
 
 DIFF;
 
-    private $mutation = [
-        'mutator' => 'TestMutator',
-        'class' => 'TestClass',
-        'method' => 'testMethod',
-        'file' => '/path/to/file'
-    ];
+    private $mutation = null;
+
+    protected function setup()
+    {
+        $this->mutation = new Mutation('/path/to/file', 1, 'TestClass', 'testMethod', 0, 'TestMutator');
+    }
 
     public function testShouldPrepareSingleReport()
     {

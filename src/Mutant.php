@@ -8,10 +8,10 @@
  * @copyright  Copyright (c) 2015 Pádraic Brady (http://blog.astrumfutura.com)
  * @license    https://github.com/padraic/humbug/blob/master/LICENSE New BSD License
  */
-
 namespace Humbug;
 
 use Humbug\Exception\LogicException;
+use Humbug\TestSuite\Mutant\Result;
 use Humbug\Utility\CoverageData;
 use Humbug\Utility\Diff;
 use Humbug\Utility\Tokenizer;
@@ -106,7 +106,7 @@ class Mutant
 
     /**
      * @param bool $timeoutFlag
-     * @return MutantResult
+     * @return Result
      *
      * @throws LogicException when the test process is not terminated.
      */
@@ -119,13 +119,13 @@ class Mutant
                 throw new LogicException('Process is not terminated yet.');
             }
 
-            $status = MutantResult::getStatusCode(
+            $status = Result::getStatusCode(
                 $this->container->getAdapter()->ok($process->getOutput()),
                 $process->isSuccessful(),
                 $timeoutFlag
             );
 
-            $this->result = new MutantResult(
+            $this->result = new Result(
                 $status,
                 $process->getOutput(),
                 $process->getErrorOutput()

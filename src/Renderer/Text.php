@@ -10,9 +10,9 @@
 
 namespace Humbug\Renderer;
 
-use Humbug\Collector;
-use Humbug\MutantResult;
-use Humbug\TestSuiteResult;
+use Humbug\TestSuite\Mutant\Collector;
+use Humbug\TestSuite\Mutant\Result as MutantResult;
+use Humbug\TestSuite\Unit\Result as TestSuiteResult;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Helper\FormatterHelper;
 
@@ -58,7 +58,7 @@ class Text
     }
 
     /**
-     * Render message preceeding the initial test run
+     * Render message preceding the initial test run
      */
     public function renderPreTestIntroduction()
     {
@@ -66,10 +66,9 @@ class Text
     }
 
     /**
-     * Render message where the initial test run didn't pass (excl. incomplete/skipped/risky tests)
+     * Render message where the initial test run did not pass (excl. incomplete/skipped/risky tests)
      *
      * @param TestSuiteResult $result
-     * @param bool $hasFailure
      */
     public function renderInitialRunFail(TestSuiteResult $result)
     {
@@ -287,6 +286,7 @@ class Text
      * Utility function to prefix output lines with an indent
      *
      * @param string $output
+     * @param bool $asArray
      * @return string
      */
     protected function indent($output, $asArray = false)

@@ -1,11 +1,13 @@
 <?php
 
-namespace Humbug;
+namespace Humbug\TestSuite\Unit;
 
 use Humbug\Adapter\AdapterAbstract;
+use Humbug\Container;
+use Humbug\ProcessRunner;
 use Symfony\Component\Process\PhpProcess;
 
-class TestSuiteRunner
+class Runner
 {
 
     private $adapter;
@@ -15,7 +17,7 @@ class TestSuiteRunner
     private $coverageLogFile;
 
     /**
-     * @var TestSuiteObserver[]
+     * @var Observer[]
      */
     private $observers = [];
 
@@ -26,7 +28,7 @@ class TestSuiteRunner
         $this->process = $process;
     }
 
-    public function addObserver(TestSuiteObserver $observer)
+    public function addObserver(Observer $observer)
     {
         $this->observers[] = $observer;
     }
@@ -45,13 +47,11 @@ class TestSuiteRunner
              * Get code coverage data so we can determine which test suites or
              * or specifications need to be run for each mutation.
              */
-            $coverage = $container->getAdapter()->getCoverageData($container);
-            $lineCoverage = $coverage->getLineCoverageFrom(
-                $container->getCacheDirectory() . $this->coverageLogFile
-            );
+            $coverage = $this->adapter->getCoverageData($container);
+            $lineCoverage = $coverage->getLineCoverageFrom($this->coverageLogFile);
         }
 
-        $result = new TestSuiteResult($this->process, $hasFailure, $coverage, $lineCoverage);
+        $result = new Result($this->process, $hasFailure, $coverage, $lineCoverage);
 
         $this->onStop($result);
 
@@ -79,7 +79,7 @@ class TestSuiteRunner
         }
     }
 
-    private function onStop(TestSuiteResult $result)
+    private function onStop(Result $result)
     {
         foreach ($this->observers as $observer) {
             $observer->onStopSuite($result);

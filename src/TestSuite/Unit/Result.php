@@ -1,11 +1,5 @@
 <?php
 
-namespace Humbug;
-
-use Humbug\Utility\CoverageData;
-use Symfony\Component\Process\PhpProcess;
-
-
 /**
  * Process execution result
  *
@@ -15,7 +9,12 @@ use Symfony\Component\Process\PhpProcess;
  * @license    https://github.com/padraic/humbug/blob/master/LICENSE New BSD License
  * @author     Thibaud Fabre
  */
-class TestSuiteResult
+namespace Humbug\TestSuite\Unit;
+
+use Humbug\Utility\CoverageData;
+use Symfony\Component\Process\PhpProcess;
+
+class Result
 {
 
     /**

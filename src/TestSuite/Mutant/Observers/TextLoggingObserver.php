@@ -1,16 +1,24 @@
 <?php
 
-namespace Humbug\MutantObservers;
+/**
+ *
+ * @category   Humbug
+ * @package    Humbug
+ * @copyright  Copyright (c) 2015 Pádraic Brady (http://blog.astrumfutura.com)
+ * @license    https://github.com/padraic/humbug/blob/master/LICENSE New BSD License
+ * @author     Thibaud Fabre
+ */
+namespace Humbug\TestSuite\Mutant\Observers;
 
-use Humbug\Collector;
 use Humbug\Mutant;
-use Humbug\MutantResult;
-use Humbug\MutantTestSuite;
-use Humbug\MutantTestSuiteObserver;
 use Humbug\Renderer\Text;
 use Humbug\Report\Text as TextReport;
+use Humbug\TestSuite\Mutant\Collector;
+use Humbug\TestSuite\Mutant\Observer;
+use Humbug\TestSuite\Mutant\Result;
+use Humbug\TestSuite\Mutant\Runner;
 
-class TextLoggingObserver implements MutantTestSuiteObserver
+class TextLoggingObserver implements Observer
 {
 
     private $textLogFile;
@@ -23,18 +31,18 @@ class TextLoggingObserver implements MutantTestSuiteObserver
         $this->renderer = $renderer;
     }
 
-    public function onStartRun(MutantTestSuite $testSuite)
+    public function onStartRun(Runner $testSuite)
     { }
 
-    public function onShadowMutant(MutantTestSuite $testSuite, $mutationIndex)
+    public function onShadowMutant(Runner $testSuite, $mutationIndex)
     { }
 
-    public function onMutantDone(MutantTestSuite $testSuite, Mutant $mutant, MutantResult $result, $index)
+    public function onMutantDone(Runner $testSuite, Mutant $mutant, Result $result, $index)
     {
         $this->logText($this->renderer);
     }
 
-    public function onEndRun(MutantTestSuite $testSuite, Collector $resultCollector)
+    public function onEndRun(Runner $testSuite, Collector $resultCollector)
     {
         $this->renderer->renderLogToText($this->textLogFile);
         $this->logText($this->renderer);
