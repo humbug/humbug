@@ -32,10 +32,12 @@ class TextLoggingObserver implements Observer
     }
 
     public function onStartRun(Runner $testSuite)
-    { }
+    {
+    }
 
     public function onShadowMutant(Runner $testSuite, $mutationIndex)
-    { }
+    {
+    }
 
     public function onMutantDone(Runner $testSuite, Mutant $mutant, Result $result, $index)
     {

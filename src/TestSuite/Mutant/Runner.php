@@ -34,7 +34,7 @@ class Runner
     {
         $this->mutables = $mutables;
         $this->mutableCount = count($mutables);
-        $this->threadCount = max((int) $threadCount, 1);
+        $this->threadCount = max((int)$threadCount, 1);
     }
 
     public function getMutableCount()
@@ -173,5 +173,4 @@ class Runner
             $observer->onEndRun($this, $collector);
         }
     }
-
 }

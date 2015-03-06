@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * Class collecting all mutants and their results.
+ *
+ * @category   Humbug
+ * @package    Humbug
+ * @copyright  Copyright (c) 2015 Pádraic Brady (http://blog.astrumfutura.com)
+ * @license    https://github.com/padraic/humbug/blob/master/LICENSE New BSD License
+ * @author     Thibaud Fabre
+ */
 namespace Humbug\TestSuite\Unit\Observers;
 
 use Humbug\Renderer\Text;
@@ -54,5 +63,4 @@ class LoggingObserver implements Observer
          */
         $this->renderer->renderInitialRunPass($result, $this->totalCount);
     }
-
 }

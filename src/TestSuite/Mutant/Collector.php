@@ -1,9 +1,5 @@
 <?php
 
-namespace Humbug\TestSuite\Mutant;
-
-use Humbug\Mutant;
-
 /**
  * Class collecting all mutants and their results.
  *
@@ -13,6 +9,10 @@ use Humbug\Mutant;
  * @license    https://github.com/padraic/humbug/blob/master/LICENSE New BSD License
  * @author     Thibaud Fabre
  */
+namespace Humbug\TestSuite\Mutant;
+
+use Humbug\Mutant;
+
 class Collector
 {
 

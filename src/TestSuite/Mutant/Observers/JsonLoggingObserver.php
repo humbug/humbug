@@ -31,13 +31,16 @@ class JsonLoggingObserver implements Observer
     }
 
     public function onStartRun(Runner $testSuite)
-    { }
+    {
+    }
 
     public function onShadowMutant(Runner $testSuite, $mutationIndex)
-    { }
+    {
+    }
 
     public function onMutantDone(Runner $testSuite, Mutant $mutant, Result $result, $index)
-    { }
+    {
+    }
 
     public function onEndRun(Runner $testSuite, Collector $resultCollector)
     {

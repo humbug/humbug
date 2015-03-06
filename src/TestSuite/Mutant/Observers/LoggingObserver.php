@@ -53,7 +53,6 @@ class LoggingObserver implements Observer
         $this->output->write(PHP_EOL);
         $this->renderer->renderSummaryReport($resultCollector);
         $this->output->write(PHP_EOL);
-
     }
 
     public function onShadowMutant(Runner $testSuite, $mutationIndex)
