@@ -194,7 +194,7 @@ class Mutant
             'diff' => $this->getDiff(),
             'stdout' => $this->getProcess()->getOutput(),
             'stderr' => $this->getProcess()->getErrorOutput(),
-            'tests' => $this->testMethods()
+            'tests' => $this->testMethods
         ];
     }
 

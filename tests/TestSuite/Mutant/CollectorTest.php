@@ -14,7 +14,7 @@ use Humbug\TestSuite\Mutant\Collector;
 
 class CollectorTest extends \PHPUnit_Framework_TestCase
 {
-    public function testShadowMutantCollection()
+    public function testAddShadowToCollector()
     {
         $collector = new Collector();
 
@@ -41,11 +41,12 @@ class CollectorTest extends \PHPUnit_Framework_TestCase
         $result->isTimeout()->willReturn((bool) $isTimeout);
 
         $mutant->getResult()->willReturn($result->reveal());
+        $mutant->toArray()->willReturn([ 'id' => uniqid(), 'stderr' => $isError ? 'Error' : '' ]);
 
         return $mutant->reveal();
     }
 
-    public function testResultCollection()
+    public function testAddErrorResultToCollector()
     {
         $collector = new Collector();
 
@@ -61,44 +62,93 @@ class CollectorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(1, $collector->getMeasurableTotal());
         $this->assertEquals(1, $collector->getVanquishedTotal());
         $this->assertContains($error, $collector->getErrors());
+    }
+
+    public function testAddKillResultToCollector()
+    {
+        $collector = new Collector();
 
         $kill = $this->getMutant(false, true, false);
 
         $collector->collect($kill, $kill->getResult());
 
-        $this->assertEquals(2, $collector->getTotalCount());
-        $this->assertEquals(1, $collector->getErrorCount());
+        $this->assertEquals(1, $collector->getTotalCount());
+        $this->assertEquals(0, $collector->getErrorCount());
         $this->assertEquals(1, $collector->getKilledCount());
         $this->assertEquals(0, $collector->getTimeoutCount());
         $this->assertEquals(0, $collector->getEscapeCount());
-        $this->assertEquals(2, $collector->getMeasurableTotal());
-        $this->assertEquals(2, $collector->getVanquishedTotal());
+        $this->assertEquals(1, $collector->getMeasurableTotal());
+        $this->assertEquals(1, $collector->getVanquishedTotal());
         $this->assertContains($kill, $collector->getKilled());
+    }
+
+    public function testAddTimeoutResultToCollector()
+    {
+        $collector = new Collector();
 
         $timeout = $this->getMutant(false, false, true);
 
         $collector->collect($timeout, $timeout->getResult());
 
-        $this->assertEquals(3, $collector->getTotalCount());
-        $this->assertEquals(1, $collector->getErrorCount());
-        $this->assertEquals(1, $collector->getKilledCount());
+        $this->assertEquals(1, $collector->getTotalCount());
+        $this->assertEquals(0, $collector->getErrorCount());
+        $this->assertEquals(0, $collector->getKilledCount());
         $this->assertEquals(1, $collector->getTimeoutCount());
         $this->assertEquals(0, $collector->getEscapeCount());
-        $this->assertEquals(3, $collector->getMeasurableTotal());
-        $this->assertEquals(3, $collector->getVanquishedTotal());
+        $this->assertEquals(1, $collector->getMeasurableTotal());
+        $this->assertEquals(1, $collector->getVanquishedTotal());
         $this->assertContains($timeout, $collector->getTimeouts());
+    }
+
+    public function testAddEscapedResultToCollector()
+    {
+        $collector = new Collector();
 
         $escape = $this->getMutant(false, false, false);
 
         $collector->collect($escape, $escape->getResult());
 
-        $this->assertEquals(4, $collector->getTotalCount());
-        $this->assertEquals(1, $collector->getErrorCount());
-        $this->assertEquals(1, $collector->getKilledCount());
-        $this->assertEquals(1, $collector->getTimeoutCount());
+        $this->assertEquals(1, $collector->getTotalCount());
+        $this->assertEquals(0, $collector->getErrorCount());
+        $this->assertEquals(0, $collector->getKilledCount());
+        $this->assertEquals(0, $collector->getTimeoutCount());
         $this->assertEquals(1, $collector->getEscapeCount());
-        $this->assertEquals(4, $collector->getMeasurableTotal());
-        $this->assertEquals(3, $collector->getVanquishedTotal());
+        $this->assertEquals(1, $collector->getMeasurableTotal());
+        $this->assertEquals(0, $collector->getVanquishedTotal());
         $this->assertContains($escape, $collector->getEscaped());
+    }
+
+    public function testToArrayGeneratesAllGroupKeys()
+    {
+        $collector = new Collector();
+
+        $array = $collector->toGroupedMutantArray();
+
+        $this->assertArrayHasKey('escaped', $array);
+        $this->assertArrayHasKey('errored', $array);
+        $this->assertArrayHasKey('timeouts', $array);
+        $this->assertArrayHasKey('killed', $array);
+    }
+
+    public function testToArrayContainsCollectedItemsInCorrectGroups()
+    {
+        $collector = new Collector();
+
+        $error = $this->getMutant(true, false, false);
+        $kill = $this->getMutant(false, true, false);
+        $timeout = $this->getMutant(false, false, true);
+        $escape = $this->getMutant(false, false, false);
+
+        $collector->collect($error, $error->getResult());
+        $collector->collect($kill, $kill->getResult());
+        $collector->collect($timeout, $timeout->getResult());
+        $collector->collect($escape, $escape->getResult());
+
+        $array = $collector->toGroupedMutantArray();
+
+        $this->assertContains($error->toArray(), $array['errored']);
+        $this->assertContains($kill->toArray(), $array['killed']);
+        $this->assertContains($timeout->toArray(), $array['timeouts']);
+        $this->assertContains($escape->toArray(), $array['escaped']);
     }
 }
