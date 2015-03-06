@@ -27,19 +27,30 @@ class MutantResult
 
     private $stdErr = '';
 
-    public function __construct($passFlag, $successFlag, $timeoutFlag, $stdOut, $stdErr)
+    public static function getStatusCode($passFlag, $successFlag, $timeoutFlag)
     {
-        $this->status = self::ESCAPE;
-        $this->stdErr = $stdErr;
-        $this->stdOut = $stdOut;
+        $status = MutantResult::ESCAPE;
 
         if ($timeoutFlag === true) {
-            $this->status = self::TIMEOUT;
+            $status = MutantResult::TIMEOUT;
         } elseif ($successFlag === false) {
-            $this->status = self::ERROR;
+            $status = MutantResult::ERROR;
         } elseif ($passFlag === false) {
-            $this->status = self::KILL;
+            $status = MutantResult::KILL;
         }
+
+        return $status;
+    }
+
+    public function __construct($status, $stdOut, $stdErr)
+    {
+        if ($status < 0 || $status > 3) {
+            throw new \InvalidArgumentException('Invalid result code.');
+        }
+
+        $this->status = $status;
+        $this->stdErr = $stdErr;
+        $this->stdOut = $stdOut;
     }
 
     public function isTimeout()

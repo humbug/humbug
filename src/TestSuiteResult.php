@@ -15,13 +15,8 @@ use Symfony\Component\Process\PhpProcess;
  * @license    https://github.com/padraic/humbug/blob/master/LICENSE New BSD License
  * @author     Thibaud Fabre
  */
-
 class TestSuiteResult
 {
-
-    const SUCCESS = 0;
-
-    const ERROR = 1;
 
     /**
      * @var int Exit code of the test suite.
@@ -41,7 +36,7 @@ class TestSuiteResult
     /**
      * @var int Status code of the test suite execution.
      */
-    private $status = 0;
+    private $hasFailure = 0;
 
     /**
      * @var CoverageData
@@ -55,38 +50,35 @@ class TestSuiteResult
 
     /**
      * @param PhpProcess $process
-     * @param Container $container
-     * @param string $coverageFileName
+     * @param bool $hasFailure
+     * @param CoverageData $coverage
+     * @param float $lineCoverage
      */
-    public function __construct(PhpProcess $process, Container $container, $coverageFileName)
+    public function __construct(PhpProcess $process, $hasFailure, CoverageData $coverage = null, $lineCoverage)
     {
-        $this->exitCode =(int) $process->getExitCode();
+        $this->hasFailure = (bool)$hasFailure;
+        $this->exitCode = (int)$process->getExitCode();
         $this->stdOut = $process->getOutput();
         $this->stdErr = $process->getErrorOutput();
 
-        $adapter = $container->getAdapter();
-
-        if (! $adapter->ok($this->stdOut) || $process->getExitCode() !== 0) {
-            $this->status = self::ERROR;
-        } else {
-            /**
-             * Capture headline line coverage %.
-             * Get code coverage data so we can determine which test suites or
-             * or specifications need to be run for each mutation.
-             */
-            $this->coverage = $container->getAdapter()->getCoverageData($container);
-            $this->lineCoverage = $this->coverage->getLineCoverageFrom(
-                $container->getCacheDirectory() . $coverageFileName
-            );
-        }
+        $this->coverage = $coverage;
+        $this->lineCoverage = $lineCoverage;
     }
 
     /**
      * @return bool
      */
-    public function isFailure()
+    public function hasFailure()
     {
-        return ($this->status != self::SUCCESS);
+        return $this->hasFailure;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasCoverage()
+    {
+        return ($this->coverage != null);
     }
 
     /**
@@ -143,5 +135,13 @@ class TestSuiteResult
     public function getStdOut()
     {
         return $this->stdOut;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSuccess()
+    {
+        return (!$this->hasFailure() && $this->getExitCode() == 0);
     }
 }

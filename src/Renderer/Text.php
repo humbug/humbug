@@ -71,7 +71,7 @@ class Text
      * @param TestSuiteResult $result
      * @param bool $hasFailure
      */
-    public function renderInitialRunFail(TestSuiteResult $result, $hasFailure)
+    public function renderInitialRunFail(TestSuiteResult $result)
     {
         $error = [];
         $error[] = 'Tests must be in a fully passing state before Humbug is run.';
@@ -79,7 +79,7 @@ class Text
         if ($result->getExitCode() !== 0) {
             $error[] = 'The testing framework reported an exit code of ' . $result->getExitCode() . '.';
         }
-        if ($hasFailure) {
+        if ($result->hasFailure()) {
             $error[] = 'The testing framework ran into a failure or error. Refer to output below.';
         }
         if ($result->hasStdOut()) {

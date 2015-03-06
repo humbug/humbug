@@ -48,8 +48,8 @@ class Text
         $mutation = $mutant->getMutation();
 
         $out =
-            $mutation['mutator'] . PHP_EOL .
-            'Diff on ' . $mutation['class'] . '::' . $mutation['method'] . '() in ' . $mutation['file'] . ':' . PHP_EOL .
+            $mutation->getMutator() . PHP_EOL .
+            'Diff on ' . $mutation->getClass() . '::' . $mutation->getMethod() . '() in ' . $mutation->getFile() . ':' . PHP_EOL .
             $mutant->getDiff() . PHP_EOL .
             PHP_EOL;
 

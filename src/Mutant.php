@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Humbug
  *
@@ -20,7 +21,7 @@ class Mutant
 {
     /**
      * The mutation's parameters
-     * @var array
+     * @var Mutation
      */
     protected $mutation;
 
@@ -54,20 +55,23 @@ class Mutant
      */
     protected $result;
 
-    public function __construct(array $mutation, Container $container, CoverageData $coverage)
+    public function __construct(Mutation $mutation, Container $container, CoverageData $coverage)
     {
         $this->mutation = $mutation;
-        $this->tests = $coverage->getTestClasses($mutation['file'], $mutation['line']);
-        $this->container = $container;
+        $this->tests = $coverage->getTestClasses(
+            $mutation->getFile(),
+            $mutation->getLine()
+        );
 
+        $this->container = $container;
         $this->file = $container->getCacheDirectory() . '/humbug.mutant.' . uniqid() . '.php';
 
         // generate mutated file
-        $mutatorClass = $mutation['mutator'];
+        $mutatorClass = $mutation->getMutator();
 
-        $originalFileContent = file_get_contents($mutation['file']);
+        $originalFileContent = file_get_contents($mutation->getFile());
         $tokens = Tokenizer::getTokens($originalFileContent);
-        $mutatedFileContent = $mutatorClass::mutate($tokens, $mutation['index']);
+        $mutatedFileContent = $mutatorClass::mutate($tokens, $mutation->getIndex());
 
         file_put_contents($this->file, $mutatedFileContent);
     }
@@ -94,7 +98,7 @@ class Mutant
         return $this->process = $this->container->getAdapter()->getProcess(
             $this->container,
             false,
-            $this->mutation['file'], // file to intercept
+            $this->mutation->getFile(), // file to intercept
             $this->file, // mutated file to substitute
             $this->tests
         );
@@ -115,10 +119,14 @@ class Mutant
                 throw new LogicException('Process is not terminated yet.');
             }
 
-            $this->result = new MutantResult(
+            $status = MutantResult::getStatusCode(
                 $this->container->getAdapter()->ok($process->getOutput()),
                 $process->isSuccessful(),
-                $timeoutFlag,
+                $timeoutFlag
+            );
+
+            $this->result = new MutantResult(
+                $status,
                 $process->getOutput(),
                 $process->getErrorOutput()
             );
@@ -133,13 +141,13 @@ class Mutant
     public function getDiff()
     {
         return Diff::difference(
-            file_get_contents($this->mutation['file']),
+            file_get_contents($this->mutation->getfile()),
             file_get_contents($this->file)
         );
     }
 
     /**
-     * @return array
+     * @return Mutation
      */
     public function getMutation()
     {
@@ -170,10 +178,10 @@ class Mutant
     {
         return [
             'file' => $this->getMutationFileRelativePath(),
-            'mutator' => $this->mutation['mutator'],
-            'class' => $this->mutation['class'],
-            'method' => $this->mutation['method'],
-            'line' => $this->mutation['line'],
+            'mutator' => $this->mutation->getMutator(),
+            'class' => $this->mutation->getClass(),
+            'method' => $this->mutation->getMethod(),
+            'line' => $this->mutation->getLine(),
             'diff' => $this->getDiff(),
             'stdout' => $this->getProcess()->getOutput(),
             'stderr' => $this->getProcess()->getErrorOutput(),
@@ -183,7 +191,7 @@ class Mutant
 
     private function getMutationFileRelativePath()
     {
-        $path = explode(DIRECTORY_SEPARATOR, $this->mutation['file']);
+        $path = explode(DIRECTORY_SEPARATOR, $this->mutation->getFile());
         $baseDirectory = explode(DIRECTORY_SEPARATOR, $this->container->getBaseDirectory());
 
         return join(DIRECTORY_SEPARATOR, array_diff($path, $baseDirectory));

@@ -25,7 +25,7 @@ class Mutable
     /**
      *  An array of generated mutations to be sequentially tested
      *
-     * @var array
+     * @var Mutation[]
      */
     protected $mutations = [];
 
@@ -178,14 +178,14 @@ class Mutable
             if (true === $inMethodBlock) {
                 foreach ($this->mutators as $mutator) {
                     if ($mutator::mutates($tokens, $index)) {
-                        $this->mutations[] = [
-                            'file'          => $this->getFilename(),
-                            'class'         => $className,
-                            'method'        => $methodName,
-                            'index'         => $index,
-                            'mutator'       => $mutator,
-                            'line'          => $lineNumber
-                        ];
+                        $this->mutations[] = new Mutation(
+                            $this->getFilename(),
+                            $lineNumber,
+                            $className,
+                            $methodName,
+                            $index,
+                            $mutator
+                        );
                     }
                 }
             }
@@ -228,7 +228,7 @@ class Mutable
      * Get an array of Class & Method indexed mutations containing the mutated
      * token and that token's index in the method's block code.
      *
-     * @return array
+     * @return Mutation[]
      */
     public function getMutations()
     {
