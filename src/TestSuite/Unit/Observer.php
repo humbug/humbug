@@ -12,10 +12,20 @@ namespace Humbug\TestSuite\Unit;
 
 interface Observer
 {
-
+    /**
+     * Called when the initial unit test suite is started.
+     */
     public function onStartSuite();
 
+    /**
+     * Called upon progress of the test suite.
+     * @param int $count
+     */
     public function onProgress($count);
 
+    /**
+     * Called when the unit test stops.
+     * @param Result $result
+     */
     public function onStopSuite(Result $result);
 }

@@ -18,11 +18,19 @@ use Symfony\Component\Process\PhpProcess;
 
 class Runner
 {
-
+    /**
+     * @var AdapterAbstract
+     */
     private $adapter;
 
+    /**
+     * @var PhpProcess
+     */
     private $process;
 
+    /**
+     * @var string
+     */
     private $coverageLogFile;
 
     /**
@@ -30,6 +38,11 @@ class Runner
      */
     private $observers = [];
 
+    /**
+     * @param AdapterAbstract $adapter
+     * @param PhpProcess $process
+     * @param $coverageLogFile
+     */
     public function __construct(AdapterAbstract $adapter, PhpProcess $process, $coverageLogFile)
     {
         $this->adapter = $adapter;
@@ -37,11 +50,21 @@ class Runner
         $this->process = $process;
     }
 
+    /**
+     * Adds an observer to the current test suite run.
+     * @param Observer $observer
+     */
     public function addObserver(Observer $observer)
     {
         $this->observers[] = $observer;
     }
 
+    /**
+     * Runs the current test suite.
+     * @param Container $container
+     *
+     * @return Result
+     */
     public function run(Container $container)
     {
         $this->onStart();

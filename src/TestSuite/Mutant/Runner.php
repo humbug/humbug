@@ -12,17 +12,26 @@ namespace Humbug\TestSuite\Mutant;
 
 use Humbug\Container;
 use Humbug\Exception\NoCoveringTestsException;
+use Humbug\Mutable;
 use Humbug\Mutant;
 use Humbug\Utility\CoverageData;
 use Humbug\Utility\ParallelGroup;
 
 class Runner
 {
-
+    /**
+     * @var Mutable[]
+     */
     private $mutables;
 
+    /**
+     * @var int
+     */
     private $mutableCount;
 
+    /**
+     * @var int
+     */
     private $threadCount;
 
     /**
@@ -37,21 +46,34 @@ class Runner
         $this->threadCount = max((int)$threadCount, 1);
     }
 
+    /**
+     * @return int
+     */
     public function getMutableCount()
     {
         return $this->mutableCount;
     }
 
+    /**
+     * @return Mutable[]
+     */
     public function getMutables()
     {
         return $this->mutables;
     }
 
+    /**
+     * @param Observer $observer
+     */
     public function addObserver(Observer $observer)
     {
         $this->observers[] = $observer;
     }
 
+    /**
+     * @param Container $container
+     * @param CoverageData $coverage
+     */
     public function run(Container $container, CoverageData $coverage)
     {
         $this->onStartRun();

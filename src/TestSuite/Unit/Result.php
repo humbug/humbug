@@ -33,7 +33,7 @@ class Result
     private $stdOut = '';
 
     /**
-     * @var int Status code of the test suite execution.
+     * @var bool Whether a failure was detected during execution of the test suite.
      */
     private $hasFailure = 0;
 

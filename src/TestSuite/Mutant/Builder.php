@@ -37,11 +37,19 @@ class Builder
      */
     private $textLogFile;
 
+    /**
+     * @param string[] $directories
+     * @param string[] $excludes
+     */
     public function __construct($directories, $excludes)
     {
         $this->finder = $this->prepareFinder($directories, $excludes);
     }
 
+    /**
+     * @param string|null $textLogFile
+     * @param string|null $jsonLogFile
+     */
     public function setLogFiles($textLogFile, $jsonLogFile)
     {
         $this->textLogFile = $textLogFile;
@@ -70,6 +78,13 @@ class Builder
         return $finder;
     }
 
+    /**
+     * @param Container $container
+     * @param Text $renderer
+     * @param OutputInterface $output
+     *
+     * @return Runner
+     */
     public function build(Container $container, Text $renderer, OutputInterface $output)
     {
         /**

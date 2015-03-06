@@ -32,7 +32,7 @@ class Humbug extends Command
     protected $container;
 
     /**
-     * @var MutantTestSuiteBuilder
+     * @var MutantBuilder
      */
     protected $builder;
 

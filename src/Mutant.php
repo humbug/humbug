@@ -51,7 +51,7 @@ class Mutant
     protected $process;
 
     /**
-     * @var MutantResult
+     * @var Result
      */
     protected $result;
 

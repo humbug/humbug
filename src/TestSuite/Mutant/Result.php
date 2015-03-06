@@ -22,9 +22,20 @@ class Result
 
     const TIMEOUT = 3;
 
+    /**
+     * @var int
+     */
     private $status;
 
+    /**
+     * @var string
+     */
     private $stdErr = '';
+
+    /**
+     * @var string
+     */
+    private $stdOut = '';
 
     public static function getStatusCode($passFlag, $successFlag, $timeoutFlag)
     {
@@ -41,6 +52,11 @@ class Result
         return $status;
     }
 
+    /**
+     * @param int $status
+     * @param string $stdOut
+     * @param string $stdErr
+     */
     public function __construct($status, $stdOut, $stdErr)
     {
         if ($status < 0 || $status > 3) {
@@ -52,31 +68,49 @@ class Result
         $this->stdOut = $stdOut;
     }
 
+    /**
+     * @return bool
+     */
     public function isTimeout()
     {
         return $this->status === self::TIMEOUT;
     }
 
+    /**
+     * @return bool
+     */
     public function isError()
     {
         return $this->status === self::ERROR;
     }
 
+    /**
+     * @return bool
+     */
     public function isKill()
     {
         return $this->status === self::KILL;
     }
 
+    /**
+     * @return bool
+     */
     public function isEscape()
     {
         return $this->status === self::ESCAPE;
     }
 
+    /**
+     * @return int
+     */
     public function getResult()
     {
         return $this->status;
     }
 
+    /**
+     * @return string
+     */
     public function getErrorOutput()
     {
         return $this->stdErr;
