@@ -41,6 +41,11 @@ class Mutant
     protected $tests;
 
     /**
+     * @var array
+     */
+    protected $testMethods;
+
+    /**
      * @var string
      */
     protected $diff;
@@ -59,6 +64,10 @@ class Mutant
     {
         $this->mutation = $mutation;
         $this->tests = $coverage->getTestClasses(
+            $mutation->getFile(),
+            $mutation->getLine()
+        );
+        $this->testMethods = $coverage->getTestMethods(
             $mutation->getFile(),
             $mutation->getLine()
         );
@@ -185,7 +194,7 @@ class Mutant
             'diff' => $this->getDiff(),
             'stdout' => $this->getProcess()->getOutput(),
             'stderr' => $this->getProcess()->getErrorOutput(),
-            'tests' => $this->getTests()
+            'tests' => $this->testMethods()
         ];
     }
 

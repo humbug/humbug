@@ -85,6 +85,20 @@ class CoverageData
         $classes = array_unique($classes);
         return $classes;
     }
+
+    public function getTestMethods($file, $line)
+    {
+        $file = realpath($file);
+
+        if (!$this->hasTestClasses($file, $line)) {
+            throw new NoCoveringTestsException(
+                'Line '.$line.' of '.$file.' has no associated test classes per '
+                . 'the coverage report'
+            );
+        }
+
+        return $this->data[$file][$line];
+    }
     
     public function getLineCoverageFrom($file)
     {
