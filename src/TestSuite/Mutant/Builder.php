@@ -23,11 +23,6 @@ class Builder
 {
 
     /**
-     * @var Finder
-     */
-    private $finder;
-
-    /**
      * @var string
      */
     private $jsonLogFile;
@@ -38,15 +33,6 @@ class Builder
     private $textLogFile;
 
     /**
-     * @param string[] $directories
-     * @param string[] $excludes
-     */
-    public function __construct($directories, $excludes)
-    {
-        $this->finder = $this->prepareFinder($directories, $excludes);
-    }
-
-    /**
      * @param string|null $textLogFile
      * @param string|null $jsonLogFile
      */
@@ -54,28 +40,6 @@ class Builder
     {
         $this->textLogFile = $textLogFile;
         $this->jsonLogFile = $jsonLogFile;
-    }
-
-    protected function prepareFinder($directories, $excludes)
-    {
-        $finder = new Finder();
-        $finder->files()->name('*.php');
-
-        if ($directories) {
-            foreach ($directories as $directory) {
-                $finder->in($directory);
-            }
-        } else {
-            $finder->in('.');
-        }
-
-        if (isset($excludes)) {
-            foreach ($excludes as $exclude) {
-                $finder->exclude($exclude);
-            }
-        }
-
-        return $finder;
     }
 
     /**
@@ -88,19 +52,12 @@ class Builder
     public function build(Container $container, Text $renderer, OutputInterface $output)
     {
         /**
-         * Examine all source code files and collect up mutations to apply
-         *
-         * TODO: Move this out of builder -- somewhere else
-         */
-        $mutables = $container->getMutableFiles($this->finder);
-
-        /**
          * We can do parallel runs, but typically two test runs will compete for
          * any uninsulated resources (e.g. files/database) so hardcoded to 1 for now.
          *
          * TODO: Move PHPUnit specific stuff to adapter...
          */
-        $testSuite = new Runner($mutables, 1);
+        $testSuite = new Runner($container, 1);
 
         $testSuite->addObserver(new LoggingObserver($renderer, $output));
         $testSuite->addObserver(new PerformanceObserver($renderer));

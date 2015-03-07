@@ -13,21 +13,28 @@ namespace Humbug\TestSuite\Mutant;
 use Humbug\Container;
 use Humbug\Exception\NoCoveringTestsException;
 use Humbug\Mutable;
+use Humbug\MutableIterator;
 use Humbug\Mutant;
 use Humbug\Utility\CoverageData;
 use Humbug\Utility\ParallelGroup;
 
 class Runner
 {
+
     /**
-     * @var Mutable[]
+     * @var FileGenerator
      */
-    private $mutables;
+    private $mutantGenerator;
+
+    /**
+     * @var ProcessBuilder
+     */
+    private $processBuilder;
 
     /**
      * @var int
      */
-    private $mutableCount;
+    private $mutableCount = 0;
 
     /**
      * @var int
@@ -39,27 +46,13 @@ class Runner
      */
     private $observers = [];
 
-    public function __construct(array $mutables, $threadCount = 1)
+    public function __construct(Container $container, $threadCount = 1)
     {
-        $this->mutables = $mutables;
-        $this->mutableCount = count($mutables);
+        $this->mutantGenerator = new FileGenerator($container->getCacheDirectory());
+        $this->processBuilder = new ProcessBuilder($container);
+
         $this->threadCount = max((int)$threadCount, 1);
-    }
-
-    /**
-     * @return int
-     */
-    public function getMutableCount()
-    {
-        return $this->mutableCount;
-    }
-
-    /**
-     * @return Mutable[]
-     */
-    public function getMutables()
-    {
-        return $this->mutables;
+        $this->baseDirectory = $container->getBaseDirectory();
     }
 
     /**
@@ -70,25 +63,29 @@ class Runner
         $this->observers[] = $observer;
     }
 
-    /**
-     * @param Container $container
-     * @param CoverageData $coverage
-     */
-    public function run(Container $container, CoverageData $coverage)
+    public function getMutableCount()
     {
+        return $this->mutableCount;
+    }
+
+    /**
+     * @param CoverageData $coverage
+     * @param MutableIterator $mutables
+     */
+    public function run(CoverageData $coverage, MutableIterator $mutables)
+    {
+        $this->mutableCount = count($mutables);
         $this->onStartRun();
 
-        $baseDirectory = $container->getBaseDirectory();
-        $mutantGenerator = new FileGenerator($container);
-        $processBuilder = new ProcessBuilder($container);
         $collector = new Collector();
+        $partition = new Partition();
 
         /**
          * MUTATION TESTING!
          */
-        foreach ($this->mutables as $i => $mutable) {
+        foreach ($mutables as $index => $mutable) {
             $mutations = $mutable->generate()->getMutations();
-            $batches = array_chunk($mutations, $this->threadCount);
+            $partition->addMutations($mutable, $index, $mutations);
 
             try {
                 $coverage->loadCoverageFor($mutable->getFilename());
@@ -103,41 +100,29 @@ class Runner
                 continue;
             }
 
-            foreach ($batches as $batch) {
-                $this->runBatch(
-                    $processBuilder,
-                    $mutantGenerator,
-                    $collector,
-                    $coverage,
-                    $baseDirectory,
-                    $batch,
-                    $i
-                );
-            }
-
             $mutable->cleanup();
         }
 
+        foreach ($partition->getBatches($this->threadCount) as $index => $batch) {
+            $this->runBatch($collector, $coverage, $batch, $index);
+        }
+
         $coverage->cleanup();
+
         $this->onEndRun($collector);
     }
 
     /**
-     * @param ProcessBuilder $processBuilder
-     * @param FileGenerator $mutantGenerator
      * @param Collector $collector
      * @param CoverageData $coverage
-     * @param $batch
-     * @param $i
+     * @param array $batch
+     * @param int $index
      */
     private function runBatch(
-        ProcessBuilder $processBuilder,
-        FileGenerator $mutantGenerator,
         Collector $collector,
         CoverageData $coverage,
-        $baseDirectory,
-        $batch,
-        $i
+        array $batch,
+        $index
     ) {
         $processes = [];
 
@@ -146,9 +131,14 @@ class Runner
                 /**
                  * Unleash the Mutant!
                  */
-                $processes[] = $processBuilder->build(
-                    new Mutant($mutation, $mutantGenerator, $coverage, $baseDirectory)
+                $mutant = new Mutant(
+                    $mutation,
+                    $this->mutantGenerator,
+                    $coverage,
+                    $this->baseDirectory
                 );
+
+                $processes[] = $this->processBuilder->build($mutant);
             } catch (NoCoveringTestsException $e) {
                 /**
                  * No tests exercise the mutated line. We'll report
@@ -156,7 +146,7 @@ class Runner
                  * from final score.
                  */
                 $collector->collectShadow();
-                $this->onShadowMutant($i);
+                $this->onShadowMutant($index);
             }
         }
 
@@ -177,7 +167,7 @@ class Runner
              */
             $result = $process->getResult();
 
-            $this->onMutantDone($process->getMutant(), $result, $i);
+            $this->onMutantDone($process->getMutant(), $result, $index);
             $collector->collect($result);
         }
     }

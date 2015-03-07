@@ -15,6 +15,7 @@ use Humbug\Container;
 use Humbug\Adapter\Phpunit;
 use Humbug\Config\JsonParser;
 use Humbug\Exception\InvalidArgumentException;
+use Humbug\MutableIterator;
 use Humbug\Renderer\Text;
 use Humbug\TestSuite\Mutant\Builder as MutantBuilder;
 use Humbug\TestSuite\Unit\Observers\LoggingObserver;
@@ -35,6 +36,11 @@ class Humbug extends Command
      * @var MutantBuilder
      */
     protected $builder;
+
+    /**
+     * @var MutableIterator
+     */
+    protected $mutableIterator;
 
     private $jsonLogFile;
 
@@ -106,7 +112,7 @@ class Humbug extends Command
         $output->write(PHP_EOL);
 
         $testSuite = $this->builder->build($container, $renderer, $output);
-        $testSuite->run($container, $result->getCoverage());
+        $testSuite->run($result->getCoverage(), $this->mutableIterator);
 
 
         if ($this->isLoggingEnabled()) {
@@ -141,12 +147,14 @@ class Humbug extends Command
         $this->jsonLogFile = $newConfig->getLogsJson();
         $this->textLogFile = $newConfig->getLogsText();
 
-        $this->builder = new MutantBuilder(
+        $this->builder = new MutantBuilder();
+        $this->builder->setLogFiles($this->textLogFile, $this->jsonLogFile);
+
+        $this->mutableIterator = new MutableIterator(
+            $this->container,
             isset($source->directories)? $source->directories : null,
             isset($source->excludes)? $source->excludes : null
         );
-
-        $this->builder->setLogFiles($this->textLogFile, $this->jsonLogFile);
     }
 
     protected function prepareFinder($directories, $excludes, array $names = null)

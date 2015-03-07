@@ -10,23 +10,22 @@
  */
 namespace Humbug\TestSuite\Mutant;
 
-use Humbug\Container;
 use Humbug\Mutation;
 use Humbug\Utility\Tokenizer;
 
 class FileGenerator
 {
     /**
-     * @var Container
+     * @var string
      */
-    private $container;
+    private $cacheDirectory;
 
     /**
-     * @param Container $container
+     * @param string $cacheDirectory
      */
-    public function __construct(Container $container)
+    public function __construct($cacheDirectory)
     {
-        $this->container = $container;
+        $this->cacheDirectory = $cacheDirectory;
     }
 
     /**
@@ -37,7 +36,7 @@ class FileGenerator
      */
     public function generateFile(Mutation $mutation)
     {
-        $file = $this->container->getCacheDirectory() . '/humbug.mutant.' . uniqid() . '.php';
+        $file = $this->cacheDirectory . '/humbug.mutant.' . uniqid() . '.php';
 
         // generate mutated file
         $mutatorClass = $mutation->getMutator();
