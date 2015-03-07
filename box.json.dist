@@ -14,7 +14,14 @@
             ],
             "exclude": [
                 "tests",
-                "mockery"
+                "mockery",
+                "behat",
+                "symfony/class-loader",
+                "symfony/translation",
+                "symfony/event-dispatcher",
+                "symfony/dependency-injection",
+                "symfony/filesystem",
+                "symfony/config"
             ],
             "in": [
                 "vendor"
