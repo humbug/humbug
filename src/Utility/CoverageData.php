@@ -43,8 +43,6 @@ class CoverageData
             return;
         }
 
-        $this->lastFile = $file;
-
         unset($this->data);
         gc_collect_cycles();
         $cache = sys_get_temp_dir() . '/coverage.humbug.' . md5($file) . '.cache';
@@ -55,6 +53,7 @@ class CoverageData
         }
         $coverage = include $cache;
         $this->data = $coverage->getData();
+        $this->lastFile = $file;
 
         unset($coverage);
     }
