@@ -44,8 +44,7 @@ class MutantTest extends \PHPUnit_Framework_TestCase
 
         if ($throwException) {
             $getTestMethod->willThrow(new NoCoveringTestsException());
-        }
-        else {
+        } else {
             $getTestMethod->willReturn($tests);
         }
 
