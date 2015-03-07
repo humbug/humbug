@@ -83,7 +83,7 @@ class Text
         }
         if (!empty($result['stdout'])) {
             $error[] = 'Stdout:';
-            $error = array_merge($error, $this->indent($result['stdout'], true));
+            $error = array_merge($error, $this->indent($this->headAndTail($result['stdout']), true));
         }
         if (!empty($result['stderr'])) {
             $error[] = 'Stderr:';
@@ -285,5 +285,26 @@ class Text
         }
         $return = implode("\n", $out);
         return $return;
+    }
+
+    /**
+     * Display only the head and tail of given output, removing text between
+     * the two where deemed umimportant.
+     *
+     * @param string $output
+     * @param int $lines Number of head/tail lines to retain
+     * @return string
+     */
+    protected function headAndTail($output, $lineCount = 20, $omittedMarker = '[...Middle of output removed by Humbug...]')
+    {
+        $lines = explode("\n", $output);
+        if (count($lines) <= ($lineCount * 2)) {
+            return $output;
+        }
+        return implode("\n", array_merge(
+            array_slice($lines, 0, $lineCount),
+            [$omittedMarker],
+            array_slice($lines, -$lineCount, $lineCount)
+        ));
     }
 }
