@@ -20,6 +20,8 @@ class CoverageData
 
     protected $data;
 
+    protected $lastFile;
+
     /**
      * The constructor processes the main coverage report into
      * a set of split files. A coverage data extract per source code file
@@ -37,6 +39,12 @@ class CoverageData
 
     public function loadCoverageFor($file)
     {
+        if ($file === $this->lastFile) {
+            return;
+        }
+
+        $this->lastFile = $file;
+
         unset($this->data);
         gc_collect_cycles();
         $cache = sys_get_temp_dir() . '/coverage.humbug.' . md5($file) . '.cache';
@@ -47,12 +55,14 @@ class CoverageData
         }
         $coverage = include $cache;
         $this->data = $coverage->getData();
+
         unset($coverage);
     }
 
     public function hasTestClasses($file, $line)
     {
         $file = realpath($file);
+
         if (!isset($this->data[$file])) {
             return false;
         } elseif (!isset($this->data[$file][$line])) {

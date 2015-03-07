@@ -12,7 +12,6 @@ namespace Humbug\TestSuite\Mutant;
 
 use Humbug\Container;
 use Humbug\Exception\NoCoveringTestsException;
-use Humbug\Mutable;
 use Humbug\MutableIterator;
 use Humbug\Mutant;
 use Humbug\Utility\CoverageData;
@@ -86,20 +85,6 @@ class Runner
         foreach ($mutables as $index => $mutable) {
             $mutations = $mutable->generate()->getMutations();
             $partition->addMutations($mutable, $index, $mutations);
-
-            try {
-                $coverage->loadCoverageFor($mutable->getFilename());
-            } catch (NoCoveringTestsException $e) {
-                $shadowCount = count($mutations);
-
-                for ($i = 0; $i < $shadowCount; $i++) {
-                    $collector->collectShadow();
-                    $this->onShadowMutant($i);
-                }
-
-                continue;
-            }
-
             $mutable->cleanup();
         }
 
@@ -128,6 +113,7 @@ class Runner
 
         foreach ($batch as $mutation) {
             try {
+                $coverage->loadCoverageFor($mutation->getFile());
                 /**
                  * Unleash the Mutant!
                  */

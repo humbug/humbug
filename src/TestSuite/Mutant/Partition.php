@@ -44,13 +44,9 @@ class Partition
         $batches = [];
 
         foreach ($this->mutations as $data) {
-            list (, $index, $mutation) = $data;
+            list (, , $mutation) = $data;
 
-            if (! isset($batches[$index])) {
-                $batches[$index] = [];
-            }
-
-            $batches[$index][] = $mutation;
+            $batches[] = [ $mutation ];
         }
 
         return $batches;
