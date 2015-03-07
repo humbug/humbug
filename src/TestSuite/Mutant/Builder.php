@@ -57,7 +57,9 @@ class Builder
          *
          * TODO: Move PHPUnit specific stuff to adapter...
          */
-        $testSuite = new Runner($container, 1);
+        $mutantGenerator = new FileGenerator($container->getCacheDirectory());
+        $processBuilder = new ProcessBuilder($container);
+        $testSuite = new Runner($mutantGenerator, $processBuilder, $container->getBaseDirectory(), 1);
 
         $testSuite->addObserver(new LoggingObserver($renderer, $output));
         $testSuite->addObserver(new PerformanceObserver($renderer));

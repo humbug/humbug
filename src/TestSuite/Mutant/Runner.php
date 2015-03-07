@@ -31,6 +31,11 @@ class Runner
     private $processBuilder;
 
     /**
+     * @var string
+     */
+    private $baseDirectory;
+
+    /**
      * @var int
      */
     private $mutableCount = 0;
@@ -45,13 +50,13 @@ class Runner
      */
     private $observers = [];
 
-    public function __construct(Container $container, $threadCount = 1)
+    public function __construct(FileGenerator $mutantGenerator, ProcessBuilder $processBuilder, $baseDirectory, $threadCount = 1)
     {
-        $this->mutantGenerator = new FileGenerator($container->getCacheDirectory());
-        $this->processBuilder = new ProcessBuilder($container);
+        $this->mutantGenerator = $mutantGenerator;
+        $this->processBuilder = $processBuilder;
 
         $this->threadCount = max((int)$threadCount, 1);
-        $this->baseDirectory = $container->getBaseDirectory();
+        $this->baseDirectory = $baseDirectory;
     }
 
     /**

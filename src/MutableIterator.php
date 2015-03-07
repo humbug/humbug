@@ -21,7 +21,7 @@ class MutableIterator implements \IteratorAggregate, \Countable
     /**
      * @var array
      */
-    private $mutables;
+    private $mutables = null;
 
     /**
      * @param Container $container
@@ -61,7 +61,7 @@ class MutableIterator implements \IteratorAggregate, \Countable
      */
     protected function getMutables()
     {
-        if (! $this->mutables) {
+        if ($this->mutables === null) {
             $this->mutables = $this->container->getMutableFiles($this->finder);
         }
 

@@ -32,7 +32,7 @@ class Collector
     private $killedCount = 0;
 
     /**
-     * @var Mutant[] Mutants killed by a test case.
+     * @var Result[] Mutants killed by a test case.
      */
     private $killed = [];
 
@@ -42,7 +42,7 @@ class Collector
     private $timeoutCount = 0;
 
     /**
-     * @var Mutant[] Mutants that resulted in a timeout.
+     * @var Result[] Mutants that resulted in a timeout.
      */
     private $timeouts = [];
 
@@ -52,7 +52,7 @@ class Collector
     private $errorCount = 0;
 
     /**
-     * @var Mutant[] Mutants that triggered an error.
+     * @var Result[] Mutants that triggered an error.
      */
     private $errors = [];
 
@@ -62,7 +62,7 @@ class Collector
     private $escapeCount = 0;
 
     /**
-     * @var Mutant[] Mutants that escaped tests.
+     * @var Result[] Mutants that escaped tests.
      */
     private $escaped = [];
 
@@ -140,7 +140,7 @@ class Collector
     }
 
     /**
-     * @return Mutant[] List of mutants successfully killed by tests.
+     * @return Result[] List of mutants successfully killed by tests.
      */
     public function getKilled()
     {
@@ -156,7 +156,7 @@ class Collector
     }
 
     /**
-     * @return Mutant[] List of mutants that resulted in a timeout.
+     * @return Result[] List of mutants that resulted in a timeout.
      */
     public function getTimeouts()
     {
@@ -172,7 +172,7 @@ class Collector
     }
 
     /**
-     * @return Mutant[] List of mutants that triggered an error.
+     * @return Result[] List of mutants that triggered an error.
      */
     public function getErrors()
     {
@@ -188,7 +188,7 @@ class Collector
     }
 
     /**
-     * @return Mutant[] List of mutants that escaped test cases.
+     * @return Result[] List of mutants that escaped test cases.
      */
     public function getEscaped()
     {
