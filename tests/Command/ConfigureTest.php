@@ -32,6 +32,9 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
     {
         @unlink($this->configureDir . '/humbug.json');
         @rmdir('src');
+        @rmdir('src1');
+        @rmdir('src2');
+
         rmdir($this->configureDir);
     }
 
@@ -41,13 +44,13 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
         mkdir($srcDirName);
 
         $this->setUserInput(
-            "Y\n" .
-            $srcDirName . "\n"
+            $srcDirName . "\n" .
+            "\n" .
+            "Y\n"
         );
 
-        $commandTester = $this->executeCommand();
+        $this->executeCommand();
 
-        $this->assertStringEndsWith('Configuration file "humbug.json" was created.' . PHP_EOL, $commandTester->getDisplay());
         $this->assertFileExists('humbug.json');
 
         $expectedJson = <<<JSON
@@ -63,13 +66,64 @@ JSON;
         $this->assertJsonStringEqualsJsonString($expectedJson, file_get_contents('humbug.json'));
     }
 
+    public function testShouldCreateConfigurationWithMultipleSourceDirectories()
+    {
+        $srcDir1 = 'src1';
+        mkdir($srcDir1);
+        $srcDir2 = 'src2';
+        mkdir($srcDir2);
+
+        $this->setUserInput(
+            $srcDir1 . "\n" .
+            $srcDir2 . "\n" .
+            "\n" .
+            "Y\n"
+        );
+
+        $this->executeCommand();
+
+        $expectedJson = <<<JSON
+{
+    "source": {
+        "directories": [
+            "src1",
+            "src2"
+        ]
+    }
+}
+JSON;
+
+        $this->assertFileExists('humbug.json');
+        $this->assertJsonStringEqualsJsonString($expectedJson, file_get_contents('humbug.json'));
+    }
+
+    public function testShouldNotCreateConfigurationIfSrcDirectoryNotExists()
+    {
+        $this->setUserInput(
+            "Y\n" .
+            "not-exists\n" .
+            "\n"
+        );
+
+        $this->executeCommand();
+
+        $this->assertFileNotExists('humbug.json');
+    }
+
     public function testShouldExitIfIfUserDoesNotWantToConfigure()
     {
-        $this->setUserInput('n\\n');
+        $srcDirName = 'src';
+        mkdir($srcDirName);
 
-        $commandTester = $this->executeCommand();
+        $this->setUserInput(
+            $srcDirName . "\n".
+            "\n" .
+            "N\\n"
+        );
 
-        $this->assertEquals('Do you want to create humbug.json [Y]: ' . PHP_EOL, $commandTester->getDisplay());
+        $this->executeCommand();
+
+        $this->assertFileNotExists('humbug.json');
     }
 
     public function testShouldWarnUserThatConfigurationAlreadyExistsAndExit()
@@ -116,6 +170,7 @@ JSON;
         $commandTester = new CommandTester($this->command);
 
         $commandTester->execute([]);
+
         return $commandTester;
     }
 } 

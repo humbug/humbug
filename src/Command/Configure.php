@@ -14,33 +14,38 @@ class Configure extends Command
 {
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if (file_exists('humbug.json')) {
+        if ($this->isAlreadyConfigured()) {
             $output->writeln('Humbug humbug.json already exists.');
             return 0;
         }
 
         $questionHelper = $this->getQuestionHelper();
 
-        $question = new ConfirmationQuestion('Do you want to create humbug.json [Y]: ', true);
+        $sourceQuestion = $this->createSourceQuestion();
+        $sourcesDirs = [];
+
+        while ($sourceDir = $questionHelper->ask($input, $output, $sourceQuestion)) {
+            if ($sourceDir) {
+                $sourcesDirs[] = $sourceDir;
+            }
+        }
+
+        if (empty($sourcesDirs)) {
+            $output->writeln('Sources directories were not provided. Cannot generate humbug.json');
+            return 0;
+        }
+
+        $question = new ConfirmationQuestion('Confirm generation of humbug.json [Y]: ', true);
 
         if (!$questionHelper->ask($input, $output, $question)) {
             $output->writeln('');
-            return;
+            return 0;
         }
 
-        $sourceQuestion = new Question('Where your source are located? : ');
+        $configuration = $this->createConfiguration($sourcesDirs);
 
-        $sourceDir = $questionHelper->ask($input, $output, $sourceQuestion);
+        $this->saveConfiguration($configuration);
 
-        $source = new \stdClass();
-        $source->directories = [
-            $sourceDir
-        ];
-
-        $configuration = new \stdClass();
-        $configuration->source = $source;
-
-        file_put_contents('humbug.json', json_encode($configuration, JSON_PRETTY_PRINT));
         $output->writeln('Configuration file "humbug.json" was created.');
     }
 
@@ -55,5 +60,48 @@ class Configure extends Command
     private function getQuestionHelper()
     {
         return $this->getHelper('question');
+    }
+
+    private function isAlreadyConfigured()
+    {
+        return file_exists('humbug.json');
+    }
+
+    /**
+     * @return Question
+     */
+    private function createSourceQuestion()
+    {
+        $sourceQuestion = new Question('Where your source are located? [Enter = exit] : ');
+        $sourceQuestion->setValidator(function ($answer) {
+            if (trim($answer) && !is_dir($answer)) {
+                throw new \RuntimeException(sprintf('Could not find "%s" directory', $answer));
+            }
+
+            return $answer;
+        });
+        return $sourceQuestion;
+    }
+
+    /**
+     * @param $sourcesDirs
+     * @return \stdClass
+     */
+    private function createConfiguration($sourcesDirs)
+    {
+        $source = new \stdClass();
+        $source->directories = $sourcesDirs;
+
+        $configuration = new \stdClass();
+        $configuration->source = $source;
+        return $configuration;
+    }
+
+    /**
+     * @param $configuration
+     */
+    private function saveConfiguration($configuration)
+    {
+        file_put_contents('humbug.json', json_encode($configuration, JSON_PRETTY_PRINT));
     }
 } 
