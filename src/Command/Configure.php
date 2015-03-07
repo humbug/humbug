@@ -2,7 +2,7 @@
 
 namespace Humbug\Command;
 
-
+use Humbug\Adapter\Phpunit\ConfigurationLocator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
@@ -19,16 +19,9 @@ class Configure extends Command
             return 0;
         }
 
-        $questionHelper = $this->getQuestionHelper();
+        $chDir = $this->resolveChDir($input, $output);
 
-        $sourceQuestion = $this->createSourceQuestion();
-        $sourcesDirs = [];
-
-        while ($sourceDir = $questionHelper->ask($input, $output, $sourceQuestion)) {
-            if ($sourceDir) {
-                $sourcesDirs[] = $sourceDir;
-            }
-        }
+        $sourcesDirs = $this->getSourcesDirs($input, $output);
 
         if (empty($sourcesDirs)) {
             $output->writeln('Sources directories were not provided. Cannot generate humbug.json');
@@ -37,12 +30,12 @@ class Configure extends Command
 
         $question = new ConfirmationQuestion('Confirm generation of humbug.json [Y]: ', true);
 
-        if (!$questionHelper->ask($input, $output, $question)) {
+        if (!$this->getQuestionHelper()->ask($input, $output, $question)) {
             $output->writeln('');
             return 0;
         }
 
-        $configuration = $this->createConfiguration($sourcesDirs);
+        $configuration = $this->createConfiguration($sourcesDirs, $chDir);
 
         $this->saveConfiguration($configuration);
 
@@ -87,13 +80,18 @@ class Configure extends Command
      * @param $sourcesDirs
      * @return \stdClass
      */
-    private function createConfiguration($sourcesDirs)
+    private function createConfiguration($sourcesDirs, $chdir = null)
     {
         $source = new \stdClass();
         $source->directories = $sourcesDirs;
 
         $configuration = new \stdClass();
         $configuration->source = $source;
+
+        if ($chdir) {
+            $configuration->chdir = $chdir;
+        }
+
         return $configuration;
     }
 
@@ -103,5 +101,82 @@ class Configure extends Command
     private function saveConfiguration($configuration)
     {
         file_put_contents('humbug.json', json_encode($configuration, JSON_PRETTY_PRINT));
+    }
+
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return string|null
+     *
+     * @throws \RuntimeException
+     */
+    private function resolveChDir(InputInterface $input, OutputInterface $output)
+    {
+        $configurationLocator = new ConfigurationLocator();
+
+        try {
+            $configurationLocator->locate('.');
+            return null;
+        } catch (\RuntimeException $e) {
+            $chDir = null;
+
+            $output->writeln($e->getMessage());
+
+            $frameworkConfigurationQuestion = $this->createFrameworkConfigurationQuestion($configurationLocator);
+
+            $chDir = $this->getQuestionHelper()->ask($input, $output, $frameworkConfigurationQuestion);
+
+            if (!$chDir) {
+                throw new \RuntimeException("Could not create 'humbug.json'. Cannot locate phpunit.xml");
+            }
+
+            return $chDir;
+        }
+    }
+
+    /**
+     * @param ConfigurationLocator $configurationLocator
+     * @return Question
+     */
+    private function createFrameworkConfigurationQuestion(ConfigurationLocator $configurationLocator)
+    {
+        $frameworkConfigurationQuestion = new Question('Where is your phpunit.xml(.dist) configuration? : ');
+        $frameworkConfigurationQuestion->setValidator(function ($answer) use ($configurationLocator) {
+
+            $answer = trim($answer);
+
+            if (!$answer) {
+                return $answer;
+            }
+
+            if (!is_dir($answer)) {
+                throw new \RuntimeException(sprintf('Could not find "%s" directory', $answer));
+            }
+
+            $configurationLocator->locate($answer);
+
+            return $answer;
+        });
+
+        return $frameworkConfigurationQuestion;
+    }
+
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return array
+     */
+    private function getSourcesDirs(InputInterface $input, OutputInterface $output)
+    {
+        $sourcesDirs = [];
+
+        $sourceQuestion = $this->createSourceQuestion();
+
+        while ($sourceDir = $this->getQuestionHelper()->ask($input, $output, $sourceQuestion)) {
+            if ($sourceDir) {
+                $sourcesDirs[] = $sourceDir;
+            }
+        }
+        return $sourcesDirs;
     }
 } 

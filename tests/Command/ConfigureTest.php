@@ -30,7 +30,11 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
 
     protected function tearDown()
     {
-        @unlink($this->configureDir . '/humbug.json');
+        @unlink('humbug.json');
+        @unlink('phpunit.xml');
+        @unlink('app/phpunit.xml');
+
+        @rmdir('app');
         @rmdir('src');
         @rmdir('src1');
         @rmdir('src2');
@@ -42,6 +46,7 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
     {
         $srcDirName = 'src';
         mkdir($srcDirName);
+        touch('phpunit.xml');
 
         $this->setUserInput(
             $srcDirName . "\n" .
@@ -66,12 +71,44 @@ JSON;
         $this->assertJsonStringEqualsJsonString($expectedJson, file_get_contents('humbug.json'));
     }
 
+    public function testShouldCreateConfigurationWithDifferentLocationOfFrameworkConfigFile()
+    {
+        mkdir('app');
+        mkdir('src');
+        touch('app/phpunit.xml');
+
+        $this->setUserInput(
+            "app\n" .
+            "src\n" .
+            "\n" .
+            "Y\n"
+        );
+
+        $this->executeCommand();
+
+        $this->assertFileExists('humbug.json');
+
+        $expectedJson = <<<JSON
+{
+    "chdir": "app",
+    "source": {
+        "directories": [
+            "src"
+        ]
+    }
+}
+JSON;
+
+        $this->assertJsonStringEqualsJsonString($expectedJson, file_get_contents('humbug.json'));
+    }
+
     public function testShouldCreateConfigurationWithMultipleSourceDirectories()
     {
         $srcDir1 = 'src1';
         mkdir($srcDir1);
         $srcDir2 = 'src2';
         mkdir($srcDir2);
+        touch('phpunit.xml');
 
         $this->setUserInput(
             $srcDir1 . "\n" .
@@ -99,6 +136,8 @@ JSON;
 
     public function testShouldNotCreateConfigurationIfSrcDirectoryNotExists()
     {
+        touch('phpunit.xml');
+
         $this->setUserInput(
             "Y\n" .
             "not-exists\n" .
@@ -114,6 +153,7 @@ JSON;
     {
         $srcDirName = 'src';
         mkdir($srcDirName);
+        touch('phpunit.xml');
 
         $this->setUserInput(
             $srcDirName . "\n".
