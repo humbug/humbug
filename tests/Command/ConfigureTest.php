@@ -13,27 +13,72 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
      */
     private $command;
 
+    /**
+     * @var string
+     */
+    private $configureDir;
+
     protected function setUp()
     {
+        $this->configureDir = sys_get_temp_dir() . '/configure-test-dir-' . rand(10000, 99999);
+
+        mkdir($this->configureDir, 0777, true);
+        chdir($this->configureDir);
+
         $this->command = $this->createConfigureCommand();
+    }
+
+    protected function tearDown()
+    {
+        @unlink($this->configureDir . '/humbug.json');
+        @rmdir('src');
+        rmdir($this->configureDir);
     }
 
     public function testShouldCreateConfigurationIfUserConfirmsIt()
     {
-        $this->setUserInput('Y\\n');
+        $srcDirName = 'src';
+        mkdir($srcDirName);
+
+        $this->setUserInput(
+            "Y\n" .
+            $srcDirName . "\n"
+        );
 
         $commandTester = $this->executeCommand();
 
-        $this->assertStringEndsWith('So lets configure' . PHP_EOL, $commandTester->getDisplay());
+        $this->assertStringEndsWith('Configuration file "humbug.json" was created.' . PHP_EOL, $commandTester->getDisplay());
+        $this->assertFileExists('humbug.json');
+
+        $expectedJson = <<<JSON
+{
+    "source": {
+        "directories": [
+            "src"
+        ]
+    }
+}
+JSON;
+
+        $this->assertJsonStringEqualsJsonString($expectedJson, file_get_contents('humbug.json'));
     }
 
-    public function testShouldNotTakeAnyActionIfUserDoesNotWantThem()
+    public function testShouldExitIfIfUserDoesNotWantToConfigure()
     {
         $this->setUserInput('n\\n');
 
         $commandTester = $this->executeCommand();
 
-        $this->assertStringEndsWith('Thats a pity:( Maybe another time' . PHP_EOL, $commandTester->getDisplay());
+        $this->assertEquals('Do you want to create humbug.json [Y]: ' . PHP_EOL, $commandTester->getDisplay());
+    }
+
+    public function testShouldWarnUserThatConfigurationAlreadyExistsAndExit()
+    {
+        touch('humbug.json');
+
+        $commandTester = $this->executeCommand();
+
+        $this->assertEquals('Humbug humbug.json already exists.' . PHP_EOL, $commandTester->getDisplay());
     }
 
     private function getInputStream($input)
