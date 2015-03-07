@@ -78,6 +78,9 @@ class Runner
     {
         $this->onStartRun();
 
+        $baseDirectory = $container->getBaseDirectory();
+        $mutantGenerator = new FileGenerator($container);
+        $processBuilder = new ProcessBuilder($container);
         $collector = new Collector();
 
         /**
@@ -90,15 +93,26 @@ class Runner
             try {
                 $coverage->loadCoverageFor($mutable->getFilename());
             } catch (NoCoveringTestsException $e) {
-                foreach ($mutations as $mutation) {
+                $shadowCount = count($mutations);
+
+                for ($i = 0; $i < $shadowCount; $i++) {
                     $collector->collectShadow();
                     $this->onShadowMutant($i);
                 }
+
                 continue;
             }
 
             foreach ($batches as $batch) {
-                $this->runBatch($container, $collector, $coverage, $batch, $i);
+                $this->runBatch(
+                    $processBuilder,
+                    $mutantGenerator,
+                    $collector,
+                    $coverage,
+                    $baseDirectory,
+                    $batch,
+                    $i
+                );
             }
 
             $mutable->cleanup();
@@ -109,33 +123,35 @@ class Runner
     }
 
     /**
-     * @param Container $container
+     * @param ProcessBuilder $processBuilder
+     * @param FileGenerator $mutantGenerator
      * @param Collector $collector
      * @param CoverageData $coverage
      * @param $batch
      * @param $i
      */
     private function runBatch(
-        Container $container,
+        ProcessBuilder $processBuilder,
+        FileGenerator $mutantGenerator,
         Collector $collector,
         CoverageData $coverage,
+        $baseDirectory,
         $batch,
         $i
     ) {
-        $mutants = [];
         $processes = [];
-        // Being utterly paranoid, track index using $tracker explicitly
-        // to ensure process->mutation indices are linked for reporting.
-        foreach ($batch as $tracker => $mutation) {
+
+        foreach ($batch as $mutation) {
             try {
                 /**
                  * Unleash the Mutant!
                  */
-                $mutants[$tracker] = new Mutant($mutation, $container, $coverage);
-                $processes[$tracker] = $mutants[$tracker]->getProcess();
+                $processes[] = $processBuilder->build(
+                    new Mutant($mutation, $mutantGenerator, $coverage, $baseDirectory)
+                );
             } catch (NoCoveringTestsException $e) {
                 /**
-                 * No tests excercise the mutated line. We'll report
+                 * No tests exercise the mutated line. We'll report
                  * the uncovered mutants separately and omit them
                  * from final score.
                  */
@@ -155,18 +171,16 @@ class Runner
         $group = new ParallelGroup($processes);
         $group->run();
 
-        foreach ($mutants as $tracker => $mutant) {
+        foreach ($processes as $process) {
             /**
              * Handle the defined result for each process
              */
-            $result = $mutant->getResult($group->timedOut($tracker));
+            $result = $process->getResult();
 
-            $mutant->getProcess()->clearOutput();
-            $this->onMutantDone($mutant, $result, $i);
-            $collector->collect($mutant, $result);
+            $this->onMutantDone($process->getMutant(), $result, $i);
+            $collector->collect($result);
         }
     }
-
 
     private function onStartRun()
     {

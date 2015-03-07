@@ -14,6 +14,7 @@ namespace Humbug\Test\Report;
 
 use Humbug\Mutation;
 use Humbug\Report\Text;
+use Humbug\TestSuite\Mutant\Result;
 
 class TextTest extends \PHPUnit_Framework_TestCase
 {
@@ -38,9 +39,9 @@ DIFF;
 
     public function testShouldPrepareSingleReport()
     {
-        $mutant = $this->createMutantStub('');
+        $result = $this->createMutantResultStub('');
 
-        $mutantReport = (new Text())->prepareReportForMutant($mutant);
+        $mutantReport = (new Text())->prepareReportForMutant($result);
 
         $expectedReport = $this->getExpectedMutantReport();
 
@@ -49,9 +50,9 @@ DIFF;
 
     public function testShouldPrepareSingleReportWithError()
     {
-        $mutant = $this->createMutantStub('Fatal error: This is test error');
+        $result = $this->createMutantResultStub('Fatal error: This is test error');
 
-        $mutantReport = (new Text())->prepareReportForMutant($mutant);
+        $mutantReport = (new Text())->prepareReportForMutant($result);
 
         $expectedError =
             'The following output was received on stderr:' . PHP_EOL .
@@ -64,19 +65,19 @@ DIFF;
 
     public function testShouldPrepareAllMutantsReport()
     {
-        $mutants = [
-            $this->createMutant(),
-            $this->createMutant(),
-            $this->createMutant()
+        $results = [
+            $this->createMutantResult(),
+            $this->createMutantResult(),
+            $this->createMutantResult()
         ];
 
         $textReport = $this->getMock('Humbug\Report\Text', ['prepareReportForMutant']);
 
-        $textReport->expects($this->at(0))->method('prepareReportForMutant')->with($mutants[0]);
-        $textReport->expects($this->at(1))->method('prepareReportForMutant')->with($mutants[1]);
-        $textReport->expects($this->at(2))->method('prepareReportForMutant')->with($mutants[2]);
+        $textReport->expects($this->at(0))->method('prepareReportForMutant')->with($results[0]);
+        $textReport->expects($this->at(1))->method('prepareReportForMutant')->with($results[1]);
+        $textReport->expects($this->at(2))->method('prepareReportForMutant')->with($results[2]);
 
-        $mutantsReport = $textReport->prepareMutantsReport($mutants, 'Mutants');
+        $mutantsReport = $textReport->prepareMutantsReport($results, 'Mutants');
 
         $expectedMutantsGroup =
             '------' . PHP_EOL .
@@ -90,23 +91,24 @@ DIFF;
         $this->assertContains(PHP_EOL . '3) ', $mutantsReport);
     }
 
-    private function createMutantStub($errorOutput)
+    private function createMutantResultStub($errorOutput)
     {
-        $process = $this->getMock('Symfony\Component\Process\Process', [], [], '', false);
-        $process->expects($this->once())->method('getErrorOutput')->willReturn($errorOutput);
-
         $mutant = $this->createMutant();
 
         $mutant->expects($this->once())->method('getMutation')->willReturn($this->mutation);
         $mutant->expects($this->once())->method('getDiff')->willReturn($this->diff);
-        $mutant->expects($this->once())->method('getProcess')->willReturn($process);
 
-        return $mutant;
+        return new Result($mutant, Result::ESCAPE, '', $errorOutput);
     }
 
     private function createMutant()
     {
         return $this->getMock('Humbug\Mutant', [], [], '', false);
+    }
+
+    private function createMutantResult()
+    {
+        return $this->getMock('Humbug\TestSuite\Mutant\Result', [], [], '', false);
     }
 
     private function getExpectedMutantReport()

@@ -11,6 +11,8 @@
  */
 namespace Humbug\TestSuite\Mutant;
 
+use Humbug\Mutant;
+
 class Result
 {
 
@@ -21,6 +23,11 @@ class Result
     const ERROR = 2;
 
     const TIMEOUT = 3;
+
+    /**
+     * @var Mutant
+     */
+    private $mutant;
 
     /**
      * @var int
@@ -53,16 +60,18 @@ class Result
     }
 
     /**
+     * @param Mutant $mutant
      * @param int $status
      * @param string $stdOut
      * @param string $stdErr
      */
-    public function __construct($status, $stdOut, $stdErr)
+    public function __construct(Mutant $mutant, $status, $stdOut, $stdErr)
     {
         if ($status < 0 || $status > 3) {
             throw new \InvalidArgumentException('Invalid result code.');
         }
 
+        $this->mutant = $mutant;
         $this->status = $status;
         $this->stdErr = $stdErr;
         $this->stdOut = $stdOut;
@@ -109,10 +118,36 @@ class Result
     }
 
     /**
+     * @return Mutant
+     */
+    public function getMutant()
+    {
+        return $this->mutant;
+    }
+
+    /**
      * @return string
      */
     public function getErrorOutput()
     {
         return $this->stdErr;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOutput()
+    {
+        return $this->stdOut;
+    }
+
+    public function toArray()
+    {
+        $data = $this->mutant->toArray();
+
+        $data['stderr'] = $this->stdErr;
+        $data['stdout'] = $this->stdOut;
+
+        return $data;
     }
 }

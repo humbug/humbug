@@ -33,17 +33,20 @@ class CollectorTest extends \PHPUnit_Framework_TestCase
 
     private function getMutant($isError, $isKill, $isTimeout)
     {
-        $mutant = $mutant=  $this->prophesize('Humbug\Mutant');
+        $mutant = $this->prophesize('Humbug\Mutant');
         $result = $this->prophesize('Humbug\TestSuite\Mutant\Result');
 
         $result->isError()->willReturn((bool) $isError);
         $result->isKill()->willReturn((bool) $isKill);
         $result->isTimeout()->willReturn((bool) $isTimeout);
+        $result->getMutant()->willReturn($mutant->reveal());
 
-        $mutant->getResult()->willReturn($result->reveal());
-        $mutant->toArray()->willReturn([ 'id' => uniqid(), 'stderr' => $isError ? 'Error' : '' ]);
+        $result->toArray()->willReturn([
+            'id' => uniqid(),
+            'stderr' => $isError ? 'Error' : ''
+        ]);
 
-        return $mutant->reveal();
+        return $result->reveal();
     }
 
     public function testAddErrorResultToCollector()
@@ -52,7 +55,7 @@ class CollectorTest extends \PHPUnit_Framework_TestCase
 
         $error = $this->getMutant(true, false, false);
 
-        $collector->collect($error, $error->getResult());
+        $collector->collect($error);
 
         $this->assertEquals(1, $collector->getTotalCount());
         $this->assertEquals(1, $collector->getErrorCount());
@@ -70,7 +73,7 @@ class CollectorTest extends \PHPUnit_Framework_TestCase
 
         $kill = $this->getMutant(false, true, false);
 
-        $collector->collect($kill, $kill->getResult());
+        $collector->collect($kill);
 
         $this->assertEquals(1, $collector->getTotalCount());
         $this->assertEquals(0, $collector->getErrorCount());
@@ -88,7 +91,7 @@ class CollectorTest extends \PHPUnit_Framework_TestCase
 
         $timeout = $this->getMutant(false, false, true);
 
-        $collector->collect($timeout, $timeout->getResult());
+        $collector->collect($timeout);
 
         $this->assertEquals(1, $collector->getTotalCount());
         $this->assertEquals(0, $collector->getErrorCount());
@@ -106,7 +109,7 @@ class CollectorTest extends \PHPUnit_Framework_TestCase
 
         $escape = $this->getMutant(false, false, false);
 
-        $collector->collect($escape, $escape->getResult());
+        $collector->collect($escape);
 
         $this->assertEquals(1, $collector->getTotalCount());
         $this->assertEquals(0, $collector->getErrorCount());
@@ -139,10 +142,10 @@ class CollectorTest extends \PHPUnit_Framework_TestCase
         $timeout = $this->getMutant(false, false, true);
         $escape = $this->getMutant(false, false, false);
 
-        $collector->collect($error, $error->getResult());
-        $collector->collect($kill, $kill->getResult());
-        $collector->collect($timeout, $timeout->getResult());
-        $collector->collect($escape, $escape->getResult());
+        $collector->collect($error);
+        $collector->collect($kill);
+        $collector->collect($timeout);
+        $collector->collect($escape);
 
         $array = $collector->toGroupedMutantArray();
 

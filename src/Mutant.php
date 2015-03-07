@@ -10,7 +10,7 @@
  */
 namespace Humbug;
 
-use Humbug\Exception\LogicException;
+use Humbug\TestSuite\Mutant\FileGenerator;
 use Humbug\TestSuite\Mutant\Result;
 use Humbug\Utility\CoverageData;
 use Humbug\Utility\Diff;
@@ -26,9 +26,9 @@ class Mutant
     protected $mutation;
 
     /**
-     * @var Container
+     * @var string
      */
-    protected $container;
+    protected $baseDirectory;
 
     /**
      * @var string
@@ -51,38 +51,25 @@ class Mutant
     protected $diff;
 
     /**
-     * @var PhpProcess
-     */
-    protected $process;
-
-    /**
      * @var Result
      */
     protected $result;
 
-    public function __construct(Mutation $mutation, Container $container, CoverageData $coverage)
+    public function __construct(Mutation $mutation, FileGenerator $generator, CoverageData $coverage, $baseDirectory)
     {
         $this->mutation = $mutation;
         $this->tests = $coverage->getTestClasses(
             $mutation->getFile(),
             $mutation->getLine()
         );
+
         $this->testMethods = $coverage->getTestMethods(
             $mutation->getFile(),
             $mutation->getLine()
         );
 
-        $this->container = $container;
-        $this->file = $container->getCacheDirectory() . '/humbug.mutant.' . uniqid() . '.php';
-
-        // generate mutated file
-        $mutatorClass = $mutation->getMutator();
-
-        $originalFileContent = file_get_contents($mutation->getFile());
-        $tokens = Tokenizer::getTokens($originalFileContent);
-        $mutatedFileContent = $mutatorClass::mutate($tokens, $mutation->getIndex());
-
-        file_put_contents($this->file, $mutatedFileContent);
+        $this->file = $generator->generateFile($mutation);
+        $this->baseDirectory = $baseDirectory;
     }
 
     public function __destruct()
@@ -90,58 +77,6 @@ class Mutant
         if (file_exists($this->file)) {
             unlink($this->file);
         }
-    }
-
-    /**
-     * Return the test process
-     * If it doesn't exist it will be created
-     *
-     * @return \Symfony\Component\Process\PhpProcess
-     */
-    public function getProcess()
-    {
-        if ($this->process) {
-            return $this->process;
-        }
-
-        return $this->process = $this->container->getAdapter()->getProcess(
-            $this->container,
-            false,
-            $this->mutation->getFile(), // file to intercept
-            $this->file, // mutated file to substitute
-            $this->tests
-        );
-    }
-
-    /**
-     * @param bool $timeoutFlag
-     * @return Result
-     *
-     * @throws LogicException when the test process is not terminated.
-     */
-    public function getResult($timeoutFlag)
-    {
-        if (! $this->result) {
-            $process = $this->getProcess();
-
-            if (! $process->isTerminated()) {
-                throw new LogicException('Process is not terminated yet.');
-            }
-
-            $status = Result::getStatusCode(
-                $this->container->getAdapter()->ok($process->getOutput()),
-                $process->isSuccessful(),
-                $timeoutFlag
-            );
-
-            $this->result = new Result(
-                $status,
-                $process->getOutput(),
-                $process->getErrorOutput()
-            );
-        }
-
-        return $this->result;
     }
 
     /**
@@ -192,8 +127,6 @@ class Mutant
             'method' => $this->mutation->getMethod(),
             'line' => $this->mutation->getLine(),
             'diff' => $this->getDiff(),
-            'stdout' => $this->getProcess()->getOutput(),
-            'stderr' => $this->getProcess()->getErrorOutput(),
             'tests' => $this->testMethods
         ];
     }
@@ -201,7 +134,7 @@ class Mutant
     private function getMutationFileRelativePath()
     {
         $path = explode(DIRECTORY_SEPARATOR, $this->mutation->getFile());
-        $baseDirectory = explode(DIRECTORY_SEPARATOR, $this->container->getBaseDirectory());
+        $baseDirectory = explode(DIRECTORY_SEPARATOR, $this->baseDirectory);
 
         return join(DIRECTORY_SEPARATOR, array_diff($path, $baseDirectory));
     }

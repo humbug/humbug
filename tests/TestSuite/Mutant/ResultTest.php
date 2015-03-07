@@ -44,12 +44,22 @@ class ResultTest extends \PHPUnit_Framework_TestCase
      */
     public function testResultRejectsInvalidStatusCode($statusCode)
     {
-        new Result($statusCode, '', '');
+        new Result(
+            $this->prophesize('Humbug\Mutant')->reveal(),
+            $statusCode,
+            '',
+            ''
+        );
     }
 
     public function testResultReturnsCorrectStatusAndErrorOutput()
     {
-        $result = new Result(Result::ERROR, '', 'error');
+        $result = new Result(
+            $this->prophesize('Humbug\Mutant')->reveal(),
+            Result::ERROR,
+            '',
+            'error'
+        );
 
         $this->assertEquals(Result::ERROR, $result->getResult());
         $this->assertEquals('error', $result->getErrorOutput());
@@ -57,7 +67,12 @@ class ResultTest extends \PHPUnit_Framework_TestCase
 
     public function testResultReportsTimeoutStatusCorrectly()
     {
-        $result = new Result(Result::TIMEOUT, '', '');
+        $result = new Result(
+            $this->prophesize('Humbug\Mutant')->reveal(),
+            Result::TIMEOUT,
+            '',
+            ''
+        );
 
         $this->assertTrue($result->isTimeout());
         $this->assertFalse($result->isError());
@@ -67,7 +82,12 @@ class ResultTest extends \PHPUnit_Framework_TestCase
 
     public function testResultReportsEscapeStatusCorrectly()
     {
-        $result = new Result(Result::ESCAPE, '', '');
+        $result = new Result(
+            $this->prophesize('Humbug\Mutant')->reveal(),
+            Result::ESCAPE,
+            '',
+            ''
+        );
 
         $this->assertFalse($result->isTimeout());
         $this->assertFalse($result->isError());
@@ -77,7 +97,12 @@ class ResultTest extends \PHPUnit_Framework_TestCase
 
     public function testResultReportsErrorStatusCorrectly()
     {
-        $result = new Result(Result::ERROR, '', '');
+        $result = new Result(
+            $this->prophesize('Humbug\Mutant')->reveal(),
+            Result::ERROR,
+            '',
+            ''
+        );
 
         $this->assertFalse($result->isTimeout());
         $this->assertTrue($result->isError());
@@ -87,7 +112,12 @@ class ResultTest extends \PHPUnit_Framework_TestCase
 
     public function testResultReportsKillStatusCorrectly()
     {
-        $result = new Result(Result::KILL, '', '');
+        $result = new Result(
+            $this->prophesize('Humbug\Mutant')->reveal(),
+            Result::KILL,
+            '',
+            ''
+        );
 
         $this->assertFalse($result->isTimeout());
         $this->assertFalse($result->isError());
