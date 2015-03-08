@@ -53,6 +53,7 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
             "\n" .
             "\n" .
             "\n" .
+            "\n" .
             "Y\n"
         );
 
@@ -65,10 +66,18 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
             "src"
         ]
     },
-    "timeout": 10
+    "timeout": 10,
+    "logs": {
+        "text": "humbuglog.txt"
+    }
 }
 JSON;
 
+        $this->assertHumbugJsonEqualsJson($expectedJson);
+    }
+
+    private function assertHumbugJsonEqualsJson($expectedJson)
+    {
         $this->assertJsonStringEqualsJsonString($expectedJson, file_get_contents('humbug.json'));
     }
 
@@ -81,6 +90,7 @@ JSON;
         $this->setUserInput(
             "app\n" .
             "src\n" .
+            "\n" .
             "\n" .
             "\n" .
             "\n" .
@@ -97,11 +107,47 @@ JSON;
             "src"
         ]
     },
-    "timeout": 10
+    "timeout": 10,
+    "logs": {
+        "text": "humbuglog.txt"
+    }
 }
 JSON;
 
-        $this->assertJsonStringEqualsJsonString($expectedJson, file_get_contents('humbug.json'));
+        $this->assertHumbugJsonEqualsJson($expectedJson);
+    }
+
+    public function testShouldCreateConfigurationWithCustomTextLogging()
+    {
+        mkdir('src');
+        touch('phpunit.xml');
+
+        $this->setUserInput(
+            "src\n" .
+            "\n" .
+            "\n" .
+            "\n" .
+            "custom-log.txt\n" .
+            "Y\n"
+        );
+
+        $this->executeCommand();
+
+        $expectedJson = <<<JSON
+{
+    "source": {
+        "directories": [
+            "src"
+        ]
+    },
+    "timeout": 10,
+    "logs": {
+        "text": "custom-log.txt"
+    }
+}
+JSON;
+
+        $this->assertHumbugJsonEqualsJson($expectedJson);
     }
 
     public function testShouldCreateConfigurationWithMultipleSourceDirectories()
@@ -118,6 +164,7 @@ JSON;
             "\n" .
             "\n" .
             "\n" .
+            "\n" .
             "Y\n"
         );
 
@@ -131,11 +178,14 @@ JSON;
             "src2"
         ]
     },
-    "timeout": 10
+    "timeout": 10,
+    "logs": {
+        "text": "humbuglog.txt"
+    }
 }
 JSON;
 
-        $this->assertJsonStringEqualsJsonString($expectedJson, file_get_contents('humbug.json'));
+        $this->assertHumbugJsonEqualsJson($expectedJson);
     }
 
     public function testShouldCreateConfigurationWithExcludeDirectories()
@@ -152,10 +202,11 @@ JSON;
         touch('phpunit.xml');
 
         $this->setUserInput(
-            $srcDir. "\n" .
+            $srcDir . "\n" .
             "\n" .
             $excludeDir1 . "\n" .
             $excludeDir2 . "\n" .
+            "\n" .
             "\n" .
             "\n" .
             "Y\n"
@@ -174,11 +225,14 @@ JSON;
             "src2"
         ]
     },
-    "timeout": 10
+    "timeout": 10,
+    "logs": {
+        "text": "humbuglog.txt"
+    }
 }
 JSON;
 
-       $this->assertJsonStringEqualsJsonString($expectedJson, file_get_contents('humbug.json'));
+        $this->assertHumbugJsonEqualsJson($expectedJson);
     }
 
     public function testShouldCreateConfigurationWithTimeout()
@@ -191,6 +245,7 @@ JSON;
             "\n" .
             "\n" .
             "5\n" .
+            "\n" .
             "Y\n"
         );
 
@@ -203,11 +258,14 @@ JSON;
             "src"
         ]
     },
-    "timeout": 5
+    "timeout": 5,
+    "logs": {
+        "text": "humbuglog.txt"
+    }
 }
 JSON;
 
-        $this->assertJsonStringEqualsJsonString($expectedJson, file_get_contents('humbug.json'));
+        $this->assertHumbugJsonEqualsJson($expectedJson);
     }
 
     public function testShouldNotCreateConfigurationIfSrcDirectoryNotExists()
@@ -233,6 +291,7 @@ JSON;
 
         $this->setUserInput(
             $srcDirName . "\n".
+            "\n" .
             "\n" .
             "\n" .
             "\n" .

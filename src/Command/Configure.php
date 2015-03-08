@@ -30,16 +30,11 @@ class Configure extends Command
 
         $excludeDirs = $this->getDirs($input, $output, 'Which dir you want to exclude? :');
 
-        $timeoutQuestion = new Question('Single test timeout in seconds [10] : ', 10);
-        $timeoutQuestion->setValidator(function($answer) {
-            if (!$answer || !is_numeric($answer)) {
-                throw new \RuntimeException('Timeout should be number');
-            }
+        $timeout = $this->getTimeout($input, $output);
 
-            return (int) $answer;
-        });
+        $textLogQuestion = new Question('Where do you want to store text logs ? [humbuglog.txt] : ', 'humbuglog.txt');
 
-        $timeout = $this->getQuestionHelper()->ask($input, $output, $timeoutQuestion);
+        $textLogFile = $this->getQuestionHelper()->ask($input, $output, $textLogQuestion);
 
         $question = new ConfirmationQuestion('Confirm generation of humbug.json [Y]: ', true);
 
@@ -48,7 +43,13 @@ class Configure extends Command
             return 0;
         }
 
-        $configuration = $this->createConfiguration($sourcesDirs, $excludeDirs, $chDir, $timeout);
+        $configuration = $this->createConfiguration(
+            $sourcesDirs,
+            $excludeDirs,
+            $chDir,
+            $timeout,
+            $textLogFile
+        );
 
         $this->saveConfiguration($configuration);
 
@@ -85,7 +86,8 @@ class Configure extends Command
         $sourcesDirs,
         $excludeDirs,
         $chDir,
-        $timeout
+        $timeout,
+        $textLogFile
     ) {
         $source = new \stdClass();
         $source->directories = $sourcesDirs;
@@ -103,6 +105,14 @@ class Configure extends Command
 
         if ($timeout) {
             $configuration->timeout = $timeout;
+        }
+
+        if ($textLogFile) {
+            $logs = new \stdClass();
+
+            $logs->text = $textLogFile;
+
+            $configuration->logs = $logs;
         }
 
         return $configuration;
@@ -210,4 +220,34 @@ class Configure extends Command
         });
         return $sourceQuestion;
     }
-} 
+
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return string
+     */
+    private function getTimeout(InputInterface $input, OutputInterface $output)
+    {
+        $timeoutQuestion = $this->createTimeoutQuestion();
+
+        $timeout = $this->getQuestionHelper()->ask($input, $output, $timeoutQuestion);
+
+        return $timeout;
+    }
+
+    /**
+     * @return Question
+     */
+    private function createTimeoutQuestion()
+    {
+        $timeoutQuestion = new Question('Single test timeout in seconds [10] : ', 10);
+        $timeoutQuestion->setValidator(function ($answer) {
+            if (!$answer || !is_numeric($answer)) {
+                throw new \RuntimeException('Timeout should be number');
+            }
+
+            return (int)$answer;
+        });
+        return $timeoutQuestion;
+    }
+}
