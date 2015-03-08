@@ -52,6 +52,7 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
             $srcDirName . "\n" .
             "\n" .
             "\n" .
+            "\n" .
             "Y\n"
         );
 
@@ -63,7 +64,8 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
         "directories": [
             "src"
         ]
-    }
+    },
+    "timeout": 10
 }
 JSON;
 
@@ -81,6 +83,7 @@ JSON;
             "src\n" .
             "\n" .
             "\n" .
+            "\n" .
             "Y\n"
         );
 
@@ -93,7 +96,8 @@ JSON;
         "directories": [
             "src"
         ]
-    }
+    },
+    "timeout": 10
 }
 JSON;
 
@@ -113,6 +117,7 @@ JSON;
             $srcDir2 . "\n" .
             "\n" .
             "\n" .
+            "\n" .
             "Y\n"
         );
 
@@ -125,7 +130,8 @@ JSON;
             "src1",
             "src2"
         ]
-    }
+    },
+    "timeout": 10
 }
 JSON;
 
@@ -151,6 +157,7 @@ JSON;
             $excludeDir1 . "\n" .
             $excludeDir2 . "\n" .
             "\n" .
+            "\n" .
             "Y\n"
         );
 
@@ -166,11 +173,41 @@ JSON;
             "src1",
             "src2"
         ]
-    }
+    },
+    "timeout": 10
 }
 JSON;
 
        $this->assertJsonStringEqualsJsonString($expectedJson, file_get_contents('humbug.json'));
+    }
+
+    public function testShouldCreateConfigurationWithTimeout()
+    {
+        mkdir('src');
+        touch('phpunit.xml');
+
+        $this->setUserInput(
+            "src\n" .
+            "\n" .
+            "\n" .
+            "5\n" .
+            "Y\n"
+        );
+
+        $this->executeCommand();
+
+        $expectedJson = <<<JSON
+{
+    "source": {
+        "directories": [
+            "src"
+        ]
+    },
+    "timeout": 5
+}
+JSON;
+
+        $this->assertJsonStringEqualsJsonString($expectedJson, file_get_contents('humbug.json'));
     }
 
     public function testShouldNotCreateConfigurationIfSrcDirectoryNotExists()
@@ -196,6 +233,7 @@ JSON;
 
         $this->setUserInput(
             $srcDirName . "\n".
+            "\n" .
             "\n" .
             "\n" .
             "N\\n"

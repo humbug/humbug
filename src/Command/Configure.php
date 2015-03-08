@@ -30,6 +30,17 @@ class Configure extends Command
 
         $excludeDirs = $this->getDirs($input, $output, 'Which dir you want to exclude? :');
 
+        $timeoutQuestion = new Question('Single test timeout in seconds [10] : ', 10);
+        $timeoutQuestion->setValidator(function($answer) {
+            if (!$answer || !is_numeric($answer)) {
+                throw new \RuntimeException('Timeout should be number');
+            }
+
+            return (int) $answer;
+        });
+
+        $timeout = $this->getQuestionHelper()->ask($input, $output, $timeoutQuestion);
+
         $question = new ConfirmationQuestion('Confirm generation of humbug.json [Y]: ', true);
 
         if (!$this->getQuestionHelper()->ask($input, $output, $question)) {
@@ -37,7 +48,7 @@ class Configure extends Command
             return 0;
         }
 
-        $configuration = $this->createConfiguration($sourcesDirs, $excludeDirs, $chDir);
+        $configuration = $this->createConfiguration($sourcesDirs, $excludeDirs, $chDir, $timeout);
 
         $this->saveConfiguration($configuration);
 
@@ -66,11 +77,16 @@ class Configure extends Command
      * @param $sourcesDirs
      * @param $excludeDirs
      * @param $chDir
+     * @param $timeout
      *
      * @return \stdClass
      */
-    private function createConfiguration($sourcesDirs, $excludeDirs, $chDir)
-    {
+    private function createConfiguration(
+        $sourcesDirs,
+        $excludeDirs,
+        $chDir,
+        $timeout
+    ) {
         $source = new \stdClass();
         $source->directories = $sourcesDirs;
 
@@ -83,6 +99,10 @@ class Configure extends Command
 
         if ($chDir) {
             $configuration->chdir = $chDir;
+        }
+
+        if ($timeout) {
+            $configuration->timeout = $timeout;
         }
 
         return $configuration;
