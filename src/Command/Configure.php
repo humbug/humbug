@@ -32,9 +32,9 @@ class Configure extends Command
 
         $timeout = $this->getTimeout($input, $output);
 
-        $textLogQuestion = new Question('Where do you want to store text logs ? [humbuglog.txt] : ', 'humbuglog.txt');
+        $textLogFile = $this->getTextLogFile($input, $output);
 
-        $textLogFile = $this->getQuestionHelper()->ask($input, $output, $textLogQuestion);
+        $jsonLogFile = $this->getJsonLogFile($input, $output);
 
         $question = new ConfirmationQuestion('Confirm generation of humbug.json [Y]: ', true);
 
@@ -48,7 +48,8 @@ class Configure extends Command
             $excludeDirs,
             $chDir,
             $timeout,
-            $textLogFile
+            $textLogFile,
+            $jsonLogFile
         );
 
         $this->saveConfiguration($configuration);
@@ -79,6 +80,8 @@ class Configure extends Command
      * @param $excludeDirs
      * @param $chDir
      * @param $timeout
+     * @param $textLogFile
+     * @param $jsonLogFile
      *
      * @return \stdClass
      */
@@ -87,7 +90,8 @@ class Configure extends Command
         $excludeDirs,
         $chDir,
         $timeout,
-        $textLogFile
+        $textLogFile,
+        $jsonLogFile
     ) {
         $source = new \stdClass();
         $source->directories = $sourcesDirs;
@@ -107,11 +111,9 @@ class Configure extends Command
             $configuration->timeout = $timeout;
         }
 
-        if ($textLogFile) {
-            $logs = new \stdClass();
+        $logs = $this->prepareLogs($textLogFile, $jsonLogFile);
 
-            $logs->text = $textLogFile;
-
+        if ($logs) {
             $configuration->logs = $logs;
         }
 
@@ -249,5 +251,57 @@ class Configure extends Command
             return (int)$answer;
         });
         return $timeoutQuestion;
+    }
+
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return string
+     */
+    private function getTextLogFile(InputInterface $input, OutputInterface $output)
+    {
+        $textLogQuestion = new Question('Where do you want to store text logs ? [humbuglog.txt] : ', 'humbuglog.txt');
+
+        $textLogFile = $this->getQuestionHelper()->ask($input, $output, $textLogQuestion);
+        return $textLogFile;
+    }
+
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return string
+     */
+    private function getJsonLogFile(InputInterface $input, OutputInterface $output)
+    {
+        $textLogQuestion = new Question('Where do you want to store json logs? : ');
+
+        $textLogFile = $this->getQuestionHelper()->ask($input, $output, $textLogQuestion);
+
+        return $textLogFile;
+    }
+
+    /**
+     * @param $textLogFile
+     * @param $jsonLogFile
+     * @return null|\stdClass
+     */
+    private function prepareLogs($textLogFile, $jsonLogFile)
+    {
+        $logs = null;
+
+        if ($textLogFile || $jsonLogFile) {
+            $logs = new \stdClass();
+
+            if ($textLogFile) {
+                $logs->text = $textLogFile;
+            }
+
+            if ($jsonLogFile) {
+                $logs->json = $jsonLogFile;
+                return $logs;
+            }
+            return $logs;
+        }
+        return $logs;
     }
 }

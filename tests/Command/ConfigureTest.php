@@ -54,6 +54,7 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
             "\n" .
             "\n" .
             "\n" .
+            "\n" .
             "Y\n"
         );
 
@@ -94,6 +95,7 @@ JSON;
             "\n" .
             "\n" .
             "\n" .
+            "\n" .
             "Y\n"
         );
 
@@ -128,6 +130,7 @@ JSON;
             "\n" .
             "\n" .
             "custom-log.txt\n" .
+            "\n" .
             "Y\n"
         );
 
@@ -150,6 +153,41 @@ JSON;
         $this->assertHumbugJsonEqualsJson($expectedJson);
     }
 
+    public function testShouldCreateConfigurationWithJsonLogging()
+    {
+        mkdir('src');
+        touch('phpunit.xml');
+
+        $this->setUserInput(
+            "src\n" .
+            "\n" .
+            "\n" .
+            "\n" .
+            "\n" .
+            "humbuglog.json\n" .
+            "Y\n"
+        );
+
+        $this->executeCommand();
+
+        $expectedJson = <<<JSON
+{
+    "source": {
+        "directories": [
+            "src"
+        ]
+    },
+    "timeout": 10,
+    "logs": {
+        "text": "humbuglog.txt",
+        "json": "humbuglog.json"
+    }
+}
+JSON;
+
+        $this->assertHumbugJsonEqualsJson($expectedJson);
+    }
+
     public function testShouldCreateConfigurationWithMultipleSourceDirectories()
     {
         $srcDir1 = 'src1';
@@ -161,6 +199,7 @@ JSON;
         $this->setUserInput(
             $srcDir1 . "\n" .
             $srcDir2 . "\n" .
+            "\n" .
             "\n" .
             "\n" .
             "\n" .
@@ -209,6 +248,7 @@ JSON;
             "\n" .
             "\n" .
             "\n" .
+            "\n" .
             "Y\n"
         );
 
@@ -245,6 +285,7 @@ JSON;
             "\n" .
             "\n" .
             "5\n" .
+            "\n" .
             "\n" .
             "Y\n"
         );
@@ -291,6 +332,7 @@ JSON;
 
         $this->setUserInput(
             $srcDirName . "\n".
+            "\n" .
             "\n" .
             "\n" .
             "\n" .
