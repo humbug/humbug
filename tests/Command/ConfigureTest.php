@@ -51,12 +51,11 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
         $this->setUserInput(
             $srcDirName . "\n" .
             "\n" .
+            "\n" .
             "Y\n"
         );
 
         $this->executeCommand();
-
-        $this->assertFileExists('humbug.json');
 
         $expectedJson = <<<JSON
 {
@@ -81,12 +80,11 @@ JSON;
             "app\n" .
             "src\n" .
             "\n" .
+            "\n" .
             "Y\n"
         );
 
         $this->executeCommand();
-
-        $this->assertFileExists('humbug.json');
 
         $expectedJson = <<<JSON
 {
@@ -114,6 +112,7 @@ JSON;
             $srcDir1 . "\n" .
             $srcDir2 . "\n" .
             "\n" .
+            "\n" .
             "Y\n"
         );
 
@@ -130,8 +129,48 @@ JSON;
 }
 JSON;
 
-        $this->assertFileExists('humbug.json');
         $this->assertJsonStringEqualsJsonString($expectedJson, file_get_contents('humbug.json'));
+    }
+
+    public function testShouldCreateConfigurationWithExcludeDirectories()
+    {
+        $srcDir = 'src';
+        mkdir($srcDir);
+
+        $excludeDir1 = 'src1';
+        mkdir($excludeDir1);
+
+        $excludeDir2 = 'src2';
+        mkdir($excludeDir2);
+
+        touch('phpunit.xml');
+
+        $this->setUserInput(
+            $srcDir. "\n" .
+            "\n" .
+            $excludeDir1 . "\n" .
+            $excludeDir2 . "\n" .
+            "\n" .
+            "Y\n"
+        );
+
+        $this->executeCommand();
+
+        $expectedJson = <<<JSON
+{
+    "source": {
+        "directories": [
+            "src"
+        ],
+        "excludes": [
+            "src1",
+            "src2"
+        ]
+    }
+}
+JSON;
+
+       $this->assertJsonStringEqualsJsonString($expectedJson, file_get_contents('humbug.json'));
     }
 
     public function testShouldNotCreateConfigurationIfSrcDirectoryNotExists()
@@ -158,6 +197,7 @@ JSON;
         $this->setUserInput(
             $srcDirName . "\n".
             "\n" .
+            "\n" .
             "N\\n"
         );
 
@@ -166,13 +206,13 @@ JSON;
         $this->assertFileNotExists('humbug.json');
     }
 
-    public function testShouldWarnUserThatConfigurationAlreadyExistsAndExit()
+    public function testShouldNotChangeConfigurationIfItAlreadyExists()
     {
-        touch('humbug.json');
+        file_put_contents('humbug.json', '{}');
 
-        $commandTester = $this->executeCommand();
+        $this->executeCommand();
 
-        $this->assertEquals('Humbug humbug.json already exists.' . PHP_EOL, $commandTester->getDisplay());
+        $this->assertStringEqualsFile('humbug.json', '{}');
     }
 
     private function getInputStream($input)
@@ -213,4 +253,4 @@ JSON;
 
         return $commandTester;
     }
-} 
+}

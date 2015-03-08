@@ -21,12 +21,14 @@ class Configure extends Command
 
         $chDir = $this->resolveChDir($input, $output);
 
-        $sourcesDirs = $this->getSourcesDirs($input, $output);
+        $sourcesDirs = $this->getDirs($input, $output, 'Which source dir you want to include? : ');
 
         if (empty($sourcesDirs)) {
             $output->writeln('Sources directories were not provided. Cannot generate humbug.json');
             return 0;
         }
+
+        $excludeDirs = $this->getDirs($input, $output, 'Which dir you want to exclude? :');
 
         $question = new ConfirmationQuestion('Confirm generation of humbug.json [Y]: ', true);
 
@@ -35,7 +37,7 @@ class Configure extends Command
             return 0;
         }
 
-        $configuration = $this->createConfiguration($sourcesDirs, $chDir);
+        $configuration = $this->createConfiguration($sourcesDirs, $excludeDirs, $chDir);
 
         $this->saveConfiguration($configuration);
 
@@ -61,35 +63,26 @@ class Configure extends Command
     }
 
     /**
-     * @return Question
-     */
-    private function createSourceQuestion()
-    {
-        $sourceQuestion = new Question('Where your source are located? [Enter = exit] : ');
-        $sourceQuestion->setValidator(function ($answer) {
-            if (trim($answer) && !is_dir($answer)) {
-                throw new \RuntimeException(sprintf('Could not find "%s" directory', $answer));
-            }
-
-            return $answer;
-        });
-        return $sourceQuestion;
-    }
-
-    /**
      * @param $sourcesDirs
+     * @param $excludeDirs
+     * @param $chDir
+     *
      * @return \stdClass
      */
-    private function createConfiguration($sourcesDirs, $chdir = null)
+    private function createConfiguration($sourcesDirs, $excludeDirs, $chDir)
     {
         $source = new \stdClass();
         $source->directories = $sourcesDirs;
 
+        if (!empty($excludeDirs)) {
+            $source->excludes = $excludeDirs;
+        }
+
         $configuration = new \stdClass();
         $configuration->source = $source;
 
-        if ($chdir) {
-            $configuration->chdir = $chdir;
+        if ($chDir) {
+            $configuration->chdir = $chDir;
         }
 
         return $configuration;
@@ -166,17 +159,35 @@ class Configure extends Command
      * @param OutputInterface $output
      * @return array
      */
-    private function getSourcesDirs(InputInterface $input, OutputInterface $output)
+    private function getDirs(InputInterface $input, OutputInterface $output, $question)
     {
         $sourcesDirs = [];
 
-        $sourceQuestion = $this->createSourceQuestion();
+        $sourceQuestion = $this->createSourceQuestion($question);
 
         while ($sourceDir = $this->getQuestionHelper()->ask($input, $output, $sourceQuestion)) {
             if ($sourceDir) {
                 $sourcesDirs[] = $sourceDir;
             }
         }
+
         return $sourcesDirs;
+    }
+
+    /**
+     * @param $question
+     * @return Question
+     */
+    private function createSourceQuestion($question)
+    {
+        $sourceQuestion = new Question($question);
+        $sourceQuestion->setValidator(function ($answer) {
+            if (trim($answer) && !is_dir($answer)) {
+                throw new \RuntimeException(sprintf('Could not find "%s" directory', $answer));
+            }
+
+            return $answer;
+        });
+        return $sourceQuestion;
     }
 } 
