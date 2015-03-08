@@ -30,18 +30,18 @@ class ObjectVisitor implements Visitor
         $this->arguments = $arguments;
     }
 
-    public function visitElement(\DOMNode $domElement)
+    public function visitNode(\DOMNode $domNode)
     {
-        $domElement->setAttribute('class', $this->className);
+        $domNode->setAttribute('class', $this->className);
 
-        $dom = $domElement->ownerDocument;
+        $dom = $domNode->ownerDocument;
 
         if (empty($this->arguments)) {
             return;
         }
 
         $arguments = $dom->createElement('arguments');
-        $domElement->appendChild($arguments);
+        $domNode->appendChild($arguments);
 
         foreach ($this->arguments as $argumentValue) {
             $argument = $this->createElementByType($argumentValue, $dom);
@@ -69,7 +69,7 @@ class ObjectVisitor implements Visitor
 
         if ($argumentValue instanceof ObjectVisitor) {
             $object = $dom->createElement('object');
-            $argumentValue->visitElement($object);
+            $argumentValue->visitNode($object);
 
             return $object;
         }

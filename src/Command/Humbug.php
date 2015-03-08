@@ -69,11 +69,10 @@ class Humbug extends Command
             $output->writeln('<error>No log file is specified. Detailed results will not be available.</error>');
         }
 
-        $formatterHelper = new FormatterHelper;
         if ($this->textLogFile) {
-            $renderer = new Text($output, $formatterHelper, true);
+            $renderer = new Text($output, true);
         } else {
-            $renderer = new Text($output, $formatterHelper);
+            $renderer = new Text($output);
         }
 
         $renderer->renderPreTestIntroduction();
@@ -168,7 +167,6 @@ class Humbug extends Command
          * collect data on how tests handled the mutations. We use ext/runkit
          * to dynamically alter included (in-memory) classes on the fly.
          */
-        $countMutantShadows = 0;
         $collector = new Collector();
 
         /**
@@ -305,11 +303,7 @@ class Humbug extends Command
         $vanquishedTotal = $collector->getVanquishedTotal();
         $measurableTotal = $collector->getMeasurableTotal();
 
-        if ($measurableTotal !== 0) {
-            $detectionRateTested  = round(100 * ($vanquishedTotal / $measurableTotal));
-        } else {
-            $detectionRateTested  = 0;
-        }
+        $detectionRateTested = $renderer->calculateDetectionRate($vanquishedTotal, $measurableTotal);
 
         if ($collector->getTotalCount() !== 0) {
             $uncoveredRate = round(100 * ($collector->getShadowCount() / $collector->getTotalCount()));

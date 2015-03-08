@@ -31,7 +31,7 @@ class XmlConfiguration
     private $rootElement;
 
     /**
-     * @var string
+     * @var string|false
      */
     private $originalBootstrap;
 
@@ -123,7 +123,7 @@ class XmlConfiguration
         $listener = $this->dom->createElement('listener');
         $listeners->appendChild($listener);
 
-        $visitor->visitElement($listener);
+        $visitor->visitNode($listener);
     }
 
     public function addLogger($type, $target)
@@ -190,9 +190,9 @@ class XmlConfiguration
 
         foreach ($replaceNodes as $replace) {
             if (false !== strpos($replace->nodeValue, '*')) {
-                $wildcardVisitor->visitElement($replace);
+                $wildcardVisitor->visitNode($replace);
             } else {
-                $pathVisitor->visitElement($replace);
+                $pathVisitor->visitNode($replace);
             }
         }
     }

@@ -49,7 +49,7 @@ class ObjectVisitorTest extends \PHPUnit_Framework_TestCase
     {
         $objectVisitor = new ObjectVisitor('This\Is\Test\ClassName');
 
-        $objectVisitor->visitElement($this->visitedObject);
+        $objectVisitor->visitNode($this->visitedObject);
 
         $this->assertEquals('This\Is\Test\ClassName', $this->visitedObject->getAttribute('class'));
         $this->assertEquals(0, $this->xpath->evaluate('count(/object/*)'));
@@ -62,7 +62,7 @@ class ObjectVisitorTest extends \PHPUnit_Framework_TestCase
     {
         $objectVisitor = new ObjectVisitor('This\Is\Test\ClassName', $arguments);
 
-        $objectVisitor->visitElement($this->visitedObject);
+        $objectVisitor->visitNode($this->visitedObject);
 
         $booleanList = $this->xpath->query('/object/arguments/boolean');
 
@@ -82,7 +82,7 @@ class ObjectVisitorTest extends \PHPUnit_Framework_TestCase
     {
         $objectVisitor = new ObjectVisitor('This\Is\Test\ClassName', ['string argument']);
 
-        $objectVisitor->visitElement($this->visitedObject);
+        $objectVisitor->visitNode($this->visitedObject);
 
         $stringList = $this->xpath->query('/object/arguments/string');
 
@@ -97,11 +97,11 @@ class ObjectVisitorTest extends \PHPUnit_Framework_TestCase
                 ->disableOriginalConstructor()
                 ->getMock();
 
-        $objectArgument->expects($this->once())->method('visitElement')->with($this->isInstanceOf('\DOMElement'));
+        $objectArgument->expects($this->once())->method('visitNode')->with($this->isInstanceOf('\DOMElement'));
 
         $objectVisitor = new ObjectVisitor('This\Is\Test\ClassName', [$objectArgument]);
 
-        $objectVisitor->visitElement($this->visitedObject);
+        $objectVisitor->visitNode($this->visitedObject);
 
         $objectList = $this->xpath->query('/object/arguments/object');
 
@@ -118,7 +118,7 @@ class ObjectVisitorTest extends \PHPUnit_Framework_TestCase
 
         $objectVisitor = new ObjectVisitor('This\Is\Test\ClassName', $arguments);
 
-        $objectVisitor->visitElement($this->visitedObject);
+        $objectVisitor->visitNode($this->visitedObject);
 
         $argumentList = $this->xpath->query('/object/arguments[position()=1]/*');
 
@@ -136,6 +136,6 @@ class ObjectVisitorTest extends \PHPUnit_Framework_TestCase
 
         $objectVisitor = new ObjectVisitor('This\Is\Test\ClassName', [new \stdClass()]);
 
-        $objectVisitor->visitElement($this->visitedObject);
+        $objectVisitor->visitNode($this->visitedObject);
     }
 }

@@ -167,7 +167,7 @@ class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
 
         $visitor = $this->getMock('Humbug\Adapter\Phpunit\XmlConfiguration\Visitor');
 
-        $visitor->expects($this->once())->method('visitElement')->with($this->isInstanceOf('\DOMElement'));
+        $visitor->expects($this->once())->method('visitNode')->with($this->isInstanceOf('\DOMElement'));
 
         $xmlConfiguration->addListener($visitor);
 
@@ -184,7 +184,7 @@ class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
 
         $visitor = $this->getMock('Humbug\Adapter\Phpunit\XmlConfiguration\Visitor');
 
-        $visitor->expects($this->exactly(2))->method('visitElement')->with($this->isInstanceOf('\DOMElement'));
+        $visitor->expects($this->exactly(2))->method('visitNode')->with($this->isInstanceOf('\DOMElement'));
 
         $xmlConfiguration->addListener($visitor);
         $xmlConfiguration->addListener($visitor);

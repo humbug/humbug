@@ -1,4 +1,14 @@
 <?php
+/**
+ * Humbug
+ *
+ * @category   Humbug
+ * @package    Humbug
+ * @copyright  Copyright (c) 2015 Pádraic Brady (http://blog.astrumfutura.com)
+ * @license    https://github.com/padraic/humbug/blob/master/LICENSE New BSD License
+ *
+ * @author     rafal.wartalski@gmail.com
+ */
 
 namespace Humbug\Adapter\Phpunit\XmlConfiguration;
 
@@ -16,17 +26,17 @@ class ReplaceWildcardVisitor implements Visitor
         $this->locator = $locator;
     }
 
-    public function visitElement(\DOMNode $domElement)
+    public function visitNode(\DOMNode $domNode)
     {
-        $directories = $this->locator->locateDirectories($domElement->nodeValue);
+        $directories = $this->locator->locateDirectories($domNode->nodeValue);
 
-        $domDocument = $domElement->ownerDocument;
+        $domDocument = $domNode->ownerDocument;
 
-        $parentNode = $domElement->parentNode;
-        $domElement->parentNode->removeChild($domElement);
+        $parentNode = $domNode->parentNode;
+        $domNode->parentNode->removeChild($domNode);
 
         foreach ($directories as $directory) {
-            $parentNode->appendChild($domDocument->createElement($domElement->tagName, $directory));
+            $parentNode->appendChild($domDocument->createElement($domNode->tagName, $directory));
         }
     }
 }
