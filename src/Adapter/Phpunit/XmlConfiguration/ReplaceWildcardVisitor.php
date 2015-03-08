@@ -36,6 +36,7 @@ class ReplaceWildcardVisitor implements Visitor
         $domNode->parentNode->removeChild($domNode);
 
         foreach ($directories as $directory) {
+            // TODO: Check for any bug here since DOMAttr would not have a tagName
             $parentNode->appendChild($domDocument->createElement($domNode->tagName, $directory));
         }
     }

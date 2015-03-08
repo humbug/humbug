@@ -61,8 +61,6 @@ abstract class AdapterAbstract
      *
      * This assumes the output is in Test Anywhere Protocol (TAP) format.
      *
-     * TODO: Update regex to make certain we take the LAST numbered ok
-     *
      * @param string $output
      * @return bool|int
      */
