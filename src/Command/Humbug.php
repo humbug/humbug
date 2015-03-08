@@ -57,7 +57,7 @@ class Humbug extends Command
         $this->validate($input);
         $container = $this->container = new Container($input->getOptions());
 
-        $this->doConfiguration();
+        $this->doConfiguration($input);
 
         if ($this->isLoggingEnabled()) {
             $this->removeOldLogFiles();
@@ -294,6 +294,18 @@ class Humbug extends Command
         Performance::downMemProfiler();
     }
 
+    private function performInitailTestsRun(
+        PhpProcess $process,
+        AdapterAbstract $testFrameworkAdapter,
+        ProgressBar $progressBar
+    ) {
+        $setProgressBarProgressCallback = function ($count) use ($progressBar) {
+            $progressBar->setProgress($count);
+        };
+
+        return (new ProcessRunner())->run($process, $testFrameworkAdapter, $setProgressBarProgressCallback);
+    }
+
     protected function logJson(Collector $collector, $renderer)
     {
         $vanquishedTotal = $collector->getVanquishedTotal();
@@ -331,29 +343,7 @@ class Humbug extends Command
         );
     }
 
-    protected function prepareFinder($directories, $excludes)
-    {
-        $finder = new Finder;
-        $finder->files()->name('*.php');
-
-        if ($directories) {
-            foreach ($directories as $directory) {
-                $finder->in($directory);
-            }
-        } else {
-            $finder->in('.');
-        }
-
-        if (isset($excludes)) {
-            foreach ($excludes as $exclude) {
-                $finder->exclude($exclude);
-            }
-        }
-
-        return $finder;
-    }
-
-    protected function doConfiguration()
+    protected function doConfiguration(InputInterface $input)
     {
         $this->container->setBaseDirectory(getcwd());
 
@@ -365,7 +355,8 @@ class Humbug extends Command
 
         $this->finder = $this->prepareFinder(
             isset($source->directories)? $source->directories : null,
-            isset($source->excludes)? $source->excludes : null
+            isset($source->excludes)? $source->excludes : null,
+            $input->getOption('file')
         );
 
         $this->container->setSourceList($source);
@@ -384,6 +375,36 @@ class Humbug extends Command
 
         $this->jsonLogFile = $newConfig->getLogsJson();
         $this->textLogFile = $newConfig->getLogsText();
+    }
+
+    protected function prepareFinder($directories, $excludes, array $names = null)
+    {
+        $finder = new Finder;
+        $finder->files();
+
+        if (!is_null($names) && count($names) > 0) {
+            foreach ($names as $name) {
+                $finder->name($name);
+            }
+        } else {
+            $finder->name('*.php');
+        }
+
+        if ($directories) {
+            foreach ($directories as $directory) {
+                $finder->in($directory);
+            }
+        } else {
+            $finder->in('.');
+        }
+
+        if (isset($excludes)) {
+            foreach ($excludes as $exclude) {
+                $finder->exclude($exclude);
+            }
+        }
+
+        return $finder;
     }
 
     protected function configure()
@@ -406,11 +427,13 @@ class Humbug extends Command
                     . 'Default is dictated dynamically by '.'Humbug'.'.'
             )
             ->addOption(
-               'constraints',
-               'c',
-               InputOption::VALUE_REQUIRED,
-               'Options set on adapter to constrain which tests are run. '
-                    . 'Applies only to the very first initialising test run.'
+               'file',
+               'f',
+               InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
+               'String representing file to mutate, comprising either a glob, '
+                    . 'regular expression or simple name. This will not restrict '
+                    . 'the initial checking of the test suite status. You can set '
+                    . 'any number of these for multiple file patterns.'
             )
             ->addOption(
                'timeout',
@@ -418,6 +441,14 @@ class Humbug extends Command
                InputOption::VALUE_REQUIRED,
                'Sets a timeout applied for each test run to combat infinite loop mutations.',
                 10
+            )
+            // Preferably this should go away...
+            ->addOption(
+                'constraints',
+                'c',
+                InputOption::VALUE_REQUIRED,
+                'Options set on adapter to constrain which tests are run. '
+                    . 'Applies only to the very first initialising test run.'
             );
     }
 
@@ -490,15 +521,4 @@ class Humbug extends Command
         return $out;
     }
 
-    private function performInitailTestsRun(
-        PhpProcess $process,
-        AdapterAbstract $testFrameworkAdapter,
-        ProgressBar $progressBar
-    ) {
-        $setProgressBarProgressCallback = function ($count) use ($progressBar) {
-            $progressBar->setProgress($count);
-        };
-
-        return (new ProcessRunner())->run($process, $testFrameworkAdapter, $setProgressBarProgressCallback);
-    }
 }
