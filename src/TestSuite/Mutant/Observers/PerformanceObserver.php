@@ -47,11 +47,9 @@ class PerformanceObserver implements Observer
 
     public function onMutantDone(Runner $testSuite, Mutant $mutant, Result $result, $index)
     {
-        // TODO: Implement onMutantDone() method.
     }
 
     public function onShadowMutant(Runner $testSuite, $mutationIndex)
     {
-        // TODO: Implement onShadowMutant() method.
     }
 }

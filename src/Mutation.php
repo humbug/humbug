@@ -11,7 +11,7 @@
  */
 namespace Humbug;
 
-class Mutation implements \ArrayAccess
+class Mutation
 {
     /**
      * @var string
