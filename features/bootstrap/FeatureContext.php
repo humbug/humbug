@@ -5,7 +5,6 @@ use Behat\Behat\Context\SnippetAcceptingContext;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use Behat\Behat\Tester\Exception\PendingException;
-
 use Symfony\Component\Console\Tester\ApplicationTester;
 use Humbug\Console\Application;
 use Humbug\Command\Humbug as HumbugCommand;
