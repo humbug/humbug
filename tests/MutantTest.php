@@ -22,7 +22,7 @@ class MutantTest extends \PHPUnit_Framework_TestCase
     /**
      * @return FileGenerator
      */
-    public function getFileGenerator()
+    private function getFileGenerator()
     {
         $generator = $this->prophesize('Humbug\TestSuite\Mutant\FileGenerator');
         $generator->generateFile(Argument::type('Humbug\Mutation'))
