@@ -13,6 +13,7 @@ namespace Humbug\Test;
 use Humbug\Container;
 use Humbug\MutableIterator;
 use Prophecy\Argument;
+use Symfony\Component\Finder\Finder;
 
 class MutableIteratorTest extends \PHPUnit_Framework_TestCase
 {
@@ -21,47 +22,23 @@ class MutableIteratorTest extends \PHPUnit_Framework_TestCase
         $container = $this->prophesize('Humbug\Container');
         $container->getMutableFiles(Argument::type('Symfony\Component\Finder\Finder'))->willReturn([]);
 
-        $iterator = new MutableIterator($container->reveal(), [], [], []);
+        $iterator = new MutableIterator($container->reveal(), new Finder());
 
         $this->assertCount(0, $iterator);
         $this->assertEmpty(iterator_to_array($iterator));
     }
 
-    public function testIteratorContainsMutableFilesFromDirectories()
+    public function testIteratorContainsMutableFilesReturnedByFinder()
     {
+        $finder = new Finder();
+
+        $finder->files('*.php');
+        $finder->in([ __DIR__ . '/_files/mutables' ]);
+
         $container = new Container([ 'options' => '' ]);
-        $iterator = new MutableIterator($container, [ __DIR__ . '/_files/mutables' ], [], []);
+        $iterator = new MutableIterator($container, $finder);
 
         $this->assertCount(3, $iterator);
         $this->assertCount(3, iterator_to_array($iterator));
-    }
-
-    public function testIteratorDoesNotContainMutableFilesFromExcludedDirectories()
-    {
-        $container = new Container([ 'options' => '' ]);
-        $iterator = new MutableIterator(
-            $container,
-            [ __DIR__ . '/_files/mutables' ],
-            [ 'exclude' ],
-            []
-        );
-
-        $this->assertCount(2, $iterator);
-        $this->assertCount(2, iterator_to_array($iterator));
-    }
-
-
-    public function testIteratorOnlyContainsFilesSpecified()
-    {
-        $container = new Container([ 'options' => '' ]);
-        $iterator = new MutableIterator(
-            $container,
-            [ __DIR__ . '/_files/mutables' ],
-            [ 'exclude' ],
-            [ 'Filtered.php' ]
-        );
-
-        $this->assertCount(1, $iterator);
-        $this->assertCount(1, iterator_to_array($iterator));
     }
 }

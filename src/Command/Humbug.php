@@ -27,6 +27,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Helper\FormatterHelper;
+use Symfony\Component\Finder\Finder;
 
 class Humbug extends Command
 {
@@ -150,12 +151,42 @@ class Humbug extends Command
         $this->builder = new MutantBuilder();
         $this->builder->setLogFiles($this->textLogFile, $this->jsonLogFile);
 
-        $this->mutableIterator = new MutableIterator(
-            $this->container,
+        $finder = $this->prepareFinder(
             isset($source->directories)? $source->directories : null,
             isset($source->excludes)? $source->excludes : null,
             $input->getOption('file')
         );
+
+        $this->mutableIterator = new MutableIterator($this->container, $finder);
+    }
+
+    protected function prepareFinder($directories, $excludes, $names)
+    {
+        $finder = new Finder();
+
+        if (!is_null($names) && count($names) > 0) {
+            foreach ($names as $name) {
+                $finder->name($name);
+            }
+        } else {
+            $finder->name('*.php');
+        }
+
+        if ($directories) {
+            foreach ($directories as $directory) {
+                $finder->in($directory);
+            }
+        } else {
+            $finder->in('.');
+        }
+
+        if (isset($excludes)) {
+            foreach ($excludes as $exclude) {
+                $finder->exclude($exclude);
+            }
+        }
+
+        return $finder;
     }
 
     protected function configure()
