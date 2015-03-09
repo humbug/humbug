@@ -38,7 +38,7 @@ class JsonLoggingObserver implements Observer
     {
     }
 
-    public function onMutantDone(Runner $testSuite, Mutant $mutant, Result $result, $index)
+    public function onMutantDone(Runner $testSuite, Result $result, $index)
     {
     }
 

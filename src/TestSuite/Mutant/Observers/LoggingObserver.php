@@ -40,7 +40,7 @@ class LoggingObserver implements Observer
         $this->output->write(PHP_EOL);
     }
 
-    public function onMutantDone(Runner $testSuite, Mutant $mutant, Result $result, $index)
+    public function onMutantDone(Runner $testSuite, Result $result, $index)
     {
         $this->renderer->renderProgressMark($result, $testSuite->getMutableCount(), $index);
     }

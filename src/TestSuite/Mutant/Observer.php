@@ -34,13 +34,12 @@ interface Observer
     /**
      * Called when a mutation test is done.
      * @param Runner $testSuite
-     * @param Mutant $mutant
      * @param Result $result
      * @param $index
      *
      * @return mixed
      */
-    public function onMutantDone(Runner $testSuite, Mutant $mutant, Result $result, $index);
+    public function onMutantDone(Runner $testSuite, Result $result, $index);
 
     /**
      * Called when the given mutation test suite stops.

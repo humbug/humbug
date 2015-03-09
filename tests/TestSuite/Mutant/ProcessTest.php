@@ -12,13 +12,14 @@ namespace Humbug\Test\TestSuite\Mutant;
 
 use Humbug\TestSuite\Mutant\Process;
 use Humbug\TestSuite\Mutant\Result;
+use Prophecy\Argument;
 
 class ProcessTest extends \PHPUnit_Framework_TestCase
 {
-    public function testProperties()
+    public function testPropertiesReturnConstructorAssignedValues()
     {
         $adapter = $this->prophesize('Humbug\Adapter\AdapterAbstract');
-        $adapter->ok("")->willReturn(true);
+        $adapter->ok(Argument::type('string'))->willReturn(true);
 
         $mutant = $this->prophesize(('Humbug\Mutant'));
 
@@ -43,7 +44,7 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
     public function testTimedoutProcessReturnsResultWithTimeoutStatus()
     {
         $adapter = $this->prophesize('Humbug\Adapter\AdapterAbstract');
-        $adapter->ok("")->willReturn(true);
+        $adapter->ok(Argument::type('string'))->willReturn(true);
 
         $mutant = $this->prophesize(('Humbug\Mutant'));
 
@@ -67,7 +68,7 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
     public function testGetResultCanOnlyBeCalledOnce()
     {
         $adapter = $this->prophesize('Humbug\Adapter\AdapterAbstract');
-        $adapter->ok("")->willReturn(true);
+        $adapter->ok(Argument::type('string'))->willReturn(true);
 
         $mutant = $this->prophesize(('Humbug\Mutant'));
 

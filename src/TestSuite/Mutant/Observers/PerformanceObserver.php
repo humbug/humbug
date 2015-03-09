@@ -45,7 +45,7 @@ class PerformanceObserver implements Observer
         Performance::downMemProfiler();
     }
 
-    public function onMutantDone(Runner $testSuite, Mutant $mutant, Result $result, $index)
+    public function onMutantDone(Runner $testSuite, Result $result, $index)
     {
     }
 

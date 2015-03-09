@@ -23,10 +23,10 @@ class PartitionTest extends \PHPUnit_Framework_TestCase
 
         $partition->add($mutable, 1, $mutation);
 
-        $this->assertCount(1, $partition->getBatches(1));
+        $this->assertCount(1, $partition->getPartitions(1));
 
         $partition->addMutations($mutable, 1, [ $mutation ]);
 
-        $this->assertCount(2, $partition->getBatches(1));
+        $this->assertCount(2, $partition->getPartitions(1));
     }
 }

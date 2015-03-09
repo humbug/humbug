@@ -93,7 +93,7 @@ class Runner
             $mutable->cleanup();
         }
 
-        foreach ($partition->getBatches($this->threadCount) as $batch) {
+        foreach ($partition->getPartitions($this->threadCount) as $batch) {
             $this->runBatch($collector, $coverage, $batch);
         }
 
