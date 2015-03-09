@@ -21,7 +21,7 @@ class MutableIteratorTest extends \PHPUnit_Framework_TestCase
         $container = $this->prophesize('Humbug\Container');
         $container->getMutableFiles(Argument::type('Symfony\Component\Finder\Finder'))->willReturn([]);
 
-        $iterator = new MutableIterator($container->reveal(), [], []);
+        $iterator = new MutableIterator($container->reveal(), [], [], []);
 
         $this->assertCount(0, $iterator);
         $this->assertEmpty(iterator_to_array($iterator));
@@ -30,10 +30,10 @@ class MutableIteratorTest extends \PHPUnit_Framework_TestCase
     public function testIteratorContainsMutableFilesFromDirectories()
     {
         $container = new Container([ 'options' => '' ]);
-        $iterator = new MutableIterator($container, [ __DIR__ . '/_files/mutables' ], []);
+        $iterator = new MutableIterator($container, [ __DIR__ . '/_files/mutables' ], [], []);
 
-        $this->assertCount(2, $iterator);
-        $this->assertCount(2, iterator_to_array($iterator));
+        $this->assertCount(3, $iterator);
+        $this->assertCount(3, iterator_to_array($iterator));
     }
 
     public function testIteratorDoesNotContainMutableFilesFromExcludedDirectories()
@@ -42,7 +42,23 @@ class MutableIteratorTest extends \PHPUnit_Framework_TestCase
         $iterator = new MutableIterator(
             $container,
             [ __DIR__ . '/_files/mutables' ],
-            [ 'exclude' ]
+            [ 'exclude' ],
+            []
+        );
+
+        $this->assertCount(2, $iterator);
+        $this->assertCount(2, iterator_to_array($iterator));
+    }
+
+
+    public function testIteratorOnlyContainsFilesSpecified()
+    {
+        $container = new Container([ 'options' => '' ]);
+        $iterator = new MutableIterator(
+            $container,
+            [ __DIR__ . '/_files/mutables' ],
+            [ 'exclude' ],
+            [ 'Filtered.php' ]
         );
 
         $this->assertCount(1, $iterator);

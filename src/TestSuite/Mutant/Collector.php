@@ -220,8 +220,10 @@ class Collector
             $stderr = explode(PHP_EOL, $mutantData['stderr'], 2);
             $mutantData['stderr'] = $stderr[0];
 
-            $stdout = explode(PHP_EOL, $mutantData['stdout'], 2);
-            $mutantData['stdout'] = $stdout[0];
+            if (isset($mutantData['stdout'])) {
+                $stdout = explode(PHP_EOL, $mutantData['stdout'], 2);
+                $mutantData['stdout'] = $stdout[0];
+            }
 
             $group[] = $mutantData;
         }

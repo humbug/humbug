@@ -32,11 +32,12 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
         $mutant = $mutant->reveal();
         $phpProcess = $process->reveal();
 
-        $process = new Process($adapter, $mutant, $phpProcess);
+        $process = new Process($adapter, $mutant, $phpProcess, 1);
 
         $this->assertEquals($adapter, $process->getAdapter());
         $this->assertEquals($mutant, $process->getMutant());
         $this->assertEquals($phpProcess, $process->getProcess());
+        $this->assertEquals(1, $process->getMutableIndex());
     }
 
     public function testTimedoutProcessReturnsResultWithTimeoutStatus()
@@ -52,7 +53,7 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
         $process->getOutput()->willReturn('');
         $process->getErrorOutput()->willReturn('');
 
-        $process = new Process($adapter->reveal(), $mutant->reveal(), $process->reveal());
+        $process = new Process($adapter->reveal(), $mutant->reveal(), $process->reveal(), 1);
         $process->markTimeout();
 
         $result = $process->getResult();
@@ -76,7 +77,7 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
         $process->getOutput()->willReturn('');
         $process->getErrorOutput()->willReturn('');
 
-        $process = new Process($adapter->reveal(), $mutant->reveal(), $process->reveal());
+        $process = new Process($adapter->reveal(), $mutant->reveal(), $process->reveal(), 1);
         $process->markTimeout();
 
         $process->getResult();
