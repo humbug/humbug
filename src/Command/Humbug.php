@@ -120,7 +120,7 @@ class Humbug extends Command
         }
     }
 
-    protected function doConfiguration()
+    protected function doConfiguration(InputInterface $input)
     {
         $this->container->setBaseDirectory(getcwd());
 
@@ -153,7 +153,8 @@ class Humbug extends Command
         $this->mutableIterator = new MutableIterator(
             $this->container,
             isset($source->directories)? $source->directories : null,
-            isset($source->excludes)? $source->excludes : null
+            isset($source->excludes)? $source->excludes : null,
+            $input->getOption('file')
         );
     }
 

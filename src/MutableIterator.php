@@ -35,17 +35,25 @@ class MutableIterator implements \IteratorAggregate, \Countable
      * @param Container $container
      * @param string[] $directories
      * @param string[] $excludes
+     * @param string[] $names
      */
-    public function __construct(Container $container, $directories, $excludes)
+    public function __construct(Container $container, $directories, $excludes, $names)
     {
         $this->container = $container;
-        $this->finder = $this->prepareFinder($directories, $excludes);
+        $this->finder = $this->prepareFinder($directories, $excludes, $names);
     }
 
-    protected function prepareFinder($directories, $excludes)
+    protected function prepareFinder($directories, $excludes, $names)
     {
         $finder = new Finder();
-        $finder->files()->name('*.php');
+
+        if (!is_null($names) && count($names) > 0) {
+            foreach ($names as $name) {
+                $finder->name($name);
+            }
+        } else {
+            $finder->name('*.php');
+        }
 
         if ($directories) {
             foreach ($directories as $directory) {
