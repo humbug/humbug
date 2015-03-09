@@ -28,6 +28,11 @@ class Process
     private $mutant;
 
     /**
+     * @var int
+     */
+    private $mutableIndex;
+
+    /**
      * @var PhpProcess
      */
     private $process;
@@ -47,11 +52,12 @@ class Process
      * @param Mutant $mutant
      * @param PhpProcess $process
      */
-    public function __construct(AdapterAbstract $adapter, Mutant $mutant, PhpProcess $process)
+    public function __construct(AdapterAbstract $adapter, Mutant $mutant, PhpProcess $process, $index)
     {
         $this->adapter = $adapter;
         $this->mutant = $mutant;
         $this->process = $process;
+        $this->mutableIndex = $index;
     }
 
     /**
@@ -76,6 +82,14 @@ class Process
     public function getProcess()
     {
         return $this->process;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMutableIndex()
+    {
+        return $this->mutableIndex;
     }
 
     /**

@@ -10,13 +10,13 @@
  */
 namespace Humbug\Test\TestSuite\Mutant;
 
-use Humbug\TestSuite\Mutant\Partition;
+use Humbug\TestSuite\Mutant\PartitionBuilder;
 
 class PartitionTest extends \PHPUnit_Framework_TestCase
 {
     public function testGetBatchesReturnsMutantsInPartitions()
     {
-        $partition = new Partition();
+        $partition = new PartitionBuilder();
 
         $mutation = $this->prophesize('Humbug\Mutation')->reveal();
         $mutable = $this->prophesize('Humbug\Mutable')->reveal();

@@ -106,7 +106,16 @@ class CoverageData
             );
         }
 
-        return $this->data[$file][$line];
+        $cases = [];
+
+        $line = $this->data[$file][$line];
+        foreach ($line as $reference) {
+            $parts = explode('::', $reference);
+            $caseParts = explode(' ', $parts[1]);
+            $cases[] = $parts[0] . '::' . $caseParts[0];
+        }
+
+        return array_unique($cases);
     }
     
     public function getLineCoverageFrom($file)

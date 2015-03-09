@@ -10,7 +10,6 @@
  */
 namespace Humbug\Test;
 
-
 use Humbug\Exception\NoCoveringTestsException;
 use Humbug\Mutant;
 use Humbug\Mutation;

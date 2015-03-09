@@ -82,7 +82,7 @@ class Runner
         $this->onStartRun();
 
         $collector = new Collector();
-        $partition = new Partition();
+        $partition = new PartitionBuilder();
 
         /**
          * MUTATION TESTING!
@@ -93,8 +93,8 @@ class Runner
             $mutable->cleanup();
         }
 
-        foreach ($partition->getBatches($this->threadCount) as $index => $batch) {
-            $this->runBatch($collector, $coverage, $batch, $index);
+        foreach ($partition->getBatches($this->threadCount) as $batch) {
+            $this->runBatch($collector, $coverage, $batch);
         }
 
         $coverage->cleanup();
@@ -106,17 +106,17 @@ class Runner
      * @param Collector $collector
      * @param CoverageData $coverage
      * @param array $batch
-     * @param int $index
      */
     private function runBatch(
         Collector $collector,
         CoverageData $coverage,
-        array $batch,
-        $index
+        array $batch
     ) {
         $processes = [];
 
-        foreach ($batch as $mutation) {
+        foreach ($batch as $batchItem) {
+            list($index, $mutation) = $batchItem;
+
             try {
                 $coverage->loadCoverageFor($mutation->getFile());
                 /**
@@ -129,7 +129,7 @@ class Runner
                     $this->baseDirectory
                 );
 
-                $processes[] = $this->processBuilder->build($mutant);
+                $processes[] = $this->processBuilder->build($mutant, $index);
             } catch (NoCoveringTestsException $e) {
                 /**
                  * No tests exercise the mutated line. We'll report
@@ -158,7 +158,7 @@ class Runner
              */
             $result = $process->getResult();
 
-            $this->onMutantDone($process->getMutant(), $result, $index);
+            $this->onMutantDone($process->getMutant(), $result, $process->getMutableIndex());
             $collector->collect($result);
         }
     }

@@ -13,7 +13,7 @@ namespace Humbug\TestSuite\Mutant;
 use Humbug\Mutable;
 use Humbug\Mutation;
 
-class Partition
+class PartitionBuilder
 {
     private $mutations = [];
 
@@ -44,9 +44,11 @@ class Partition
         $batches = [];
 
         foreach ($this->mutations as $data) {
-            list(, , $mutation) = $data;
+            list(, $index, $mutation) = $data;
 
-            $batches[] = [ $mutation ];
+            $batches[] = [
+                [ $index, $mutation ]
+            ];
         }
 
         return $batches;

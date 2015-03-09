@@ -29,10 +29,11 @@ class ProcessBuilder
     /**
      * Creates a new process to run mutant tests
      * @param Mutant $mutant
+     * @param int $index Index of the mutable file in test suite
      *
      * @return Process
      */
-    public function build(Mutant $mutant)
+    public function build(Mutant $mutant, $index)
     {
         $process = $this->adapter->getProcess(
             $this->container,
@@ -42,6 +43,6 @@ class ProcessBuilder
             $mutant->getTests()
         );
 
-        return new Process($this->adapter, $mutant, $process);
+        return new Process($this->adapter, $mutant, $process, $index);
     }
 }
