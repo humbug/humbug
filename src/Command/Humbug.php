@@ -158,36 +158,6 @@ class Humbug extends Command
         );
     }
 
-    protected function prepareFinder($directories, $excludes, array $names = null)
-    {
-        $finder = new Finder;
-        $finder->files();
-
-        if (!is_null($names) && count($names) > 0) {
-            foreach ($names as $name) {
-                $finder->name($name);
-            }
-        } else {
-            $finder->name('*.php');
-        }
-
-        if ($directories) {
-            foreach ($directories as $directory) {
-                $finder->in($directory);
-            }
-        } else {
-            $finder->in('.');
-        }
-
-        if (isset($excludes)) {
-            foreach ($excludes as $exclude) {
-                $finder->exclude($exclude);
-            }
-        }
-
-        return $finder;
-    }
-
     protected function configure()
     {
         $this
