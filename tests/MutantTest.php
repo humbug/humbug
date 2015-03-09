@@ -32,21 +32,34 @@ class MutantTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param bool $throwException
+     * @param array $tests
+     * @param array $testMethods
      *
      * @return CoverageData
      */
-    public function getCoverageData($throwException = false, array $tests = [], array $testMethods = [])
+    public function getCoverageData(array $tests = [], array $testMethods = [])
     {
         $coverageData = $this->prophesize('Humbug\Utility\CoverageData');
-        $getTestMethod = $coverageData->getTestClasses(Argument::any(), Argument::any());
 
-        if ($throwException) {
-            $getTestMethod->willThrow(new NoCoveringTestsException());
-        } else {
-            $getTestMethod->willReturn($tests);
-        }
+        $coverageData->getTestClasses(Argument::any(), Argument::any())
+            ->willReturn($tests);
+        $coverageData->getTestMethods(Argument::any(), Argument::any())
+            ->willReturn($testMethods);
 
+        return $coverageData->reveal();
+    }
+
+    /**
+     * @param array $testMethods
+     *
+     * @return CoverageData
+     */
+    public function getExceptionRaisingCoverageData(array $testMethods = [])
+    {
+        $coverageData = $this->prophesize('Humbug\Utility\CoverageData');
+
+        $coverageData->getTestClasses(Argument::any(), Argument::any())
+            ->willThrow(new NoCoveringTestsException());
         $coverageData->getTestMethods(Argument::any(), Argument::any())
             ->willReturn($testMethods);
 
@@ -71,7 +84,7 @@ class MutantTest extends \PHPUnit_Framework_TestCase
         $mutant = new Mutant(
             $mutation,
             $this->getFileGenerator(),
-            $this->getCoverageData(false, [ 'dummy' ], [ 'dummyMethod' ]),
+            $this->getCoverageData([ 'dummy' ], [ 'dummyMethod' ]),
             __DIR__ . '/_files/mutables/'
         );
 
@@ -85,11 +98,10 @@ class MutantTest extends \PHPUnit_Framework_TestCase
      */
     public function testConstructorFailsWithoutCoverage()
     {
-        $mutation = $this->getMutation();
-        $mutant = new Mutant(
-            $mutation,
+        new Mutant(
+            $this->getMutation(),
             $this->getFileGenerator(),
-            $this->getCoverageData(true),
+            $this->getExceptionRaisingCoverageData(),
             __DIR__ . '/_files/mutables/'
         );
     }
@@ -100,9 +112,15 @@ class MutantTest extends \PHPUnit_Framework_TestCase
         $mutant = new Mutant(
             $mutation,
             new FileGenerator(__DIR__ . '/_files/mutants/'),
-            $this->getCoverageData(false, [ 'dummy' ], [ 'dummyMethod' ]),
+            $this->getCoverageData([ 'dummy' ], [ 'dummyMethod' ]),
             __DIR__ . '/_files/mutables/'
         );
+
+        $diff = $this->prophesize('Humbug\Utility\Diff');
+        $diff->difference(Argument::any(), Argument::any())
+            ->willReturn('diff');
+
+        $mutant->setDiffGenerator($diff->reveal());
 
         $expected = [
             'file' => 'Math.php',
@@ -110,7 +128,8 @@ class MutantTest extends \PHPUnit_Framework_TestCase
             'class' => 'Phpunit_MM1_Math',
             'method' => 'add',
             'line' => 8,
-            'tests' => [ 'dummyMethod' ]
+            'tests' => [ 'dummyMethod' ],
+            'diff' => 'diff'
         ];
 
         $actual = $mutant->toArray();

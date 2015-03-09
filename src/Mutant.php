@@ -46,14 +46,14 @@ class Mutant
     protected $testMethods;
 
     /**
-     * @var string
-     */
-    protected $diff;
-
-    /**
      * @var Result
      */
     protected $result;
+
+    /**
+     * @var Diff
+     */
+    protected $diff;
 
     public function __construct(Mutation $mutation, FileGenerator $generator, CoverageData $coverage, $baseDirectory)
     {
@@ -70,6 +70,7 @@ class Mutant
 
         $this->file = $generator->generateFile($mutation);
         $this->baseDirectory = $baseDirectory;
+        $this->diff = Diff::getInstance();
     }
 
     public function __destruct()
@@ -80,11 +81,19 @@ class Mutant
     }
 
     /**
+     * @param Diff $diff
+     */
+    public function setDiffGenerator(Diff $diff)
+    {
+        $this->diff = $diff;
+    }
+
+    /**
      * @return string
      */
     public function getDiff()
     {
-        return Diff::difference(
+        return $this->diff->difference(
             file_get_contents($this->mutation->getfile()),
             file_get_contents($this->file)
         );
