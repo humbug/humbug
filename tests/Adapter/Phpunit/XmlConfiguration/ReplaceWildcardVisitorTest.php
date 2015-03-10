@@ -46,7 +46,7 @@ class ReplaceWildcardVisitorTest extends \PHPUnit_Framework_TestCase
         $visitedObject = $dom->createElement('object', '*suite');
         $dom->appendChild($visitedObject);
 
-        $this->replaceWildcardVisitor->visitNode($visitedObject);
+        $this->replaceWildcardVisitor->visitElement($visitedObject);
 
         $xpath = new \DOMXPath($dom);
 
@@ -61,7 +61,7 @@ class ReplaceWildcardVisitorTest extends \PHPUnit_Framework_TestCase
         $visitedObject = $dom->createElement('object', '*/Tests');
         $dom->appendChild($visitedObject);
 
-        $this->replaceWildcardVisitor->visitNode($visitedObject);
+        $this->replaceWildcardVisitor->visitElement($visitedObject);
         $xpath = new \DOMXPath($dom);
 
         $secondExpected = realpath($this->wildcardDir . '/second-suite/Tests');

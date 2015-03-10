@@ -28,8 +28,7 @@ class FunctionCall extends MutatorAbstract
     {
         $replace = [];
         $last = null;
-        $tokenCount = count($tokens);
-        for ($i=$index+1; $i < $tokenCount; $i++) {
+        for ($i=$index+1; $i < count($tokens); $i++) {
             if (is_array($tokens[$i]) && $tokens[$i][0] == T_WHITESPACE) {
                 continue;
             } elseif (is_array($tokens[$i]) && $tokens[$i][0] == T_STRING && function_exists($tokens[$i][1])) {

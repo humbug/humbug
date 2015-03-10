@@ -55,7 +55,7 @@ class Text
 
         $errorOutput = $mutant->getProcess()->getErrorOutput();
 
-        if (!empty($errorOutput)) {
+        if ($errorOutput) {
             $out .=
                 'The following output was received on stderr:' . PHP_EOL .
                 PHP_EOL .

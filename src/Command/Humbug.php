@@ -15,6 +15,7 @@ use Humbug\Collector;
 use Humbug\Config;
 use Humbug\Config\JsonParser;
 use Humbug\Container;
+use Humbug\Adapter\Phpunit;
 use Humbug\Mutant;
 use Humbug\ProcessRunner;
 use Humbug\Report\Text as TextReport;
@@ -26,8 +27,11 @@ use Humbug\Exception\NoCoveringTestsException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\ArrayInput as EmptyInput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Helper\ProgressBar;
+use Symfony\Component\Console\Helper\FormatterHelper;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\PhpProcess;
 
@@ -57,7 +61,7 @@ class Humbug extends Command
         $this->validate($input);
         $container = $this->container = new Container($input->getOptions());
 
-        $this->doConfiguration($input);
+        $this->doConfiguration();
 
         if ($this->isLoggingEnabled()) {
             $this->removeOldLogFiles();
@@ -65,10 +69,11 @@ class Humbug extends Command
             $output->writeln('<error>No log file is specified. Detailed results will not be available.</error>');
         }
 
+        $formatterHelper = new FormatterHelper;
         if ($this->textLogFile) {
-            $renderer = new Text($output, true);
+            $renderer = new Text($output, $formatterHelper, true);
         } else {
-            $renderer = new Text($output);
+            $renderer = new Text($output, $formatterHelper);
         }
 
         $renderer->renderPreTestIntroduction();
@@ -163,6 +168,7 @@ class Humbug extends Command
          * collect data on how tests handled the mutations. We use ext/runkit
          * to dynamically alter included (in-memory) classes on the fly.
          */
+        $countMutantShadows = 0;
         $collector = new Collector();
 
         /**
@@ -270,7 +276,7 @@ class Humbug extends Command
          */
         if ($this->jsonLogFile) {
             $renderer->renderLogToJson($this->jsonLogFile);
-            $this->logJson($collector, $renderer);
+            $this->logJson($collector);
         }
 
         if ($this->textLogFile) {
@@ -294,24 +300,16 @@ class Humbug extends Command
         Performance::downMemProfiler();
     }
 
-    private function performInitailTestsRun(
-        PhpProcess $process,
-        AdapterAbstract $testFrameworkAdapter,
-        ProgressBar $progressBar
-    ) {
-        $setProgressBarProgressCallback = function ($count) use ($progressBar) {
-            $progressBar->setProgress($count);
-        };
-
-        return (new ProcessRunner())->run($process, $testFrameworkAdapter, $setProgressBarProgressCallback);
-    }
-
-    protected function logJson(Collector $collector, $renderer)
+    protected function logJson(Collector $collector)
     {
         $vanquishedTotal = $collector->getVanquishedTotal();
         $measurableTotal = $collector->getMeasurableTotal();
 
-        $detectionRateTested = $renderer->calculateDetectionRate($vanquishedTotal, $measurableTotal);
+        if ($measurableTotal !== 0) {
+            $detectionRateTested  = round(100 * ($vanquishedTotal / $measurableTotal));
+        } else {
+            $detectionRateTested  = 0;
+        }
 
         if ($collector->getTotalCount() !== 0) {
             $uncoveredRate = round(100 * ($collector->getShadowCount() / $collector->getTotalCount()));
@@ -343,7 +341,29 @@ class Humbug extends Command
         );
     }
 
-    protected function doConfiguration(InputInterface $input)
+    protected function prepareFinder($directories, $excludes)
+    {
+        $finder = new Finder;
+        $finder->files()->name('*.php');
+
+        if ($directories) {
+            foreach ($directories as $directory) {
+                $finder->in($directory);
+            }
+        } else {
+            $finder->in('.');
+        }
+
+        if (isset($excludes)) {
+            foreach ($excludes as $exclude) {
+                $finder->exclude($exclude);
+            }
+        }
+
+        return $finder;
+    }
+
+    protected function doConfiguration()
     {
         $this->container->setBaseDirectory(getcwd());
 
@@ -355,8 +375,7 @@ class Humbug extends Command
 
         $this->finder = $this->prepareFinder(
             isset($source->directories)? $source->directories : null,
-            isset($source->excludes)? $source->excludes : null,
-            $input->getOption('file')
+            isset($source->excludes)? $source->excludes : null
         );
 
         $this->container->setSourceList($source);
@@ -375,36 +394,6 @@ class Humbug extends Command
 
         $this->jsonLogFile = $newConfig->getLogsJson();
         $this->textLogFile = $newConfig->getLogsText();
-    }
-
-    protected function prepareFinder($directories, $excludes, array $names = null)
-    {
-        $finder = new Finder;
-        $finder->files();
-
-        if (!is_null($names) && count($names) > 0) {
-            foreach ($names as $name) {
-                $finder->name($name);
-            }
-        } else {
-            $finder->name('*.php');
-        }
-
-        if ($directories) {
-            foreach ($directories as $directory) {
-                $finder->in($directory);
-            }
-        } else {
-            $finder->in('.');
-        }
-
-        if (isset($excludes)) {
-            foreach ($excludes as $exclude) {
-                $finder->exclude($exclude);
-            }
-        }
-
-        return $finder;
     }
 
     protected function configure()
@@ -427,13 +416,11 @@ class Humbug extends Command
                     . 'Default is dictated dynamically by '.'Humbug'.'.'
             )
             ->addOption(
-               'file',
-               'f',
-               InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
-               'String representing file to mutate, comprising either a glob, '
-                    . 'regular expression or simple name. This will not restrict '
-                    . 'the initial checking of the test suite status. You can set '
-                    . 'any number of these for multiple file patterns.'
+               'constraints',
+               'c',
+               InputOption::VALUE_REQUIRED,
+               'Options set on adapter to constrain which tests are run. '
+                    . 'Applies only to the very first initialising test run.'
             )
             ->addOption(
                'timeout',
@@ -441,14 +428,6 @@ class Humbug extends Command
                InputOption::VALUE_REQUIRED,
                'Sets a timeout applied for each test run to combat infinite loop mutations.',
                 10
-            )
-            // Preferably this should go away...
-            ->addOption(
-                'constraints',
-                'c',
-                InputOption::VALUE_REQUIRED,
-                'Options set on adapter to constrain which tests are run. '
-                    . 'Applies only to the very first initialising test run.'
             );
     }
 
@@ -521,4 +500,15 @@ class Humbug extends Command
         return $out;
     }
 
+    private function performInitailTestsRun(
+        PhpProcess $process,
+        AdapterAbstract $testFrameworkAdapter,
+        ProgressBar $progressBar
+    ) {
+        $setProgressBarProgressCallback = function ($count) use ($progressBar) {
+            $progressBar->setProgress($count);
+        };
+
+        return (new ProcessRunner())->run($process, $testFrameworkAdapter, $setProgressBarProgressCallback);
+    }
 }

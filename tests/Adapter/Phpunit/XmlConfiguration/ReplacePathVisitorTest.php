@@ -40,7 +40,7 @@ class ReplacePathVisitorTest extends \PHPUnit_Framework_TestCase
         $visitedObject = $dom->createElement('object', 'file.php');
         $dom->appendChild($visitedObject);
 
-        $this->replacePathVisitor->visitNode($visitedObject);
+        $this->replacePathVisitor->visitElement($visitedObject);
 
         $expectedPath = realpath(__DIR__ . '/../../_files/phpunit-conf/file.php');
         $this->assertEquals($expectedPath, $visitedObject->nodeValue);

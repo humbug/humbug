@@ -27,7 +27,7 @@ class Text
 
     protected $useBuffer = false;
 
-    public function __construct(OutputInterface $output, $buffer = false, $colors = true)
+    public function __construct(OutputInterface $output, FormatterHelper $formatterHelper, $buffer = false, $colors = true)
     {
         $this->output = $output;
         if (!$colors) {
@@ -204,7 +204,12 @@ class Text
     /**
      * Render message that mutation testing loop is starting
      *
-     * @param Collector $collector
+     * @param int $total
+     * @param int $kills
+     * @param int $escapes
+     * @param int $errors
+     * @param int $timeouts
+     * @param int $shadows
      */
     public function renderSummaryReport(Collector $collector)
     {
@@ -223,7 +228,11 @@ class Text
         $this->write(PHP_EOL, false);
         $vanquishedTotal = $collector->getVanquishedTotal();
         $measurableTotal = $collector->getMeasurableTotal();
-        $detectionRateTested = $this->calculateDetectionRate($vanquishedTotal, $measurableTotal);
+        if ($measurableTotal !== 0) {
+            $detectionRateTested  = round(100 * ($vanquishedTotal / $measurableTotal));
+        } else {
+            $detectionRateTested  = 0;
+        }
         if ($collector->getTotalCount() !== 0) {
             $coveredRate = round(100 * (($measurableTotal) / $collector->getTotalCount()));
             $detectionRateAll = round(100 * ($vanquishedTotal / $collector->getTotalCount()));
@@ -259,21 +268,6 @@ class Text
     }
 
     /**
-     *  Calculate the Mutant Detection Rate
-     *
-     * @param int $vanquishedTotal Number of mutations considered killed
-     * @param int $measurableTotal Number of mutations considered detectable
-     * @return int
-     */
-    public function calculateDetectionRate($vanquishedTotal, $measurableTotal)
-    {
-        if ($measurableTotal !== 0) {
-            return round(100 * ($vanquishedTotal / $measurableTotal));
-        }
-        return 0;
-    }
-
-    /**
      * Utility function to prefix output lines with an indent
      *
      * @param string $output
@@ -298,8 +292,7 @@ class Text
      * the two where deemed umimportant.
      *
      * @param string $output
-     * @param int $lineCount Number of head/tail lines to retain
-     * @param string $omittedMarker Text to insert where lines removed
+     * @param int $lines Number of head/tail lines to retain
      * @return string
      */
     protected function headAndTail($output, $lineCount = 20, $omittedMarker = '[...Middle of output removed by Humbug...]')
