@@ -36,10 +36,8 @@ class Configure extends Command
 
         $jsonLogFile = $this->getJsonLogFile($input, $output);
 
-        $question = new ConfirmationQuestion('Confirm generation of humbug.json [Y]: ', true);
-
-        if (!$this->getQuestionHelper()->ask($input, $output, $question)) {
-            $output->writeln('');
+        if (!$this->isGenerationConfirmed($input, $output)) {
+            $output->writeln('Aborted.');
             return 0;
         }
 
@@ -298,10 +296,21 @@ class Configure extends Command
 
             if ($jsonLogFile) {
                 $logs->json = $jsonLogFile;
-                return $logs;
             }
-            return $logs;
         }
+
         return $logs;
+    }
+
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return string
+     */
+    private function isGenerationConfirmed(InputInterface $input, OutputInterface $output)
+    {
+        $question = new ConfirmationQuestion('Confirm generation of humbug.json [Y]: ', true);
+        $generationConfirmed = $this->getQuestionHelper()->ask($input, $output, $question);
+        return $generationConfirmed;
     }
 }
