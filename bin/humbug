@@ -8,6 +8,8 @@ if (PHP_SAPI !== 'cli') {
 require_once __DIR__ . '/../bootstrap.php';
 
 use Humbug\Console\Application;
+use Symfony\Component\Console\ConsoleEvents;
+use Symfony\Component\Console\Event\ConsoleCommandEvent;
 
 if (function_exists('date_default_timezone_set')
 && function_exists('date_default_timezone_get')) {
@@ -19,9 +21,21 @@ if (function_exists('ini_set')) {
     @ini_set('display_errors', 1);
 }
 
+$dispatcher = new \Symfony\Component\EventDispatcher\EventDispatcher();
+$dispatcher->addListener(ConsoleEvents::COMMAND, function(ConsoleCommandEvent $event){
+    $application = $event->getCommand()->getApplication();
+
+    $event->getOutput()->writeln($application->getLongVersion() . PHP_EOL);
+});
+
+
 $application = new Application();
+$application->setDispatcher($dispatcher);
+
 $application->add(new \Humbug\Command\Humbug());
 $application->add(new \Humbug\Command\Configure());
+
+
 if ('phar:' === substr(__FILE__, 0, 5)) {
     $application->add(new \Humbug\Command\SelfUpdate());
 }
