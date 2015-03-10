@@ -3,6 +3,7 @@
 namespace Humbug\Command;
 
 use Humbug\Adapter\Phpunit\ConfigurationLocator;
+use Humbug\Exception\RuntimeException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
@@ -15,20 +16,28 @@ class Configure extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         if ($this->isAlreadyConfigured()) {
-            $output->writeln('Humbug humbug.json already exists.');
+            $output->writeln(
+                'Humbug configuration file "humbug.json" already exists. '
+                . 'You may delete the file to start over.'
+            );
             return 0;
         }
+
+        $output->writeln('When choosing directories, you may enter each directory and press return.');
+        $output->writeln('To exit directory selection, please leave the next answer blank and press return.');
+        $output->write(PHP_EOL);
 
         $chDir = $this->resolveChDir($input, $output);
 
-        $sourcesDirs = $this->getDirs($input, $output, 'Which source dir you want to include? : ');
+        $sourcesDirs = $this->getDirs($input, $output, 'What source directories do you want to include? : ');
 
         if (empty($sourcesDirs)) {
-            $output->writeln('Sources directories were not provided. Cannot generate humbug.json');
+            $output->writeln('A source directory was not provided. Unable to generate "humbug.json".');
             return 0;
         }
 
-        $excludeDirs = $this->getDirs($input, $output, 'Which dir you want to exclude? :');
+        $excludeDirs = $this->getDirs($input, $output,
+            'Any directories to exclude from within your source directories? :');
 
         $timeout = $this->getTimeout($input, $output);
 
@@ -36,7 +45,7 @@ class Configure extends Command
 
         $jsonLogFile = $this->getJsonLogFile($input, $output);
 
-        $question = new ConfirmationQuestion('Confirm generation of humbug.json [Y]: ', true);
+        $question = new ConfirmationQuestion('Generate "humbug.json"? [Y]: ', true);
 
         if (!$this->getQuestionHelper()->ask($input, $output, $question)) {
             $output->writeln('');
@@ -152,7 +161,7 @@ class Configure extends Command
             $chDir = $this->getQuestionHelper()->ask($input, $output, $frameworkConfigurationQuestion);
 
             if (!$chDir) {
-                throw new \RuntimeException("Could not create 'humbug.json'. Cannot locate phpunit.xml");
+                throw new RuntimeException('Could not create "humbug.json". Cannot locate phpunit.xml(.dist) file.');
             }
 
             return $chDir;
@@ -165,7 +174,7 @@ class Configure extends Command
      */
     private function createFrameworkConfigurationQuestion(ConfigurationLocator $configurationLocator)
     {
-        $frameworkConfigurationQuestion = new Question('Where is your phpunit.xml(.dist) configuration? : ');
+        $frameworkConfigurationQuestion = new Question('Where is your phpunit.xml(.dist) configuration located? : ');
         $frameworkConfigurationQuestion->setValidator(function ($answer) use ($configurationLocator) {
 
             $answer = trim($answer);
@@ -175,7 +184,7 @@ class Configure extends Command
             }
 
             if (!is_dir($answer)) {
-                throw new \RuntimeException(sprintf('Could not find "%s" directory', $answer));
+                throw new RuntimeException(sprintf('Could not find "%s" directory.', $answer));
             }
 
             $configurationLocator->locate($answer);
@@ -215,7 +224,7 @@ class Configure extends Command
         $sourceQuestion = new Question($question);
         $sourceQuestion->setValidator(function ($answer) {
             if (trim($answer) && !is_dir($answer)) {
-                throw new \RuntimeException(sprintf('Could not find "%s" directory', $answer));
+                throw new RuntimeException(sprintf('Could not find "%s" directory.', $answer));
             }
 
             return $answer;
@@ -242,10 +251,10 @@ class Configure extends Command
      */
     private function createTimeoutQuestion()
     {
-        $timeoutQuestion = new Question('Single test timeout in seconds [10] : ', 10);
+        $timeoutQuestion = new Question('Single test suite timeout in seconds [10] : ', 10);
         $timeoutQuestion->setValidator(function ($answer) {
-            if (!$answer || !is_numeric($answer)) {
-                throw new \RuntimeException('Timeout should be number');
+            if (!$answer || !is_numeric($answer) || (int) $answer <= 0) {
+                throw new RuntimeException('Timeout should be an integer greater than 0');
             }
 
             return (int)$answer;
@@ -260,8 +269,7 @@ class Configure extends Command
      */
     private function getTextLogFile(InputInterface $input, OutputInterface $output)
     {
-        $textLogQuestion = new Question('Where do you want to store text logs ? [humbuglog.txt] : ', 'humbuglog.txt');
-
+        $textLogQuestion = new Question('Where do you want to store the text log? [humbuglog.txt] : ', 'humbuglog.txt');
         $textLogFile = $this->getQuestionHelper()->ask($input, $output, $textLogQuestion);
         return $textLogFile;
     }
@@ -273,10 +281,8 @@ class Configure extends Command
      */
     private function getJsonLogFile(InputInterface $input, OutputInterface $output)
     {
-        $textLogQuestion = new Question('Where do you want to store json logs? : ');
-
+        $textLogQuestion = new Question('Where do you want to store the json log (if you need it)? : ');
         $textLogFile = $this->getQuestionHelper()->ask($input, $output, $textLogQuestion);
-
         return $textLogFile;
     }
 
