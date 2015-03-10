@@ -15,10 +15,15 @@ class Configure extends Command
 {
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $output->writeln(
+            '<fg=green>Humbug configuration tool.' . PHP_EOL .
+            'It will guide you through Humbug configuration in few seconds.</fg=green>' . PHP_EOL
+        );
+
         if ($this->isAlreadyConfigured()) {
             $output->writeln(
-                'Humbug configuration file "humbug.json" already exists. '
-                . 'You may delete the file to start over.'
+                '<bg=red>Humbug configuration file "humbug.json" already exists. '
+                . 'You may delete the file to start over.</bg=red>' . PHP_EOL
             );
             return 0;
         }
@@ -46,7 +51,7 @@ class Configure extends Command
         $jsonLogFile = $this->getJsonLogFile($input, $output);
 
         if (!$this->isGenerationConfirmed($input, $output)) {
-            $output->writeln('Aborted.');
+            $output->writeln('<fg=red>Aborted.</fg=red>' .PHP_EOL);
             return 0;
         }
 
