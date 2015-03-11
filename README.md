@@ -74,6 +74,8 @@ Humbug currently works on PHP 5.4 or greater.
 Usage
 -----
 
+### Configuration
+
 Humbug is still under development so, to repeat, beware of rough edges.
 
 In the base directory of your project create a humbug.json file:
@@ -132,6 +134,18 @@ other than your project's base directory.
     }
 }
 ```
+
+#### Configure command
+
+To configure humbug in your project you may also run 
+
+```sh
+humbug configure
+```
+
+This tool will ask some questions required to create Humbug configuration file(humbug.json). 
+
+### Running Humbug
 
 Ensure that your tests are all in a passing state (incomplete and skipped tests
 are allowed). Humbug will quit if any of your tests are failing.

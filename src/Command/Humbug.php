@@ -56,7 +56,6 @@ class Humbug extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         Performance::upMemProfiler();
-        $output->writeln($this->getApplication()->getLongVersion() . PHP_EOL);
 
         $this->validate($input);
         $container = $this->container = new Container($input->getOptions());
