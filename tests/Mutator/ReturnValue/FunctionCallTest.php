@@ -9,7 +9,7 @@
  * @license    https://github.com/padraic/humbug/blob/master/LICENSE New BSD License
  */
 
-namespace Humbug\Test\Mutator\FunctionCall;
+namespace Humbug\Test\Mutator\ReturnValue;
 
 use Humbug\Mutator;
 
@@ -39,7 +39,7 @@ class FunctionCallTest extends \PHPUnit_Framework_TestCase
 
     public function testMutatesWithValueReturnAssociative()
     {
-        // @todo is this really a false case?
+        // @todo is this really a false case? [PB: Yes, it should - see BracketedStatement mutator]
         // return (count($foo));
         $tokens = [
             0 => [

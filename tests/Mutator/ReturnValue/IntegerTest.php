@@ -9,7 +9,7 @@
  * @license    https://github.com/padraic/humbug/blob/master/LICENSE New BSD License
  */
 
-namespace Humbug\Test\Mutator\FunctionCall;
+namespace Humbug\Test\Mutator\ReturnValue;
 
 use Humbug\Mutator;
 use Humbug\Utility\Tokenizer;

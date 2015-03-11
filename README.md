@@ -379,6 +379,7 @@ Return Values:
 | return $this; | return null; |
 | return function(); | function(); return null; |
 | return new Class; | new Class; return null; |
+| return (<Anything>); | (<Anything>); return null; |
 
 Literal Numbers:
 

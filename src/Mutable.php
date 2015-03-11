@@ -90,6 +90,7 @@ class Mutable
         '\Humbug\Mutator\ReturnValue\FloatNegation',
         '\Humbug\Mutator\ReturnValue\NewObject',
         '\Humbug\Mutator\ReturnValue\FunctionCall',
+        '\Humbug\Mutator\ReturnValue\BracketedStatement',
     ];
 
     /**

@@ -23,6 +23,9 @@
     <filter>
         <whitelist>
             <directory>./src/</directory>
+            <exclude>
+                <file>./src/StreamWrapper/IncludeInterceptor.php</file>
+            </exclude>
         </whitelist>
     </filter>
     

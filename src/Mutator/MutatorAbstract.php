@@ -45,7 +45,7 @@ abstract class MutatorAbstract
      *
      * @return int|string|false The next match if found, or false. Token is guaranteed to be a scalar if a match is found.
      */
-    protected static function getNextToken(array $tokens, $index, array $excludeTokens = [])
+    protected static function getNextToken(array &$tokens, $index, array $excludeTokens = [])
     {
         while ($index < count($tokens) && isset($tokens[$index+1]) && self::shouldSkip($tokens[$index + 1], $excludeTokens)) {
             $index++;
@@ -67,7 +67,7 @@ abstract class MutatorAbstract
      *
      * @return int|string|false The previous match if found, or false. Token is guaranteed to be a scalar if a match is found.
      */
-    protected static function getPreviousToken(array $tokens, $index, array $excludeTokens = [])
+    protected static function getPreviousToken(array &$tokens, $index, array $excludeTokens = [])
     {
         while ($index > 0 && isset($tokens[$index-1]) && self::shouldSkip($tokens[$index - 1], $excludeTokens)) {
             $index--;
