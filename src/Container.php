@@ -40,7 +40,9 @@ class Container
     public function __construct(array $inputOptions)
     {
         $this->inputOptions = $inputOptions;
-        $this->setAdapterOptionsFromString($this->inputOptions['options']);
+        if (isset($inputOptions['options'])) {
+            $this->setAdapterOptionsFromString($this->inputOptions['options']);
+        }
     }
 
     /**
@@ -235,7 +237,7 @@ class Container
      */
     public function getGenerator()
     {
-        if (!isset($this->_generator)) {
+        if (!isset($this->generator)) {
             $this->generator = new Generator;
         }
         return $this->generator;
@@ -244,6 +246,7 @@ class Container
     public function setTimeout($seconds)
     {
         $this->timeout = $seconds;
+        return $this;
     }
 
     /**
