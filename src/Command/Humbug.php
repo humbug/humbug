@@ -61,7 +61,7 @@ class Humbug extends Command
         $this->validate($input);
         $container = $this->container = new Container($input->getOptions());
 
-        $this->doConfiguration();
+        $this->doConfiguration($input);
 
         if ($this->isLoggingEnabled()) {
             $this->removeOldLogFiles();
@@ -341,10 +341,18 @@ class Humbug extends Command
         );
     }
 
-    protected function prepareFinder($directories, $excludes)
+    protected function prepareFinder($directories, $excludes, array $names = null)
     {
         $finder = new Finder;
-        $finder->files()->name('*.php');
+        $finder->files();
+
+        if (!is_null($names) && count($names) > 0) {
+            foreach ($names as $name) {
+                $finder->name($name);
+            }
+        } else {
+            $finder->name('*.php');
+        }
 
         if ($directories) {
             foreach ($directories as $directory) {
@@ -363,7 +371,7 @@ class Humbug extends Command
         return $finder;
     }
 
-    protected function doConfiguration()
+    protected function doConfiguration(InputInterface $input)
     {
         $this->container->setBaseDirectory(getcwd());
 
@@ -375,7 +383,8 @@ class Humbug extends Command
 
         $this->finder = $this->prepareFinder(
             isset($source->directories)? $source->directories : null,
-            isset($source->excludes)? $source->excludes : null
+            isset($source->excludes)? $source->excludes : null,
+            $input->getOption('file')
         );
 
         $this->container->setSourceList($source);
@@ -414,6 +423,15 @@ class Humbug extends Command
                InputOption::VALUE_REQUIRED,
                'Set command line options string to pass to test adapter. '
                     . 'Default is dictated dynamically by '.'Humbug'.'.'
+            )
+            ->addOption(
+               'file',
+               'f',
+               InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
+               'String representing file to mutate, comprising either a glob, '
+                    . 'regular expression or simple name. This will not restrict '
+                    . 'the initial checking of the test suite status. You can set '
+                    . 'any number of these for multiple file patterns.'
             )
             ->addOption(
                'constraints',

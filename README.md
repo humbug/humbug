@@ -225,6 +225,35 @@ Interpreting these results requires some context. The logs will list all undetec
 mutations as diffs against the original source code. Examining these will provide
 further insight as to what specific mutations went undetected.
 
+Command Line Options
+--------------------
+
+Humbug has a few command line options of note, other than those normally associated
+with any Symfony Console application.
+
+####Overriding The Configured Timeout
+
+You can manually set the timeout threshold for any single test:
+
+```sh
+humbug --timeout=10
+```
+
+####Restricting Files To Mutate
+
+If you're only interested in mutating a subset of your files, you can pass
+any number of `--file` options containing simple file names, globs or regular
+expressions. Basically, these are all passed to the Symfony Finder's `name()`
+method.
+
+```sh
+humbug --file=NewClass.php --file=*Driver.php
+```
+
+This in no way restricts the initial Humbug check on the overall test suite which
+is still executed in full to ensure all tests are passing correctly before
+proceeding.
+
 Performance
 -----------
 
