@@ -1,0 +1,6 @@
+default:
+  suites:
+    application:
+      contexts: [ FeatureContext, FilesystemContext ]
+  formatters:
+    progress: ~
