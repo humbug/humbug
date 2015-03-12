@@ -74,5 +74,4 @@ class BracketedStatementTest extends \PHPUnit_Framework_TestCase
         Mutator\ReturnValue\BracketedStatement::getMutation($tokens, 0);
         $this->assertSame('(count([1,2])); return null;', Tokenizer::reconstructFromTokens($tokens));
     }
-
 }
