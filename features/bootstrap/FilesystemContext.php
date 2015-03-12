@@ -46,15 +46,16 @@ class FilesystemContext implements Context, SnippetAcceptingContext
     /**
      * @Given the class file :file contains:
      * @Given the test file :file contains:
+     * @Given the phpunit config file :file contains:
+     * @Given the phpunit bootstrap file :file contains:
      */
     public function theClassOrTestFileContains($file, PyStringNode $contents)
     {
         $this->theFileContains($file, $contents);
-        require_once($file);
     }
 
     /**
-     * @Given the config file contains:
+     * @Given the humbug config file contains:
      */
     public function theConfigFileContains(PyStringNode $contents)
     {
@@ -90,5 +91,10 @@ class FilesystemContext implements Context, SnippetAcceptingContext
         if ($result === false) {
             throw new \RuntimeException($message);
         }
+    }
+
+    private function theFileContains($file, PyStringNode $contents)
+    {
+        $this->filesystem->dumpFile($file, (string) $contents);
     }
 }

@@ -5,7 +5,7 @@ use Behat\Behat\Context\SnippetAcceptingContext;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use Behat\Behat\Tester\Exception\PendingException;
-
+use SebastianBergmann\Diff\Differ;
 use Symfony\Component\Console\Tester\ApplicationTester;
 use Humbug\Console\Application;
 use Humbug\Command\Humbug as HumbugCommand;
@@ -23,6 +23,8 @@ class FeatureContext implements Context, SnippetAcceptingContext
 
     private $startingDirectory;
 
+    private $differ;
+
     /**
      * Initializes context.
      *
@@ -36,6 +38,7 @@ class FeatureContext implements Context, SnippetAcceptingContext
         $this->application->setAutoExit(false);
         $this->application->add(new HumbugCommand);
         $this->appTester = new ApplicationTester($this->application);
+        $this->differ = new Differ();
     }
 
     /**
@@ -65,6 +68,14 @@ class FeatureContext implements Context, SnippetAcceptingContext
     }
 
     /**
+     * @When I run humbug
+     */
+    public function iRunHumbug()
+    {
+        $this->appTester->run(['run']);
+    }
+
+    /**
      * @When I run humbug with :arg1
      */
     public function iRunHumbugWith($arg1)
@@ -74,14 +85,32 @@ class FeatureContext implements Context, SnippetAcceptingContext
     }
 
     /**
-     * @Then I should see
+     * @Then I should see:
      */
     public function iShouldSee(PyStringNode $string)
     {
         $string = (string) $string;
-        if (trim($this->appTester->getDisplay()) !== trim($string)) {
-            throw new \Exception(sprintf(
-                'Actual output was:%s%s', PHP_EOL, $string
+        $output = $this->appTester->getDisplay();
+        if (trim($output) !== trim($string)) {
+            throw new \RuntimeException(sprintf(
+                'Output difference:%s%s', PHP_EOL, $this->differ->diff(trim($string), trim($output))
+            ));
+        }
+    }
+
+    /**
+     * @Then I should see ignoring dynamic lines:
+     */
+    public function iShouldSeeIgnoringPerformanceLine(PyStringNode $string)
+    {
+        $string = (string) $string;
+        $output = $this->appTester->getDisplay();
+        $output = preg_replace(
+            ["/Time: \d+.*/", "/\s*\d+ \[[\>=]+.*\n/"], '', $output
+        );
+        if (trim($output) !== trim($string)) {
+            throw new \RuntimeException(sprintf(
+                'Output difference:%s%s', PHP_EOL, $this->differ->diff(trim($string), trim($output))
             ));
         }
     }

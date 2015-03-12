@@ -6,7 +6,7 @@ Feature: Developer runs Humbug with --version option
     Scenario: View Humbug version
         Given I am in any directory
         When I run humbug with "--version"
-        Then I should see
+        Then I should see:
             """
              _  _            _
             | || |_  _ _ __ | |__ _  _ __ _
