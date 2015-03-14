@@ -40,6 +40,7 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
 
     protected function tearDown()
     {
+        @unlink('humbug.json.dist');
         @unlink('humbug.json');
         @unlink('phpunit.xml');
         @unlink('app/phpunit.xml');
@@ -89,7 +90,7 @@ JSON;
 
     private function assertHumbugJsonEqualsJson($expectedJson)
     {
-        $this->assertJsonStringEqualsJsonString($expectedJson, file_get_contents('humbug.json'));
+        $this->assertJsonStringEqualsJsonString($expectedJson, file_get_contents('humbug.json.dist'));
     }
 
     public function testShouldCreateConfigurationWithDifferentLocationOfFrameworkConfigFile()

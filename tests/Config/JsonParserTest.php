@@ -29,19 +29,31 @@ class JsonParserTest extends \PHPUnit_Framework_TestCase
 
     public function testParseShouldReturnConfig()
     {
-        $config = $this->parser->parseFile(__DIR__ . '/../_files/config/humbug.json');
-
+        $config = $this->parser->parseFile(__DIR__ . '/../_files/config/');
         $this->assertInstanceOf('stdClass', $config);
+    }
+
+    public function testParseShouldReturnDistConfigIfNoOther()
+    {
+        $config = $this->parser->parseFile(__DIR__ . '/../_files/config3/');
+        $this->assertInstanceOf('stdClass', $config);
+    }
+
+    public function testParsesNonDistFilePreferentially()
+    {
+        $this->setExpectedException(
+            '\Humbug\Exception\JsonConfigException'
+        );
+        $config = $this->parser->parseFile(__DIR__ . '/../_files/config4/');
     }
 
     public function testShouldRiseExceptionWhenFileNotExists()
     {
         $this->setExpectedException(
             '\Humbug\Exception\JsonConfigException',
-            'Configuration file does not exist. Please create a humbug.json file.'
+            'Please create a humbug.json(.dist) file.'
         );
-
-        $this->parser->parseFile('it/not/exists');
+        $this->parser->parseFile('it/not/exists/');
     }
 
     public function testShouldRiseExceptionWhenFileContainsInvalidJson()
@@ -49,8 +61,7 @@ class JsonParserTest extends \PHPUnit_Framework_TestCase
         $this->setExpectedExceptionRegExp(
             '\Humbug\Exception\JsonConfigException',
             '/Error parsing configuration file JSON.*/'
-            );
-
-        $this->parser->parseFile(__DIR__ . '/../_files/config/invalid.json');
+        );
+        $this->parser->parseFile(__DIR__ . '/../_files/config2/');
     }
 }

@@ -385,7 +385,7 @@ class Humbug extends Command
     {
         $this->container->setBaseDirectory(getcwd());
 
-        $config = (new JsonParser())->parseFile('humbug.json');
+        $config = (new JsonParser())->parseFile();
 
         $newConfig = new Config($config);
 

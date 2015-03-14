@@ -18,9 +18,14 @@ use Humbug\Exception\JsonConfigException;
 
 class JsonParser
 {
-    public function parseFile($file)
+
+    const FILE = 'humbug.json';
+
+    const DIST = 'humbug.json.dist';
+
+    public function parseFile($path = '')
     {
-        $this->guardFileExists($file);
+        $file = $this->guardFileExists($path);
 
         $config = json_decode(file_get_contents($file));
 
@@ -32,13 +37,18 @@ class JsonParser
     /**
      * @param $file
      */
-    private function guardFileExists($file)
+    private function guardFileExists($path)
     {
-        if (!file_exists($file)) {
-            throw new JsonConfigException(
-                'Configuration file does not exist. Please create a humbug.json file.'
-            );
+        if (file_exists($path.self::FILE)) {
+            return $path.self::FILE;
         }
+        if (!file_exists($path.self::DIST)) {
+            throw new JsonConfigException(sprintf(
+                'Configuration file does not exist: %s. Please create a humbug.json(.dist) file.',
+                $path.self::DIST
+            ));
+        }
+        return $path.self::DIST;
     }
 
     /**

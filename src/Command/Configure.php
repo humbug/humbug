@@ -32,7 +32,7 @@ class Configure extends Command
 
         if ($this->isAlreadyConfigured()) {
             $output->writeln(
-                '<bg=red>Humbug configuration file "humbug.json" already exists. '
+                '<bg=red>Humbug configuration file "humbug.json.dist" already exists. '
                 . 'You may delete the file to start over.</bg=red>' . PHP_EOL
             );
             return 0;
@@ -47,7 +47,7 @@ class Configure extends Command
         $sourcesDirs = $this->getDirs($input, $output, 'What source directories do you want to include? : ');
 
         if (empty($sourcesDirs)) {
-            $output->writeln('A source directory was not provided. Unable to generate "humbug.json".');
+            $output->writeln('A source directory was not provided. Unable to generate "humbug.json.dist".');
             return 0;
         }
 
@@ -76,7 +76,7 @@ class Configure extends Command
 
         $this->saveConfiguration($configuration);
 
-        $output->writeln('Configuration file "humbug.json" was created.');
+        $output->writeln('Configuration file "humbug.json.dist" was created.');
     }
 
     protected function configure()
@@ -94,7 +94,7 @@ class Configure extends Command
 
     private function isAlreadyConfigured()
     {
-        return file_exists('humbug.json');
+        return file_exists('humbug.json.dist') || file_exists('humbug.json');
     }
 
     /**
@@ -147,7 +147,7 @@ class Configure extends Command
      */
     private function saveConfiguration($configuration)
     {
-        file_put_contents('humbug.json', json_encode($configuration, JSON_PRETTY_PRINT));
+        file_put_contents('humbug.json.dist', json_encode($configuration, JSON_PRETTY_PRINT));
     }
 
     /**
@@ -174,7 +174,7 @@ class Configure extends Command
             $chDir = $this->getQuestionHelper()->ask($input, $output, $frameworkConfigurationQuestion);
 
             if (!$chDir) {
-                throw new RuntimeException('Could not create "humbug.json". Cannot locate phpunit.xml(.dist) file.');
+                throw new RuntimeException('Could not create "humbug.json.dist". Cannot locate phpunit.xml(.dist) file.');
             }
 
             return $chDir;
@@ -330,7 +330,7 @@ class Configure extends Command
      */
     private function isGenerationConfirmed(InputInterface $input, OutputInterface $output)
     {
-        $question = new ConfirmationQuestion('Generate "humbug.json"? [Y]: ', true);
+        $question = new ConfirmationQuestion('Generate "humbug.json.dist"? [Y]: ', true);
         $generationConfirmed = $this->getQuestionHelper()->ask($input, $output, $question);
         return $generationConfirmed;
     }
