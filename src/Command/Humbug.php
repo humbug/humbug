@@ -537,13 +537,12 @@ class Humbug extends Command
         ProgressBar $progressBar = null
     ) {
         if (!is_null($progressBar)) {
-                $setProgressBarProgressCallback = function ($count) use ($progressBar) {
+            $setProgressBarProgressCallback = function ($count) use ($progressBar) {
                 $progressBar->setProgress($count);
             };
 
             return (new ProcessRunner())->run($process, $testFrameworkAdapter, $setProgressBarProgressCallback);
         }
         return (new ProcessRunner())->run($process, $testFrameworkAdapter);
-        
     }
 }

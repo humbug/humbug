@@ -24,5 +24,4 @@ class ApplicationTest extends \PHPUnit_Framework_TestCase
         $app = new Application;
         $this->assertRegExp("/Humbug/", $app->getName());
     }
-
 }
