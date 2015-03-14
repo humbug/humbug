@@ -6,7 +6,6 @@
  * @package    Humbug
  * @copyright  Copyright (c) 2015 Pádraic Brady (http://blog.astrumfutura.com)
  * @license    https://github.com/padraic/humbug/blob/master/LICENSE New BSD License
- * @author     Thibaud Fabre
  */
 
 namespace Humbug;
@@ -107,6 +106,9 @@ class FileCollection
             $file,
             array_map(function ($data) {return $data['name'];}, $collection)
         );
+        if ($collection[$index]['name'] !== $file) {
+            throw new RuntimeException();
+        }
         return $collection[$index]['hash'];
     }
 }
