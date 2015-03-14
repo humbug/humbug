@@ -30,7 +30,6 @@
         "mockery/mockery": "~0.9",
         "behat/behat": "^3.0.15",
         "symfony/filesystem": "~2.6",
-        "league/flysystem": "~1.0",
         "mikey179/vfsStream": "~1.4"
     },
     "autoload": {
