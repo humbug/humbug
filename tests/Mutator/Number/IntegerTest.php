@@ -57,4 +57,16 @@ class IntegerTest extends \PHPUnit_Framework_TestCase
         $tokens = [11 => [T_DNUMBER, 1.0]];
         $this->assertFalse(Mutator\Number\Integer::mutates($tokens, 11));
     }
+
+    public function testDoesMutateOtherIntegerForms()
+    {
+        $tokens = [11 => [T_LNUMBER, 0123]];
+        $this->assertTrue(Mutator\Number\Integer::mutates($tokens, 11));
+
+        $tokens = [11 => [T_LNUMBER, 0x1A]];
+        $this->assertTrue(Mutator\Number\Integer::mutates($tokens, 11));
+
+        $tokens = [11 => [T_LNUMBER, 0b11111111]];
+        $this->assertTrue(Mutator\Number\Integer::mutates($tokens, 11));
+    }
 }

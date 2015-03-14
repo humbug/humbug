@@ -28,6 +28,15 @@ class FloatNegation extends MutatorAbstract
             if (is_array($tokens[$i]) && $tokens[$i][0] == T_WHITESPACE) {
                 continue;
             } elseif (is_array($tokens[$i]) && $tokens[$i][0] == T_DNUMBER) {
+                // Dump the negation - string for negative ints
+                if (self::getPreviousToken($tokens, $i) == '-') {
+                    $tokens[$i-1] = [
+                        T_WHITESPACE,
+                        ''
+                    ];
+                    break;
+                }
+                // otherwise multiply by -1 to make negative for positive ints
                 $num = (float) $tokens[$i][1];
                 $replace = -1 * $num;
                 $tokens[$i] = [
