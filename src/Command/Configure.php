@@ -17,6 +17,7 @@ use Humbug\Exception\RuntimeException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
@@ -30,10 +31,10 @@ class Configure extends Command
             'It will guide you through Humbug configuration in few seconds.</fg=green>' . PHP_EOL
         );
 
-        if ($this->isAlreadyConfigured()) {
+        if ($this->isAlreadyConfigured($input)) {
             $output->writeln(
                 '<bg=red>Humbug configuration file "humbug.json.dist" already exists. '
-                . 'You may delete the file to start over.</bg=red>' . PHP_EOL
+                . 'You may use the --force option to start over.</bg=red>' . PHP_EOL
             );
             return 0;
         }
@@ -81,7 +82,14 @@ class Configure extends Command
 
     protected function configure()
     {
-        $this->setName('configure');
+        $this->setName('configure')
+            ->addOption(
+               'force',
+               'f',
+               InputOption::VALUE_NONE,
+               'If it already exists, recreate the configuration anyway.'
+            )
+        ;
     }
 
     /**
@@ -92,8 +100,9 @@ class Configure extends Command
         return $this->getHelper('question');
     }
 
-    private function isAlreadyConfigured()
+    private function isAlreadyConfigured(InputInterface $input)
     {
+        if ($input->getOption('force')) return false;
         return file_exists('humbug.json.dist') || file_exists('humbug.json');
     }
 
