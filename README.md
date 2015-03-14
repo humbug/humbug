@@ -78,7 +78,7 @@ Usage
 
 Humbug is still under development so, to repeat, beware of rough edges.
 
-In the base directory of your project create a humbug.json.dist file:
+In the base directory of your project create a `humbug.json.dist` file:
 
 ```js
 {
