@@ -99,13 +99,15 @@ class Text
      *
      * @param array $result
      */
-    public function renderInitialRunPass(array &$result, $testCount)
+    public function renderInitialRunPass(array &$result, $progressBar = null)
     {
         $this->write('Humbug has completed the initial test run successfully.');
-        $this->write(
-            'Tests: <fg=cyan>' . $testCount . '</fg=cyan> '
-            . 'Line Coverage: <fg=cyan>' . sprintf('%3.2f%%', $result['coverage']) . '</fg=cyan>'
-        );
+        if (!is_null($progressBar)) {
+            $this->write(
+                'Tests: <fg=cyan>' . $progressBar->getProgress() . '</fg=cyan> '
+                . 'Line Coverage: <fg=cyan>' . sprintf('%3.2f%%', $result['coverage']) . '</fg=cyan>'
+            );
+        }
     }
 
     /**

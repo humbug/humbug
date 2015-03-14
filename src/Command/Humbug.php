@@ -88,13 +88,16 @@ class Humbug extends Command
          * and also log the results so test runs during the mutation phase can
          * be optimised.
          */
-        $progressBar = new ProgressBar($output);
-        $progressBar->setFormat('verbose');
-        $progressBar->setBarWidth(58);
-        if (!$output->isDecorated()) {
-            $progressBar->setRedrawFrequency(60);
+        $progressBar = null;
+        if (!$input->getOption('no-progress-bar')) {
+            $progressBar = new ProgressBar($output);
+            $progressBar->setFormat('verbose');
+            $progressBar->setBarWidth(58);
+            if (!$output->isDecorated()) {
+                $progressBar->setRedrawFrequency(60);
+            }
+            $progressBar->start();
         }
-        $progressBar->start();
 
         $testFrameworkAdapter = $container->getAdapter();
 
@@ -102,8 +105,11 @@ class Humbug extends Command
 
         $hasFailure = $this->performInitailTestsRun($process, $testFrameworkAdapter, $progressBar);
 
-        $progressBar->finish();
-        $output->write(PHP_EOL.PHP_EOL);
+        if (!$input->getOption('no-progress-bar')) {
+            $progressBar->finish();
+            $output->write(PHP_EOL.PHP_EOL);
+        }
+
         $exitCode = $process->getExitCode();
 
         $result = [ // default values
@@ -139,7 +145,7 @@ class Humbug extends Command
         /**
          * Initial test run was a success!
          */
-        $renderer->renderInitialRunPass($result, $progressBar->getProgress());
+        $renderer->renderInitialRunPass($result, $progressBar);
         $output->write(PHP_EOL);
         $this->logText($renderer);
 
@@ -293,7 +299,12 @@ class Humbug extends Command
         /**
          * Render performance data
          */
-        $renderer->renderPerformanceData(Performance::getTimeString(), Performance::getMemoryUsageString());
+        if (!$input->getOption('no-progress-bar')) {
+            $renderer->renderPerformanceData(
+                Performance::getTimeString(),
+                Performance::getMemoryUsageString()
+            );
+        }
         $this->logText($renderer);
 
         Performance::downMemProfiler();
@@ -427,17 +438,14 @@ class Humbug extends Command
                'file',
                'f',
                InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
-               'String representing file to mutate, comprising either a glob, '
-                    . 'regular expression or simple name. This will not restrict '
-                    . 'the initial checking of the test suite status. You can set '
-                    . 'any number of these for multiple file patterns.'
+               'Pattern representing file(s) to mutate. Can set more than once.'
             )
             ->addOption(
                'constraints',
                'c',
                InputOption::VALUE_REQUIRED,
                'Options set on adapter to constrain which tests are run. '
-                    . 'Applies only to the very first initialising test run.'
+                    . 'Applies only to the very first test run.'
             )
             ->addOption(
                'timeout',
@@ -445,6 +453,12 @@ class Humbug extends Command
                InputOption::VALUE_REQUIRED,
                'Sets a timeout applied for each test run to combat infinite loop mutations.',
                 10
+            )
+            ->addOption(
+               'no-progress-bar',
+               'b',
+               InputOption::VALUE_NONE,
+               'Removes dynamic output like the progress bar and performance data from output.'
             );
     }
 
@@ -520,12 +534,16 @@ class Humbug extends Command
     private function performInitailTestsRun(
         PhpProcess $process,
         AdapterAbstract $testFrameworkAdapter,
-        ProgressBar $progressBar
+        ProgressBar $progressBar = null
     ) {
-        $setProgressBarProgressCallback = function ($count) use ($progressBar) {
-            $progressBar->setProgress($count);
-        };
+        if (!is_null($progressBar)) {
+                $setProgressBarProgressCallback = function ($count) use ($progressBar) {
+                $progressBar->setProgress($count);
+            };
 
-        return (new ProcessRunner())->run($process, $testFrameworkAdapter, $setProgressBarProgressCallback);
+            return (new ProcessRunner())->run($process, $testFrameworkAdapter, $setProgressBarProgressCallback);
+        }
+        return (new ProcessRunner())->run($process, $testFrameworkAdapter);
+        
     }
 }

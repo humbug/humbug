@@ -72,7 +72,7 @@ class FeatureContext implements Context, SnippetAcceptingContext
      */
     public function iRunHumbug()
     {
-        $this->appTester->run(['run']);
+        $this->appTester->run(['run', '--no-progress-bar'=>true]);
     }
 
     /**
@@ -105,9 +105,6 @@ class FeatureContext implements Context, SnippetAcceptingContext
     {
         $string = (string) $string;
         $output = $this->appTester->getDisplay();
-        $output = preg_replace(
-            ["/Time: \d+.*/", "/\s*\d+ \[[\>=]+.*\n/"], '', $output
-        );
         if (trim($output) !== trim($string)) {
             throw new \RuntimeException(sprintf(
                 'Output difference:%s%s', PHP_EOL, $this->differ->diff(trim($string), trim($output))

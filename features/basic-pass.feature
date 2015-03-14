@@ -65,11 +65,11 @@ Feature: Use Humbug
             }
             """
         When I run humbug
-        Then I should see ignoring dynamic lines:
+        Then I should see:
             """
             Humbug running test suite to generate logs and code coverage data...
+
             Humbug has completed the initial test run successfully.
-            Tests: 1 Line Coverage: 100.00%
 
             Humbug is analysing source files...
 
