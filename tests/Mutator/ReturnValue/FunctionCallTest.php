@@ -11,126 +11,51 @@
 
 namespace Humbug\Test\Mutator\ReturnValue;
 
-use Humbug\Mutator;
+use Humbug\Mutator\ReturnValue\FunctionCall;
+use Humbug\Utility\Tokenizer;
 
 class FunctionCallTest extends \PHPUnit_Framework_TestCase
 {
 
-    public function testMutatesWithValueReturnTrue()
+    public function testNotMutatesWithValueReturnTrue()
     {
-        // return false;
-        $tokens = [
-            0 => [
-                0 => T_RETURN,
-                1 => 'return',
-            ],
-            1 => [
-                0 => T_WHITESPACE,
-                1 => ' ',
-            ],
-            2 => [
-                0 => 308,
-                1 => 'true',
-            ],
-            3 => ';',
-        ];
-        $this->assertFalse(Mutator\ReturnValue\FunctionCall::mutates($tokens, 0));
+        $content = '<?php return true;';
+        $tokens = Tokenizer::getTokens($content);
+        array_shift($tokens);
+        $this->assertFalse(FunctionCall::mutates($tokens, 0));
     }
 
-    public function testMutatesWithValueReturnAssociative()
+    public function testNotMutatesWithValueReturnTrueForNewObjects()
     {
-        // @todo is this really a false case? [PB: Yes, it should - see BracketedStatement mutator]
-        // return (count($foo));
-        $tokens = [
-            0 => [
-                0 => T_RETURN,
-                1 => 'return',
-            ],
-            1 => [
-                0 => T_WHITESPACE,
-                1 => ' ',
-            ],
-            2 => '(',
-            3 => [
-                0 => T_STRING,
-                1 => 'count',
-            ],
-            4 => '(',
-            5 => [
-                0 => T_VARIABLE,
-                1 => '$foo',
-            ],
-            6 => ')',
-            7 => ')',
-            8 => ';',
-        ];
-        $this->assertFalse(Mutator\ReturnValue\FunctionCall::mutates($tokens, 0));
+        $content = '<?php return new Foo();';
+        $tokens = Tokenizer::getTokens($content);
+        array_shift($tokens);
+        $this->assertFalse(FunctionCall::mutates($tokens, 0));
     }
 
-    public function testMutatesWithValueReturnFunction()
+    public function testMutatesWithValueReturnFunctionCallNoParams()
     {
-        // return count($foo);
-        $tokens = [
-            0 => [
-                0 => T_RETURN,
-                1 => 'return',
-            ],
-            1 => [
-                0 => T_WHITESPACE,
-                1 => ' ',
-            ],
-            2 => [
-                0 => T_STRING,
-                1 => 'count',
-            ],
-            3 => '(',
-            4 => [
-                0 => T_VARIABLE,
-                1 => '$foo',
-            ],
-            5 => ')',
-            6 => ';',
-        ];
-        $this->assertTrue(Mutator\ReturnValue\FunctionCall::mutates($tokens, 0));
+        $content = '<?php return rand();';
+        $tokens = Tokenizer::getTokens($content);
+        array_shift($tokens);
+        $this->assertTrue(FunctionCall::mutates($tokens, 0));
     }
 
-    public function testMutatesWithValueReturnFunctionAndString()
+    // Abusing rand() but it's a recognised function name, and not linting!
+    public function testMutatesWithValueReturnFunctionCallWithParams()
     {
-        // return count('foo') . 'bar';
-        $tokens = [
-            0 => [
-                0 => T_RETURN,
-                1 => 'return',
-            ],
-            1 => [
-                0 => T_WHITESPACE,
-                1 => ' ',
-            ],
-            2 => [
-                0 => T_STRING,
-                1 => 'count',
-            ],
-            3 => '(',
-            4 => [
-                0 => T_VARIABLE,
-                1 => '$foo',
-            ],
-            5 => ')',
-            6 => [
-                0 => T_WHITESPACE,
-                1 => ' ',
-            ],
-            7 => '.',
-            8 => [
-                0 => T_WHITESPACE,
-                1 => ' ',
-            ],
-            9 => [
-                0 => T_CONSTANT_ENCAPSED_STRING,
-                1 => 'foo',
-            ],
-            10 => ";",
-        ];
-        $this->assertTrue(Mutator\ReturnValue\FunctionCall::mutates($tokens, 0));
+        $content = '<?php return rand(1, "foo", 0.3);';
+        $tokens = Tokenizer::getTokens($content);
+        array_shift($tokens);
+        $this->assertTrue(FunctionCall::mutates($tokens, 0));
+    }
+
+    public function testGetsMutationSettingReturnValueNullAndPreservingFunctionCall()
+    {
+        $content = '<?php return rand(1, "foo", 0.3);';
+        $tokens = Tokenizer::getTokens($content);
+        array_shift($tokens);
+        FunctionCall::getMutation($tokens, 0);
+        $this->assertSame('rand(1, "foo", 0.3); return null;', Tokenizer::reconstructFromTokens($tokens));
     }
 }
