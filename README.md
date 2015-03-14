@@ -78,7 +78,7 @@ Usage
 
 Humbug is still under development so, to repeat, beware of rough edges.
 
-In the base directory of your project create a humbug.json file:
+In the base directory of your project create a humbug.json.dist file:
 
 ```js
 {
@@ -94,6 +94,9 @@ In the base directory of your project create a humbug.json file:
     }
 }
 ```
+
+You can commit the `humbug.json.dist` to your VCS and override it locally with a
+`humbug.json` file.
 
 Edit as appropriate. If you do not define at least one log, detailed information
 about escaped mutants will not be available. The Text log is the most human readable.
@@ -143,7 +146,8 @@ To configure humbug in your project you may also run
 humbug configure
 ```
 
-This tool will ask some questions required to create Humbug configuration file(humbug.json). 
+This tool will ask some questions required to create Humbug configuration file
+(`humbug.json.dist`). 
 
 ### Running Humbug
 
