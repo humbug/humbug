@@ -160,8 +160,8 @@ was cloned at same level as your project directory):
 If all went well, you will get something similar to:
 
 ```
- _  _            _              
-| || |_  _ _ __ | |__ _  _ __ _ 
+ _  _            _
+| || |_  _ _ __ | |__ _  _ __ _
 | __ | || | '  \| '_ \ || / _` |
 |_||_|\_,_|_|_|_|_.__/\_,_\__, |
                           |___/ 
@@ -169,46 +169,45 @@ Humbug version 1.0-dev
 
 Humbug running test suite to generate logs and code coverage data...
 
-  242 [=======================================================] 30 secs
+  361 [==========================================================] 31 secs
 
 Humbug has completed the initial test run successfully.
+Tests: 361 Line Coverage: 64.86%
 
 Humbug is analysing source files...
 
-Mutation Testing is commencing...
+Mutation Testing is commencing on 78 files...
 (.: killed, M: escaped, S: uncovered, E: fatal error, T: timed out)
 
-SS..E.SM..ESSMMMMMSSSSSSSSSSSSSSSSSSE.ESSSSSSSSSSSSSSSSSSSM. |   60 ( 7/76)
-.M....MMMESSS..SSSSSSSSSSSS...MMM.MEMMESS.SS........SSS....S |  120 (12/76)
-SMMSSSSM.M.M.M...TT.M...T.MM.SSSS...SSSSSSSSSSSSSM..M..M.SSS |  180 (16/76)
-S.......M.......MMM...M...SSSS.SSSEM..M.M.M.MM...SSSSS.SSS.M |  240 (18/76)
-SMMMMMMM.STSSSTTTSSSSS.......SSSSS............SSSMMMSSSMMMMM |  300 (23/76)
-.MM.M.SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSESS |  360 (29/76)
-S....S......SS......M...SSS..S..M...SSSSSSSSSSSSSSSSSS..MMMM |  420 (36/76)
-M..M....MMM..SSSSSSS..SSSSSSSSSS.EM.SS.ME.MSSSS...........MM |  480 (43/76)
-.SSS....M.SM.M.M..M..SS.MMMSS.......MMMS................SSSS |  540 (50/76)
-SSSSSSSSSSSSSSSSSSSE.SSSEMEMMMMMMS.MSSSSSSSMSSSSSSSSSSSSSSSS |  600 (51/76)
-S.MEMSSSSSSM..SMM.MMMM...SSS...EMMMEM.MMS.MMSSSSSSSSS.M..SSS |  660 (60/76)
-SSSSSSMM.SSSSSS...MSS......SSSSSS..M..MSSMSMSSSSSSSSSSSSSSSS |  720 (66/76)
-SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
+..M.M..EMMMMMSSSSMMMMMSMMMMMSSSE.ESSSSSSSSSSSSSSSSSM..M..... |   60 ( 7/78)
+MM.ES..SSSSSSSSSS...MMM.MEMME.SSSS............SSMMSSSSM.M.M. |  120 (12/78)
+M...TT.M...T.MM....S.....SSS..M..SMMSM...........M......MM.. |  180 (17/78)
+.M...ESSSEM..MMM.M.MM...SSS.SS.MSMMMMMMM..SMMMMS............ |  240 (24/78)
+....SMMMSMMMM.MM..M.SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS |  300 (27/78)
+SM..E....S......SS......M.SS..S..M...SSSSSSSS....MEM..M....M |  360 (37/78)
+M..SM..S..SSSSSSS.EM.S.E.M............M.....M.SM.M.M..M....M |  420 (47/78)
+MS...MMSSS...............M.....EME....SEMS...SSSSSSSSSSS.EMS |  480 (52/78)
+SSSM..M.MMMM...SSE...MMM.M.MM..MSSSSSSSSSSSSSSSSSS....SSSSSS |  540 (62/78)
+SSMM.SSS..........S..M..MSSMS.SSSSSSSSSSSSSSSSS......E...M.. |  600 (69/78)
+.......SM.....MMMMM.MMMMMSSSSSSSM.SS
 
-779 mutations were generated:
-     229 mutants were killed
-     410 mutants were not covered by tests
-     119 covered mutants were not detected
-      14 fatal errors were encountered
-       7 time outs were encountered
+636 mutations were generated:
+     272 mutants were killed
+     214 mutants were not covered by tests
+     129 covered mutants were not detected
+      18 fatal errors were encountered
+       3 time outs were encountered
 
-Out of 369 test covered mutations, 68% were detected.
-Out of 779 total mutations, 32% were detected.
-Out of 779 total mutations, 53% were not covered by tests.
+Out of 422 test covered mutations, 69% were detected.
+Out of 636 total mutations, 46% were detected.
+Out of 636 total mutations, 66% were covered by tests.
 
 Remember that some mutants will inevitably be harmless (i.e. false positives).
 
-Humbug results are being logged as JSON to: humbuglog.json
-Humbug results are being logged as TEXT to: humbuglog.txt
+Humbug results are being logged as JSON to: log.json
+Humbug results are being logged as TEXT to: log.txt
 
-Time: 2.26 minutes Memory: 8.75MB
+Time: 6.49 minutes Memory: 7.75MB
 ```
 
 To explain the perhaps cryptic progress output, a killed mutant is a defect which
