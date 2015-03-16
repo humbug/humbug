@@ -79,18 +79,18 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($this->container, $result);
     }
 
-    public function testSetCacheDirectory()
+    public function testsetTempDirectory()
     {
         $tmp = sys_get_temp_dir();
-        $result = $this->container->setCacheDirectory($tmp.'/');
-        $this->assertEquals($tmp, $this->container->getCacheDirectory());
+        $result = $this->container->setTempDirectory($tmp.'/');
+        $this->assertEquals($tmp, $this->container->getTempDirectory());
         $this->assertSame($this->container, $result);
     }
 
-    public function testSetCacheDirectoryThrowsExceptionOnUnwriteableParam()
+    public function testsetTempDirectoryThrowsExceptionOnUnwriteableParam()
     {
         $this->setExpectedException('Humbug\\Exception\\InvalidArgumentException');
-        $result = $this->container->setCacheDirectory('/really/does/not/exist');
+        $result = $this->container->setTempDirectory('/really/does/not/exist');
     }
 
     public function testSetPrimaryTimeout()

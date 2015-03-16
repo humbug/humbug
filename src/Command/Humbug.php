@@ -140,7 +140,7 @@ class Humbug extends Command
          * or specifications need to be run for each mutation.
          */
         $coverage = $container->getAdapter()->getCoverageData($container);
-        $result['coverage'] = $coverage->getLineCoverageFrom($container->getCacheDirectory() . '/coverage.humbug.txt');
+        $result['coverage'] = $coverage->getLineCoverageFrom($container->getTempDirectory() . '/coverage.humbug.txt');
 
         /**
          * Initial test run was a success!

@@ -17,7 +17,7 @@ class Container
 {
     private $inputOptions;
 
-    protected $cache;
+    protected $tempDirectory;
 
     protected $adapter;
 
@@ -128,13 +128,13 @@ class Container
      *
      * @param string $dir
      */
-    public function setCacheDirectory($dir)
+    public function setTempDirectory($dir)
     {
         $dir = rtrim($dir, ' \\/');
         if (!is_dir($dir) || !is_readable($dir)) {
             throw new InvalidArgumentException('Invalid cache directory: "'.$dir.'"');
         }
-        $this->cache = $dir;
+        $this->tempDirectory = $dir;
         return $this;
     }
 
@@ -143,12 +143,12 @@ class Container
      *
      * @return string
      */
-    public function getCacheDirectory()
+    public function getTempDirectory()
     {
-        if (is_null($this->cache)) {
+        if (is_null($this->tempDirectory)) {
             return sys_get_temp_dir();
         }
-        return $this->cache;
+        return $this->tempDirectory;
     }
 
     /**

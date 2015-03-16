@@ -49,7 +49,7 @@ class MutantTest extends \PHPUnit_Framework_TestCase
             ->with($this->mutation['file'], $this->mutation['line'])
             ->andReturn(['FooTest.php']);
         $this->container
-            ->shouldReceive('getCacheDirectory')
+            ->shouldReceive('getTempDirectory')
             ->andReturn(vfsStream::url('tempDir'));
         $this->container
             ->shouldReceive('getBaseDirectory')

@@ -54,7 +54,7 @@ class Mutant
         $this->tests = $coverage->getTestClasses($mutation['file'], $mutation['line']);
         $this->container = $container;
 
-        $this->file = $container->getCacheDirectory() . '/humbug.mutant.' . uniqid() . '.php';
+        $this->file = $container->getTempDirectory() . '/humbug.mutant.' . uniqid() . '.php';
 
         // generate mutated file
         $mutatorClass = $mutation['mutator'];

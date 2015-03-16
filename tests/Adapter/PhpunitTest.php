@@ -68,7 +68,7 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
             'getTestRunDirectory'      => __DIR__ . '/_files/phpunit',
             'getBaseDirectory'      => __DIR__ . '/_files/phpunit',
             'getTimeout'            => 1200,
-            'getCacheDirectory'     => $this->tmpDir,
+            'getTempDirectory'     => $this->tmpDir,
             'getAdapterOptions'     => [],
             'getBootstrap'          => '',
             'getAdapterConstraints' => 'MM1_MathTest MathTest.php'
@@ -96,7 +96,7 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
             'getTestRunDirectory'      => __DIR__ . '/_files/phpunit2',
             'getBaseDirectory'      => __DIR__ . '/_files/phpunit2',
             'getTimeout'            => 1200,
-            'getCacheDirectory'     => $this->tmpDir,
+            'getTempDirectory'     => $this->tmpDir,
             'getAdapterOptions'     => [],
             'getBootstrap'          => '',
             'getAdapterConstraints' => 'AllTests.php'
@@ -124,7 +124,7 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
             'getTestRunDirectory'      => $this->root,
             'getBaseDirectory'      => $this->root,
             'getTimeout'            => 1200,
-            'getCacheDirectory'     => $this->tmpDir,
+            'getTempDirectory'     => $this->tmpDir,
             'getAdapterOptions'     => [],
             'getBootstrap'          => '',
             'getAdapterConstraints' => 'PassTest'
@@ -151,7 +151,7 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
             'getTestRunDirectory'      => $this->root,
             'getBaseDirectory'      => $this->root,
             'getTimeout'            => 1200,
-            'getCacheDirectory'     => $this->tmpDir,
+            'getTempDirectory'     => $this->tmpDir,
             'getAdapterOptions'     => [],
             'getBootstrap'          => '',
             'getAdapterConstraints' => 'FailTest'
@@ -178,7 +178,7 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
             'getTestRunDirectory'      => $this->root,
             'getBaseDirectory'      => $this->root,
             'getTimeout'            => 1200,
-            'getCacheDirectory'     => $this->tmpDir,
+            'getTempDirectory'     => $this->tmpDir,
             'getAdapterOptions'     => [],
             'getBootstrap'          => '',
             'getAdapterConstraints' => 'ExceptionTest'
@@ -205,7 +205,7 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
             'getTestRunDirectory'      => $this->root,
             'getBaseDirectory'      => $this->root,
             'getTimeout'            => 1200,
-            'getCacheDirectory'     => $this->tmpDir,
+            'getTempDirectory'     => $this->tmpDir,
             'getAdapterOptions'     => [],
             'getBootstrap'          => '',
             'getAdapterConstraints' => 'ErrorTest'
@@ -252,7 +252,7 @@ OUTPUT;
             'getTestRunDirectory'   => $directory,
             'getBaseDirectory'      => $directory,
             'getTimeout'            => 1200,
-            'getCacheDirectory'     => $this->tmpDir,
+            'getTempDirectory'     => $this->tmpDir,
             'getAdapterOptions'     => [],
             'getBootstrap'          => '',
             'getAdapterConstraints' => ''

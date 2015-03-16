@@ -46,7 +46,7 @@ class Phpunit extends AdapterAbstract
             'testdir'       => $container->getTestRunDirectory(),
             'basedir'       => $container->getBaseDirectory(),
             'timeout'       => $container->getTimeout(),
-            'cachedir'      => $container->getCacheDirectory(),
+            'cachedir'      => $container->getTempDirectory(),
             'cliopts'       => $container->getAdapterOptions(),
             'constraints'   => $container->getAdapterConstraints()
         ];
@@ -73,7 +73,7 @@ class Phpunit extends AdapterAbstract
          */
         $xmlConfiguration = $this->assembleXmlConfiguration($container, $firstRun, $testSuites);
 
-        $configFile = $container->getCacheDirectory() . '/phpunit.humbug.xml';
+        $configFile = $container->getTempDirectory() . '/phpunit.humbug.xml';
 
         file_put_contents($configFile, $xmlConfiguration->generateXML());
 
@@ -172,7 +172,7 @@ class Phpunit extends AdapterAbstract
     public function getCoverageData(Container $container)
     {
         $coverage = new CoverageData(
-            $container->getCacheDirectory() . '/coverage.humbug.php'
+            $container->getTempDirectory() . '/coverage.humbug.php'
         );
         return $coverage;
     }
@@ -193,8 +193,8 @@ class Phpunit extends AdapterAbstract
         $xmlConfigurationBuilder = new XmlConfigurationBuilder($configurationDir);
 
         if ($firstRun) {
-            $xmlConfigurationBuilder->setPhpCoverage($container->getCacheDirectory() . '/coverage.humbug.php');
-            $xmlConfigurationBuilder->setTextCoverage($container->getCacheDirectory() . '/coverage.humbug.txt');
+            $xmlConfigurationBuilder->setPhpCoverage($container->getTempDirectory() . '/coverage.humbug.php');
+            $xmlConfigurationBuilder->setTextCoverage($container->getTempDirectory() . '/coverage.humbug.txt');
 
             $whiteListSrc = $this->getWhiteListSrc($container);
             $excludeDirs = $this->getExcludeDirs($container);
@@ -218,7 +218,7 @@ class Phpunit extends AdapterAbstract
 
     private function getPathToTimeCollectorFile(Container $container)
     {
-        return $container->getCacheDirectory() . '/phpunit.times.humbug.json';
+        return $container->getTempDirectory() . '/phpunit.times.humbug.json';
     }
 
     /**
