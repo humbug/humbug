@@ -97,18 +97,4 @@ class FeatureContext implements Context, SnippetAcceptingContext
             ));
         }
     }
-
-    /**
-     * @Then I should see ignoring dynamic lines:
-     */
-    public function iShouldSeeIgnoringPerformanceLine(PyStringNode $string)
-    {
-        $string = (string) $string;
-        $output = $this->appTester->getDisplay();
-        if (trim($output) !== trim($string)) {
-            throw new \RuntimeException(sprintf(
-                'Output difference:%s%s', PHP_EOL, $this->differ->diff(trim($string), trim($output))
-            ));
-        }
-    }
 }
