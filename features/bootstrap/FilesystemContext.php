@@ -6,6 +6,7 @@ use Behat\Behat\Context\SnippetAcceptingContext;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use Symfony\Component\Filesystem\Filesystem;
+use SebastianBergmann\Diff\Differ;
 
 class FilesystemContext implements Context, SnippetAcceptingContext
 {
@@ -21,7 +22,8 @@ class FilesystemContext implements Context, SnippetAcceptingContext
 
     public function __construct()
     {
-        $this->filesystem = new Filesystem();
+        $this->filesystem = new Filesystem;
+        $this->differ = new Differ;
     }
 
     /**
@@ -67,8 +69,16 @@ class FilesystemContext implements Context, SnippetAcceptingContext
      */
     public function thereIsNoFile($file)
     {
-
         $this->throwExceptionIfFalse(!file_exists($file), sprintf('Expected file to not exist: %s', $file));
+    }
+
+    /**
+     * @Then the file :file should exist.
+     * @Then the file :file should exist
+     */
+    public function theFileShouldExist($file)
+    {
+        $this->throwExceptionIfFalse(file_exists($file), sprintf('Expected file to exist: %s', $file));
     }
 
     /**
@@ -80,9 +90,18 @@ class FilesystemContext implements Context, SnippetAcceptingContext
             file_exists($file),
             sprintf('Expected file exist: %s', $file)
         );
+        $writtenContent = preg_replace(
+            "/humbug-behat[0-9A-Za-z]+\//",
+            'humbug-behatJ6Dj5I/',
+            file_get_contents($file)
+        );
         $this->throwExceptionIfFalse(
-            trim(file_get_contents($file)) == trim((string) $contents),
-            sprintf('Expected file to contain:%s%s%s but actually contained%s%s', PHP_EOL, (string) $contents, PHP_EOL, PHP_EOL, file_get_contents($file))
+            trim($writtenContent) == trim((string) $contents),
+            sprintf(
+                'Actual file content differs:%s%s',
+                PHP_EOL,
+                $this->differ->diff((string) $contents, $writtenContent)
+            )
         );
     }
 
