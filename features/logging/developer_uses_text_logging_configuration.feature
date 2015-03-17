@@ -1,7 +1,7 @@
 Feature: Use Humbug
-    So that I can see a Humbug mutant kill result
+    So that I can view TEXT log after running Humbug
     As a developer
-    I need to be able to run Humbug
+    I need to be able to create a TEXT log when configured
 
     Scenario:
         Given the class file "src/Foo.php" contains:
