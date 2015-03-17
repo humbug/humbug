@@ -1,5 +1,5 @@
 Feature: Use Humbug
-    So that I can see a Humbug positive result
+    So that I can see a Humbug mutant kill result
     As a developer
     I need to be able to run Humbug
 
