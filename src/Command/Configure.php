@@ -102,7 +102,9 @@ class Configure extends Command
 
     private function isAlreadyConfigured(InputInterface $input)
     {
-        if ($input->getOption('force')) return false;
+        if ($input->getOption('force')) {
+            return false;
+        }
         return file_exists('humbug.json.dist') || file_exists('humbug.json');
     }
 

@@ -50,7 +50,7 @@ class FunctionCallNegation extends MutatorAbstract
         $max = count($tokens) - $index + 1;
         $bracketCount = 0;
         $inArg = false;
-        for ($i=$index+1; $i < $max; $i++) { 
+        for ($i=$index+1; $i < $max; $i++) {
             if (is_array($tokens[$i]) && $tokens[$i][0] == T_WHITESPACE) {
                 continue;
             } elseif (!is_array($tokens[$i]) && $tokens[$i] == '(') {
@@ -58,7 +58,7 @@ class FunctionCallNegation extends MutatorAbstract
                 if (!$inArg) {
                     $inArg = true;
                 }
-            }  elseif (!is_array($tokens[$i]) && $tokens[$i] == ')') {
+            } elseif (!is_array($tokens[$i]) && $tokens[$i] == ')') {
                 $bracketCount--;
             }
             if ($inArg && $bracketCount == 0) {

@@ -160,5 +160,4 @@ class FileCollectionTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame($expected, $collection->toArray());
     }
-
 }
