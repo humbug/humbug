@@ -154,8 +154,13 @@ This tool will ask some questions required to create Humbug configuration file
 Ensure that your tests are all in a passing state (incomplete and skipped tests
 are allowed). Humbug will quit if any of your tests are failing.
 
-The magic command, while in your project's base directory (and assuming humbug
-was cloned at same level as your project directory):
+The magic command, while in your project's base directory (using the PHAR download) is:
+
+```sh
+./humbug.phar
+```
+
+or if you just cloned Humbug:
 
 ```sh
 ../humbug/bin/humbug
