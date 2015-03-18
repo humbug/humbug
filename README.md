@@ -394,6 +394,17 @@ Literal Numbers:
 | Float >= 1 / <= 2 | Float + 1 |
 | Float > 2 | 1 |
 
+If Statements:
+
+All if statements are covered largely by previous mutators, but there are special
+cases such as using native functions or class methods without any compares or operations, e.g.
+`is_int()` or `in_array()`. This would not cover functions defined in files since
+they don't exist until runtime (something else to work on!).
+
+| Original | Mutated |
+| :------: |:-------:| 
+| if(is_int(1)) | if(!is_int(1)) |
+
 More Mutators will be added over time.
 
 Did I Say Rough Edges?
