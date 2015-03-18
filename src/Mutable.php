@@ -91,6 +91,8 @@ class Mutable
         '\Humbug\Mutator\ReturnValue\NewObject',
         '\Humbug\Mutator\ReturnValue\FunctionCall',
         '\Humbug\Mutator\ReturnValue\BracketedStatement',
+        // Negation of native function calls in if statements (assuming no ops/comps)
+        '\Humbug\Mutator\IfStatement\FunctionCallNegation',
     ];
 
     /**
