@@ -18,10 +18,10 @@
                 "behat",
                 "symfony/class-loader",
                 "symfony/translation",
-                "symfony/event-dispatcher",
                 "symfony/dependency-injection",
                 "symfony/filesystem",
-                "symfony/config"
+                "symfony/config",
+                "mikey179"
             ],
             "in": [
                 "vendor"
