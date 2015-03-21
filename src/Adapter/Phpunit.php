@@ -189,30 +189,25 @@ class Phpunit extends AdapterAbstract
     private function assembleXmlConfiguration(Container $container, $firstRun = false, array $testSuites = [])
     {
         $configurationDir = $this->resolveConfigurationDir($container);
-
         $xmlConfigurationBuilder = new XmlConfigurationBuilder($configurationDir);
 
         if ($firstRun) {
             $xmlConfigurationBuilder->setPhpCoverage($container->getTempDirectory() . '/coverage.humbug.php');
             $xmlConfigurationBuilder->setTextCoverage($container->getTempDirectory() . '/coverage.humbug.txt');
-
             $whiteListSrc = $this->getWhiteListSrc($container);
             $excludeDirs = $this->getExcludeDirs($container);
             $xmlConfigurationBuilder->setCoverageFilter($whiteListSrc, $excludeDirs);
-
             $xmlConfigurationBuilder->setTimeCollectionListener($this->getPathToTimeCollectorFile($container));
         } else {
             $xmlConfigurationBuilder->setFilterListener($testSuites, $this->getPathToTimeCollectorFile($container));
         }
 
         $xmlConfigurationBuilder->setAcceleratorListener();
-
         $xmlConfiguration = $xmlConfigurationBuilder->getConfiguration();
 
         if ($xmlConfiguration->hasOriginalBootstrap()) {
             $container->setBootstrap($xmlConfiguration->getOriginalBootstrap());
         }
-
         return $xmlConfiguration;
     }
 
@@ -228,11 +223,9 @@ class Phpunit extends AdapterAbstract
     private function resolveConfigurationDir(Container $container)
     {
         $configurationDir = $container->getTestRunDirectory();
-
         if (empty($configurationDir)) {
             $configurationDir = $container->getBaseDirectory();
         }
-
         return realpath($configurationDir);
     }
 
@@ -243,7 +236,6 @@ class Phpunit extends AdapterAbstract
     private function getWhiteListSrc(Container $container)
     {
         $srcList = $container->getSourceList();
-
         return isset($srcList->directories) ? $this->getRealPathList($srcList->directories) : [];
     }
 
@@ -254,7 +246,6 @@ class Phpunit extends AdapterAbstract
     private function getExcludeDirs(Container $container)
     {
         $srcList = $container->getSourceList();
-
         return isset($srcList->excludes) ? $this->getRealPathList($srcList->excludes) : [];
     }
 

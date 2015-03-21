@@ -66,6 +66,11 @@ class XmlConfigurationBuilder
      */
     private $acceleratorListener = false;
 
+    /**
+     * @var int
+     */
+    private $testSuiteNestingLevel = 0;
+
     public function __construct($configurationDir)
     {
         $this->configurationDir = $configurationDir;
@@ -95,17 +100,32 @@ class XmlConfigurationBuilder
         }
 
         if ($this->pathToTimeStats) {
-            $timeCollectionListener = new ObjectVisitor('\Humbug\Phpunit\Listener\TimeCollectorListener', [
-                new ObjectVisitor('\Humbug\Phpunit\Logger\JsonLogger', [$this->pathToTimeStats])
-            ]);
+            $timeCollectionListener = new ObjectVisitor(
+                '\Humbug\Phpunit\Listener\TimeCollectorListener',
+                [
+                    new ObjectVisitor(
+                        '\Humbug\Phpunit\Logger\JsonLogger',
+                        [$this->pathToTimeStats, $xmlConfiguration->getRootTestSuiteNestingLevel()]
+                    )
+                ]
+            );
             $xmlConfiguration->addListener($timeCollectionListener);
         }
 
         if (!empty($this->filterTestSuites) || $this->filterStatsPath) {
-            $filterListener = new ObjectVisitor('\Humbug\Phpunit\Listener\FilterListener', [
-                new ObjectVisitor('\Humbug\Phpunit\Filter\TestSuite\IncludeOnlyFilter', $this->filterTestSuites),
-                new ObjectVisitor('\Humbug\Phpunit\Filter\TestSuite\FastestFirstFilter', [$this->filterStatsPath])
-            ]);
+            $filterListener = new ObjectVisitor(
+                '\Humbug\Phpunit\Listener\FilterListener',
+                [
+                    new ObjectVisitor(
+                        '\Humbug\Phpunit\Filter\TestSuite\IncludeOnlyFilter', 
+                        $this->filterTestSuites
+                    ),
+                    new ObjectVisitor(
+                        '\Humbug\Phpunit\Filter\TestSuite\FastestFirstFilter',
+                        [$this->filterStatsPath]
+                    )
+                ]
+            );
             $xmlConfiguration->addListener($filterListener);
         }
 
@@ -179,5 +199,13 @@ class XmlConfigurationBuilder
     {
         $this->coverageWhiteListDirs = $coverageWhiteListDirs;
         $this->coverageExcludeDirs = $coverageExcludeDirs;
+    }
+
+    /**
+     * @param int $level
+     */
+    public function setTestSuiteNestingLevel($level)
+    {
+        $this->testSuiteNestingLevel = $level;
     }
 }

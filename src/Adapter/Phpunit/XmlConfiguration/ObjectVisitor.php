@@ -11,6 +11,7 @@
  */
 
 namespace Humbug\Adapter\Phpunit\XmlConfiguration;
+use Humbug\Exception\InvalidArgumentException;
 
 class ObjectVisitor implements Visitor
 {
@@ -33,19 +34,14 @@ class ObjectVisitor implements Visitor
     public function visitElement(\DOMNode $domElement)
     {
         $domElement->setAttribute('class', $this->className);
-
         $dom = $domElement->ownerDocument;
-
         if (empty($this->arguments)) {
             return;
         }
-
         $arguments = $dom->createElement('arguments');
         $domElement->appendChild($arguments);
-
         foreach ($this->arguments as $argumentValue) {
             $argument = $this->createElementByType($argumentValue, $dom);
-
             $arguments->appendChild($argument);
         }
     }
@@ -59,21 +55,19 @@ class ObjectVisitor implements Visitor
     {
         if (is_bool($argumentValue)) {
             $nodeValue = ($argumentValue === false) ? 'false' : 'true';
-
             return $dom->createElement('boolean', $nodeValue);
         }
-
         if (is_string($argumentValue)) {
             return $dom->createElement('string', $argumentValue);
         }
-
+        if (is_int($argumentValue)) {
+            return $dom->createElement('integer', $argumentValue);
+        }
         if ($argumentValue instanceof ObjectVisitor) {
             $object = $dom->createElement('object');
             $argumentValue->visitElement($object);
-
             return $object;
         }
-
-        throw new \InvalidArgumentException('Unsuported type: '. gettype($argumentValue));
+        throw new InvalidArgumentException('Unsupported type: '. gettype($argumentValue));
     }
 }

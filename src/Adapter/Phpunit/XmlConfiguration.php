@@ -11,6 +11,7 @@
 namespace Humbug\Adapter\Phpunit;
 
 use Humbug\Adapter\Phpunit\XmlConfiguration\Visitor;
+use Humbug\Exception\LogicException;
 
 class XmlConfiguration
 {
@@ -38,7 +39,7 @@ class XmlConfiguration
     public function __construct(\DOMDocument $dom)
     {
         if (!$dom->documentElement) {
-            throw new \LogicException('No document element present. Document should not be empty!');
+            throw new LogicException('No document element present. Document should not be empty!');
         }
 
         $this->dom = $dom;
@@ -80,6 +81,18 @@ class XmlConfiguration
         return $this->getBootstrap() ?: null;
     }
 
+    /**
+     * @return integer
+     */
+    public function getRootTestSuiteNestingLevel()
+    {
+        $list = $this->xpath->query('//testsuite');
+        if ($list->length == 1) {
+            return 0;
+        }
+        return 1;
+    }
+
     public function turnOffCacheTokens()
     {
         return $this->rootElement->setAttribute('cacheTokens', 'false');
@@ -100,15 +113,6 @@ class XmlConfiguration
         $this->removeDocumentChildElementsByName('listeners');
     }
 
-    private function removeDocumentChildElementsByName($name)
-    {
-        $nodes = $this->xpath->query('/phpunit/' . $name);
-
-        foreach ($nodes as $node) {
-            $this->rootElement->removeChild($node);
-        }
-    }
-
     public function addListener(Visitor $visitor)
     {
         $listenersList = $this->xpath->query('/phpunit/listeners');
@@ -122,7 +126,6 @@ class XmlConfiguration
 
         $listener = $this->dom->createElement('listener');
         $listeners->appendChild($listener);
-
         $visitor->visitElement($listener);
     }
 
@@ -200,5 +203,14 @@ class XmlConfiguration
     public function generateXML()
     {
         return $this->dom->saveXML();
+    }
+
+    private function removeDocumentChildElementsByName($name)
+    {
+        $nodes = $this->xpath->query('/phpunit/' . $name);
+
+        foreach ($nodes as $node) {
+            $this->rootElement->removeChild($node);
+        }
     }
 }
