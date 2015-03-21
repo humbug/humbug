@@ -82,6 +82,10 @@ class XmlConfiguration
     }
 
     /**
+     * Given how PHPUnit nests suites, if there's more than one, the suite containing
+     * actual tests will be two levels down the hierarchy from where we'd normally
+     * find it with a single testsuite.
+     *
      * @return integer
      */
     public function getRootTestSuiteNestingLevel()
@@ -90,7 +94,7 @@ class XmlConfiguration
         if ($list->length == 1) {
             return 0;
         }
-        return 1;
+        return 2;
     }
 
     public function turnOffCacheTokens()
