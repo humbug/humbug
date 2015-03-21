@@ -116,6 +116,7 @@ class XmlConfigurationBuilder
             $filterListener = new ObjectVisitor(
                 '\Humbug\Phpunit\Listener\FilterListener',
                 [
+                    $xmlConfiguration->getRootTestSuiteNestingLevel(),
                     new ObjectVisitor(
                         '\Humbug\Phpunit\Filter\TestSuite\IncludeOnlyFilter', 
                         $this->filterTestSuites

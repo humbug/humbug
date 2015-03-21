@@ -94,7 +94,7 @@ class XmlConfiguration
         if ($list->length == 1) {
             return 0;
         }
-        return 2;
+        return 1;
     }
 
     public function turnOffCacheTokens()
