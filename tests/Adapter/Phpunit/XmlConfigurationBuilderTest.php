@@ -92,9 +92,16 @@ class XmlConfigurationBuilderTest extends \PHPUnit_Framework_TestCase
 
         $xmlConfiguration = $this->builder->getConfiguration();
 
-        $timeCollectionListener = new ObjectVisitor('\Humbug\Phpunit\Listener\TimeCollectorListener', [
-            new ObjectVisitor('\Humbug\Phpunit\Logger\JsonLogger', ['path/to/stats.json'])
-        ]);
+        $timeCollectionListener = new ObjectVisitor(
+            '\Humbug\Phpunit\Listener\TimeCollectorListener',
+            [
+                new ObjectVisitor(
+                    '\Humbug\Phpunit\Logger\JsonLogger',
+                    ['path/to/stats.json']
+                ),
+                0 //root suite nesting level
+            ]
+        );
 
         $xmlConfiguration->wasCalledWith('addListener', [$timeCollectionListener]);
     }
@@ -110,6 +117,7 @@ class XmlConfigurationBuilderTest extends \PHPUnit_Framework_TestCase
         $xmlConfiguration = $this->builder->getConfiguration();
 
         $filterListener = new ObjectVisitor('\Humbug\Phpunit\Listener\FilterListener', [
+            0, //root suite nesting level
             new ObjectVisitor('\Humbug\Phpunit\Filter\TestSuite\IncludeOnlyFilter', $testSuites),
             new ObjectVisitor('\Humbug\Phpunit\Filter\TestSuite\FastestFirstFilter', ['path/to/stats.json'])
         ]);
