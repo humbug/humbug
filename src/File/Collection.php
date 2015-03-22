@@ -55,11 +55,6 @@ class Collection
             $file,
             array_map(function ($data) {return $data['name'];}, $this->files)
         );
-        if ($this->files[$index]['name'] !== $file) {
-            throw new RuntimeException(
-                'Internal error: hash entry located was not for intended file: ' . $file
-            );
-        }
         return $this->files[$index]['hash'];
     }
 
