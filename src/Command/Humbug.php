@@ -24,6 +24,8 @@ use Humbug\Utility\ParallelGroup;
 use Humbug\Renderer\Text;
 use Humbug\Exception\InvalidArgumentException;
 use Humbug\Exception\NoCoveringTestsException;
+use Humbug\File\Collector as FileCollector;
+use Humbug\File\Collection as FileCollection;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -187,7 +189,13 @@ class Humbug extends Command
         /**
          * MUTATION TESTING!
          */
+
+        $fileCollector = new FileCollector(new FileCollection);
+
         foreach ($mutables as $i => $mutable) {
+
+            $fileCollector->collect($mutable->getFilename());
+
             $mutations = $mutable->generate()->getMutations();
             $batches = array_chunk($mutations, $parallels);
             unset($mutations);
@@ -267,6 +275,7 @@ class Humbug extends Command
         }
 
         $coverage->cleanup();
+        $fileCollector->write($container->getWorkingCacheDirectory() . '/source_files.json');
         Performance::stop();
 
         /**

@@ -38,6 +38,8 @@ class Container
 
     protected $cacheDirectory;
 
+    protected $workingCacheDirectory;
+
     protected $srcList;
 
     public function __construct(array $inputOptions)
