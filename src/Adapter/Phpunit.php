@@ -10,9 +10,10 @@
 
 namespace Humbug\Adapter;
 
-use Humbug\Adapter\Phpunit\XmlConfigurationBuilder;
 use Humbug\Container;
+use Humbug\Adapter\Phpunit\TestClassLocator;
 use Humbug\Adapter\Phpunit\XmlConfiguration;
+use Humbug\Adapter\Phpunit\XmlConfigurationBuilder;
 use Humbug\Adapter\Phpunit\Job;
 use Humbug\Utility\CoverageData;
 use Symfony\Component\Process\PhpExecutableFinder;
@@ -20,6 +21,11 @@ use Symfony\Component\Process\PhpProcess;
 
 class Phpunit extends AdapterAbstract
 {
+
+    /**
+     * @var TestClassLocator
+     */
+    private $locator;
 
     /**
      * Runs the tests suite according to Runner set options and the execution
@@ -169,12 +175,20 @@ class Phpunit extends AdapterAbstract
      *
      * @return \Humbug\Utility\CoverageData
      */
-    public function getCoverageData(Container $container)
+    public function getCoverageData()
     {
         $coverage = new CoverageData(
             $container->getTempDirectory() . '/coverage.humbug.php'
         );
         return $coverage;
+    }
+
+    public function getClassFile($class, Container $container)
+    {
+        if (is_null($this->locator)) {
+            $this->locator = new TestClassLocator($container);
+        }
+        return $locator->locate($class);
     }
 
     /**
