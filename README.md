@@ -311,26 +311,17 @@ of tokens.
 
 Binary Arithmetic:
 
-| Original | Mutated |
-| :------: |:-------:| 
-| + | - |
-| - | + |
-| * | / |
-| / | * |
-| % | * |
-| ** | / |
-| += | -= |
-| -= | += |
-| *= | /= |
-| /= | *= |
-| %= | *= |
-| **= | /= |
-| & | &#124; |
-| &#124; | & |
-| ^ | & |
-| ~ |  |
-| >> | << |
-| << | >> |
+| Original | Mutated | Original | Mutated |
+| :------: |:-------:| :------: |:-------:| 
+| + | - | /= | *= |
+| - | + | %= | *= |
+| * | / | **= | /= |
+| / | * | & | &#124; |
+| % | * | &#124; | & |
+| ** | / | ^ | & |
+| += | -= | ~ |  |
+| -= | += | >> | << |
+| *= | /= | << | >> |
 
 Boolean Substitution:
 
@@ -357,17 +348,13 @@ Conditional Boundaries:
 
 Negated Conditionals:
 
-| Original | Mutated |
-| :------: |:-------:| 
-| == | != |
-| != | == |
-| <> | == |
-| === | !== |
+| Original | Mutated | Original | Mutated |
+| :------: |:-------:| :------: |:-------:| 
+| == | != | > | <= |
+| != | == | < | >= |
+| <> | == | >= | < |
+| === | !== | <= | > |
 | !== | === |
-| > | <= |
-| < | >= |
-| >= | < |
-| <= | > |
 
 Increments:
 
@@ -378,19 +365,14 @@ Increments:
 
 Return Values:
 
-| Original | Mutated |
-| :------: |:-------:| 
-| return true; | return false; |
-| return false; | return true; |
-| return 0; | return 1; |
-| return <Any Integer>; | return 0; |
-| return 0.0; | return 1.0; |
+| Original | Mutated | Original | Mutated |
+| :------: |:-------:| :------: |:-------:|
+| return true; | return false; | return <Any Float > 1.0>; | return -(<Float> + 1); |
+| return false; | return true; | return $this; | return null; |
+| return 0; | return 1; | return function(); | function(); return null; |
+| return <Any Integer>; | return 0; | return new Class; | new Class; return null; |
+| return 0.0; | return 1.0; | return (`Anything`); | (`Anything`); return null; |
 | return 1.0; | return 0.0; |
-| return <Any Float > 1.0>; | return -(<Float> + 1); |
-| return $this; | return null; |
-| return function(); | function(); return null; |
-| return new Class; | new Class; return null; |
-| return (<Anything>); | (<Anything>); return null; |
 
 Literal Numbers:
 
