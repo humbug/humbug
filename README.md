@@ -312,7 +312,7 @@ of tokens.
 Binary Arithmetic:
 
 | Original | Mutated | Original | Mutated |
-| :------: |:-------:| :------: |:-------:| 
+| ------: |:-------| ------: |:-------| 
 | + | - | /= | *= |
 | - | + | %= | *= |
 | * | / | **= | /= |
@@ -328,7 +328,7 @@ Boolean Substitution:
 This temporarily encompasses logical mutators.
 
 | Original | Mutated |
-| :------: |:-------:| 
+| ------: |:-------| 
 | true | false |
 | false | true |
 | && | &#124;&#124; |
@@ -340,7 +340,7 @@ This temporarily encompasses logical mutators.
 Conditional Boundaries:
 
 | Original | Mutated
-| :------: |:-------:
+| ------: |:-------
 | >        | >=
 | <        | <=
 | >=       | >
@@ -349,7 +349,7 @@ Conditional Boundaries:
 Negated Conditionals:
 
 | Original | Mutated | Original | Mutated |
-| :------: |:-------:| :------: |:-------:| 
+| ------: |:-------| ------: |:-------| 
 | == | != | > | <= |
 | != | == | < | >= |
 | <> | == | >= | < |
@@ -359,14 +359,14 @@ Negated Conditionals:
 Increments:
 
 | Original | Mutated |
-| :------: |:-------:| 
+| ------: |:-------| 
 | ++ | -- |
 | -- | ++ |
 
 Return Values:
 
 | Original | Mutated | Original | Mutated |
-| :------: |:-------:| :------: |:-------:|
+| ------: |:-------| ------: |:-------|
 | return true; | return false; | return <Any Float > 1.0>; | return -(<Float> + 1); |
 | return false; | return true; | return $this; | return null; |
 | return 0; | return 1; | return function(); | function(); return null; |
@@ -377,7 +377,7 @@ Return Values:
 Literal Numbers:
 
 | Original | Mutated |
-| :------: |:-------:| 
+| ------: |:-------| 
 | 0 | 1 |
 | 1 | 0 |
 | Int > 1 | Int + 1 |
@@ -392,7 +392,7 @@ cases such as using native functions or class methods without any compares or op
 they don't exist until runtime (something else to work on!).
 
 | Original | Mutated |
-| :------: |:-------:| 
+| ------: |:-------| 
 | if(is_int(1)) | if(!is_int(1)) |
 
 More Mutators will be added over time.
