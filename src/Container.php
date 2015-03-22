@@ -35,6 +35,8 @@ class Container
 
     protected $baseDirectory;
 
+    protected $cacheDirectory;
+
     protected $srcList;
 
     public function __construct(array $inputOptions)
@@ -100,6 +102,42 @@ class Container
     public function getBaseDirectory()
     {
         return $this->baseDirectory;
+    }
+
+    /**
+     * Get the cache directory.
+     *
+     * @return string
+     */
+    public function getCacheDirectory($subDirectory = '')
+    {
+        if (!is_null($this->cacheDirectory)) {
+            return $this->cacheDirectory;
+        }
+        if (defined('PHP_WINDOWS_VERSION_MAJOR')) {
+            if (!getenv('APPDATA')) {
+                throw new RuntimeException(
+                    'The APPDATA environment variable must be set for humbug.'
+                );
+            }
+            $home = strtr(getenv('APPDATA'), '\\', '/') . '/Humbug';
+        } else {
+            if (!getenv('HOME')) {
+                throw new RuntimeException(
+                    'The HOME environment variable must be set for humbug.'
+                );
+            }
+            $home = rtrim(getenv('HOME'), '/') . '/.humbug';
+        }
+        @file_put_contents($home . '/.htaccess', 'Deny from all');
+        $cache = $home . '/cache';
+        foreach ([$home, $cache] as $dir) {
+            if (!is_dir($dir)) {
+                @mkdir($dir, 0777);
+            }
+        }
+        $this->cacheDirectory = $cache;
+        return $cache;
     }
 
     /**
