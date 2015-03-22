@@ -50,6 +50,10 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
             unlink($this->tmpDir . '/phpunit.humbug.xml');
         }
 
+        if (file_exists($this->tmpDir . '/junit.humbug.xml')) {
+            unlink($this->tmpDir . '/junit.humbug.xml');
+        }
+
         if (file_exists($this->tmpDir)) {
             rmdir($this->tmpDir);
         }
