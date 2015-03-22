@@ -170,7 +170,7 @@ class Humbug extends Command
         $fileCollector = new FileCollector(new FileCollection);
         $testCollector = new FileCollector(new FileCollection);
         $cachedFileCollection = $this->getCachedFileCollection('source_files.json');
-        $cachedTestFileCollection = $this->getCachedFileCollection('test_files.json');
+        $cachedTestCollection = $this->getCachedFileCollection('test_files.json');
 
         /**
          * Message re Mutation Testing starting
@@ -230,6 +230,13 @@ class Humbug extends Command
                          */
                         $mutants[$tracker] = new Mutant($mutation, $container, $coverage);
 
+                        /**
+                         * TODO: Check if relevant tests have changed since last cached
+                         */
+                        if ($this->testFilesHaveChanged($testCollector, $cachedTestCollection, $coverage, $container->getAdapter(), $mutation)) {
+                            // skip this process and use cached results when ready if IA enabled
+                        }
+
                         $processes[$tracker] = $mutants[$tracker]->getProcess();
                     } catch (NoCoveringTestsException $e) {
                         /**
@@ -284,6 +291,7 @@ class Humbug extends Command
 
         $coverage->cleanup();
         $fileCollector->write($container->getWorkingCacheDirectory() . '/source_files.json');
+        $testCollector->write($container->getWorkingCacheDirectory() . '/test_files.json');
         Performance::stop();
 
         /**
@@ -554,5 +562,25 @@ class Humbug extends Command
             return (new ProcessRunner())->run($process, $testFrameworkAdapter, $setProgressBarProgressCallback);
         }
         return (new ProcessRunner())->run($process, $testFrameworkAdapter);
+    }
+
+    private function testFilesHaveChanged(
+        FileCollector $collector,
+        FileCollection $cached,
+        \Humbug\Utility\CoverageData $coverage,
+        AdapterAbstract $adapter,
+        array $mutation)
+    {
+        $result = false;
+        $tests = $coverage->getTestClasses($mutation['file'], $mutation['line']);
+        foreach ($tests as $test) {
+            $file = $adapter->getClassFile($test, $this->container);
+            $collector->collect($file);
+            if (!$cached->hasFile($file)
+            || $collector->getCollection()->getFileHash($file) !== $cached->getFileHash($file)) {
+                $result = true;
+            }
+        }
+        return $result;
     }
 }

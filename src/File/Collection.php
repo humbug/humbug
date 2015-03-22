@@ -32,6 +32,9 @@ class Collection
 
     public function addFile($file)
     {
+        if ($this->hasFile($file)) {
+            return;
+        }
         $this->files[] = [
             'name' => $file,
             'hash' => $this->getSha1($file)
@@ -51,16 +54,21 @@ class Collection
         if (!$this->hasFile($file)) {
             throw new RuntimeException('File does not exist: ' . $file);
         }
-        $index = array_search(
-            $file,
-            array_map(function ($data) {return $data['name'];}, $this->files)
-        );
+        $index = $this->getIndex($file);
         return $this->files[$index]['hash'];
     }
 
     public function toArray()
     {
         return $this->files;
+    }
+
+    private function getIndex($file)
+    {
+        return array_search(
+            $file,
+            array_map(function ($data) {return $data['name'];}, $this->files)
+        );
     }
 
     private function getSha1($file)

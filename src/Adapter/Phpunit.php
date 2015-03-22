@@ -173,9 +173,10 @@ class Phpunit extends AdapterAbstract
     /**
      * Load coverage data from and return
      *
+     * @param Container $container
      * @return \Humbug\Utility\CoverageData
      */
-    public function getCoverageData()
+    public function getCoverageData(Container $container)
     {
         $coverage = new CoverageData(
             $container->getTempDirectory() . '/coverage.humbug.php'
@@ -188,7 +189,7 @@ class Phpunit extends AdapterAbstract
         if (is_null($this->locator)) {
             $this->locator = new TestClassLocator($container);
         }
-        return $locator->locate($class);
+        return $this->locator->locate($class);
     }
 
     /**

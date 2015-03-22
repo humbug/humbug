@@ -38,6 +38,8 @@ abstract class AdapterAbstract
         array $testCases = []
     );
 
+    abstract public function getClassFile($class, Container $container);
+
     /**
      * Parse the test adapter result output to see if there were any failures.
      * In the context of mutation testing, a test failure is good (i.e. the

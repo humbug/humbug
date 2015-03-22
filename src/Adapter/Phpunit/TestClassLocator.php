@@ -21,24 +21,29 @@ class TestClassLocator
 
     private $xpath;
 
+    private $map = [];
+
+    public function __construct(Container $container)
+    {
+        $this->container = $container;
+        $this->dom = $this->loadXml();
+        $this->xpath = new \DOMXPath($this->dom);
+    }
+
     /**
      * @param string $class
      * @return string
      */
-    public function locate($class, Container $container)
+    public function locate($class)
     {
-        if (is_null($this->container)) {
-            $this->container = $container;
+        if (isset($this->map[$class])) {
+            return $this->map[$class];
         }
-        if (is_null($this->dom)) {
-            $this->dom = $this->loadXml();
-            $this->xpath = new \DOMXPath($this->dom);
-        }
-        $item = $this->xpath->query(sprintf(
-            "(//testcase[class='%s'])[1]/@file",
+        $this->map[$class] = $this->xpath->evaluate(sprintf(
+            "string((//testcase[@class='%s'])[1]/@file)",
             $class
         ));
-        return $item;
+        return $this->map[$class];
     }
 
     private function loadXml()

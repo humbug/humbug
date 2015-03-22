@@ -25,6 +25,9 @@ class Collector
 
     public function collect($file)
     {
+        if (empty($file) || !file_exists($file)) {
+            return; // Why no exception? Er...JUNIT may chuck out empty file names
+        }
         $this->collection->addFile($file);
     }
 
