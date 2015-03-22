@@ -10,6 +10,7 @@
 
 namespace Humbug;
 
+use Humbug\Exception\RuntimeException;
 use Humbug\Exception\InvalidArgumentException;
 use Symfony\Component\Finder\Finder;
 
