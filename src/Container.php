@@ -105,6 +105,16 @@ class Container
         return $this->baseDirectory;
     }
 
+    public function setCacheDirectory($dir)
+    {
+        if (!is_dir($dir)) {
+            throw new InvalidArgumentException(sprintf(
+                'The cache directory does not exist: %s', $dir
+            ));
+        }
+        $this->cacheDirectory = $dir;
+    }
+
     /**
      * Get the cache directory.
      *
@@ -139,6 +149,19 @@ class Container
         }
         $this->cacheDirectory = $cache;
         return $cache;
+    }
+
+    public function getWorkingCacheDirectory()
+    {
+        if (!is_null($this->workingCacheDirectory)) {
+            return $this->workingCacheDirectory;
+        }
+        $wcd = $this->getCacheDirectory() . '/' . md5($this->getBaseDirectory());
+        if (!is_dir($wcd)) {
+            @mkdir($wcd, 0777);
+        }
+        $this->workingCacheDirectory = $wcd;
+        return $wcd;
     }
 
     /**
