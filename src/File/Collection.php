@@ -16,99 +16,60 @@ use Humbug\Exception\InvalidArgumentException;
 class Collection
 {
 
-    private $sources = [];
-
-    private $tests = [];
+    private $files = [];
 
     public function __construct(array $import = null)
     {
         if (!is_null($import)) {
-            if (!isset($import['source_files']) || !isset($import['test_files'])) {
-                throw new InvalidArgumentException();
+            if (!isset($import[0]['name']) || !isset($import[0]['hash'])) {
+                throw new InvalidArgumentException(
+                    'The imported data passed to constructor does match expected collection'
+                );
             }
-            $this->sources = $import['source_files'];
-            $this->tests = $import['test_files'];
+            $this->files = $import;
         }
     }
 
-    public function addSourceFile($file)
+    public function addFile($file)
     {
-        $this->sources[] = [
+        $this->files[] = [
             'name' => $file,
             'hash' => $this->getSha1($file)
         ];
     }
 
-    public function addTestFile($file)
+    public function hasFile($file)
     {
-        $this->tests[] = [
-            'name' => $file,
-            'hash' => $this->getSha1($file)
-        ];
+        return false !== array_search(
+            $file,
+            array_map(function ($data) {return $data['name'];}, $this->files)
+        );
     }
 
-    public function hasSourceFile($file)
+    public function getFileHash($file)
     {
-        if ($this->hasFile($this->sources, $file)) {
-            return true;
+        if (!$this->hasFile($file)) {
+            throw new RuntimeException('File does not exist: ' . $file);
         }
-        return false;
-    }
-
-    public function hasTestFile($file)
-    {
-        if ($this->hasFile($this->tests, $file)) {
-            return true;
+        $index = array_search(
+            $file,
+            array_map(function ($data) {return $data['name'];}, $this->files)
+        );
+        if ($this->files[$index]['name'] !== $file) {
+            throw new RuntimeException(
+                'Internal error: hash entry located was not for intended file: ' . $file
+            );
         }
-        return false;
-    }
-
-    public function getSourceFileHash($file)
-    {
-        if (!$this->hasFile($this->sources, $file)) {
-            throw new RuntimeException();
-        }
-        return $this->getFileHash($this->sources, $file);
-    }
-
-    public function getTestFileHash($file)
-    {
-        if (!$this->hasFile($this->tests, $file)) {
-            throw new RuntimeException();
-        }
-        return $this->getFileHash($this->tests, $file);
+        return $this->files[$index]['hash'];
     }
 
     public function toArray()
     {
-        return [
-            'source_files' => $this->sources,
-            'test_files' => $this->tests
-        ];
+        return $this->files;
     }
 
     private function getSha1($file)
     {
         return sha1_file($file);
-    }
-
-    private function hasFile(array $collection, $file)
-    {
-        return false !== array_search(
-            $file,
-            array_map(function ($data) {return $data['name'];}, $collection)
-        );
-    }
-
-    private function getFileHash(array $collection, $file)
-    {
-        $index = array_search(
-            $file,
-            array_map(function ($data) {return $data['name'];}, $collection)
-        );
-        if ($collection[$index]['name'] !== $file) {
-            throw new RuntimeException();
-        }
-        return $collection[$index]['hash'];
     }
 }
