@@ -194,6 +194,7 @@ class Phpunit extends AdapterAbstract
         if ($firstRun) {
             $xmlConfigurationBuilder->setPhpCoverage($container->getTempDirectory() . '/coverage.humbug.php');
             $xmlConfigurationBuilder->setTextCoverage($container->getTempDirectory() . '/coverage.humbug.txt');
+            $xmlConfigurationBuilder->setJunitLog($container->getTempDirectory() . '/junit.humbug.xml');
             $whiteListSrc = $this->getWhiteListSrc($container);
             $excludeDirs = $this->getExcludeDirs($container);
             $xmlConfigurationBuilder->setCoverageFilter($whiteListSrc, $excludeDirs);

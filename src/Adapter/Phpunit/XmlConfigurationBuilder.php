@@ -39,6 +39,11 @@ class XmlConfigurationBuilder
     /**
      * @var string
      */
+    private $junitLogPath;
+
+    /**
+     * @var string
+     */
     private $pathToTimeStats;
 
     /**
@@ -88,6 +93,10 @@ class XmlConfigurationBuilder
 
         if ($this->textCoveragePath) {
             $xmlConfiguration->addLogger('coverage-text', $this->textCoveragePath);
+        }
+
+        if ($this->junitLogPath) {
+            $xmlConfiguration->addLogger('junit', $this->junitLogPath);
         }
 
         if (!empty($this->coverageWhiteListDirs) || !empty($this->coverageExcludeDirs)) {
@@ -184,6 +193,11 @@ class XmlConfigurationBuilder
     public function setTextCoverage($textCoveragePath)
     {
         $this->textCoveragePath = $textCoveragePath;
+    }
+
+    public function setJunitLog($junitLogPath)
+    {
+        $this->junitLogPath = $junitLogPath;
     }
 
     public function setTimeCollectionListener($pathToTimeStats)

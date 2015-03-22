@@ -163,6 +163,16 @@ class Humbug extends Command
         $mutables = $container->getMutableFiles($this->finder);
 
         /**
+         * Setup caching of files in use. We can improve performance by not repeating
+         * mutations where neither the underlying file nor matching tests have
+         * changed.
+         */
+        $fileCollector = new FileCollector(new FileCollection);
+        $testCollector = new FileCollector(new FileCollection);
+        $cachedFileCollection = $this->getCachedFileCollection('source_files.json');
+        $cachedTestFileCollection = $this->getCachedFileCollection('test_files.json');
+
+        /**
          * Message re Mutation Testing starting
          */
         $renderer->renderMutationTestingStart(count($mutables));
@@ -189,8 +199,6 @@ class Humbug extends Command
         /**
          * MUTATION TESTING!
          */
-
-        $fileCollector = new FileCollector(new FileCollection);
 
         foreach ($mutables as $i => $mutable) {
 
@@ -292,7 +300,6 @@ class Humbug extends Command
             $renderer->renderLogToJson($this->jsonLogFile);
             $this->logJson($collector);
         }
-
         if ($this->textLogFile) {
             $renderer->renderLogToText($this->textLogFile);
             $this->logText($renderer);
@@ -300,7 +307,6 @@ class Humbug extends Command
             $textReport = $this->prepareTextReport($collector);
             $this->logText($renderer, $textReport);
         }
-
         if ($this->jsonLogFile || $this->textLogFile) {
             $output->write(PHP_EOL);
         }
@@ -315,7 +321,6 @@ class Humbug extends Command
             );
         }
         $this->logText($renderer);
-
         Performance::downMemProfiler();
     }
 
@@ -323,13 +328,11 @@ class Humbug extends Command
     {
         $vanquishedTotal = $collector->getVanquishedTotal();
         $measurableTotal = $collector->getMeasurableTotal();
-
         if ($measurableTotal !== 0) {
             $detectionRateTested  = round(100 * ($vanquishedTotal / $measurableTotal));
         } else {
             $detectionRateTested  = 0;
         }
-
         if ($collector->getTotalCount() !== 0) {
             $uncoveredRate = round(100 * ($collector->getShadowCount() / $collector->getTotalCount()));
             $detectionRateAll = round(100 * ($collector->getVanquishedTotal() / $collector->getTotalCount()));
@@ -351,9 +354,7 @@ class Humbug extends Command
             ],
             'escaped' => []
         ];
-
         $out = array_merge($out, $collector->toGroupedMutantArray());
-
         file_put_contents(
             $this->jsonLogFile,
             json_encode($out, JSON_PRETTY_PRINT)
@@ -364,7 +365,6 @@ class Humbug extends Command
     {
         $finder = new Finder;
         $finder->files();
-
         if (!is_null($names) && count($names) > 0) {
             foreach ($names as $name) {
                 $finder->name($name);
@@ -372,7 +372,6 @@ class Humbug extends Command
         } else {
             $finder->name('*.php');
         }
-
         if ($directories) {
             foreach ($directories as $directory) {
                 $finder->in($directory);
@@ -380,48 +379,50 @@ class Humbug extends Command
         } else {
             $finder->in('.');
         }
-
         if (isset($excludes)) {
             foreach ($excludes as $exclude) {
                 $finder->exclude($exclude);
             }
         }
-
         return $finder;
     }
 
     protected function doConfiguration(InputInterface $input)
     {
         $this->container->setBaseDirectory(getcwd());
-
         $config = (new JsonParser())->parseFile();
-
         $newConfig = new Config($config);
-
         $source = $newConfig->getSource();
-
         $this->finder = $this->prepareFinder(
             isset($source->directories)? $source->directories : null,
             isset($source->excludes)? $source->excludes : null,
             $input->getOption('file')
         );
-
         $this->container->setSourceList($source);
-
         $timeout = $newConfig->getTimeout();
-
         if ($timeout !== null) {
             $this->container->setTimeout((int) $timeout);
         }
-
         $chDir = $newConfig->getChDir();
-
         if ($chDir !== null) {
             $this->container->setTestRunDirectory($chDir);
         }
-
         $this->jsonLogFile = $newConfig->getLogsJson();
         $this->textLogFile = $newConfig->getLogsText();
+    }
+
+    protected function getCachedFileCollection($cache)
+    {
+
+        if (file_exists($this->container->getWorkingCacheDirectory() . '/' . $cache)) {
+            $cachedFileCollection = new FileCollection(json_decode(
+                $this->container->getWorkingCacheDirectory() . '/' . $cache,
+                true
+            ));
+        } else {
+            $cachedFileCollection = new FileCollection;
+        }
+        return $cachedFileCollection;
     }
 
     protected function configure()
