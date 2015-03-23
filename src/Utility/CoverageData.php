@@ -112,6 +112,21 @@ class CoverageData
         }
     }
 
+    public function getAllTestClasses($file)
+    {
+        $file = realpath($file);
+        $lines = array_keys($this->data[$file]);
+        $classes = [];
+        foreach ($lines as $line) {
+            try {
+                $classes = array_merge($classes, $this->getTestClasses($file, $line));
+            } catch (NoCoveringTestsException $e) {
+                
+            }
+        }
+        return array_unique($classes);
+    }
+
     protected function process($file)
     {
         $fp = fopen($file, 'r');

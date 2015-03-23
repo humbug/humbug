@@ -218,6 +218,28 @@ class Humbug extends Command
                 continue;
             }
 
+            /**
+             * TODO: Cache results and import them here.
+             */
+            $testFilesHaveChanged = $this->testFilesHaveChanged(
+                $testCollector,
+                $cachedTestCollection,
+                $coverage,
+                $container->getAdapter(),
+                $mutable->getFilename()
+            );
+            $sourceFilesHaveChanged =
+                $cachedFileCollection->hasFile($mutable->getFilename()) === false
+                || (
+                $cachedFileCollection->getFileHash($mutable->getFilename())
+                !== $fileCollector->getCollection()->getFileHash($mutable->getFilename())
+                )
+            ;
+            if ($input->getOption('incremental') && $testFilesHaveChanged === false
+            && $sourceFilesHaveChanged === false) {
+                // skip this process and use cached results when ready if IA enabled
+            }
+
             foreach ($batches as $batch) {
                 $mutants = [];
                 $processes = [];
@@ -229,17 +251,6 @@ class Humbug extends Command
                          * Unleash the Mutant!
                          */
                         $mutants[$tracker] = new Mutant($mutation, $container, $coverage);
-
-                        /**
-                         * TODO: Cache results and import them here.
-                         */
-                        if (!$this->testFilesHaveChanged($testCollector, $cachedTestCollection, $coverage, $container->getAdapter(), $mutation)
-                        && $input->getOption('incremental')
-                        && $cachedFileCollection->getFileHash($mutable->getFilename()) !== $fileCollector->getCollection()->getFileHash($mutable->getFilename())
-                        ) {
-                            // skip this process and use cached results when ready if IA enabled
-                        }
-
                         $processes[$tracker] = $mutants[$tracker]->getProcess();
                     } catch (NoCoveringTestsException $e) {
                         /**
@@ -579,10 +590,10 @@ class Humbug extends Command
         FileCollection $cached,
         \Humbug\Utility\CoverageData $coverage,
         AdapterAbstract $adapter,
-        array $mutation)
+        $file)
     {
         $result = false;
-        $tests = $coverage->getTestClasses($mutation['file'], $mutation['line']);
+        $tests = $coverage->getAllTestClasses($file);
         foreach ($tests as $test) {
             $file = $adapter->getClassFile($test, $this->container);
             $collector->collect($file);
