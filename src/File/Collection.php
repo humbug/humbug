@@ -43,10 +43,7 @@ class Collection
 
     public function hasFile($file)
     {
-        return false !== array_search(
-            $file,
-            array_map(function ($data) {return $data['name'];}, $this->files)
-        );
+        return false !== $this->getIndex($file);
     }
 
     public function getFileHash($file)

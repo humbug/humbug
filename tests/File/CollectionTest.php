@@ -48,6 +48,14 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    public function testHasFileIsFalseWhenFileNotAdded()
+    {
+        file_put_contents(vfsStream::url('tempDir/Foo.php'), '012345');
+        $collection = new Collection;
+        $collection->addFile(vfsStream::url('tempDir/Foo.php'));
+        $this->assertFalse($collection->hasFile(vfsStream::url('tempDir/Bar.php')));
+    }
+
     public function testImportingData()
     {
         $data = [
