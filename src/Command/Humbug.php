@@ -231,9 +231,12 @@ class Humbug extends Command
                         $mutants[$tracker] = new Mutant($mutation, $container, $coverage);
 
                         /**
-                         * TODO: Check if relevant tests have changed since last cached
+                         * TODO: Cache results and import them here.
                          */
-                        if ($this->testFilesHaveChanged($testCollector, $cachedTestCollection, $coverage, $container->getAdapter(), $mutation)) {
+                        if (!$this->testFilesHaveChanged($testCollector, $cachedTestCollection, $coverage, $container->getAdapter(), $mutation)
+                        && $input->getOption('incremental')
+                        && $cachedFileCollection->getFileHash($mutable->getFilename()) !== $fileCollector->getCollection()->getFileHash($mutable->getFilename())
+                        ) {
                             // skip this process and use cached results when ready if IA enabled
                         }
 
@@ -477,7 +480,14 @@ class Humbug extends Command
                'b',
                InputOption::VALUE_NONE,
                'Removes dynamic output like the progress bar and performance data from output.'
-            );
+            )
+            ->addOption(
+               'incremental',
+               'i',
+               InputOption::VALUE_NONE,
+               'Enable incremental mutation testing by relying on cached results.'
+            )
+        ;
     }
 
     private function validate(InputInterface $input)
