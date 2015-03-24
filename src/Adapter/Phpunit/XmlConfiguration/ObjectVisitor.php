@@ -11,6 +11,7 @@
  */
 
 namespace Humbug\Adapter\Phpunit\XmlConfiguration;
+
 use Humbug\Exception\InvalidArgumentException;
 
 class ObjectVisitor implements Visitor

@@ -201,7 +201,6 @@ class Humbug extends Command
          */
 
         foreach ($mutables as $i => $mutable) {
-
             $fileCollector->collect($mutable->getFilename());
 
             $mutations = $mutable->generate()->getMutations();
@@ -435,7 +434,6 @@ class Humbug extends Command
 
     protected function getCachedFileCollection($cache)
     {
-
         if (file_exists($this->container->getWorkingCacheDirectory() . '/' . $cache)) {
             $cachedFileCollection = new FileCollection(json_decode(
                 $this->container->getWorkingCacheDirectory() . '/' . $cache,

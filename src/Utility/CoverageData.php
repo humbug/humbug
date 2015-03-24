@@ -121,7 +121,6 @@ class CoverageData
             try {
                 $classes = array_merge($classes, $this->getTestClasses($file, $line));
             } catch (NoCoveringTestsException $e) {
-                
             }
         }
         return array_unique($classes);
