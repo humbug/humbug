@@ -32,7 +32,7 @@ class XmlConfiguration
     private $rootElement;
 
     /**
-     * @var string
+     * @var string|boolean
      */
     private $originalBootstrap;
 

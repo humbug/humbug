@@ -206,12 +206,7 @@ class Text
     /**
      * Render message that mutation testing loop is starting
      *
-     * @param int $total
-     * @param int $kills
-     * @param int $escapes
-     * @param int $errors
-     * @param int $timeouts
-     * @param int $shadows
+     * @param Collector $collector
      */
     public function renderSummaryReport(Collector $collector)
     {
