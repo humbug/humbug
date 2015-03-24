@@ -15,7 +15,6 @@ use Humbug\Collector;
 use Humbug\Config;
 use Humbug\Config\JsonParser;
 use Humbug\Container;
-use Humbug\Adapter\Phpunit;
 use Humbug\Mutant;
 use Humbug\ProcessRunner;
 use Humbug\Report\Text as TextReport;
@@ -29,8 +28,6 @@ use Humbug\File\Collection as FileCollection;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\ArrayInput as EmptyInput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Helper\FormatterHelper;
@@ -432,6 +429,9 @@ class Humbug extends Command
         $this->textLogFile = $newConfig->getLogsText();
     }
 
+    /**
+     * @param string $cache
+     */
     protected function getCachedFileCollection($cache)
     {
         if (file_exists($this->container->getWorkingCacheDirectory() . '/' . $cache)) {
@@ -522,6 +522,9 @@ class Humbug extends Command
         }
     }
 
+    /**
+     * @param string $output
+     */
     private function logText(Text $renderer, $output = null)
     {
         if ($this->textLogFile) {
