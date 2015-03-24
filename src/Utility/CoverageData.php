@@ -24,6 +24,7 @@ class CoverageData
      * The constructor processes the main coverage report into
      * a set of split files. A coverage data extract per source code file
      * available.
+     * @param string $file
      */
     public function __construct($file)
     {
@@ -50,6 +51,9 @@ class CoverageData
         unset($coverage);
     }
 
+    /**
+     * @param string $file
+     */
     public function hasTestClasses($file, $line)
     {
         $file = realpath($file);
@@ -127,6 +131,9 @@ class CoverageData
         return array_unique($classes);
     }
 
+    /**
+     * @param string $file
+     */
     protected function process($file)
     {
         $fp = fopen($file, 'r');
@@ -167,6 +174,9 @@ class CoverageData
         fclose($fp);
     }
 
+    /**
+     * @param null|resource $out
+     */
     protected function wrapup($out)
     {
         $buffer = PHP_EOL . '));'
