@@ -57,7 +57,7 @@ class ProcessRunner
 
             $oksCount = $testFrameworkAdapter->hasOks($data);
 
-            if ($oksCount && $onProgressCallback) {
+            if ($oksCount !== false && $onProgressCallback) {
                 $onProgressCallback($oksCount);
             }
         });

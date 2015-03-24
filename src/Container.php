@@ -122,7 +122,7 @@ class Container
      *
      * @return string
      */
-    public function getCacheDirectory($subDirectory = '')
+    public function getCacheDirectory()
     {
         if (!is_null($this->cacheDirectory)) {
             return $this->cacheDirectory;
@@ -142,11 +142,11 @@ class Container
             }
             $home = rtrim(getenv('HOME'), '/') . '/.humbug';
         }
-        @file_put_contents($home . '/.htaccess', 'Deny from all');
+        file_put_contents($home . '/.htaccess', 'Deny from all');
         $cache = $home . '/cache';
         foreach ([$home, $cache] as $dir) {
             if (!is_dir($dir)) {
-                @mkdir($dir, 0777);
+                mkdir($dir, 0777);
             }
         }
         $this->cacheDirectory = $cache;
@@ -160,7 +160,7 @@ class Container
         }
         $wcd = $this->getCacheDirectory() . '/' . md5($this->getBaseDirectory());
         if (!is_dir($wcd)) {
-            @mkdir($wcd, 0777);
+            mkdir($wcd, 0777);
         }
         $this->workingCacheDirectory = $wcd;
         return $wcd;

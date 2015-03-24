@@ -176,12 +176,8 @@ class Configure extends Command
             $configurationLocator->locate('.');
             return null;
         } catch (\RuntimeException $e) {
-            $chDir = null;
-
             $output->writeln($e->getMessage());
-
             $frameworkConfigurationQuestion = $this->createFrameworkConfigurationQuestion($configurationLocator);
-
             $chDir = $this->getQuestionHelper()->ask($input, $output, $frameworkConfigurationQuestion);
 
             if (!$chDir) {

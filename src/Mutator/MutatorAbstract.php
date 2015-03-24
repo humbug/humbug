@@ -47,7 +47,9 @@ abstract class MutatorAbstract
      */
     protected static function getNextToken(array &$tokens, $index, array $excludeTokens = [])
     {
-        while ($index < count($tokens) && isset($tokens[$index+1]) && self::shouldSkip($tokens[$index + 1], $excludeTokens)) {
+        $tokenCount = count($tokens);
+        while ($index < $tokenCount && isset($tokens[$index+1])
+        && self::shouldSkip($tokens[$index + 1], $excludeTokens)) {
             $index++;
         }
 
@@ -69,7 +71,8 @@ abstract class MutatorAbstract
      */
     protected static function getPreviousToken(array &$tokens, $index, array $excludeTokens = [])
     {
-        while ($index > 0 && isset($tokens[$index-1]) && self::shouldSkip($tokens[$index - 1], $excludeTokens)) {
+        while ($index > 0 && isset($tokens[$index-1])
+        && self::shouldSkip($tokens[$index - 1], $excludeTokens)) {
             $index--;
         }
 

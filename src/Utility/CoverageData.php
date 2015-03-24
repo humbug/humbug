@@ -108,7 +108,7 @@ class CoverageData
         $finder = new Finder;
         $finder->files()->ignoreUnreadableDirs()->name('coverage.humbug.*.cache');
         foreach ($finder->in(sys_get_temp_dir()) as $file) {
-            @unlink($file->getRealpath());
+            unlink($file->getRealpath());
         }
     }
 

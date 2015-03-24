@@ -16,6 +16,11 @@ class FilesystemContext implements Context, SnippetAcceptingContext
     private $workingDirectory;
 
     /**
+     * @var Differ
+     */
+    private $differ;
+
+    /**
      * @var Filesystem
      */
     private $filesystem;

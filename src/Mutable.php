@@ -121,6 +121,7 @@ class Mutable
         $inMethod = false;
         $inMethodBlock = false;
         $methodCurlyCount = 0;
+        $tokenCount = count($tokens);
         foreach ($tokens as $index => $token) {
             if (is_array($token) && $token[0] == Tokenizer::T_NEWLINE) {
                 $lineNumber = $token[2] + 1;
@@ -128,7 +129,7 @@ class Mutable
             }
 
             if (is_array($token) && $token[0] == T_NAMESPACE) {
-                for ($j=$index+1; $j<count($tokens); $j++) {
+                for ($j=$index+1; $j<$tokenCount; $j++) {
                     if ($tokens[$j][0] == T_STRING) {
                         $namespace .= '\\' . $tokens[$j][1];
                     } elseif ($tokens[$j] == '{' || $tokens[$j] == ';') {
