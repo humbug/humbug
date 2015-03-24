@@ -25,6 +25,9 @@ class ObjectVisitor implements Visitor
      */
     private $arguments = [];
 
+    /**
+     * @param string $className
+     */
     public function __construct($className, array $arguments = [])
     {
         $this->className = $className;

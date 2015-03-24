@@ -36,6 +36,9 @@ class Text
         $this->useBuffer = $buffer;
     }
 
+    /**
+     * @param string $string
+     */
     public function write($string, $eol = true)
     {
         if ($eol) {
@@ -98,6 +101,7 @@ class Text
      * Render message where the initial test run didn't pass (excl. incomplete/skipped/risky tests)
      *
      * @param array $result
+     * @param \Symfony\Component\Console\Helper\ProgressBar $progressBar
      */
     public function renderInitialRunPass(array &$result, $progressBar = null)
     {
@@ -289,7 +293,6 @@ class Text
      * the two where deemed umimportant.
      *
      * @param string $output
-     * @param int $lines Number of head/tail lines to retain
      * @return string
      */
     protected function headAndTail($output, $lineCount = 20, $omittedMarker = '[...Middle of output removed by Humbug...]')
