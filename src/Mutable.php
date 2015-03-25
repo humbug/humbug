@@ -80,11 +80,11 @@ class Mutable
         '\Humbug\Mutator\ConditionalNegation\LessThan',
         '\Humbug\Mutator\ConditionalNegation\LessThanOrEqualTo',
         // Explicit Numbers
-        '\Humbug\Mutator\Number\Integer',
-        '\Humbug\Mutator\Number\Float',
+        '\Humbug\Mutator\Number\IntegerValue',
+        '\Humbug\Mutator\Number\FloatValue',
         // Return Values
         '\Humbug\Mutator\ReturnValue\This',
-        '\Humbug\Mutator\ReturnValue\Integer',
+        '\Humbug\Mutator\ReturnValue\IntegerValue',
         //'\Humbug\Mutator\ReturnValue\Float',
         '\Humbug\Mutator\ReturnValue\IntegerNegation',
         '\Humbug\Mutator\ReturnValue\FloatNegation',

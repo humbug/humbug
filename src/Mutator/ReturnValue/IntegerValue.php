@@ -12,13 +12,13 @@ namespace Humbug\Mutator\ReturnValue;
 
 use Humbug\Mutator\MutatorAbstract;
 
-class Float extends MutatorAbstract
+class IntegerValue extends MutatorAbstract
 {
 
     /**
-     * This is covered by the Number\Float mutator and currently disabled pending
-     * some checks on whether a returned literal float should be handled any
-     * differently.
+     * Replace 0 with 1, 1 with 0 or otherwise 0.
+     * Intent being to cover any generic uses of positive values being equivalent
+     * to boolean TRUE or FALSE.
      *
      * @param array $tokens
      * @param int $index
@@ -30,17 +30,16 @@ class Float extends MutatorAbstract
         for ($i=$index+1; $i < $tokenCount; $i++) {
             if (is_array($tokens[$i]) && $tokens[$i][0] == T_WHITESPACE) {
                 continue;
-            } elseif (is_array($tokens[$i]) && $tokens[$i][0] == T_DNUMBER) {
-                $num = (float) $tokens[$i][1];
-                $replace = 0.0;
+            } elseif (is_array($tokens[$i]) && $tokens[$i][0] == T_LNUMBER) {
+                $num = (integer) $tokens[$i][1];
                 if ($num == 0) {
-                    $replace = 1.0;
-                } elseif ($num > 1) {
-                    $replace = 0.0;
+                    $replace = 1;
+                } else {
+                    $replace = 0;
                 }
                 $tokens[$i] = [
-                    T_DNUMBER,
-                    sprintf("%.2f", $replace)
+                    T_LNUMBER,
+                    (string) $replace
                 ];
                 break;
             }
@@ -56,15 +55,11 @@ class Float extends MutatorAbstract
             for ($i=$index+1; $i < $tokenCount; $i++) {
                 if (is_array($tokens[$i]) && $tokens[$i][0] == T_WHITESPACE) {
                     continue;
-                } elseif (is_array($tokens[$i]) && $tokens[$i][0] == T_DNUMBER) {
+                } elseif (is_array($tokens[$i]) && $tokens[$i][0] == T_LNUMBER) {
                     $has = true;
                     continue;
                 } elseif (!is_array($tokens[$i]) && $tokens[$i] == ';') {
-                    // return statement terminated
-                    if ($has === true) {
-                        return true;
-                    }
-                    return false;
+                    return $has;
                 } else {
                     $has = false;
                 }

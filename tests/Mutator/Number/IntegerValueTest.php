@@ -11,14 +11,14 @@
 
 namespace Humbug\Test\Mutator\Number;
 
-use Humbug\Mutator;
+use Humbug\Mutator\Number\IntegerValue;
 
-class IntegerTest extends \PHPUnit_Framework_TestCase
+class IntegerValueTest extends \PHPUnit_Framework_TestCase
 {
 
     public function testReturnsTokenSwitchingZeroForOne()
     {
-        $mutation = new Mutator\Number\Integer;
+        $mutation = new IntegerValue;
         $tokens = [10 => [T_LNUMBER, 0]];
         $mutation->getMutation($tokens, 10);
         $this->assertEquals([10 => [T_LNUMBER, 1]], $tokens);
@@ -26,7 +26,7 @@ class IntegerTest extends \PHPUnit_Framework_TestCase
 
     public function testReturnsTokenSwitchingOneForZero()
     {
-        $mutation = new Mutator\Number\Integer;
+        $mutation = new IntegerValue;
         $tokens = [10 => [T_LNUMBER, 1]];
         $mutation->getMutation($tokens, 10);
         $this->assertEquals([10 => [T_LNUMBER, 0]], $tokens);
@@ -34,7 +34,7 @@ class IntegerTest extends \PHPUnit_Framework_TestCase
 
     public function testReturnsTokenSwitchingAnyIntegerGreaterThanOneWithItsIncrement()
     {
-        $mutation = new Mutator\Number\Integer;
+        $mutation = new IntegerValue;
         $tokens = [10 => [T_LNUMBER, 2]];
         $mutation->getMutation($tokens, 10);
         $this->assertEquals([10 => [T_LNUMBER, 3]], $tokens);
@@ -43,30 +43,30 @@ class IntegerTest extends \PHPUnit_Framework_TestCase
     public function testMutatesInteger()
     {
         $tokens = [10 => [T_LNUMBER, 0]];
-        $this->assertTrue(Mutator\Number\Integer::mutates($tokens, 10));
+        $this->assertTrue(IntegerValue::mutates($tokens, 10));
     }
 
     public function testDoesNotMutateOtherScalars()
     {
         $tokens = [11 => [T_STRING, 'foo']];
-        $this->assertFalse(Mutator\Number\Integer::mutates($tokens, 11));
+        $this->assertFalse(IntegerValue::mutates($tokens, 11));
 
         $tokens = [11 => [T_DNUMBER, 0.0]];
-        $this->assertFalse(Mutator\Number\Integer::mutates($tokens, 11));
+        $this->assertFalse(IntegerValue::mutates($tokens, 11));
 
         $tokens = [11 => [T_DNUMBER, 1.0]];
-        $this->assertFalse(Mutator\Number\Integer::mutates($tokens, 11));
+        $this->assertFalse(IntegerValue::mutates($tokens, 11));
     }
 
     public function testDoesMutateOtherIntegerForms()
     {
         $tokens = [11 => [T_LNUMBER, 0123]];
-        $this->assertTrue(Mutator\Number\Integer::mutates($tokens, 11));
+        $this->assertTrue(IntegerValue::mutates($tokens, 11));
 
         $tokens = [11 => [T_LNUMBER, 0x1A]];
-        $this->assertTrue(Mutator\Number\Integer::mutates($tokens, 11));
+        $this->assertTrue(IntegerValue::mutates($tokens, 11));
 
         $tokens = [11 => [T_LNUMBER, 0b11111111]];
-        $this->assertTrue(Mutator\Number\Integer::mutates($tokens, 11));
+        $this->assertTrue(IntegerValue::mutates($tokens, 11));
     }
 }

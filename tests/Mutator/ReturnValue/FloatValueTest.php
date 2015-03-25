@@ -11,76 +11,76 @@
 
 namespace Humbug\Test\Mutator\ReturnValue;
 
-use Humbug\Mutator;
+use Humbug\Mutator\ReturnValue\FloatValue;
 use Humbug\Utility\Tokenizer;
 
-class IntegerTest extends \PHPUnit_Framework_TestCase
+class FloatValueTest extends \PHPUnit_Framework_TestCase
 {
 
     public function testMutatesWithValueReturnOne()
     {
-        $content = '<?php return 1;';
+        $content = '<?php return 1.0;';
         $tokens = Tokenizer::getTokens($content);
         array_shift($tokens);
-        $this->assertTrue(Mutator\ReturnValue\Integer::mutates($tokens, 0));
+        $this->assertTrue(FloatValue::mutates($tokens, 0));
     }
 
     public function testMutatesWithValueReturnZero()
     {
-        $content = '<?php return 1;';
+        $content = '<?php return 0.0;';
         $tokens = Tokenizer::getTokens($content);
         array_shift($tokens);
-        $this->assertTrue(Mutator\ReturnValue\Integer::mutates($tokens, 0));
+        $this->assertTrue(FloatValue::mutates($tokens, 0));
     }
 
     public function testMutatesWithValueReturnOneAndWhitespaces()
     {
-        $content = '<?php return 1   ;';
+        $content = '<?php return 1.0   ;';
         $tokens = Tokenizer::getTokens($content);
         array_shift($tokens);
-        $this->assertTrue(Mutator\ReturnValue\Integer::mutates($tokens, 0));
+        $this->assertTrue(FloatValue::mutates($tokens, 0));
     }
 
     public function testMutatesWithValueReturnOneAndPlusDecimal()
     {
-        $content = '<?php return 1+1;';
+        $content = '<?php return 1.0+1.0;';
         $tokens = Tokenizer::getTokens($content);
         array_shift($tokens);
-        $this->assertTrue(Mutator\ReturnValue\Integer::mutates($tokens, 0));
+        $this->assertTrue(FloatValue::mutates($tokens, 0));
     }
 
-    public function testMutatesWithValueReturnFloat()
-    {
-        $content = '<?php return 1.0;';
-        $tokens = Tokenizer::getTokens($content);
-        array_shift($tokens);
-        $this->assertFalse(Mutator\ReturnValue\Integer::mutates($tokens, 0));
-    }
-
-    public function testGetMutationWithValueReturnOne()
+    public function testMutatesWithValueReturnInteger()
     {
         $content = '<?php return 1;';
         $tokens = Tokenizer::getTokens($content);
         array_shift($tokens);
-        Mutator\ReturnValue\Integer::getMutation($tokens, 0);
-        $this->assertSame($tokens[2][1], "0");
+        $this->assertFalse(FloatValue::mutates($tokens, 0));
+    }
+
+    public function testGetMutationWithValueReturnOne()
+    {
+        $content = '<?php return 1.0;';
+        $tokens = Tokenizer::getTokens($content);
+        array_shift($tokens);
+        FloatValue::getMutation($tokens, 0);
+        $this->assertSame($tokens[2][1], "0.00");
     }
 
     public function testGetMutationWithValueReturnZero()
     {
-        $content = '<?php return 0;';
+        $content = '<?php return 0.0;';
         $tokens = Tokenizer::getTokens($content);
         array_shift($tokens);
-        Mutator\ReturnValue\Integer::getMutation($tokens, 0);
-        $this->assertSame($tokens[2][1], "1");
+        FloatValue::getMutation($tokens, 0);
+        $this->assertSame($tokens[2][1], "1.00");
     }
 
     public function testGetMutationWithValueReturnOneAndPlusDecimal()
     {
-        $content = '<?php return 1+1;';
+        $content = '<?php return 1.0+1.0;';
         $tokens = Tokenizer::getTokens($content);
         array_shift($tokens);
-        Mutator\ReturnValue\Integer::getMutation($tokens, 0);
-        $this->assertSame($tokens[2][1], "0");
+        FloatValue::getMutation($tokens, 0);
+        $this->assertSame($tokens[2][1], "0.00");
     }
 }

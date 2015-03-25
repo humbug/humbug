@@ -12,12 +12,11 @@ namespace Humbug\Mutator\Number;
 
 use Humbug\Mutator\MutatorAbstract;
 
-class Float extends MutatorAbstract
+class IntegerValue extends MutatorAbstract
 {
 
     /**
-     * Replace 0.0 with 1.0, 1.0 with 0.0, and float between 1 and 2 is incremented
-     * by one, and any float greater than 2 is replaced with 1.0.
+     * Replace 1 with 0, 0 with 1, or increment.
      *
      * @param array $tokens
      * @param int $index
@@ -25,26 +24,24 @@ class Float extends MutatorAbstract
      */
     public static function getMutation(array &$tokens, $index)
     {
-        $num = (float) $tokens[$index][1];
+        $num = (integer) $tokens[$index][1];
         if ($num == 0) {
-            $replace = 1.0;
+            $replace = 1;
         } elseif ($num == 1) {
-            $replace = 0.0;
-        } elseif ($num < 2) {
-            $replace = $num + 1;
+            $replace = 0;
         } else {
-            $replace = 1.0;
+            $replace = $num + 1;
         }
         $tokens[$index] = [
-            T_DNUMBER,
-            sprintf("%.2f", $replace)
+            T_LNUMBER,
+            (string) $replace
         ];
     }
 
     public static function mutates(array &$tokens, $index)
     {
         $t = $tokens[$index];
-        if (is_array($t) && $t[0] == T_DNUMBER) {
+        if (is_array($t) && $t[0] == T_LNUMBER) {
             return true;
         }
         return false;
