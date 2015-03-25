@@ -22,4 +22,4 @@ before_script:
 
 script:
     - vendor/bin/phpunit --coverage-text
-    - vendor/bin/behat --format=pretty
+    - vendor/bin/behat
