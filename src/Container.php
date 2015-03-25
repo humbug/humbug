@@ -142,13 +142,13 @@ class Container
             }
             $home = rtrim(getenv('HOME'), '/') . '/.humbug';
         }
-        file_put_contents($home . '/.htaccess', 'Deny from all');
         $cache = $home . '/cache';
         foreach ([$home, $cache] as $dir) {
             if (!is_dir($dir)) {
                 mkdir($dir, 0777);
             }
         }
+        file_put_contents($home . '/.htaccess', 'Deny from all');
         $this->cacheDirectory = $cache;
         return $cache;
     }
