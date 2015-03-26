@@ -164,10 +164,12 @@ class Humbug extends Command
          * mutations where neither the underlying file nor matching tests have
          * changed.
          */
-        $fileCollector = new FileCollector(new FileCollection);
-        $testCollector = new FileCollector(new FileCollection);
-        $cachedFileCollection = $this->getCachedFileCollection('source_files.json');
-        $cachedTestCollection = $this->getCachedFileCollection('test_files.json');
+        if ($input->getOption('incremental')) {
+            $fileCollector = new FileCollector(new FileCollection);
+            $testCollector = new FileCollector(new FileCollection);
+            $cachedFileCollection = $this->getCachedFileCollection('source_files.json');
+            $cachedTestCollection = $this->getCachedFileCollection('test_files.json');
+        }
 
         /**
          * Message re Mutation Testing starting
@@ -196,9 +198,10 @@ class Humbug extends Command
         /**
          * MUTATION TESTING!
          */
-
         foreach ($mutables as $i => $mutable) {
-            $fileCollector->collect($mutable->getFilename());
+            if ($input->getOption('incremental')) {
+                $fileCollector->collect($mutable->getFilename());
+            }
 
             $mutations = $mutable->generate()->getMutations();
             $batches = array_chunk($mutations, $parallels);
@@ -217,23 +220,24 @@ class Humbug extends Command
             /**
              * TODO: Cache results and import them here.
              */
-            $testFilesHaveChanged = $this->testFilesHaveChanged(
-                $testCollector,
-                $cachedTestCollection,
-                $coverage,
-                $container->getAdapter(),
-                $mutable->getFilename()
-            );
-            $sourceFilesHaveChanged =
-                $cachedFileCollection->hasFile($mutable->getFilename()) === false
-                || (
-                $cachedFileCollection->getFileHash($mutable->getFilename())
-                !== $fileCollector->getCollection()->getFileHash($mutable->getFilename())
-                )
-            ;
-            if ($input->getOption('incremental') && $testFilesHaveChanged === false
-            && $sourceFilesHaveChanged === false) {
-                // skip this process and use cached results when ready if IA enabled
+            if ($input->getOption('incremental')) {
+                $testFilesHaveChanged = $this->testFilesHaveChanged(
+                    $testCollector,
+                    $cachedTestCollection,
+                    $coverage,
+                    $container->getAdapter(),
+                    $mutable->getFilename()
+                );
+                $sourceFilesHaveChanged =
+                    $cachedFileCollection->hasFile($mutable->getFilename()) === false
+                    || (
+                    $cachedFileCollection->getFileHash($mutable->getFilename())
+                    !== $fileCollector->getCollection()->getFileHash($mutable->getFilename())
+                    )
+                ;
+                if ($testFilesHaveChanged === false && $sourceFilesHaveChanged === false) {
+                    // skip this process and use cached results when ready if IA enabled
+                }
             }
 
             foreach ($batches as $batch) {
@@ -300,8 +304,10 @@ class Humbug extends Command
         }
 
         $coverage->cleanup();
-        $fileCollector->write($container->getWorkingCacheDirectory() . '/source_files.json');
-        $testCollector->write($container->getWorkingCacheDirectory() . '/test_files.json');
+        if ($input->getOption('incremental')) {
+            $fileCollector->write($container->getWorkingCacheDirectory() . '/source_files.json');
+            $testCollector->write($container->getWorkingCacheDirectory() . '/test_files.json');
+        }
         Performance::stop();
 
         /**
