@@ -176,6 +176,12 @@ class Humbug extends Command
             $testCollector = new FileCollector(new FileCollection);
             $cachedFileCollection = $this->getCachedFileCollection('source_files.json');
             $cachedTestCollection = $this->getCachedFileCollection('test_files.json');
+            $cachedResults = null;
+            if (file_exists($container->getWorkingCacheDirectory() . '/results.json')) {
+                $cachedResults = json_decode(file_get_contents(
+                    $container->getWorkingCacheDirectory() . '/results.json'
+                ));
+            }
         }
 
         /**
@@ -227,7 +233,13 @@ class Humbug extends Command
             }
 
             /**
-             * TODO: Cache results and import them here.
+             * EXPERIMENTAL: Increment Analysis kicks in here if enabled to
+             * to inject cached results where the underlying files and tests
+             * being subjected to mutation testing have not changed since last
+             * run.
+             *
+             * In its current naive state, this is probably very inaccurate since
+             * related classes of the current mutable are ignored.
              */
             if ($input->getOption('incremental')) {
                 $testFilesHaveChanged = $this->testFilesHaveChanged(
@@ -244,11 +256,22 @@ class Humbug extends Command
                     !== $fileCollector->getCollection()->getFileHash($mutable->getFilename())
                     )
                 ;
-                if ($testFilesHaveChanged === false && $sourceFilesHaveChanged === false) {
-                    // skip this process and use cached results when ready if IA enabled
+                if (!is_null($cachedResults) && $testFilesHaveChanged === false && $sourceFilesHaveChanged === false) {
+                    $resultSet = $cachedResults[$mutable->getFilename()]['items'];
+                    $resultSetShadowCount = $cachedResults[$mutable->getFilename()]['shadowCount'];
+                    foreach ($resultSet as $result) {
+                        $collector->collect(unserialize($result['mutant']), $result['result']);
+                    }
+                    for ($i=0; $i < $resultSetShadowCount; $i++) { 
+                        $collector->collectShadow();
+                    }
+                    continue;
                 }
             }
 
+            /**
+             * Loop over the current mutable's mutations and run the tests against them.
+             */
             foreach ($batches as $batch) {
                 $mutants = [];
                 $processes = [];

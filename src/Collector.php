@@ -249,6 +249,7 @@ class Collector
                 $file = $mutant->getMutation()['file'];
                 if (!isset($group[$file])) {
                     $group[$file] = [];
+                    $group[$file]['items'] = [];
                 }
                 $item = [
                     'result' => [],
@@ -268,9 +269,11 @@ class Collector
                         break;
                 }
                 $item['mutant'] = serialize($mutant);
-                $group[$file][] = $item;
+                $group[$file]['items'] = $item;
             }
         }
+
+        $group[$file]['shadowCount'] = $this->getShadowCount();
 
         return $group;
     }
