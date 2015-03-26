@@ -238,8 +238,9 @@ class Collector
 
         foreach ($types as $type => $collection) {
             foreach ($collection as $mutant) {
-                if (!isset($group[$mutant->getFile()])) {
-                    $group[$mutant->getFile()] = [];
+                $file = $mutant->getMutation()['file'];
+                if (!isset($group[$file])) {
+                    $group[$file] = [];
                 }
                 $item = [
                     'result' => [],
@@ -259,7 +260,7 @@ class Collector
                         break;
                 }
                 $item['mutant'] = serialize($mutant);
-                $group[$mutant->getFile()][] = $item;
+                $group[$file][] = $item;
             }
         }
 

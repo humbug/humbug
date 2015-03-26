@@ -66,10 +66,12 @@ class Humbug extends Command
         } else {
             $output->writeln('<error>No log file is specified. Detailed results '
                 . 'will not be available.</error>');
+            $output->write(PHP_EOL);
         }
         if ($input->getOption('incremental')) {
-            $output->writeln('<error>Incremental Analysis is an experimental feature '
-                . 'and will very likely yield inaccurate results at this time.</error>');
+            $output->writeln('<error>Incremental Analysis is an experimental feature and will very likely</error>');
+            $output->writeln('<error>yield inaccurate results at this time.</error>');
+            $output->write(PHP_EOL);
         }
 
         $formatterHelper = new FormatterHelper;
