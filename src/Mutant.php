@@ -14,8 +14,9 @@ use Humbug\Utility\CoverageData;
 use Humbug\Utility\Diff;
 use Humbug\Utility\Tokenizer;
 use Symfony\Component\Process\PhpProcess;
+use Serializable;
 
-class Mutant
+class Mutant implements Serializable
 {
     /**
      * The mutation's parameters
@@ -37,11 +38,6 @@ class Mutant
      * @var array
      */
     protected $tests;
-
-    /**
-     * @var string
-     */
-    protected $diff;
 
     /**
      * @var PhpProcess
@@ -146,6 +142,24 @@ class Mutant
             'stderr' => $this->getProcess()->getErrorOutput(),
             'tests' => $this->getTests()
         ];
+    }
+
+    public function serialize()
+    {
+        $data = [
+            'mutation' => $this->mutation,
+            'tests' => $this->tests,
+            'file' => $this->file
+        ];
+        return serialize($data);
+    }
+
+    public function unserialize($string)
+    {
+        $data = unserialize($string);
+        $this->mutation = $data['mutation'];
+        $this->tests = $data['tests'];
+        $this->file = $data['file'];
     }
 
     private function getMutationFileRelativePath()

@@ -307,6 +307,10 @@ class Humbug extends Command
         if ($input->getOption('incremental')) {
             $fileCollector->write($container->getWorkingCacheDirectory() . '/source_files.json');
             $testCollector->write($container->getWorkingCacheDirectory() . '/test_files.json');
+            file_put_contents(
+                $container->getWorkingCacheDirectory() . '/results.json',
+                json_encode($collector->toGroupedFileArray(), JSON_PRETTY_PRINT)
+            );
         }
         Performance::stop();
 

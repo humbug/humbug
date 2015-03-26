@@ -224,4 +224,45 @@ class Collector
 
         return $group;
     }
+
+    public function toGroupedFileArray()
+    {
+        $types = [
+            'escaped' => $this->escaped,
+            'errors' => $this->errors,
+            'timeouts' => $this->timeouts,
+            'killed' => $this->killed,
+        ];
+
+        $group = [];
+
+        foreach ($types as $type => $collection) {
+            foreach ($collection as $mutant) {
+                if (!isset($group[$mutant->getFile()])) {
+                    $group[$mutant->getFile()] = [];
+                }
+                $item = [
+                    'result' => [],
+                    'mutant' => []
+                ];
+                switch ($type) {
+                    case 'timeouts':
+                        $item['result']['timeout'] = true;
+                        break;
+                    case 'errors':
+                        $item['result']['successful'] = false;
+                        break;
+                    case 'killed':
+                        $item['result']['passed'] = false;
+                        break;
+                    default:
+                        break;
+                }
+                $item['mutant'] = serialize($mutant);
+                $group[$mutant->getFile()][] = $item;
+            }
+        }
+
+        return $group;
+    }
 }
