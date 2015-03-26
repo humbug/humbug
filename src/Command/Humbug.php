@@ -64,7 +64,12 @@ class Humbug extends Command
         if ($this->isLoggingEnabled()) {
             $this->removeOldLogFiles();
         } else {
-            $output->writeln('<error>No log file is specified. Detailed results will not be available.</error>');
+            $output->writeln('<error>No log file is specified. Detailed results '
+                . 'will not be available.</error>');
+        }
+        if ($input->getOption('incremental')) {
+            $output->writeln('<error>Incremental Analysis is an experimental feature '
+                . 'and will very likely yield inaccurate results at this time.</error>');
         }
 
         $formatterHelper = new FormatterHelper;
