@@ -269,7 +269,7 @@ class Collector
                         break;
                 }
                 $item['mutant'] = serialize($mutant);
-                $group[$file]['items'] = $item;
+                $group[$file]['items'][] = $item;
             }
         }
 
