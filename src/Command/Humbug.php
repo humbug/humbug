@@ -256,7 +256,7 @@ class Humbug extends Command
                     !== $fileCollector->getCollection()->getFileHash($mutable->getFilename())
                     )
                 ;
-
+                //var_dump($mutable->getFilename()); return 1;
                 if (!is_null($cachedResults) && $testFilesHaveChanged === false && $sourceFilesHaveChanged === false) {
                     $resultSet = $cachedResults[$mutable->getFilename()]['items'];
                     $resultSetShadowCount = $cachedResults[$mutable->getFilename()]['shadowCount'];
