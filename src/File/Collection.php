@@ -21,11 +21,6 @@ class Collection
     public function __construct(array $import = null)
     {
         if (!is_null($import)) {
-            if (!isset($import[0]['name']) || !isset($import[0]['hash'])) {
-                throw new InvalidArgumentException(
-                    'The imported data passed to constructor does match expected collection'
-                );
-            }
             $this->files = $import;
         }
     }
@@ -35,15 +30,12 @@ class Collection
         if ($this->hasFile($file)) {
             return;
         }
-        $this->files[] = [
-            'name' => $file,
-            'hash' => $this->getSha1($file)
-        ];
+        $this->files[$file] = $this->getSha1($file);
     }
 
     public function hasFile($file)
     {
-        return false !== $this->getIndex($file);
+        return isset($this->files[$file]);
     }
 
     public function getFileHash($file)
@@ -51,21 +43,12 @@ class Collection
         if (!$this->hasFile($file)) {
             throw new RuntimeException('File does not exist: ' . $file);
         }
-        $index = $this->getIndex($file);
-        return $this->files[$index]['hash'];
+        return $this->files[$file];
     }
 
     public function toArray()
     {
         return $this->files;
-    }
-
-    private function getIndex($file)
-    {
-        return array_search(
-            $file,
-            array_map(function ($data) {return $data['name'];}, $this->files)
-        );
     }
 
     private function getSha1($file)

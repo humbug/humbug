@@ -59,14 +59,8 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
     public function testImportingData()
     {
         $data = [
-            [
-                'name' => vfsStream::url('tempDir/Foo.php'),
-                'hash' => 'fdf8bc5814536f66012884e146a8887a44709a56'
-            ],
-            [
-                'name' => vfsStream::url('tempDir/Bar.php'),
-                'hash' => '3e5ff6d0dbcd5851f75f892999f5d972c3cb5792'
-            ],
+            vfsStream::url('tempDir/Foo.php') => 'fdf8bc5814536f66012884e146a8887a44709a56',
+            vfsStream::url('tempDir/Bar.php') => '3e5ff6d0dbcd5851f75f892999f5d972c3cb5792'
         ];
 
         $collection = new Collection($data);
@@ -87,14 +81,8 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
     public function testExportingData()
     {
         $expected = [
-            [
-                'name' => vfsStream::url('tempDir/Foo.php'),
-                'hash' => 'fdf8bc5814536f66012884e146a8887a44709a56'
-            ],
-            [
-                'name' => vfsStream::url('tempDir/Bar.php'),
-                'hash' => '3e5ff6d0dbcd5851f75f892999f5d972c3cb5792'
-            ],
+            vfsStream::url('tempDir/Foo.php') => 'fdf8bc5814536f66012884e146a8887a44709a56',
+            vfsStream::url('tempDir/Bar.php') => '3e5ff6d0dbcd5851f75f892999f5d972c3cb5792'
         ];
 
         file_put_contents(vfsStream::url('tempDir/Foo.php'), '012345');
