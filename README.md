@@ -67,7 +67,12 @@ downloaded only once. It is re-used by self-update to verify future phar release
 
 Due to Humbug's dependencies being pegged to recent versions, adding Humbug to
 composer.json may give rise to conflicts. The above two methods of installation are
-preferred where this occurs.
+preferred where this occurs. You can however install it globally as any other
+general purpose tool:
+
+```sh
+composer global require 'humbug/humbug=~1.0@dev'
+```
 
 Humbug currently works on PHP 5.4 or greater.
 
@@ -278,6 +283,26 @@ humbug --file=NewClass.php --file=*Driver.php
 This in no way restricts the initial Humbug check on the overall test suite which
 is still executed in full to ensure all tests are passing correctly before
 proceeding.
+
+####Incremental Analysis
+
+Incremental Analysis (IA) is an experimental unfinished mode of operation where results
+are cached locally between runs and reused where it makes sense. At present, this
+mode operates very naively by eliminating test runs where both the immediate file
+being mutated and the relevant tests for a mutated line have not been modified
+since the last run (as determined by comparing the SHA1 of the files involved).
+
+```sh
+humbug --incremental
+```
+
+The IA mode offers a significant performance increase for relatively stable code
+bases, and you're free to test it and see how it fares in real life. In the future,
+it does need to take into accounts changes in files which contain parent classes,
+imported traits and the classes of its immediate dependencies, all of which have
+an impact on the behaviour of any given object.
+
+IA utilises a local permanent cache, e.g. `/home/padraic/.humbug`.
 
 Performance
 -----------

@@ -176,7 +176,7 @@ class Mutant implements Serializable
     private function getMutationFileRelativePath()
     {
         $path = explode(DIRECTORY_SEPARATOR, $this->mutation['file']);
-        $baseDirectory = explode(DIRECTORY_SEPARATOR, $this->baseDirectory;
+        $baseDirectory = explode(DIRECTORY_SEPARATOR, $this->baseDirectory);
 
         return join(DIRECTORY_SEPARATOR, array_diff($path, $baseDirectory));
     }
