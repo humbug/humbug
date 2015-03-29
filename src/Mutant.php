@@ -13,6 +13,7 @@ namespace Humbug;
 use Humbug\Utility\CoverageData;
 use Humbug\Utility\Diff;
 use Humbug\Utility\Tokenizer;
+use Humbug\Exception\NoCoveringTestsException;
 use Symfony\Component\Process\PhpProcess;
 use Serializable;
 
@@ -47,8 +48,13 @@ class Mutant implements Serializable
     public function __construct(array $mutation, Container $container, CoverageData $coverage)
     {
         $this->mutation = $mutation;
-        $this->tests = $coverage->getTestClasses($mutation['file'], $mutation['line']);
         $this->container = $container;
+
+        try {
+            $this->tests = $coverage->getTestClasses($mutation['file'], $mutation['line']);
+        } catch (NoCoveringTestsException $e) {
+            $this->tests = [];
+        }
 
         $this->file = $container->getTempDirectory() . '/humbug.mutant.' . uniqid() . '.php';
 

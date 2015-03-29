@@ -25,6 +25,11 @@ class Collector
     private $shadowCount = 0;
 
     /**
+     * @var Mutant[] Mutants killed by a test case.
+     */
+    private $shadows = [];
+
+    /**
      * @var int Count of mutants killed by a test case.
      */
     private $killedCount = 0;
@@ -92,10 +97,13 @@ class Collector
     /**
      * Collects a shadow mutant.
      */
-    public function collectShadow()
+    public function collectShadow(Mutant $mutant = null)
     {
         $this->totalCount++;
         $this->shadowCount++;
+        if (!is_null($mutant)) {
+            $this->shadows[] = $mutant;
+        }
     }
 
     /**
@@ -265,5 +273,17 @@ class Collector
         }
 
         return $group;
+    }
+
+    /**
+     * Returns all collected uncovered/shadows as arrays.
+     *
+     * @return array
+     */
+    public function getGroupedShadowArray()
+    {
+        return [
+            'shadows' => $this->createGroup($this->shadows)
+        ];
     }
 }

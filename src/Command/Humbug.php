@@ -218,7 +218,9 @@ class Humbug extends Command
                 $coverage->loadCoverageFor($mutable->getFilename());
             } catch (NoCoveringTestsException $e) {
                 foreach ($batches as $batch) {
-                    $collector->collectShadow();
+                    foreach ($batch as $mutation) {
+                        $collector->collectShadow(new Mutant($mutation, $container, $coverage));
+                    }
                     $renderer->renderShadowMark(count($mutables), $i);
                 }
                 continue;
@@ -253,19 +255,21 @@ class Humbug extends Command
                 // Being utterly paranoid, track index using $tracker explicitly
                 // to ensure process->mutation indices are linked for reporting.
                 foreach ($batch as $tracker => $mutation) {
-                    try {
-                        /**
-                         * Unleash the Mutant!
-                         */
-                        $mutants[$tracker] = new Mutant($mutation, $container, $coverage);
+
+                    /**
+                     * Unleash the Mutant!
+                     */
+                    $mutants[$tracker] = new Mutant($mutation, $container, $coverage);
+                    $tests = $mutants[$tracker]->getTests();
+                    if (!empty($tests)) {
                         $processes[$tracker] = $mutants[$tracker]->getProcess();
-                    } catch (NoCoveringTestsException $e) {
+                    } else {
                         /**
                          * No tests excercise the mutated line. We'll report
                          * the uncovered mutants separately and omit them
                          * from final score.
                          */
-                        $collector->collectShadow();
+                        $collector->collectShadow($mutants[$tracker]);
                         $renderer->renderShadowMark(count($mutables), $i);
                     }
                 }
