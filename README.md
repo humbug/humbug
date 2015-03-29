@@ -74,6 +74,12 @@ general purpose tool:
 composer global require 'humbug/humbug=~1.0@dev'
 ```
 
+And if you haven't done so previously...add this to `~/.bash_profile` (or `~/.bashrc`):
+
+```sh
+export PATH=~/.composer/vendor/bin:$PATH
+```
+
 Humbug currently works on PHP 5.4 or greater.
 
 Usage
