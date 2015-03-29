@@ -180,7 +180,7 @@ class Humbug extends Command
             if (file_exists($container->getWorkingCacheDirectory() . '/results.json')) {
                 $cachedResults = json_decode(file_get_contents(
                     $container->getWorkingCacheDirectory() . '/results.json'
-                ));
+                ), true);
             }
         }
 
@@ -249,6 +249,7 @@ class Humbug extends Command
                     $container->getAdapter(),
                     $mutable->getFilename()
                 );
+
                 $sourceFilesHaveChanged =
                     $cachedFileCollection->hasFile($mutable->getFilename()) === false
                     || (
@@ -256,15 +257,19 @@ class Humbug extends Command
                     !== $fileCollector->getCollection()->getFileHash($mutable->getFilename())
                     )
                 ;
-                //var_dump($mutable->getFilename()); return 1;
-                if (!is_null($cachedResults) && $testFilesHaveChanged === false && $sourceFilesHaveChanged === false) {
+
+                if (!is_null($cachedResults) && isset($cachedResults[$mutable->getFilename()])
+                && $testFilesHaveChanged === false && $sourceFilesHaveChanged === false) {
                     $resultSet = $cachedResults[$mutable->getFilename()]['items'];
-                    $resultSetShadowCount = $cachedResults[$mutable->getFilename()]['shadowCount'];
+                    $this->logText($renderer);
                     foreach ($resultSet as $result) {
-                        $collector->collect(unserialize($result['mutant']), $result['result']);
-                    }
-                    for ($i=0; $i < $resultSetShadowCount; $i++) { 
-                        $collector->collectShadow();
+                        if ($result['isShadow'] === false) {
+                            $collector->collect(unserialize($result['mutant']), $result['result']);
+                            $renderer->renderProgressMark($result['result'], count($mutables), $i);
+                        } else {
+                            $collector->collectShadow(unserialize($result['mutant']), $i);
+                            $renderer->renderShadowMark(count($mutables), $i);
+                        }
                     }
                     continue;
                 }
@@ -481,7 +486,7 @@ class Humbug extends Command
     {
         if (file_exists($this->container->getWorkingCacheDirectory() . '/' . $cache)) {
             $cachedFileCollection = new FileCollection(json_decode(
-                $this->container->getWorkingCacheDirectory() . '/' . $cache,
+                file_get_contents($this->container->getWorkingCacheDirectory() . '/' . $cache),
                 true
             ));
         } else {

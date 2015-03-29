@@ -45,10 +45,13 @@ class Mutant implements Serializable
      */
     protected $process;
 
+    protected $baseDirectory;
+
     public function __construct(array $mutation, Container $container, CoverageData $coverage)
     {
         $this->mutation = $mutation;
         $this->container = $container;
+        $this->baseDirectory = $this->container->getBaseDirectory();
 
         try {
             $this->tests = $coverage->getTestClasses($mutation['file'], $mutation['line']);
@@ -155,7 +158,8 @@ class Mutant implements Serializable
         $data = [
             'mutation' => $this->mutation,
             'tests' => $this->tests,
-            'file' => $this->file
+            'file' => $this->file,
+            'baseDirectory' => $this->baseDirectory
         ];
         return serialize($data);
     }
@@ -166,12 +170,13 @@ class Mutant implements Serializable
         $this->mutation = $data['mutation'];
         $this->tests = $data['tests'];
         $this->file = $data['file'];
+        $this->baseDirectory = $data['baseDirectory'];
     }
 
     private function getMutationFileRelativePath()
     {
         $path = explode(DIRECTORY_SEPARATOR, $this->mutation['file']);
-        $baseDirectory = explode(DIRECTORY_SEPARATOR, $this->container->getBaseDirectory());
+        $baseDirectory = explode(DIRECTORY_SEPARATOR, $this->baseDirectory;
 
         return join(DIRECTORY_SEPARATOR, array_diff($path, $baseDirectory));
     }

@@ -240,6 +240,7 @@ class Collector
             'errors' => $this->errors,
             'timeouts' => $this->timeouts,
             'killed' => $this->killed,
+            'shadows' => $this->shadows
         ];
 
         $group = [];
@@ -252,8 +253,13 @@ class Collector
                     $group[$file]['items'] = [];
                 }
                 $item = [
-                    'result' => [],
-                    'mutant' => []
+                    'result' => [
+                        'timeout' => false,
+                        'successful' => true,
+                        'passed' => true
+                    ],
+                    'mutant' => [],
+                    'isShadow' => false
                 ];
                 switch ($type) {
                     case 'timeouts':
@@ -265,6 +271,8 @@ class Collector
                     case 'killed':
                         $item['result']['passed'] = false;
                         break;
+                    case 'shadows':
+                        $item['isShadow'] = true;
                     default:
                         break;
                 }
@@ -272,8 +280,6 @@ class Collector
                 $group[$file]['items'][] = $item;
             }
         }
-
-        $group[$file]['shadowCount'] = $this->getShadowCount();
 
         return $group;
     }
