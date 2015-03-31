@@ -89,6 +89,19 @@ Usage
 
 Humbug is still under development so, to repeat, beware of rough edges.
 
+#### Configure command
+
+To configure humbug in your project you may run: 
+
+```sh
+humbug configure
+```
+
+This tool will ask some questions required to create the Humbug configuration file
+(`humbug.json.dist`).
+
+#### Manual Configuration
+
 In the base directory of your project create a `humbug.json.dist` file:
 
 ```js
@@ -110,7 +123,7 @@ You can commit the `humbug.json.dist` to your VCS and override it locally with a
 `humbug.json` file.
 
 Edit as appropriate. If you do not define at least one log, detailed information
-about escaped mutants will not be available. The Text log is the most human readable.
+about escaped mutants will not be available. The Text log is human readable.
 If source files exist in the base directory, or files in the source directories
 must be excluded, you can add exclude patterns (here's one for files in base
 directory where composer vendor and Tests directories are excluded):
@@ -148,17 +161,6 @@ other than your project's base directory.
     }
 }
 ```
-
-#### Configure command
-
-To configure humbug in your project you may also run 
-
-```sh
-humbug configure
-```
-
-This tool will ask some questions required to create Humbug configuration file
-(`humbug.json.dist`). 
 
 ### Running Humbug
 
