@@ -14,7 +14,6 @@ namespace Humbug\Test;
 
 use Humbug\Mutant;
 use Humbug\Exception\NoCoveringTestsException;
-use Humbug\Mutant;
 use Humbug\Mutation;
 use Humbug\TestSuite\Mutant\FileGenerator;
 use Humbug\Utility\CoverageData;
@@ -96,6 +95,7 @@ class MutantTest extends \PHPUnit_Framework_TestCase
             'tests' => ['FooTest.php']
         ];
         $this->assertSame($expected, $mutant->toArray());
+    }
 
     /**
      * @return FileGenerator
