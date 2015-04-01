@@ -15,21 +15,34 @@ use SebastianBergmann\Diff\Differ;
 class Diff
 {
 
-    protected static $differ;
+    private static $instance;
 
-    public static function difference($from, $to, $lines = 12)
+    public static function getInstance()
     {
-        if (null === self::$differ) {
-            self::$differ = new Differ;
+        if (self::$instance == null) {
+            self::$instance = new self();
         }
-        return self::split(
-            self::$differ->diff($from, $to),
+
+        return self::$instance;
+    }
+
+    protected $differ;
+
+    private function __construct()
+    {
+        $this->differ = new Differ();
+    }
+
+    public function difference($from, $to, $lines = 12)
+    {
+        return $this->split(
+            $this->differ->diff($from, $to),
             "\n",
             $lines
         );
     }
 
-    protected static function split($string, $needle, $nth)
+    protected function split($string, $needle, $nth)
     {
         $max = strlen($string);
         $n = 0;

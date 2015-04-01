@@ -10,21 +10,21 @@
 
 namespace Humbug\Command;
 
-use Humbug\Adapter\AdapterAbstract;
-use Humbug\Collector;
 use Humbug\Config;
-use Humbug\Config\JsonParser;
 use Humbug\Container;
-use Humbug\Mutant;
-use Humbug\ProcessRunner;
-use Humbug\Report\Text as TextReport;
-use Humbug\Utility\Performance;
-use Humbug\Utility\ParallelGroup;
-use Humbug\Renderer\Text;
+use Humbug\Adapter\Phpunit;
+use Humbug\Config\JsonParser;
 use Humbug\Exception\InvalidArgumentException;
 use Humbug\Exception\NoCoveringTestsException;
 use Humbug\File\Collector as FileCollector;
 use Humbug\File\Collection as FileCollection;
+use Humbug\MutableIterator;
+use Humbug\Renderer\Text;
+use Humbug\TestSuite\Mutant\Builder as MutantBuilder;
+use Humbug\TestSuite\Unit\Observers\LoggingObserver;
+use Humbug\TestSuite\Unit\Observers\ProgressBarObserver;
+use Humbug\TestSuite\Unit\Runner as UnitTestRunner;
+use Humbug\Utility\Performance;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -32,13 +32,20 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Helper\FormatterHelper;
 use Symfony\Component\Finder\Finder;
-use Symfony\Component\Process\PhpProcess;
 
 class Humbug extends Command
 {
     protected $container;
 
-    protected $finder;
+    /**
+     * @var MutantBuilder
+     */
+    protected $builder;
+
+    /**
+     * @var MutableIterator
+     */
+    protected $mutableIterator;
 
     private $jsonLogFile;
 
@@ -51,6 +58,7 @@ class Humbug extends Command
      *
      * @param InputInterface $input
      * @param OutputInterface $output
+     * @return void
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -81,19 +89,12 @@ class Humbug extends Command
             $renderer = new Text($output, $formatterHelper);
         }
 
-        $renderer->renderPreTestIntroduction();
-        $output->write(PHP_EOL);
-
-        /**
-         * Log buffered renderer output to file if enabled
-         */
-        $this->logText($renderer);
-
         /**
          * Make initial test run to ensure tests are in a starting passing state
          * and also log the results so test runs during the mutation phase can
          * be optimised.
          */
+<<<<<<< HEAD
         $progressBar = null;
         if (!$input->getOption('no-progress-bar')) {
             $progressBar = new ProgressBar($output);
@@ -108,9 +109,21 @@ class Humbug extends Command
         $testFrameworkAdapter = $container->getAdapter();
 
         $process = $testFrameworkAdapter->getProcess($container, true);
+=======
+        $testSuiteRunner = new UnitTestRunner(
+            $container->getAdapter(),
+            $container->getAdapter()->getProcess($container, true),
+            $container->getCacheDirectory() . '/coverage.humbug.txt'
+        );
+>>>>>>> aztech/refactor/result
 
-        $hasFailure = $this->performInitailTestsRun($process, $testFrameworkAdapter, $progressBar);
+        $testSuiteRunner->addObserver(new LoggingObserver(
+            $renderer,
+            $output,
+            new ProgressBarObserver($output)
+        ));
 
+<<<<<<< HEAD
         if (!$input->getOption('no-progress-bar')) {
             $progressBar->finish();
             $output->write(PHP_EOL.PHP_EOL);
@@ -130,16 +143,18 @@ class Humbug extends Command
         if (!$container->getAdapter()->ok($result['stdout'])) {
             $result['passed'] = false;
         }
+=======
+        $result = $testSuiteRunner->run($container);
+>>>>>>> aztech/refactor/result
 
         /**
          * Check if the initial test run ended with a fatal error
          */
-        if ($exitCode !== 0 || $hasFailure) {
-            $renderer->renderInitialRunFail($result, $exitCode, $hasFailure);
-            $this->logText($renderer);
+        if (! $result->isSuccess()) {
             return 1;
         }
 
+<<<<<<< HEAD
         /**
          * Capture headline line coverage %.
          * Get code coverage data so we can determine which test suites or
@@ -152,8 +167,9 @@ class Humbug extends Command
          * Initial test run was a success!
          */
         $renderer->renderInitialRunPass($result, $progressBar);
+=======
+>>>>>>> aztech/refactor/result
         $output->write(PHP_EOL);
-        $this->logText($renderer);
 
         /**
          * Message re Static Analysis
@@ -161,6 +177,7 @@ class Humbug extends Command
         $renderer->renderStaticAnalysisStart();
         $output->write(PHP_EOL);
 
+<<<<<<< HEAD
         /**
          * Examine all source code files and collect up mutations to apply
          */
@@ -427,6 +444,15 @@ class Humbug extends Command
             $this->jsonLogFile,
             json_encode($out, JSON_PRETTY_PRINT)
         );
+=======
+        $testSuite = $this->builder->build($container, $renderer, $output);
+        $testSuite->run($result->getCoverage(), $this->mutableIterator);
+
+
+        if ($this->isLoggingEnabled()) {
+            $output->write(PHP_EOL);
+        }
+>>>>>>> aztech/refactor/result
     }
 
     protected function prepareFinder($directories, $excludes, array $names = null)
@@ -461,11 +487,13 @@ class Humbug extends Command
         $config = (new JsonParser())->parseFile();
         $newConfig = new Config($config);
         $source = $newConfig->getSource();
+
         $this->finder = $this->prepareFinder(
             isset($source->directories)? $source->directories : null,
             isset($source->excludes)? $source->excludes : null,
             $input->getOption('file')
         );
+
         $this->container->setSourceList($source);
         $timeout = $newConfig->getTimeout();
         if ($timeout !== null) {
@@ -477,6 +505,17 @@ class Humbug extends Command
         }
         $this->jsonLogFile = $newConfig->getLogsJson();
         $this->textLogFile = $newConfig->getLogsText();
+
+        $this->builder = new MutantBuilder();
+        $this->builder->setLogFiles($this->textLogFile, $this->jsonLogFile);
+
+        $finder = $this->prepareFinder(
+            isset($source->directories)? $source->directories : null,
+            isset($source->excludes)? $source->excludes : null,
+            $input->getOption('file')
+        );
+
+        $this->mutableIterator = new MutableIterator($this->container, $finder);
     }
 
     /**

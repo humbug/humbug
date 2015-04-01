@@ -47,3 +47,9 @@ private.*
 priv.*
 key.*
 box.json
+
+# Humbug log files
+humbuglog.*
+
+# Mutant test files
+tests/_files/mutants/
