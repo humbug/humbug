@@ -95,7 +95,7 @@ class Humbug extends Command
         $testSuiteRunner = new UnitTestRunner(
             $container->getAdapter(),
             $container->getAdapter()->getProcess($container, true),
-            $container->getCacheDirectory() . '/coverage.humbug.txt'
+            $container->getTempDirectory() . '/coverage.humbug.txt'
         );
 
         $testSuiteRunner->addObserver(new LoggingObserver(

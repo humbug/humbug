@@ -57,7 +57,7 @@ class Builder
          *
          * TODO: Move PHPUnit specific stuff to adapter...
          */
-        $mutantGenerator = new FileGenerator($container->getCacheDirectory());
+        $mutantGenerator = new FileGenerator($container->getTempDirectory());
         $processBuilder = new ProcessBuilder($container);
         $testSuite = new Runner($mutantGenerator, $processBuilder, $container->getBaseDirectory(), 1);
 

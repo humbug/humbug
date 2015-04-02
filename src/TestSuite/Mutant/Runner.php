@@ -180,7 +180,7 @@ class Runner
     private function onMutantDone(Mutant $mutant, Result $result, $index)
     {
         foreach ($this->observers as $observer) {
-            $observer->onMutantDone($this, $mutant, $result, $index);
+            $observer->onMutantDone($this, $result, $index);
         }
     }
 
