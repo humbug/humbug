@@ -33,7 +33,7 @@ class MutantTest extends \PHPUnit_Framework_TestCase
 
     private $mutation;
 
-    public function setup()
+    /*public function setup()
     {
         $this->tmp = vfsStream::setup('tempDir');
         $this->file = vfsStream::url('tempDir/Foo.php');
@@ -66,7 +66,7 @@ class MutantTest extends \PHPUnit_Framework_TestCase
             ->andReturn($process);
     }
 
-    /*public function testContruction()
+    public function testContruction()
     {
         $mutant = new Mutant($this->mutation, $this->container, $this->coverage);
         $this->assertTrue($mutant instanceof Mutant);
@@ -167,17 +167,15 @@ class MutantTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(['dummy'], $mutant->getTests());
     }
 
-    /**
-     * @expectedException \Humbug\Exception\NoCoveringTestsException
-     */
-    public function testConstructorFailsWithoutCoverage()
+    public function testConstructorReturnsEmptyTestsArrayWhenNoCoverage()
     {
-        new Mutant(
+        $mutant = new Mutant(
             $this->getMutation(),
             $this->getFileGenerator(),
             $this->getExceptionRaisingCoverageData(),
             __DIR__ . '/_files/mutables/'
         );
+        $this->assertSame([], $mutant->getTests());
     }
 
     public function testToArray()
