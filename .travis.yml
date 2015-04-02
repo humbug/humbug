@@ -9,17 +9,21 @@ php:
   - hhvm-nightly
 
 matrix:
-    allow_failures:
-        - php: 7.0
-        - php: hhvm
-        - php: hhvm-nightly
+  allow_failures:
+    - php: 7.0
+    - php: hhvm
+    - php: hhvm-nightly
+        
+branches:
+  only:
+    - master
 
 before_install:
-    - composer self-update
+  - composer self-update
 
 before_script:
-    - travis_retry composer install --no-interaction --prefer-source
+  - travis_retry composer install --no-interaction --prefer-source
 
 script:
-    - vendor/bin/phpunit --coverage-text
-    - vendor/bin/behat
+  - vendor/bin/phpunit --coverage-text
+  - vendor/bin/behat
