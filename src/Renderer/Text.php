@@ -86,7 +86,7 @@ class Text
         }
         if ($result->hasStdOut()) {
             $error[] = 'Stdout:';
-            $error = array_merge($error, $this->indent($this->headAndTail($result['stdout']), true));
+            $error = array_merge($error, $this->indent($this->headAndTail($result->getStdOut()), true));
         }
         if ($result->hasStdErr()) {
             $error[] = 'Stderr:';
