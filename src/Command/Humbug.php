@@ -53,12 +53,10 @@ class Humbug extends Command
 
     /**
      * Execute the command.
-     * The text output, other than some newline management, is held within
-     * Humbug\Renderer\Text.
      *
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @return void
+     * @return void|int
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -76,17 +74,17 @@ class Humbug extends Command
                 . 'will not be available.</error>');
             $output->write(PHP_EOL);
         }
+
         if ($input->getOption('incremental')) {
             $output->writeln('<error>Incremental Analysis is an experimental feature and will very likely</error>');
             $output->writeln('<error>yield inaccurate results at this time.</error>');
             $output->write(PHP_EOL);
         }
 
-        $formatterHelper = new FormatterHelper;
         if ($this->textLogFile) {
-            $renderer = new Text($output, $formatterHelper, true);
+            $renderer = new Text($output, true);
         } else {
-            $renderer = new Text($output, $formatterHelper);
+            $renderer = new Text($output);
         }
 
         /**
@@ -288,22 +286,6 @@ class Humbug extends Command
         }
     }
 
-    /**
-     * @param string $output
-     */
-    private function logText(Text $renderer, $output = null)
-    {
-        if ($this->textLogFile) {
-            $logText = !is_null($output) ? $output : $renderer->getBuffer();
-
-            file_put_contents(
-                $this->textLogFile,
-                $logText,
-                FILE_APPEND
-            );
-        }
-    }
-
     private function removeOldLogFiles()
     {
         if (file_exists($this->jsonLogFile)) {
@@ -318,38 +300,6 @@ class Humbug extends Command
     private function isLoggingEnabled()
     {
         return $this->jsonLogFile !== null || $this->textLogFile !== null;
-    }
-
-    private function prepareTextReport(Collector $collector)
-    {
-        $textReport = new TextReport();
-
-        $out = $textReport->prepareMutantsReport($collector->getEscaped(), 'Escapes');
-
-        if ($collector->getTimeoutCount() > 0) {
-            $out .= PHP_EOL . $textReport->prepareMutantsReport($collector->getTimeouts(), 'Timeouts');
-        }
-
-        if ($collector->getErrorCount() > 0) {
-            $out .= PHP_EOL . $textReport->prepareMutantsReport($collector->getErrors(), 'Errors');
-        }
-
-        return $out;
-    }
-
-    private function performInitailTestsRun(
-        PhpProcess $process,
-        AdapterAbstract $testFrameworkAdapter,
-        ProgressBar $progressBar = null
-    ) {
-        if (!is_null($progressBar)) {
-            $setProgressBarProgressCallback = function ($count) use ($progressBar) {
-                $progressBar->setProgress($count);
-            };
-
-            return (new ProcessRunner())->run($process, $testFrameworkAdapter, $setProgressBarProgressCallback);
-        }
-        return (new ProcessRunner())->run($process, $testFrameworkAdapter);
     }
 
     private function testFilesHaveChanged(

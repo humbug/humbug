@@ -29,7 +29,7 @@ class Text
 
     protected $useBuffer = false;
 
-    public function __construct(OutputInterface $output, FormatterHelper $formatterHelper, $buffer = false, $colors = true)
+    public function __construct(OutputInterface $output, $buffer = false, $colors = true)
     {
         $this->output = $output;
         if (!$colors) {
