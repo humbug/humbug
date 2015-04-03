@@ -26,11 +26,14 @@ class IncrementalCache
 
     private $cachedResults;
 
+    private $workingCacheDirectory;
+
     /**
      * @param string $workingCacheDirectory
      */
     public function __construct($workingCacheDirectory)
     {
+        $this->workingCacheDirectory = $workingCacheDirectory;
         $this->fileCollector = new FileCollector(new FileCollection);
         $this->testCollector = new FileCollector(new FileCollection);
         $this->cachedFileCollection = $this->getCachedFileCollection('source_files.json');
@@ -58,9 +61,9 @@ class IncrementalCache
      */
     private function getCachedFileCollection($cache)
     {
-        if (file_exists($this->container->getWorkingCacheDirectory() . '/' . $cache)) {
+        if (file_exists($this->workingCacheDirectory . '/' . $cache)) {
             $cachedFileCollection = new FileCollection(json_decode(
-                file_get_contents($this->container->getWorkingCacheDirectory() . '/' . $cache),
+                file_get_contents($this->workingCacheDirectory . '/' . $cache),
                 true
             ));
         } else {

@@ -93,11 +93,9 @@ class FeatureContext implements Context, SnippetAcceptingContext
         $output = $this->appTester->getDisplay();
         if (trim($output) !== trim($string)) {
             throw new \RuntimeException(sprintf(
-                'Output difference:%s%s%sHumbug Log:%s',
+                'Output difference:%s%s',
                 PHP_EOL,
-                $this->differ->diff(trim($string), trim($output)),
-                PHP_EOL,
-                file_get_contents(getcwd() . '/humbuglog.txt')
+                $this->differ->diff(trim($string), trim($output))
             ));
         }
     }

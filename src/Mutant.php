@@ -66,14 +66,14 @@ class Mutant implements Serializable
                 $mutation->getFile(),
                 $mutation->getLine()
             );
+            /*$this->testMethods = $coverage->getTestMethods(
+                $mutation->getFile(),
+                $mutation->getLine()
+            );*/
         } catch (NoCoveringTestsException $e) {
             $this->tests = [];
+            $this->testMethods = [];
         }
-
-        $this->testMethods = $coverage->getTestMethods(
-            $mutation->getFile(),
-            $mutation->getLine()
-        );
 
         $this->file = $generator->generateFile($mutation);
         $this->baseDirectory = $baseDirectory;
@@ -120,6 +120,14 @@ class Mutant implements Serializable
     public function getFile()
     {
         return $this->file;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasTests()
+    {
+        return !empty($this->tests);
     }
 
     /**

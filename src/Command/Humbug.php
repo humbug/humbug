@@ -19,6 +19,7 @@ use Humbug\File\Collection as FileCollection;
 use Humbug\MutableIterator;
 use Humbug\Renderer\Text;
 use Humbug\TestSuite\Mutant\Builder as MutantBuilder;
+use Humbug\TestSuite\Mutant\IncrementalCache;
 use Humbug\TestSuite\Unit\Observers\LoggingObserver;
 use Humbug\TestSuite\Unit\Observers\ProgressBarObserver;
 use Humbug\TestSuite\Unit\Runner as UnitTestRunner;
@@ -125,8 +126,13 @@ class Humbug extends Command
         $renderer->renderStaticAnalysisStart();
         $output->write(PHP_EOL);
 
+        $incrementalCache = null;
+        if ($input->getOption('incremental')) {
+            $incrementalCache = new IncrementalCache($container->getWorkingCacheDirectory());
+        }
+
         $testSuite = $this->builder->build($container, $renderer, $input, $output);
-        $testSuite->run($result->getCoverage(), $this->mutableIterator);
+        $testSuite->run($result->getCoverage(), $this->mutableIterator, $incrementalCache);
 
 
         if ($this->isLoggingEnabled()) {

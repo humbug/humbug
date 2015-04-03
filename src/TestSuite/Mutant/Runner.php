@@ -13,6 +13,7 @@ namespace Humbug\TestSuite\Mutant;
 use Humbug\Exception\NoCoveringTestsException;
 use Humbug\MutableIterator;
 use Humbug\Mutant;
+use Humbug\TestSuite\Mutant\IncrementalCache;
 use Humbug\Utility\CoverageData;
 use Humbug\Utility\ParallelGroup;
 
@@ -81,7 +82,7 @@ class Runner
      * @param CoverageData $coverage
      * @param MutableIterator $mutables
      */
-    public function run(CoverageData $coverage, MutableIterator $mutables)
+    public function run(CoverageData $coverage, MutableIterator $mutables, IncrementalCache $cache = null)
     {
         $this->mutableCount = count($mutables);
         $this->onStartRun();
@@ -134,14 +135,22 @@ class Runner
                     $this->baseDirectory
                 );
 
+                if (!$mutant->hasTests()) {
+                    throw new NoCoveringTestsException(
+                        'Current mutant has no covering tests'
+                    );
+                }
+
                 $processes[] = $this->processBuilder->build($mutant, $index);
             } catch (NoCoveringTestsException $e) {
-                /**
-                 * No tests exercise the mutated line. We'll report
-                 * the uncovered mutants separately and omit them
-                 * from final score.
-                 */
-                $collector->collectShadow();
+
+                $shadow = new Mutant(
+                    $mutation,
+                    $this->mutantGenerator,
+                    $coverage,
+                    $this->baseDirectory
+                );
+                $collector->collectShadow($shadow);
                 $this->onShadowMutant($index);
             }
         }
