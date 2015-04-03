@@ -40,7 +40,7 @@ class PartitionBuilder
     }
 
     /**
-     * @param integer $partitionSize
+     * @param int $partitionSize
      */
     public function getPartitions($partitionSize)
     {

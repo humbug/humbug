@@ -26,6 +26,7 @@ class CoverageData
      * The constructor processes the main coverage report into
      * a set of split files. A coverage data extract per source code file
      * available.
+     *
      * @param string $file
      */
     public function __construct($file)
@@ -38,6 +39,9 @@ class CoverageData
         $this->process($path);
     }
 
+    /**
+     * @param string $file
+     */
     public function loadCoverageFor($file)
     {
         if ($file === $this->lastFile) {
@@ -61,6 +65,7 @@ class CoverageData
 
     /**
      * @param string $file
+     * @param int $file
      */
     public function hasTestClasses($file, $line)
     {
@@ -78,6 +83,7 @@ class CoverageData
 
     /**
      * @param string $file
+     * @param int $file
      */
     public function getTestClasses($file, $line)
     {
@@ -101,7 +107,7 @@ class CoverageData
 
     /**
      * @param string $file
-     * @param integer $line
+     * @param int $line
      */
     public function getTestMethods($file, $line)
     {
@@ -126,6 +132,9 @@ class CoverageData
         return array_unique($cases);
     }
     
+    /**
+     * @param string $file
+     */
     public function getLineCoverageFrom($file)
     {
         $file = realpath($file);
@@ -152,6 +161,9 @@ class CoverageData
         }
     }
 
+    /**
+     * @param string $file
+     */
     public function getAllTestClasses($file)
     {
         $file = realpath($file);

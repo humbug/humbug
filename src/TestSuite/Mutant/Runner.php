@@ -50,7 +50,10 @@ class Runner
     private $observers = [];
 
     /**
+     * @param FileGenerator $mutantGenerator
+     * @param ProcessBuilder $processBuilder
      * @param string $baseDirectory
+     * @param int $threadCount
      */
     public function __construct(FileGenerator $mutantGenerator, ProcessBuilder $processBuilder, $baseDirectory, $threadCount = 1)
     {
