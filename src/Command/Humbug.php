@@ -12,10 +12,8 @@ namespace Humbug\Command;
 
 use Humbug\Config;
 use Humbug\Container;
-use Humbug\Adapter\Phpunit;
 use Humbug\Config\JsonParser;
 use Humbug\Exception\InvalidArgumentException;
-use Humbug\Exception\NoCoveringTestsException;
 use Humbug\File\Collector as FileCollector;
 use Humbug\File\Collection as FileCollection;
 use Humbug\MutableIterator;
@@ -29,8 +27,6 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Helper\ProgressBar;
-use Symfony\Component\Console\Helper\FormatterHelper;
 use Symfony\Component\Finder\Finder;
 
 class Humbug extends Command

@@ -10,7 +10,6 @@
  */
 namespace Humbug\TestSuite\Mutant;
 
-use Humbug\Container;
 use Humbug\Exception\NoCoveringTestsException;
 use Humbug\MutableIterator;
 use Humbug\Mutant;
@@ -50,6 +49,9 @@ class Runner
      */
     private $observers = [];
 
+    /**
+     * @param string $baseDirectory
+     */
     public function __construct(FileGenerator $mutantGenerator, ProcessBuilder $processBuilder, $baseDirectory, $threadCount = 1)
     {
         $this->mutantGenerator = $mutantGenerator;

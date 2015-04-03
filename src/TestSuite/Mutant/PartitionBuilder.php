@@ -39,6 +39,9 @@ class PartitionBuilder
         }
     }
 
+    /**
+     * @param integer $partitionSize
+     */
     public function getPartitions($partitionSize)
     {
         $batches = [];
