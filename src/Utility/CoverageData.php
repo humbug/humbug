@@ -76,6 +76,9 @@ class CoverageData
         return true;
     }
 
+    /**
+     * @param string $file
+     */
     public function getTestClasses($file, $line)
     {
         $file = realpath($file);
@@ -96,6 +99,10 @@ class CoverageData
         return $classes;
     }
 
+    /**
+     * @param string $file
+     * @param integer $line
+     */
     public function getTestMethods($file, $line)
     {
         $file = realpath($file);
