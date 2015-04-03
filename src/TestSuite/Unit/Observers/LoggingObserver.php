@@ -50,11 +50,12 @@ class LoggingObserver implements Observer
     public function onStopSuite(Result $result)
     {
         $this->progressObserver->onStopSuite($result);
-        $this->output->write(PHP_EOL . PHP_EOL);
+        if (!$this->progressObserver->isDisabled()) {
+            $this->output->write(PHP_EOL . PHP_EOL);
+        }
 
         if (! $result->isSuccess()) {
             $this->renderer->renderInitialRunFail($result);
-
             return;
         }
 
