@@ -15,37 +15,49 @@ use Humbug\TestSuite\Unit\Result;
 use Humbug\TestSuite\Unit\Observer;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Input\InputInterface;
 
 class ProgressBarObserver implements Observer
 {
 
     private $progressBar;
 
-    public function __construct(OutputInterface $output)
+    private $isDisabled = false;
+
+    public function __construct(InputInterface $input, OutputInterface $output)
     {
-        $progressBar = new ProgressBar($output);
-        $progressBar->setFormat('verbose');
-        $progressBar->setBarWidth(58);
+        if (!$input->getOption('no-progress-bar')) {
+            $progressBar = new ProgressBar($output);
+            $progressBar->setFormat('verbose');
+            $progressBar->setBarWidth(58);
 
-        if (!$output->isDecorated()) {
-            $progressBar->setRedrawFrequency(60);
+            if (!$output->isDecorated()) {
+                $progressBar->setRedrawFrequency(60);
+            }
+
+            $this->progressBar = $progressBar;
+        } else {
+            $this->isDisabled = true;
         }
-
-        $this->progressBar = $progressBar;
     }
 
     public function onStartSuite()
     {
-        $this->progressBar->start();
+        if (!$this->isDisabled) $this->progressBar->start();
     }
 
     public function onProgress($count)
     {
-        $this->progressBar->setProgress($count);
+        if (!$this->isDisabled) $this->progressBar->setProgress($count);
     }
 
     public function onStopSuite(Result $result)
     {
-        $this->progressBar->finish();
+        if (!$this->isDisabled) $this->progressBar->finish();
+    }
+
+    public function isDisabled()
+    {
+        return $this->isDisabled;
     }
 }

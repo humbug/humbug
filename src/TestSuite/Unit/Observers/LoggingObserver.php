@@ -61,6 +61,10 @@ class LoggingObserver implements Observer
         /**
          * Initial test run was a success!
          */
-        $this->renderer->renderInitialRunPass($result, $this->totalCount);
+        if (!$this->progressObserver->isDisabled()) {
+            $this->renderer->renderInitialRunPass($result, $this->totalCount);
+        } else {
+            $this->renderer->renderInitialRunPass($result);
+        }
     }
 }

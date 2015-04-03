@@ -17,6 +17,7 @@ use Humbug\TestSuite\Mutant\Observers\LoggingObserver;
 use Humbug\TestSuite\Mutant\Observers\PerformanceObserver;
 use Humbug\TestSuite\Mutant\Observers\TextLoggingObserver;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Finder\Finder;
 
 class Builder
@@ -49,7 +50,7 @@ class Builder
      *
      * @return Runner
      */
-    public function build(Container $container, Text $renderer, OutputInterface $output)
+    public function build(Container $container, Text $renderer, InputInterface $input, OutputInterface $output)
     {
         /**
          * We can do parallel runs, but typically two test runs will compete for
@@ -62,7 +63,7 @@ class Builder
         $testSuite = new Runner($mutantGenerator, $processBuilder, $container->getBaseDirectory(), 1);
 
         $testSuite->addObserver(new LoggingObserver($renderer, $output));
-        $testSuite->addObserver(new PerformanceObserver($renderer));
+        $testSuite->addObserver(new PerformanceObserver($renderer, $input));
 
         /**
          * Add logging observers

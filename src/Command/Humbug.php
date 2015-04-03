@@ -47,8 +47,14 @@ class Humbug extends Command
      */
     protected $mutableIterator;
 
+    /**
+     * @var string
+     */
     private $jsonLogFile;
 
+    /**
+     * @var string
+     */
     private $textLogFile;
 
     /**
@@ -98,11 +104,13 @@ class Humbug extends Command
             $container->getTempDirectory() . '/coverage.humbug.txt'
         );
 
-        $testSuiteRunner->addObserver(new LoggingObserver(
-            $renderer,
-            $output,
-            new ProgressBarObserver($output)
-        ));
+        $testSuiteRunner->addObserver(
+            new LoggingObserver(
+                $renderer,
+                $output,
+                new ProgressBarObserver($input, $output)
+            )
+        );
 
         $result = $testSuiteRunner->run($container);
 
@@ -121,7 +129,7 @@ class Humbug extends Command
         $renderer->renderStaticAnalysisStart();
         $output->write(PHP_EOL);
 
-        $testSuite = $this->builder->build($container, $renderer, $output);
+        $testSuite = $this->builder->build($container, $renderer, $input, $output);
         $testSuite->run($result->getCoverage(), $this->mutableIterator);
 
 

@@ -17,15 +17,21 @@ use Humbug\TestSuite\Mutant\Observer;
 use Humbug\TestSuite\Mutant\Result;
 use Humbug\TestSuite\Mutant\Runner;
 use Humbug\Utility\Performance;
+use Symfony\Component\Console\Input\InputInterface;
 
 class PerformanceObserver implements Observer
 {
 
     private $renderer;
 
-    public function __construct(Text $renderer)
+    private $isDisabled = false;
+
+    public function __construct(Text $renderer, InputInterface $input)
     {
         $this->renderer = $renderer;
+        if ($input->getOption('no-progress-bar')) {
+            $this->isDisabled = true;
+        }
     }
 
     public function onStartRun(Runner $testSuite)
@@ -37,10 +43,12 @@ class PerformanceObserver implements Observer
     {
         Performance::stop();
 
-        $this->renderer->renderPerformanceData(
-            Performance::getTimeString(),
-            Performance::getMemoryUsageString()
-        );
+        if (!$this->isDisabled) {
+            $this->renderer->renderPerformanceData(
+                Performance::getTimeString(),
+                Performance::getMemoryUsageString()
+            );
+        }
 
         Performance::downMemProfiler();
     }

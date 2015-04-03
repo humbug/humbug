@@ -103,22 +103,15 @@ class Text
      * @param TestSuiteResult $result
      * @param int $testCount
      */
-    /*public function renderInitialRunPass(array &$result, $progressBar = null)
+    public function renderInitialRunPass(TestSuiteResult $result, $testCount = null)
     {
         $this->write('Humbug has completed the initial test run successfully.');
-        if (!is_null($progressBar)) {
+        if (!is_null($testCount)) {
             $this->write(
-                'Tests: <fg=cyan>' . $progressBar->getProgress() . '</fg=cyan> '
-                . 'Line Coverage: <fg=cyan>' . sprintf('%3.2f%%', $result['coverage']) . '</fg=cyan>'
+                'Tests: <fg=cyan>' . $testCount . '</fg=cyan> '
+                . 'Line Coverage: <fg=cyan>' . sprintf('%3.2f%%', $result->getLineCoverage()) . '</fg=cyan>'
             );
-        }*/
-    public function renderInitialRunPass(TestSuiteResult $result, $testCount)
-    {
-        $this->write('Humbug has completed the initial test run successfully.');
-        $this->write(
-            'Tests: <fg=cyan>' . $testCount . '</fg=cyan> '
-            . 'Line Coverage: <fg=cyan>' . sprintf('%3.2f%%', $result->getLineCoverage()) . '</fg=cyan>'
-        );
+        }
     }
 
     /**
