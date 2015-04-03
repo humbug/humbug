@@ -43,17 +43,23 @@ class ProgressBarObserver implements Observer
 
     public function onStartSuite()
     {
-        if (!$this->isDisabled) $this->progressBar->start();
+        if (!$this->isDisabled) {
+            $this->progressBar->start();
+        }
     }
 
     public function onProgress($count)
     {
-        if (!$this->isDisabled) $this->progressBar->setProgress($count);
+        if (!$this->isDisabled) {
+            $this->progressBar->setProgress($count);
+        }
     }
 
     public function onStopSuite(Result $result)
     {
-        if (!$this->isDisabled) $this->progressBar->finish();
+        if (!$this->isDisabled) {
+            $this->progressBar->finish();
+        }
     }
 
     public function isDisabled()
