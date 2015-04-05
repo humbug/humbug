@@ -258,39 +258,24 @@ class Collector
                 } else {
                     $mutant = $result;
                 }
-                $file = $mutant->getFile();
+                $file = $mutant->getMutation()->getFile();
 
                 if (!isset($group[$file])) {
                     $group[$file] = [];
                 }
 
                 $item = [
-                    'result' => [
-                        'timeout' => false,
-                        'successful' => true,
-                        'passed' => true
-                    ],
-                    'mutant' => [],
+                    'result' => serialize($result),
                     'isShadow' => false
                 ];
                 
                 switch ($type) {
-                    case 'timeouts':
-                        $item['result']['timeout'] = true;
-                        break;
-                    case 'errors':
-                        $item['result']['successful'] = false;
-                        break;
-                    case 'killed':
-                        $item['result']['passed'] = false;
-                        break;
                     case 'shadows':
                         $item['isShadow'] = true;
                         break;
                     default:
                         break;
                 }
-                $item['mutant'] = serialize($mutant);
                 $group[$file][] = $item;
             }
         }

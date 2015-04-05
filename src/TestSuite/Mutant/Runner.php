@@ -148,6 +148,13 @@ class Runner
                     );
                 }
 
+                if (!is_null($cache)) {
+                    $hit = $this->runCache($cache, $coverage, $mutation, $collector, $index);
+                    if ($hit === true) {
+                        continue;
+                    }
+                }
+
                 $processes[] = $this->processBuilder->build($mutant, $index);
             } catch (NoCoveringTestsException $e) {
 
@@ -170,34 +177,6 @@ class Runner
             return;
         }
 
-        if (!is_null($cache)) {
-            // need to load coverage for*********
-            $testFilesHaveChanged = $cache->hasModifiedTestFiles(
-                $coverage,
-                $mutation->getFile()
-            );
-
-            $sourceFilesHaveChanged = $cache->hasModifiedSourceFiles(
-                $mutation->getFile()
-            );
-
-            /**if ($cache->hasResultsFor($mutable->getFilename())
-            && $testFilesHaveChanged === false && $sourceFilesHaveChanged === false) {
-                $resultSet = $cachedResults[$mutable->getFilename()]['items'];
-                $this->logText($renderer);
-                foreach ($resultSet as $result) {
-                    if ($result['isShadow'] === false) {
-                        $collector->collect(unserialize($result['mutant']), $result['result']);
-                        $renderer->renderProgressMark($result['result'], count($mutables), $i);
-                    } else {
-                        $collector->collectShadow(unserialize($result['mutant']), $i);
-                        $renderer->renderShadowMark(count($mutables), $i);
-                    }
-                }
-                continue;
-            }*/
-        }
-
         $group = new ParallelGroup($processes);
         $group->run();
 
@@ -209,6 +188,57 @@ class Runner
 
             $this->onMutantDone($process->getMutant(), $result, $process->getMutableIndex());
             $collector->collect($result);
+        }
+    }
+
+    private function runCache(
+        IncrementalCache $cache,
+        CoverageData $coverage,
+        $mutation,
+        Collector $collector,
+        $index)
+    {
+        static $fileHits = [];
+        static $cacheHits = [];
+
+        if (in_array($mutation->getFile(), $cacheHits)) {
+            return true;
+        } elseif (in_array($mutation->getFile(), $fileHits)) {
+            return;
+        }
+
+        $fileHits[] = $mutation->getFile();
+
+        $testFilesHaveChanged = $cache->hasModifiedTestFiles(
+            $coverage,
+            $mutation->getFile()
+        );
+
+        $sourceFilesHaveChanged = $cache->hasModifiedSourceFiles(
+            $mutation->getFile()
+        );
+
+        if ($cache->hasResultsFor($mutation->getFile())
+        && $testFilesHaveChanged === false && $sourceFilesHaveChanged === false) {
+            $resultSet = $cache->getResultsFor($mutation->getFile());
+            //$this->logText($renderer);
+            foreach ($resultSet as $result) {
+                if ($result['isShadow'] === false) {
+                    $resultObject = unserialize($result['result']);
+                    $collector->collect($resultObject);
+                    $this->onMutantDone(
+                        $resultObject->getMutant(),
+                        $resultObject,
+                        $index
+                    );
+                } else {
+                    $mutantObject = unserialize($result['result']);
+                    $collector->collectShadow($mutantObject);
+                    $this->onShadowMutant($index);
+                }
+            }
+            $cacheHits[] = $mutation->getFile();
+            return true;
         }
     }
 

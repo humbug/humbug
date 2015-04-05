@@ -173,6 +173,7 @@ class Mutant implements Serializable
         $this->tests = $data['tests'];
         $this->file = $data['file'];
         $this->baseDirectory = $data['baseDirectory'];
+        $this->diff = Diff::getInstance();
     }
 
     private function getMutationFileRelativePath()

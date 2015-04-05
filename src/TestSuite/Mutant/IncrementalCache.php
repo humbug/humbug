@@ -16,6 +16,7 @@ use Humbug\File\Collection as FileCollection;
 use Humbug\TestSuite\Mutant\Collector as ResultCollector;
 use Humbug\Adapter\AdapterAbstract;
 use Humbug\Utility\CoverageData;
+use Humbug\Exception\RuntimeException;
 
 class IncrementalCache
 {
@@ -113,6 +114,11 @@ class IncrementalCache
 
     public function getResultsFor($file)
     {
+        if (!$this->hasResultsFor($file)) {
+            throw new RuntimeException(sprintf(
+                'There are no incremental cache results for file: %s', $file
+            ));
+        }
         return $this->cachedResults[$file];
     }
 

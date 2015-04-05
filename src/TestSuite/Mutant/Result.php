@@ -13,7 +13,7 @@ namespace Humbug\TestSuite\Mutant;
 
 use Humbug\Mutant;
 
-class Result
+class Result implements \Serializable
 {
 
     const KILL = 0;
@@ -149,5 +149,25 @@ class Result
         $data['stdout'] = $this->stdOut;
 
         return $data;
+    }
+
+    public function serialize()
+    {
+        $data = [
+            'mutant' => serialize($this->mutant),
+            'status' => $this->status,
+            'stdErr' => $this->stdErr,
+            'stdOut' => $this->stdOut
+        ];
+        return serialize($data);
+    }
+
+    public function unserialize($string)
+    {
+        $data = unserialize($string);
+        $this->mutant = unserialize($data['mutant']);
+        $this->status = $data['status'];
+        $this->stdErr = $data['stdErr'];
+        $this->stdOut = $data['stdOut'];
     }
 }
