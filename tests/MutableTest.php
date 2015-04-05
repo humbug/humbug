@@ -75,7 +75,8 @@ class MutableTest extends \PHPUnit_Framework_TestCase
         $file = new Mutable($this->root . '/math1.php');
         $file->generate();
         $return = $file->getMutations();
-        $this->assertEquals(['file', 'class', 'method', 'index', 'mutator', 'line'], array_keys($return[0]));
+        $this->assertArrayHasKey(0, $return);
+        $this->assertInstanceOf('\Humbug\Mutation', $return[0]);
     }
 
     public function testShouldReturnMutationsAsMutantObjectWrappers()
@@ -83,7 +84,7 @@ class MutableTest extends \PHPUnit_Framework_TestCase
         $file = new Mutable($this->root . '/math1.php');
         $file->generate();
         $return = $file->getMutations();
-        $this->assertEquals($return[0]['mutator'], '\Humbug\Mutator\Arithmetic\Addition');
+        $this->assertEquals($return[0]->getMutator(), '\Humbug\Mutator\Arithmetic\Addition');
     }
 
     public function testShouldDetectMutablesForClassesInSameFileSeparately()
@@ -91,7 +92,7 @@ class MutableTest extends \PHPUnit_Framework_TestCase
         $file = new Mutable($this->root . '/mathx2.php');
         $file->generate();
         $return = $file->getMutations();
-        $this->assertEquals('\Math2', $return[1]['class']);
+        $this->assertEquals('\Math2', $return[1]->getClass());
     }
 
     public function testShouldDetectMutationsForClassesInSameFileSeparately()
@@ -99,7 +100,7 @@ class MutableTest extends \PHPUnit_Framework_TestCase
         $file = new Mutable($this->root . '/mathx2.php');
         $file->generate();
         $return = $file->getMutations();
-        $this->assertEquals('\Math2', $return[1]['class']);
+        $this->assertEquals('\Math2', $return[1]->getClass());
     }
 
 
@@ -111,7 +112,7 @@ class MutableTest extends \PHPUnit_Framework_TestCase
         $file = new Mutable($this->root . '/math1.php');
         $file->generate();
         $return = $file->getMutations();
-        $this->assertEquals('\Humbug\Mutator\Arithmetic\Addition', $return[0]['mutator']);
+        $this->assertEquals('\Humbug\Mutator\Arithmetic\Addition', $return[0]->getMutator());
     }
 
     public function testShouldGenerateSubstractionOperatorMutationWhenMinusSignDetected()
@@ -119,7 +120,7 @@ class MutableTest extends \PHPUnit_Framework_TestCase
         $file = new Mutable($this->root . '/math2.php');
         $file->generate();
         $return = $file->getMutations();
-        $this->assertEquals('\Humbug\Mutator\Arithmetic\Subtraction', $return[0]['mutator']);
+        $this->assertEquals('\Humbug\Mutator\Arithmetic\Subtraction', $return[0]->getMutator());
     }
 
     public function testShouldGenerateIncrementOperatorMutationWhenPostIncrementDetected()
@@ -127,7 +128,7 @@ class MutableTest extends \PHPUnit_Framework_TestCase
         $file = new Mutable($this->root . '/math3.php');
         $file->generate();
         $return = $file->getMutations();
-        $this->assertEquals('\Humbug\Mutator\Increment\Increment', $return[0]['mutator']);
+        $this->assertEquals('\Humbug\Mutator\Increment\Increment', $return[0]->getMutator());
     }
 
     public function testShouldGenerateIncrementOperatorMutationWhenPreIncrementDetected()
@@ -135,7 +136,7 @@ class MutableTest extends \PHPUnit_Framework_TestCase
         $file = new Mutable($this->root . '/math4.php');
         $file->generate();
         $return = $file->getMutations();
-        $this->assertEquals('\Humbug\Mutator\Increment\Increment', $return[0]['mutator']);
+        $this->assertEquals('\Humbug\Mutator\Increment\Increment', $return[0]->getMutator());
     }
 
     public function testShouldGenerateBooleanTrueMutationWhenBoolTrueDetected()
@@ -143,7 +144,7 @@ class MutableTest extends \PHPUnit_Framework_TestCase
         $file = new Mutable($this->root . '/bool1.php');
         $file->generate();
         $return = $file->getMutations();
-        $this->assertEquals('\Humbug\Mutator\Boolean\True', $return[0]['mutator']);
+        $this->assertEquals('\Humbug\Mutator\Boolean\True', $return[0]->getMutator());
     }
 
     public function testShouldGenerateBooleanFalseMutationWhenBoolFalseDetected()
@@ -151,7 +152,7 @@ class MutableTest extends \PHPUnit_Framework_TestCase
         $file = new Mutable($this->root . '/bool2.php');
         $file->generate();
         $return = $file->getMutations();
-        $this->assertEquals('\Humbug\Mutator\Boolean\False', $return[0]['mutator']);
+        $this->assertEquals('\Humbug\Mutator\Boolean\False', $return[0]->getMutator());
     }
 
     public function testShoultNotGenerateMutableOnArrayConcatenation()

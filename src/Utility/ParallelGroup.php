@@ -27,7 +27,7 @@ class ParallelGroup
     public function run()
     {
         foreach ($this->processes as $process) {
-            $process->start();
+            $process->getProcess()->start();
         }
         usleep(1000);
         while ($this->stillRunning()) {
@@ -40,19 +40,14 @@ class ParallelGroup
     {
         foreach ($this->processes as $index => $process) {
             try {
-                $process->checkTimeout();
+                $process->getProcess()->checkTimeout();
             } catch (ProcessTimedOutException $e) {
-                $this->timeouts[] = $index;
+                $process->markTimeout();
             }
-            if ($process->isRunning()) {
+            if ($process->getProcess()->isRunning()) {
                 return true;
             }
         }
-    }
-
-    public function timedOut($index)
-    {
-        return in_array($index, $this->timeouts);
     }
 
     public function reset()

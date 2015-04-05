@@ -10,47 +10,56 @@
 
 namespace Humbug\Command;
 
-use Humbug\Adapter\AdapterAbstract;
-use Humbug\Collector;
 use Humbug\Config;
-use Humbug\Config\JsonParser;
 use Humbug\Container;
-use Humbug\Mutant;
-use Humbug\ProcessRunner;
-use Humbug\Report\Text as TextReport;
-use Humbug\Utility\Performance;
-use Humbug\Utility\ParallelGroup;
-use Humbug\Renderer\Text;
+use Humbug\Config\JsonParser;
 use Humbug\Exception\InvalidArgumentException;
-use Humbug\Exception\NoCoveringTestsException;
 use Humbug\File\Collector as FileCollector;
 use Humbug\File\Collection as FileCollection;
+use Humbug\MutableIterator;
+use Humbug\Renderer\Text;
+use Humbug\TestSuite\Mutant\Builder as MutantBuilder;
+use Humbug\TestSuite\Mutant\IncrementalCache;
+use Humbug\TestSuite\Unit\Observers\LoggingObserver;
+use Humbug\TestSuite\Unit\Observers\ProgressBarObserver;
+use Humbug\TestSuite\Unit\Runner as UnitTestRunner;
+use Humbug\Utility\Performance;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Helper\ProgressBar;
-use Symfony\Component\Console\Helper\FormatterHelper;
 use Symfony\Component\Finder\Finder;
-use Symfony\Component\Process\PhpProcess;
 
 class Humbug extends Command
 {
     protected $container;
 
-    protected $finder;
+    /**
+     * @var MutantBuilder
+     */
+    protected $builder;
 
+    /**
+     * @var MutableIterator
+     */
+    protected $mutableIterator;
+
+    /**
+     * @var string
+     */
     private $jsonLogFile;
 
+    /**
+     * @var string
+     */
     private $textLogFile;
 
     /**
      * Execute the command.
-     * The text output, other than some newline management, is held within
-     * Humbug\Renderer\Text.
      *
      * @param InputInterface $input
      * @param OutputInterface $output
+     * @return void|int
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -68,92 +77,48 @@ class Humbug extends Command
                 . 'will not be available.</error>');
             $output->write(PHP_EOL);
         }
+
         if ($input->getOption('incremental')) {
             $output->writeln('<error>Incremental Analysis is an experimental feature and will very likely</error>');
             $output->writeln('<error>yield inaccurate results at this time.</error>');
             $output->write(PHP_EOL);
         }
 
-        $formatterHelper = new FormatterHelper;
         if ($this->textLogFile) {
-            $renderer = new Text($output, $formatterHelper, true);
+            $renderer = new Text($output, true);
         } else {
-            $renderer = new Text($output, $formatterHelper);
+            $renderer = new Text($output);
         }
-
-        $renderer->renderPreTestIntroduction();
-        $output->write(PHP_EOL);
-
-        /**
-         * Log buffered renderer output to file if enabled
-         */
-        $this->logText($renderer);
 
         /**
          * Make initial test run to ensure tests are in a starting passing state
          * and also log the results so test runs during the mutation phase can
          * be optimised.
          */
-        $progressBar = null;
-        if (!$input->getOption('no-progress-bar')) {
-            $progressBar = new ProgressBar($output);
-            $progressBar->setFormat('verbose');
-            $progressBar->setBarWidth(58);
-            if (!$output->isDecorated()) {
-                $progressBar->setRedrawFrequency(60);
-            }
-            $progressBar->start();
-        }
+        $testSuiteRunner = new UnitTestRunner(
+            $container->getAdapter(),
+            $container->getAdapter()->getProcess($container, true),
+            $container->getTempDirectory() . '/coverage.humbug.txt'
+        );
 
-        $testFrameworkAdapter = $container->getAdapter();
+        $testSuiteRunner->addObserver(
+            new LoggingObserver(
+                $renderer,
+                $output,
+                new ProgressBarObserver($input, $output)
+            )
+        );
 
-        $process = $testFrameworkAdapter->getProcess($container, true);
-
-        $hasFailure = $this->performInitailTestsRun($process, $testFrameworkAdapter, $progressBar);
-
-        if (!$input->getOption('no-progress-bar')) {
-            $progressBar->finish();
-            $output->write(PHP_EOL.PHP_EOL);
-        }
-
-        $exitCode = $process->getExitCode();
-
-        $result = [ // default values
-            'passed'    => true,
-            'timeout'   => false,
-            'stdout'    => '',
-            'stderr'    => '',
-            'coverage'  => 0
-        ];
-        $result['stdout'] = $process->getOutput();
-        $result['stderr'] = $process->getErrorOutput();
-        if (!$container->getAdapter()->ok($result['stdout'])) {
-            $result['passed'] = false;
-        }
+        $result = $testSuiteRunner->run($container);
 
         /**
          * Check if the initial test run ended with a fatal error
          */
-        if ($exitCode !== 0 || $hasFailure) {
-            $renderer->renderInitialRunFail($result, $exitCode, $hasFailure);
-            $this->logText($renderer);
+        if (! $result->isSuccess()) {
             return 1;
         }
 
-        /**
-         * Capture headline line coverage %.
-         * Get code coverage data so we can determine which test suites or
-         * or specifications need to be run for each mutation.
-         */
-        $coverage = $container->getAdapter()->getCoverageData($container);
-        $result['coverage'] = $coverage->getLineCoverageFrom($container->getTempDirectory() . '/coverage.humbug.txt');
-
-        /**
-         * Initial test run was a success!
-         */
-        $renderer->renderInitialRunPass($result, $progressBar);
         $output->write(PHP_EOL);
-        $this->logText($renderer);
 
         /**
          * Message re Static Analysis
@@ -161,272 +126,21 @@ class Humbug extends Command
         $renderer->renderStaticAnalysisStart();
         $output->write(PHP_EOL);
 
-        /**
-         * Examine all source code files and collect up mutations to apply
-         */
-        $mutables = $container->getMutableFiles($this->finder);
-
-        /**
-         * Setup caching of files in use. We can improve performance by not repeating
-         * mutations where neither the underlying file nor matching tests have
-         * changed.
-         */
+        $incrementalCache = null;
         if ($input->getOption('incremental')) {
-            $fileCollector = new FileCollector(new FileCollection);
-            $testCollector = new FileCollector(new FileCollection);
-            $cachedFileCollection = $this->getCachedFileCollection('source_files.json');
-            $cachedTestCollection = $this->getCachedFileCollection('test_files.json');
-            $cachedResults = null;
-            if (file_exists($container->getWorkingCacheDirectory() . '/results.json')) {
-                $cachedResults = json_decode(file_get_contents(
-                    $container->getWorkingCacheDirectory() . '/results.json'
-                ), true);
-            }
+            $incrementalCache = new IncrementalCache($container);
         }
 
-        /**
-         * Message re Mutation Testing starting
-         */
-        $renderer->renderMutationTestingStart(count($mutables));
-        $output->write(PHP_EOL);
-        Performance::start();
-        $this->logText($renderer);
+        $testSuite = $this->builder->build($container, $renderer, $input, $output);
+        $testSuite->run($result->getCoverage(), $this->mutableIterator, $incrementalCache);
 
-        /**
-         * Iterate across all mutations. After each, run the test suite and
-         * collect data on how tests handled the mutations. We use ext/runkit
-         * to dynamically alter included (in-memory) classes on the fly.
-         */
-        $countMutantShadows = 0;
-        $collector = new Collector();
-
-        /**
-         * We can do parallel runs, but typically two test runs will compete for
-         * any uninsulated resources (e.g. files/database) so hardcoded to 1 for now.
-         *
-         * TODO: Move PHPUnit specific stuff to adapter...
-         */
-        $parallels = 1;
-
-        /**
-         * MUTATION TESTING!
-         */
-        foreach ($mutables as $i => $mutable) {
-            if ($input->getOption('incremental')) {
-                $fileCollector->collect($mutable->getFilename());
-            }
-
-            $mutations = $mutable->generate()->getMutations();
-            $batches = array_chunk($mutations, $parallels);
-            unset($mutations);
-
-            try {
-                $coverage->loadCoverageFor($mutable->getFilename());
-            } catch (NoCoveringTestsException $e) {
-                foreach ($batches as $batch) {
-                    foreach ($batch as $mutation) {
-                        $collector->collectShadow(new Mutant($mutation, $container, $coverage));
-                    }
-                    $renderer->renderShadowMark(count($mutables), $i);
-                }
-                continue;
-            }
-
-            /**
-             * EXPERIMENTAL: Increment Analysis kicks in here if enabled to
-             * to inject cached results where the underlying files and tests
-             * being subjected to mutation testing have not changed since last
-             * run.
-             *
-             * In its current naive state, this is probably very inaccurate since
-             * related classes of the current mutable are ignored.
-             */
-            if ($input->getOption('incremental')) {
-                $testFilesHaveChanged = $this->testFilesHaveChanged(
-                    $testCollector,
-                    $cachedTestCollection,
-                    $coverage,
-                    $container->getAdapter(),
-                    $mutable->getFilename()
-                );
-
-                $sourceFilesHaveChanged =
-                    $cachedFileCollection->hasFile($mutable->getFilename()) === false
-                    || (
-                    $cachedFileCollection->getFileHash($mutable->getFilename())
-                    !== $fileCollector->getCollection()->getFileHash($mutable->getFilename())
-                    )
-                ;
-
-                if (!is_null($cachedResults) && isset($cachedResults[$mutable->getFilename()])
-                && $testFilesHaveChanged === false && $sourceFilesHaveChanged === false) {
-                    $resultSet = $cachedResults[$mutable->getFilename()]['items'];
-                    $this->logText($renderer);
-                    foreach ($resultSet as $result) {
-                        if ($result['isShadow'] === false) {
-                            $collector->collect(unserialize($result['mutant']), $result['result']);
-                            $renderer->renderProgressMark($result['result'], count($mutables), $i);
-                        } else {
-                            $collector->collectShadow(unserialize($result['mutant']), $i);
-                            $renderer->renderShadowMark(count($mutables), $i);
-                        }
-                    }
-                    continue;
-                }
-            }
-
-            /**
-             * Loop over the current mutable's mutations and run the tests against them.
-             */
-            foreach ($batches as $batch) {
-                $mutants = [];
-                $processes = [];
-                // Being utterly paranoid, track index using $tracker explicitly
-                // to ensure process->mutation indices are linked for reporting.
-                foreach ($batch as $tracker => $mutation) {
-
-                    /**
-                     * Unleash the Mutant!
-                     */
-                    $mutants[$tracker] = new Mutant($mutation, $container, $coverage);
-                    $tests = $mutants[$tracker]->getTests();
-                    if (!empty($tests)) {
-                        $processes[$tracker] = $mutants[$tracker]->getProcess();
-                    } else {
-                        /**
-                         * No tests excercise the mutated line. We'll report
-                         * the uncovered mutants separately and omit them
-                         * from final score.
-                         */
-                        $collector->collectShadow($mutants[$tracker]);
-                        $renderer->renderShadowMark(count($mutables), $i);
-                    }
-                }
-
-                /**
-                 * Check if the whole batch has been eliminated as uncovered
-                 * by any tests
-                 */
-                if (count($processes) == 0) {
-                    continue;
-                }
-
-                $group = new ParallelGroup($processes);
-                $group->run();
-
-                foreach ($mutants as $tracker => $mutant) {
-                    $process = $mutant->getProcess();
-
-                    /**
-                     * Define the result for each process
-                     */
-                    $result = [
-                        'passed'     => $container->getAdapter()->ok($process->getOutput()),
-                        'successful' => $process->isSuccessful(),
-                        'timeout'    => $group->timedOut($tracker),
-                        'stderr'     => $process->getErrorOutput(),
-                    ];
-
-                    $process->clearOutput();
-
-                    /**
-                     * Handle the defined result for each process
-                     */
-
-                    $renderer->renderProgressMark($result, count($mutables), $i);
-                    $this->logText($renderer);
-
-                    $collector->collect($mutant, $result);
-                }
-            }
-
-            $mutable->cleanup();
-        }
-
-        $coverage->cleanup();
-        if ($input->getOption('incremental')) {
-            $fileCollector->write($container->getWorkingCacheDirectory() . '/source_files.json');
-            $testCollector->write($container->getWorkingCacheDirectory() . '/test_files.json');
-            file_put_contents(
-                $container->getWorkingCacheDirectory() . '/results.json',
-                json_encode($collector->toGroupedFileArray(), JSON_PRETTY_PRINT)
-            );
-        }
-        Performance::stop();
-
-        /**
-         * Render summary report with stats
-         */
-        $output->write(PHP_EOL);
-        $renderer->renderSummaryReport($collector);
-        $output->write(PHP_EOL);
-
-        /**
-         * Do any detailed logging now
-         */
-        if ($this->jsonLogFile) {
-            $renderer->renderLogToJson($this->jsonLogFile);
-            $this->logJson($collector);
-        }
-        if ($this->textLogFile) {
-            $renderer->renderLogToText($this->textLogFile);
-            $this->logText($renderer);
-
-            $textReport = $this->prepareTextReport($collector);
-            $this->logText($renderer, $textReport);
-        }
-        if ($this->jsonLogFile || $this->textLogFile) {
+        if ($this->isLoggingEnabled()) {
             $output->write(PHP_EOL);
         }
 
-        /**
-         * Render performance data
-         */
-        if (!$input->getOption('no-progress-bar')) {
-            $renderer->renderPerformanceData(
-                Performance::getTimeString(),
-                Performance::getMemoryUsageString()
-            );
+        if ($input->getOption('incremental')) {
+            $incrementalCache->write();
         }
-        $this->logText($renderer);
-        Performance::downMemProfiler();
-    }
-
-    protected function logJson(Collector $collector)
-    {
-        $vanquishedTotal = $collector->getVanquishedTotal();
-        $measurableTotal = $collector->getMeasurableTotal();
-        if ($measurableTotal !== 0) {
-            $detectionRateTested  = round(100 * ($vanquishedTotal / $measurableTotal));
-        } else {
-            $detectionRateTested  = 0;
-        }
-        if ($collector->getTotalCount() !== 0) {
-            $uncoveredRate = round(100 * ($collector->getShadowCount() / $collector->getTotalCount()));
-            $detectionRateAll = round(100 * ($collector->getVanquishedTotal() / $collector->getTotalCount()));
-        } else {
-            $uncoveredRate = 0;
-            $detectionRateAll = 0;
-        }
-        $out = [
-            'summary' => [
-                'total' => $collector->getTotalCount(),
-                'kills' => $collector->getKilledCount(),
-                'escapes' => $collector->getEscapeCount(),
-                'errors' => $collector->getErrorCount(),
-                'timeouts' => $collector->getTimeoutCount(),
-                'notests' => $collector->getShadowCount(),
-                'covered_score' => $detectionRateTested,
-                'combined_score' => $detectionRateAll,
-                'mutation_coverage' => (100 - $uncoveredRate)
-            ],
-            'escaped' => []
-        ];
-        $out = array_merge($out, $collector->toGroupedMutantArray());
-        file_put_contents(
-            $this->jsonLogFile,
-            json_encode($out, JSON_PRETTY_PRINT)
-        );
     }
 
     protected function prepareFinder($directories, $excludes, array $names = null)
@@ -461,11 +175,13 @@ class Humbug extends Command
         $config = (new JsonParser())->parseFile();
         $newConfig = new Config($config);
         $source = $newConfig->getSource();
+
         $this->finder = $this->prepareFinder(
             isset($source->directories)? $source->directories : null,
             isset($source->excludes)? $source->excludes : null,
             $input->getOption('file')
         );
+
         $this->container->setSourceList($source);
         $timeout = $newConfig->getTimeout();
         if ($timeout !== null) {
@@ -477,6 +193,17 @@ class Humbug extends Command
         }
         $this->jsonLogFile = $newConfig->getLogsJson();
         $this->textLogFile = $newConfig->getLogsText();
+
+        $this->builder = new MutantBuilder();
+        $this->builder->setLogFiles($this->textLogFile, $this->jsonLogFile);
+
+        $finder = $this->prepareFinder(
+            isset($source->directories)? $source->directories : null,
+            isset($source->excludes)? $source->excludes : null,
+            $input->getOption('file')
+        );
+
+        $this->mutableIterator = new MutableIterator($this->container, $finder);
     }
 
     /**
@@ -572,22 +299,6 @@ class Humbug extends Command
         }
     }
 
-    /**
-     * @param string $output
-     */
-    private function logText(Text $renderer, $output = null)
-    {
-        if ($this->textLogFile) {
-            $logText = !is_null($output) ? $output : $renderer->getBuffer();
-
-            file_put_contents(
-                $this->textLogFile,
-                $logText,
-                FILE_APPEND
-            );
-        }
-    }
-
     private function removeOldLogFiles()
     {
         if (file_exists($this->jsonLogFile)) {
@@ -602,38 +313,6 @@ class Humbug extends Command
     private function isLoggingEnabled()
     {
         return $this->jsonLogFile !== null || $this->textLogFile !== null;
-    }
-
-    private function prepareTextReport(Collector $collector)
-    {
-        $textReport = new TextReport();
-
-        $out = $textReport->prepareMutantsReport($collector->getEscaped(), 'Escapes');
-
-        if ($collector->getTimeoutCount() > 0) {
-            $out .= PHP_EOL . $textReport->prepareMutantsReport($collector->getTimeouts(), 'Timeouts');
-        }
-
-        if ($collector->getErrorCount() > 0) {
-            $out .= PHP_EOL . $textReport->prepareMutantsReport($collector->getErrors(), 'Errors');
-        }
-
-        return $out;
-    }
-
-    private function performInitailTestsRun(
-        PhpProcess $process,
-        AdapterAbstract $testFrameworkAdapter,
-        ProgressBar $progressBar = null
-    ) {
-        if (!is_null($progressBar)) {
-            $setProgressBarProgressCallback = function ($count) use ($progressBar) {
-                $progressBar->setProgress($count);
-            };
-
-            return (new ProcessRunner())->run($process, $testFrameworkAdapter, $setProgressBarProgressCallback);
-        }
-        return (new ProcessRunner())->run($process, $testFrameworkAdapter);
     }
 
     private function testFilesHaveChanged(

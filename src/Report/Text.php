@@ -14,15 +14,16 @@
 namespace Humbug\Report;
 
 use Humbug\Mutant;
+use Humbug\TestSuite\Mutant\Result;
 
 class Text
 {
     /**
-     * @param Mutant[] $mutants
+     * @param Result[] $results
      * @param string $mutantsGroupName
      * @return string
      */
-    public function prepareMutantsReport(array $mutants, $mutantsGroupName)
+    public function prepareMutantsReport(array $results, $mutantsGroupName)
     {
         $out = [];
 
@@ -32,28 +33,29 @@ class Text
             '------' . PHP_EOL .
             PHP_EOL;
 
-        foreach ($mutants as $index => $mutant) {
-            $out[] = $index + 1 . ') ' . $this->prepareReportForMutant($mutant);
+        foreach ($results as $index => $result) {
+            $out[] = $index + 1 . ') ' . $this->prepareReportForMutant($result);
         }
 
         return implode(PHP_EOL, $out);
     }
 
     /**
-     * @param Mutant $mutant
+     * @param Result $result
      * @return string
      */
-    public function prepareReportForMutant(Mutant $mutant)
+    public function prepareReportForMutant(Result $result)
     {
+        $mutant = $result->getMutant();
         $mutation = $mutant->getMutation();
 
         $out =
-            $mutation['mutator'] . PHP_EOL .
-            'Diff on ' . $mutation['class'] . '::' . $mutation['method'] . '() in ' . $mutation['file'] . ':' . PHP_EOL .
+            $mutation->getMutator() . PHP_EOL .
+            'Diff on ' . $mutation->getClass() . '::' . $mutation->getMethod() . '() in ' . $mutation->getFile() . ':' . PHP_EOL .
             $mutant->getDiff() . PHP_EOL .
             PHP_EOL;
 
-        $errorOutput = $mutant->getProcess()->getErrorOutput();
+        $errorOutput = $result->getErrorOutput();
 
         if (!empty($errorOutput)) {
             $out .=

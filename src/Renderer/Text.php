@@ -10,7 +10,9 @@
 
 namespace Humbug\Renderer;
 
-use Humbug\Collector;
+use Humbug\TestSuite\Mutant\Collector;
+use Humbug\TestSuite\Mutant\Result as MutantResult;
+use Humbug\TestSuite\Unit\Result as TestSuiteResult;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Helper\FormatterHelper;
 
@@ -27,7 +29,7 @@ class Text
 
     protected $useBuffer = false;
 
-    public function __construct(OutputInterface $output, FormatterHelper $formatterHelper, $buffer = false, $colors = true)
+    public function __construct(OutputInterface $output, $buffer = false, $colors = true)
     {
         $this->output = $output;
         if (!$colors) {
@@ -59,7 +61,7 @@ class Text
     }
 
     /**
-     * Render message preceeding the initial test run
+     * Render message preceding the initial test run
      */
     public function renderPreTestIntroduction()
     {
@@ -67,30 +69,28 @@ class Text
     }
 
     /**
-     * Render message where the initial test run didn't pass (excl. incomplete/skipped/risky tests)
+     * Render message where the initial test run did not pass (excl. incomplete/skipped/risky tests)
      *
-     * @param array $result
-     * @param int $exitCode
-     * @param bool $hasFailure
+     * @param TestSuiteResult $result
      */
-    public function renderInitialRunFail(array &$result, $exitCode, $hasFailure)
+    public function renderInitialRunFail(TestSuiteResult $result)
     {
         $error = [];
         $error[] = 'Tests must be in a fully passing state before Humbug is run.';
         $error[] = 'Incomplete, skipped or risky tests are allowed.';
-        if ($exitCode !== 0) {
-            $error[] = 'The testing framework reported an exit code of ' . $exitCode . '.';
+        if ($result->getExitCode() !== 0) {
+            $error[] = 'The testing framework reported an exit code of ' . $result->getExitCode() . '.';
         }
-        if ($hasFailure) {
+        if ($result->hasFailure()) {
             $error[] = 'The testing framework ran into a failure or error. Refer to output below.';
         }
-        if (!empty($result['stdout'])) {
+        if ($result->hasStdOut()) {
             $error[] = 'Stdout:';
-            $error = array_merge($error, $this->indent($this->headAndTail($result['stdout']), true));
+            $error = array_merge($error, $this->indent($this->headAndTail($result->getStdOut()), true));
         }
-        if (!empty($result['stderr'])) {
+        if ($result->hasStdErr()) {
             $error[] = 'Stderr:';
-            $error = array_merge($error, $this->indent($result['stderr'], true));
+            $error = array_merge($error, $this->indent($result->getStdErr(), true));
         }
         foreach ($error as $err) {
             $this->write('<fg=red>' . $err . '</fg=red>');
@@ -100,16 +100,16 @@ class Text
     /**
      * Render message where the initial test run didn't pass (excl. incomplete/skipped/risky tests)
      *
-     * @param array $result
-     * @param \Symfony\Component\Console\Helper\ProgressBar $progressBar
+     * @param TestSuiteResult $result
+     * @param int $testCount
      */
-    public function renderInitialRunPass(array &$result, $progressBar = null)
+    public function renderInitialRunPass(TestSuiteResult $result, $testCount = null)
     {
         $this->write('Humbug has completed the initial test run successfully.');
-        if (!is_null($progressBar)) {
+        if (!is_null($testCount)) {
             $this->write(
-                'Tests: <fg=cyan>' . $progressBar->getProgress() . '</fg=cyan> '
-                . 'Line Coverage: <fg=cyan>' . sprintf('%3.2f%%', $result['coverage']) . '</fg=cyan>'
+                'Tests: <fg=cyan>' . $testCount . '</fg=cyan> '
+                . 'Line Coverage: <fg=cyan>' . sprintf('%3.2f%%', $result->getLineCoverage()) . '</fg=cyan>'
             );
         }
     }
@@ -146,23 +146,31 @@ class Text
      *  M: The test run was successful. The mutation went undetected by the unit tests.
      *  .: The test run included a fail condition. The mutation was detected!!!
      *
-     * @param array $result
+     * @param MutantResult $result
      * @param int $count
      * @param int $current
      * @param int $eolInterval
      */
-    public function renderProgressMark(array &$result, $count, $current, $eolInterval = 60)
+    public function renderProgressMark(MutantResult $result, $count, $current, $eolInterval = 60)
     {
         $this->progressCount++;
-        if ($result['timeout'] === true) {
-            $this->write('<fg=cyan;options=bold>T</fg=cyan;options=bold>', false);
-        } elseif ($result['successful'] === false) {
-            $this->write('<fg=yellow;options=bold>E</fg=yellow;options=bold>', false);
-        } elseif ($result['passed'] === true) {
-            $this->write('<fg=red;options=bold>M</fg=red;options=bold>', false);
-        } else {
-            $this->write('<options=bold>.</options=bold>', false);
+
+        switch ($result->getResult()) {
+            case MutantResult::TIMEOUT:
+                $this->write('<fg=cyan;options=bold>T</fg=cyan;options=bold>', false);
+                break;
+            case MutantResult::ERROR:
+                $this->write('<fg=yellow;options=bold>E</fg=yellow;options=bold>', false);
+                break;
+            case MutantResult::ESCAPE:
+                $this->write('<fg=red;options=bold>M</fg=red;options=bold>', false);
+                break;
+            case MutantResult::KILL:
+            default:
+                $this->write('<options=bold>.</options=bold>', false);
+                break;
         }
+
         if (($this->progressCount % $eolInterval) == 0) {
             $counter = str_pad($this->progressCount, 5, ' ', STR_PAD_LEFT);
             $this->write(
@@ -272,6 +280,7 @@ class Text
      * Utility function to prefix output lines with an indent
      *
      * @param string $output
+     * @param bool $asArray
      * @return string
      */
     protected function indent($output, $asArray = false)

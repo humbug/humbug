@@ -48,7 +48,7 @@ abstract class AdapterAbstract
      * This assumes the output is in Test Anywhere Protocol (TAP) format.
      *
      * @param string $output
-     * @return bool
+     * @return bool True if the test passed, false if it failed
      */
     public function ok($output)
     {

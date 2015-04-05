@@ -20,10 +20,13 @@ class CoverageData
 
     protected $data;
 
+    protected $lastFile;
+
     /**
      * The constructor processes the main coverage report into
      * a set of split files. A coverage data extract per source code file
      * available.
+     *
      * @param string $file
      */
     public function __construct($file)
@@ -36,8 +39,15 @@ class CoverageData
         $this->process($path);
     }
 
+    /**
+     * @param string $file
+     */
     public function loadCoverageFor($file)
     {
+        if ($file === $this->lastFile) {
+            return;
+        }
+
         unset($this->data);
         gc_collect_cycles();
         $cache = sys_get_temp_dir() . '/coverage.humbug.' . md5($file) . '.cache';
@@ -48,15 +58,19 @@ class CoverageData
         }
         $coverage = include $cache;
         $this->data = $coverage->getData();
+        $this->lastFile = $file;
+
         unset($coverage);
     }
 
     /**
      * @param string $file
+     * @param int $file
      */
     public function hasTestClasses($file, $line)
     {
         $file = realpath($file);
+
         if (!isset($this->data[$file])) {
             return false;
         } elseif (!isset($this->data[$file][$line])) {
@@ -67,6 +81,10 @@ class CoverageData
         return true;
     }
 
+    /**
+     * @param string $file
+     * @param int $file
+     */
     public function getTestClasses($file, $line)
     {
         $file = realpath($file);
@@ -77,19 +95,46 @@ class CoverageData
             );
         }
         $classes = [];
-        $cases = [];
         $line = $this->data[$file][$line];
         foreach ($line as $reference) {
             $parts = explode('::', $reference);
             $classes[] = $parts[0];
-            $caseParts = explode(' ', $parts[1]);
-            $cases[] = $caseParts[0];
         }
         unset($line);
         $classes = array_unique($classes);
         return $classes;
     }
 
+    /**
+     * @param string $file
+     * @param int $line
+     */
+    public function getTestMethods($file, $line)
+    {
+        $file = realpath($file);
+
+        if (!$this->hasTestClasses($file, $line)) {
+            throw new NoCoveringTestsException(
+                'Line '.$line.' of '.$file.' has no associated test classes per '
+                . 'the coverage report'
+            );
+        }
+
+        $cases = [];
+
+        $line = $this->data[$file][$line];
+        foreach ($line as $reference) {
+            $parts = explode('::', $reference);
+            $caseParts = explode(' ', $parts[1]);
+            $cases[] = $parts[0] . '::' . $caseParts[0];
+        }
+
+        return array_unique($cases);
+    }
+    
+    /**
+     * @param string $file
+     */
     public function getLineCoverageFrom($file)
     {
         $file = realpath($file);
@@ -116,6 +161,9 @@ class CoverageData
         }
     }
 
+    /**
+     * @param string $file
+     */
     public function getAllTestClasses($file)
     {
         $file = realpath($file);

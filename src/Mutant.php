@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Humbug
  *
@@ -7,9 +8,10 @@
  * @copyright  Copyright (c) 2015 Pádraic Brady (http://blog.astrumfutura.com)
  * @license    https://github.com/padraic/humbug/blob/master/LICENSE New BSD License
  */
-
 namespace Humbug;
 
+use Humbug\TestSuite\Mutant\FileGenerator;
+use Humbug\TestSuite\Mutant\Result;
 use Humbug\Utility\CoverageData;
 use Humbug\Utility\Diff;
 use Humbug\Utility\Tokenizer;
@@ -21,14 +23,14 @@ class Mutant implements Serializable
 {
     /**
      * The mutation's parameters
-     * @var array
+     * @var Mutation
      */
     protected $mutation;
 
     /**
-     * @var Container
+     * @var string
      */
-    protected $container;
+    protected $baseDirectory;
 
     /**
      * @var string
@@ -41,34 +43,41 @@ class Mutant implements Serializable
     protected $tests;
 
     /**
-     * @var PhpProcess
+     * @var array
      */
-    protected $process;
+    protected $testMethods;
 
-    protected $baseDirectory;
+    /**
+     * @var Result
+     */
+    protected $result;
 
-    public function __construct(array $mutation, Container $container, CoverageData $coverage)
+    /**
+     * @var Diff
+     */
+    protected $diff;
+
+    public function __construct(Mutation $mutation, FileGenerator $generator, CoverageData $coverage, $baseDirectory)
     {
         $this->mutation = $mutation;
-        $this->container = $container;
-        $this->baseDirectory = $this->container->getBaseDirectory();
 
         try {
-            $this->tests = $coverage->getTestClasses($mutation['file'], $mutation['line']);
+            $this->tests = $coverage->getTestClasses(
+                $mutation->getFile(),
+                $mutation->getLine()
+            );
+            $this->testMethods = $coverage->getTestMethods(
+                $mutation->getFile(),
+                $mutation->getLine()
+            );
         } catch (NoCoveringTestsException $e) {
             $this->tests = [];
+            $this->testMethods = [];
         }
 
-        $this->file = $container->getTempDirectory() . '/humbug.mutant.' . uniqid() . '.php';
-
-        // generate mutated file
-        $mutatorClass = $mutation['mutator'];
-
-        $originalFileContent = file_get_contents($mutation['file']);
-        $tokens = Tokenizer::getTokens($originalFileContent);
-        $mutatedFileContent = $mutatorClass::mutate($tokens, $mutation['index']);
-
-        file_put_contents($this->file, $mutatedFileContent);
+        $this->file = $generator->generateFile($mutation);
+        $this->baseDirectory = $baseDirectory;
+        $this->diff = Diff::getInstance();
     }
 
     public function __destruct()
@@ -79,24 +88,11 @@ class Mutant implements Serializable
     }
 
     /**
-     * Return the test process
-     * If it doesn't exist it will be created
-     *
-     * @return \Symfony\Component\Process\PhpProcess
+     * @param Diff $diff
      */
-    public function getProcess()
+    public function setDiffGenerator(Diff $diff)
     {
-        if ($this->process) {
-            return $this->process;
-        }
-
-        return $this->process = $this->container->getAdapter()->getProcess(
-            $this->container,
-            false,
-            $this->mutation['file'], // file to intercept
-            $this->file, // mutated file to substitute
-            $this->tests
-        );
+        $this->diff = $diff;
     }
 
     /**
@@ -104,14 +100,14 @@ class Mutant implements Serializable
      */
     public function getDiff()
     {
-        return Diff::difference(
-            file_get_contents($this->mutation['file']),
+        return $this->diff->difference(
+            file_get_contents($this->mutation->getfile()),
             file_get_contents($this->file)
         );
     }
 
     /**
-     * @return array
+     * @return Mutation
      */
     public function getMutation()
     {
@@ -124,6 +120,14 @@ class Mutant implements Serializable
     public function getFile()
     {
         return $this->file;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasTests()
+    {
+        return !empty($this->tests);
     }
 
     /**
@@ -142,14 +146,12 @@ class Mutant implements Serializable
     {
         return [
             'file' => $this->getMutationFileRelativePath(),
-            'mutator' => $this->mutation['mutator'],
-            'class' => $this->mutation['class'],
-            'method' => $this->mutation['method'],
-            'line' => $this->mutation['line'],
+            'mutator' => $this->mutation->getMutator(),
+            'class' => $this->mutation->getClass(),
+            'method' => $this->mutation->getMethod(),
+            'line' => $this->mutation->getLine(),
             'diff' => $this->getDiff(),
-            'stdout' => $this->getProcess()->getOutput(),
-            'stderr' => $this->getProcess()->getErrorOutput(),
-            'tests' => $this->getTests()
+            'tests' => $this->testMethods
         ];
     }
 
@@ -171,11 +173,12 @@ class Mutant implements Serializable
         $this->tests = $data['tests'];
         $this->file = $data['file'];
         $this->baseDirectory = $data['baseDirectory'];
+        $this->diff = Diff::getInstance();
     }
 
     private function getMutationFileRelativePath()
     {
-        $path = explode(DIRECTORY_SEPARATOR, $this->mutation['file']);
+        $path = explode(DIRECTORY_SEPARATOR, $this->mutation->getFile());
         $baseDirectory = explode(DIRECTORY_SEPARATOR, $this->baseDirectory);
 
         return join(DIRECTORY_SEPARATOR, array_diff($path, $baseDirectory));
