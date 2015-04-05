@@ -128,15 +128,18 @@ class Humbug extends Command
 
         $incrementalCache = null;
         if ($input->getOption('incremental')) {
-            $incrementalCache = new IncrementalCache($container->getWorkingCacheDirectory());
+            $incrementalCache = new IncrementalCache($container);
         }
 
         $testSuite = $this->builder->build($container, $renderer, $input, $output);
         $testSuite->run($result->getCoverage(), $this->mutableIterator, $incrementalCache);
 
-
         if ($this->isLoggingEnabled()) {
             $output->write(PHP_EOL);
+        }
+
+        if ($input->getOption('incremental')) {
+            $incrementalCache->write();
         }
     }
 

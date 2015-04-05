@@ -10,9 +10,6 @@
 
 namespace Humbug\File;
 
-use Humbug\Exception\RuntimeException;
-use Humbug\Exception\InvalidArgumentException;
-
 class Collector
 {
 

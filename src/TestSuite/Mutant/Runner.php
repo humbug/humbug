@@ -94,13 +94,19 @@ class Runner
          * MUTATION TESTING!
          */
         foreach ($mutables as $index => $mutable) {
+            if (!is_null($cache)) {
+                $cache->setResultCollector($collector);
+                $cache->getFileCollector()->collect($mutable->getFilename());
+            }
+
             $mutations = $mutable->generate()->getMutations();
+
             $partition->addMutations($mutable, $index, $mutations);
             $mutable->cleanup();
         }
 
         foreach ($partition->getPartitions($this->threadCount) as $batch) {
-            $this->runBatch($collector, $coverage, $batch);
+            $this->runBatch($collector, $coverage, $batch, $cache);
         }
 
         $coverage->cleanup();
@@ -116,7 +122,8 @@ class Runner
     private function runBatch(
         Collector $collector,
         CoverageData $coverage,
-        array $batch
+        array $batch,
+        IncrementalCache $cache = null
     ) {
         $processes = [];
 
@@ -161,6 +168,34 @@ class Runner
          */
         if (count($processes) == 0) {
             return;
+        }
+
+        if (!is_null($cache)) {
+            // need to load coverage for*********
+            $testFilesHaveChanged = $cache->hasModifiedTestFiles(
+                $coverage,
+                $mutation->getFile()
+            );
+
+            $sourceFilesHaveChanged = $cache->hasModifiedSourceFiles(
+                $mutation->getFile()
+            );
+
+            /**if ($cache->hasResultsFor($mutable->getFilename())
+            && $testFilesHaveChanged === false && $sourceFilesHaveChanged === false) {
+                $resultSet = $cachedResults[$mutable->getFilename()]['items'];
+                $this->logText($renderer);
+                foreach ($resultSet as $result) {
+                    if ($result['isShadow'] === false) {
+                        $collector->collect(unserialize($result['mutant']), $result['result']);
+                        $renderer->renderProgressMark($result['result'], count($mutables), $i);
+                    } else {
+                        $collector->collectShadow(unserialize($result['mutant']), $i);
+                        $renderer->renderShadowMark(count($mutables), $i);
+                    }
+                }
+                continue;
+            }*/
         }
 
         $group = new ParallelGroup($processes);

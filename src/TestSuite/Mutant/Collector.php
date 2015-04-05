@@ -252,12 +252,18 @@ class Collector
         $group = [];
 
         foreach ($types as $type => $collection) {
-            foreach ($collection as $mutant) {
-                $file = $mutant->getMutation()['file'];
+            foreach ($collection as $result) {
+                if ($result instanceof Result) {
+                    $mutant = $result->getMutant();
+                } else {
+                    $mutant = $result;
+                }
+                $file = $mutant->getFile();
+
                 if (!isset($group[$file])) {
                     $group[$file] = [];
-                    $group[$file]['items'] = [];
                 }
+
                 $item = [
                     'result' => [
                         'timeout' => false,
@@ -267,6 +273,7 @@ class Collector
                     'mutant' => [],
                     'isShadow' => false
                 ];
+                
                 switch ($type) {
                     case 'timeouts':
                         $item['result']['timeout'] = true;
@@ -279,11 +286,12 @@ class Collector
                         break;
                     case 'shadows':
                         $item['isShadow'] = true;
+                        break;
                     default:
                         break;
                 }
                 $item['mutant'] = serialize($mutant);
-                $group[$file]['items'][] = $item;
+                $group[$file][] = $item;
             }
         }
 

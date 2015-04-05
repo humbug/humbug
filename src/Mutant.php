@@ -66,10 +66,10 @@ class Mutant implements Serializable
                 $mutation->getFile(),
                 $mutation->getLine()
             );
-            /*$this->testMethods = $coverage->getTestMethods(
+            $this->testMethods = $coverage->getTestMethods(
                 $mutation->getFile(),
                 $mutation->getLine()
-            );*/
+            );
         } catch (NoCoveringTestsException $e) {
             $this->tests = [];
             $this->testMethods = [];

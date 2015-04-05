@@ -10,54 +10,184 @@
 
 namespace Humbug\TestSuite\Mutant;
 
+use Humbug\Container;
 use Humbug\File\Collector as FileCollector;
 use Humbug\File\Collection as FileCollection;
+use Humbug\TestSuite\Mutant\Collector as ResultCollector;
+use Humbug\Adapter\AdapterAbstract;
+use Humbug\Utility\CoverageData;
 
 class IncrementalCache
 {
 
+    const FILES = 'source_files.json';
+
+    const TESTS = 'test_files.json';
+
+    const RESULTS = 'results.json';
+
+    /**
+     * @var FileCollector
+     */
     private $fileCollector;
 
+    /**
+     * @var FileCollector
+     */
     private $testCollector;
 
+    /**
+     * @var FileCollection
+     */
     private $cachedFileCollection;
 
+    /**
+     * @var FileCollection
+     */
     private $cachedTestCollection;
 
+    /**
+     * @var array
+     */
     private $cachedResults;
 
+    /**
+     * @var Container
+     */
+    private $container;
+
+    /**
+     * ResultCollector
+     */
+    private $resultCollector;
+
+    /**
+     * @var string
+     */
     private $workingCacheDirectory;
 
     /**
      * @param string $workingCacheDirectory
      */
-    public function __construct($workingCacheDirectory)
+    public function __construct(Container $container)
     {
-        $this->workingCacheDirectory = $workingCacheDirectory;
+        $this->container = $container;
+        $this->workingCacheDirectory = $container->getWorkingCacheDirectory();
         $this->fileCollector = new FileCollector(new FileCollection);
         $this->testCollector = new FileCollector(new FileCollection);
-        $this->cachedFileCollection = $this->getCachedFileCollection('source_files.json');
-        $this->cachedTestCollection = $this->getCachedFileCollection('test_files.json');
-
-        if (file_exists($workingCacheDirectory . '/results.json')) {
-            $this->cachedResults = json_decode(file_get_contents(
-                $workingCacheDirectory . '/results.json'
-            ), true);
-        }
+        $this->cachedFileCollection = $this->getCachedFileCollection(self::FILES);
+        $this->cachedTestCollection = $this->getCachedFileCollection(self::TESTS);
+        if ($this->hasResults()) $this->loadResults();
     }
 
+    public function setResultCollector(ResultCollector $collector)
+    {
+        $this->resultCollector = $collector;
+    }
+
+    /**
+     * @return FileCollector
+     */
     public function getFileCollector()
     {
         return $this->fileCollector;
     }
 
+    /**
+     * @return FileCollector
+     */
     public function getTestCollector()
     {
         return $this->testCollector;
     }
 
+    public function hasResults()
+    {
+        return file_exists($this->workingCacheDirectory . '/' . self::RESULTS);
+    }
+
+    public function hasResultsFor($file)
+    {
+        return $this->hasResults() && isset($this->cachedResults[$file]);
+    }
+
+    public function getResultsFor($file)
+    {
+        return $this->cachedResults[$file];
+    }
+
+    private function loadResults()
+    {
+        $this->cachedResults = json_decode(
+            file_get_contents($this->workingCacheDirectory . '/' . self::RESULTS),
+            true
+        );
+    }
+
+    /**
+     * @return void
+     */
+    public function write()
+    {
+        $this->fileCollector->write($this->workingCacheDirectory . '/' . self::FILES);
+        $this->testCollector->write($this->workingCacheDirectory . '/' . self::TESTS);
+        file_put_contents(
+            $this->workingCacheDirectory . '/' . self::RESULTS,
+            json_encode(
+                $this->resultCollector->toGroupedFileArray(),
+                JSON_PRETTY_PRINT
+            )
+        );
+    }
+
+    /**
+     * @param string $file
+     * @return bool
+     */
+    public function hasModifiedSourceFiles($file)
+    {
+        if (!$this->cachedFileCollection->hasFile($file)) {
+            return true;
+        }
+
+        $currentHash = $this->fileCollector->getCollection()->getFileHash($file);
+        $previousHash = $this->cachedFileCollection->getFileHash($file);
+        if ($currentHash !== $previousHash) {
+            $result = true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param CoverageData $coverage
+     * @param string $file
+     * @return bool
+     */
+    public function hasModifiedTestFiles(CoverageData $coverage, $file)
+    {
+        $result = false;
+        $tests = $coverage->getAllTestClasses($file);
+        foreach ($tests as $test) {
+            $file = $this->container->getAdapter()->getClassFile($test, $this->container);
+            $this->testCollector->collect($file);
+
+            if (!$this->cachedTestCollection->hasFile($file)) {
+                return true;
+            }
+
+            $currentHash = $this->testCollector->getCollection()->getFileHash($file);
+            $previousHash = $this->cachedTestCollection->getFileHash($file);
+            if ($currentHash !== $previousHash) {
+                $result = true;
+            }
+        }
+        return $result;
+    }
+
     /**
      * @param string $cache
+     * @return FileCollection
      */
     private function getCachedFileCollection($cache)
     {
@@ -70,25 +200,5 @@ class IncrementalCache
             $cachedFileCollection = new FileCollection;
         }
         return $cachedFileCollection;
-    }
-
-    private function testFilesHaveChanged(
-        FileCollector $collector,
-        FileCollection $cached,
-        \Humbug\Utility\CoverageData $coverage,
-        AdapterAbstract $adapter,
-        $file)
-    {
-        $result = false;
-        $tests = $coverage->getAllTestClasses($file);
-        foreach ($tests as $test) {
-            $file = $adapter->getClassFile($test, $this->container);
-            $collector->collect($file);
-            if (!$cached->hasFile($file)
-            || $collector->getCollection()->getFileHash($file) !== $cached->getFileHash($file)) {
-                $result = true;
-            }
-        }
-        return $result;
     }
 }
