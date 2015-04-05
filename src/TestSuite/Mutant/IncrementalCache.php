@@ -78,7 +78,9 @@ class IncrementalCache
         $this->testCollector = new FileCollector(new FileCollection);
         $this->cachedFileCollection = $this->getCachedFileCollection(self::FILES);
         $this->cachedTestCollection = $this->getCachedFileCollection(self::TESTS);
-        if ($this->hasResults()) $this->loadResults();
+        if ($this->hasResults()) {
+            $this->loadResults();
+        }
     }
 
     public function setResultCollector(ResultCollector $collector)

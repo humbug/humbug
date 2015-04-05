@@ -157,7 +157,6 @@ class Runner
 
                 $processes[] = $this->processBuilder->build($mutant, $index);
             } catch (NoCoveringTestsException $e) {
-
                 $shadow = new Mutant(
                     $mutation,
                     $this->mutantGenerator,
