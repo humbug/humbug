@@ -12,20 +12,21 @@ namespace Humbug\TestSuite\Mutant;
 
 use Humbug\Mutation;
 use Humbug\Utility\Tokenizer;
+use Symfony\Component\Finder\Finder;
 
 class FileGenerator
 {
     /**
      * @var string
      */
-    private $cacheDirectory;
+    private $tempDirectory;
 
     /**
      * @param string $cacheDirectory
      */
-    public function __construct($cacheDirectory)
+    public function __construct($tempDirectory)
     {
-        $this->cacheDirectory = $cacheDirectory;
+        $this->tempDirectory = $tempDirectory;
     }
 
     /**
@@ -37,7 +38,7 @@ class FileGenerator
     public function generateFile(Mutation $mutation)
     {
         $id = $this->createId($mutation); // uniqid()
-        $file = $this->cacheDirectory . '/humbug.mutant.' . $id . '.php';
+        $file = $this->tempDirectory . '/mutant.humbug.' . $id . '.php';
 
         // generate mutated file
         $mutatorClass = $mutation->getMutator();
@@ -49,6 +50,18 @@ class FileGenerator
         file_put_contents($file, $mutatedFileContent);
 
         return $file;
+    }
+
+    /**
+     * @return void
+     */
+    public function cleanup()
+    {
+        $finder = new Finder;
+        $finder->files()->ignoreUnreadableDirs()->name('mutant.humbug.*.php')->in($this->tempDirectory);
+        foreach ($finder as $file) {
+            unlink($file->getRealpath());
+        }
     }
 
     private function createId(Mutation $mutation)

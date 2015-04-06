@@ -112,6 +112,8 @@ class Runner
         $coverage->cleanup();
 
         $this->onEndRun($collector);
+
+        $this->mutantGenerator->cleanup();
     }
 
     /**

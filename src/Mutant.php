@@ -80,13 +80,6 @@ class Mutant implements Serializable
         $this->diff = Diff::getInstance();
     }
 
-    public function __destruct()
-    {
-        if (file_exists($this->file)) {
-            unlink($this->file);
-        }
-    }
-
     /**
      * @param Diff $diff
      */

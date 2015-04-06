@@ -210,7 +210,11 @@ class Container
     public function getTempDirectory()
     {
         if (is_null($this->tempDirectory)) {
-            return sys_get_temp_dir();
+            $root = sys_get_temp_dir();
+            if (!is_dir($root . '/humbug')) {
+                mkdir($root . '/humbug', 0777, true);
+            }
+            $this->tempDirectory = $root . '/humbug';
         }
         return $this->tempDirectory;
     }

@@ -155,8 +155,8 @@ class CoverageData
     public function cleanup()
     {
         $finder = new Finder;
-        $finder->files()->ignoreUnreadableDirs()->name('coverage.humbug.*.cache');
-        foreach ($finder->in(sys_get_temp_dir()) as $file) {
+        $finder->files()->ignoreUnreadableDirs()->name('coverage.humbug.*.cache')->in(sys_get_temp_dir());
+        foreach ($finder as $file) {
             unlink($file->getRealpath());
         }
     }
