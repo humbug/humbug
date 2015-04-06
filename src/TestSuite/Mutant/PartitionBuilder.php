@@ -44,6 +44,9 @@ class PartitionBuilder
      */
     public function getPartitions($partitionSize)
     {
+        /**
+         * TODO: Find a use for partitionSize or remove
+         */
         $batches = [];
 
         foreach ($this->mutations as $data) {

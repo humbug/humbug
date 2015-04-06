@@ -68,7 +68,7 @@ class IncrementalCache
     private $workingCacheDirectory;
 
     /**
-     * @param string $workingCacheDirectory
+     * @param Container $container
      */
     public function __construct(Container $container)
     {
@@ -161,7 +161,7 @@ class IncrementalCache
         $currentHash = $this->fileCollector->getCollection()->getFileHash($file);
         $previousHash = $this->cachedFileCollection->getFileHash($file);
         if ($currentHash !== $previousHash) {
-            $result = true;
+            return true;
         }
 
         return false;
@@ -185,12 +185,6 @@ class IncrementalCache
 
         foreach ($testFiles as $testFile) {
             if (!$this->cachedTestCollection->hasFile($testFile)) {
-                /*var_dump(
-                    $testFile,
-                    $this->cachedTestCollection->hasFile($testFile),
-                    $this->testCollector->getCollection()->hasFile($testFile)
-                );
-                exit;*/
                 return true;
             }
 

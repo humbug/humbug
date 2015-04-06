@@ -68,4 +68,9 @@ class LoggingObserver implements Observer
             $this->renderer->renderInitialRunPass($result);
         }
     }
+
+    public function isDisabled()
+    {
+        return false;
+    }
 }

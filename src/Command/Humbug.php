@@ -176,12 +176,6 @@ class Humbug extends Command
         $newConfig = new Config($config);
         $source = $newConfig->getSource();
 
-        $this->finder = $this->prepareFinder(
-            isset($source->directories)? $source->directories : null,
-            isset($source->excludes)? $source->excludes : null,
-            $input->getOption('file')
-        );
-
         $this->container->setSourceList($source);
         $timeout = $newConfig->getTimeout();
         if ($timeout !== null) {
@@ -204,22 +198,6 @@ class Humbug extends Command
         );
 
         $this->mutableIterator = new MutableIterator($this->container, $finder);
-    }
-
-    /**
-     * @param string $cache
-     */
-    protected function getCachedFileCollection($cache)
-    {
-        if (file_exists($this->container->getWorkingCacheDirectory() . '/' . $cache)) {
-            $cachedFileCollection = new FileCollection(json_decode(
-                file_get_contents($this->container->getWorkingCacheDirectory() . '/' . $cache),
-                true
-            ));
-        } else {
-            $cachedFileCollection = new FileCollection;
-        }
-        return $cachedFileCollection;
     }
 
     protected function configure()

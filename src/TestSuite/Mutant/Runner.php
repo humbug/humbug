@@ -187,7 +187,7 @@ class Runner
              */
             $result = $process->getResult();
 
-            $this->onMutantDone($process->getMutant(), $result, $process->getMutableIndex());
+            $this->onMutantDone($result, $process->getMutableIndex());
             $collector->collect($result);
         }
     }
@@ -227,7 +227,6 @@ class Runner
                     $resultObject = unserialize($result['result']);
                     $collector->collect($resultObject);
                     $this->onMutantDone(
-                        $resultObject->getMutant(),
                         $resultObject,
                         $index
                     );
@@ -257,7 +256,7 @@ class Runner
         }
     }
 
-    private function onMutantDone(Mutant $mutant, Result $result, $index)
+    private function onMutantDone(Result $result, $index)
     {
         foreach ($this->observers as $observer) {
             $observer->onMutantDone($this, $result, $index);

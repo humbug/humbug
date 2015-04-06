@@ -173,6 +173,9 @@ class CoverageData
             try {
                 $classes = array_merge($classes, $this->getTestClasses($file, $line));
             } catch (NoCoveringTestsException $e) {
+                /**
+                 * No recovery necessary, we expect some lines will be uncovered
+                 */
             }
         }
         return array_unique($classes);

@@ -22,7 +22,7 @@ class FileGenerator
     private $tempDirectory;
 
     /**
-     * @param string $cacheDirectory
+     * @param string $tempDirectory
      */
     public function __construct($tempDirectory)
     {

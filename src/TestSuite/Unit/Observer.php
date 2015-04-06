@@ -28,4 +28,6 @@ interface Observer
      * @param Result $result
      */
     public function onStopSuite(Result $result);
+
+    public function isDisabled();
 }
