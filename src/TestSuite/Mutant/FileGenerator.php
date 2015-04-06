@@ -36,7 +36,8 @@ class FileGenerator
      */
     public function generateFile(Mutation $mutation)
     {
-        $file = $this->cacheDirectory . '/humbug.mutant.' . uniqid() . '.php';
+        $id = $this->createId($mutation); // uniqid()
+        $file = $this->cacheDirectory . '/humbug.mutant.' . $id . '.php';
 
         // generate mutated file
         $mutatorClass = $mutation->getMutator();
@@ -48,5 +49,12 @@ class FileGenerator
         file_put_contents($file, $mutatedFileContent);
 
         return $file;
+    }
+
+    private function createId(Mutation $mutation)
+    {
+        return md5(
+            implode('', $mutation->toArray())
+        );
     }
 }

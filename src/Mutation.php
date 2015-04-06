@@ -108,4 +108,19 @@ class Mutation
     {
         return $this->mutator;
     }
+
+    /**
+     * @return array
+     */
+    public function toArray()
+    {
+        return [
+            'file' => $this->file,
+            'line' => $this->line,
+            'class' => $this->class,
+            'method' => $this->method,
+            'index' => $this->index,
+            'mutator' => $this->mutator,
+        ];
+    }
 }

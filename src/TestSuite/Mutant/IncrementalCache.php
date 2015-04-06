@@ -174,23 +174,33 @@ class IncrementalCache
      */
     public function hasModifiedTestFiles(CoverageData $coverage, $file)
     {
-        $result = false;
         $tests = $coverage->getAllTestClasses($file);
-        foreach ($tests as $test) {
-            $file = $this->container->getAdapter()->getClassFile($test, $this->container);
-            $this->testCollector->collect($file);
+        $testFiles = [];
 
-            if (!$this->cachedTestCollection->hasFile($file)) {
+        foreach ($tests as $test) {
+            $tfile = $this->container->getAdapter()->getClassFile($test, $this->container);
+            $this->testCollector->collect($tfile);
+            $testFiles[] = $tfile;
+        }
+
+        foreach ($testFiles as $testFile) {
+            if (!$this->cachedTestCollection->hasFile($testFile)) {
+                /*var_dump(
+                    $testFile,
+                    $this->cachedTestCollection->hasFile($testFile),
+                    $this->testCollector->getCollection()->hasFile($testFile)
+                );
+                exit;*/
                 return true;
             }
 
-            $currentHash = $this->testCollector->getCollection()->getFileHash($file);
-            $previousHash = $this->cachedTestCollection->getFileHash($file);
+            $currentHash = $this->testCollector->getCollection()->getFileHash($testFile);
+            $previousHash = $this->cachedTestCollection->getFileHash($testFile);
             if ($currentHash !== $previousHash) {
-                $result = true;
+                return true;
             }
         }
-        return $result;
+        return false;
     }
 
     /**

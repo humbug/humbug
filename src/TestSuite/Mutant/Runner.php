@@ -149,7 +149,7 @@ class Runner
                 }
 
                 if (!is_null($cache)) {
-                    $hit = $this->runCache($cache, $coverage, $mutation, $collector, $index);
+                    $hit = $this->runCache($cache, $coverage, $collector, $mutation->getFile(), $index);
                     if ($hit === true) {
                         continue;
                     }
@@ -193,34 +193,33 @@ class Runner
     private function runCache(
         IncrementalCache $cache,
         CoverageData $coverage,
-        $mutation,
         Collector $collector,
+        $mutableFile,
         $index)
     {
         static $fileHits = [];
         static $cacheHits = [];
 
-        if (in_array($mutation->getFile(), $cacheHits)) {
+        if (in_array($mutableFile, $cacheHits)) {
             return true;
-        } elseif (in_array($mutation->getFile(), $fileHits)) {
-            return;
+        } elseif (in_array($mutableFile, $fileHits)) {
+            return false;
         }
 
-        $fileHits[] = $mutation->getFile();
+        $fileHits[] = $mutableFile;
 
         $testFilesHaveChanged = $cache->hasModifiedTestFiles(
             $coverage,
-            $mutation->getFile()
+            $mutableFile
         );
 
         $sourceFilesHaveChanged = $cache->hasModifiedSourceFiles(
-            $mutation->getFile()
+            $mutableFile
         );
 
-        if ($cache->hasResultsFor($mutation->getFile())
+        if ($cache->hasResultsFor($mutableFile)
         && $testFilesHaveChanged === false && $sourceFilesHaveChanged === false) {
-            $resultSet = $cache->getResultsFor($mutation->getFile());
-            //$this->logText($renderer);
+            $resultSet = $cache->getResultsFor($mutableFile);
             foreach ($resultSet as $result) {
                 if ($result['isShadow'] === false) {
                     $resultObject = unserialize($result['result']);
@@ -236,9 +235,10 @@ class Runner
                     $this->onShadowMutant($index);
                 }
             }
-            $cacheHits[] = $mutation->getFile();
+            $cacheHits[] = $mutableFile;
             return true;
         }
+        return false;
     }
 
     private function onStartRun()
