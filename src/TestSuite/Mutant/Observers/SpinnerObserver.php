@@ -10,10 +10,7 @@
 namespace Humbug\TestSuite\Mutant\Observers;
 
 use Humbug\Mutable;
-use Humbug\TestSuite\Mutant\Collector;
 use Humbug\TestSuite\Mutant\BaseObserver;
-use Humbug\TestSuite\Mutant\Result;
-use Humbug\TestSuite\Mutant\Runner;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
