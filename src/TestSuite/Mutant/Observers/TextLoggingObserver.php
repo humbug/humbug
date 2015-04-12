@@ -14,11 +14,11 @@ use Humbug\Mutant;
 use Humbug\Renderer\Text;
 use Humbug\Report\Text as TextReport;
 use Humbug\TestSuite\Mutant\Collector;
-use Humbug\TestSuite\Mutant\Observer;
+use Humbug\TestSuite\Mutant\BaseObserver;
 use Humbug\TestSuite\Mutant\Result;
 use Humbug\TestSuite\Mutant\Runner;
 
-class TextLoggingObserver implements Observer
+class TextLoggingObserver extends BaseObserver
 {
 
     private $textLogFile;
@@ -29,14 +29,6 @@ class TextLoggingObserver implements Observer
     {
         $this->textLogFile = $textLogFile;
         $this->renderer = $renderer;
-    }
-
-    public function onStartRun(Runner $testSuite)
-    {
-    }
-
-    public function onShadowMutant(Runner $testSuite, $mutationIndex)
-    {
     }
 
     public function onMutantDone(Runner $testSuite, Result $result, $index)

@@ -11,6 +11,7 @@
 namespace Humbug\TestSuite\Mutant;
 
 use Humbug\Mutant;
+use Humbug\Mutable;
 
 interface Observer
 {
@@ -21,6 +22,16 @@ interface Observer
      * @return mixed
      */
     public function onStartRun(Runner $testSuite);
+
+    /**
+     * @return void
+     */
+    public function onProcessedMutable(Mutable $mutable);
+
+    /**
+     * @return void
+     */
+    public function onMutationsGenerated();
 
     /**
      * Called whenever a shadow mutant is encountered.

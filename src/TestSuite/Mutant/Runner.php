@@ -13,6 +13,7 @@ namespace Humbug\TestSuite\Mutant;
 use Humbug\Exception\NoCoveringTestsException;
 use Humbug\MutableIterator;
 use Humbug\Mutant;
+use Humbug\Mutable;
 use Humbug\TestSuite\Mutant\IncrementalCache;
 use Humbug\Utility\CoverageData;
 use Humbug\Utility\ParallelGroup;
@@ -102,8 +103,11 @@ class Runner
             $mutations = $mutable->generate()->getMutations();
 
             $partition->addMutations($mutable, $index, $mutations);
+            $this->onProcessedMutable($mutable);
             $mutable->cleanup();
         }
+
+        $this->onMutationsGenerated();
 
         foreach ($partition->getPartitions($this->threadCount) as $batch) {
             $this->runBatch($collector, $coverage, $batch, $cache);
@@ -246,6 +250,20 @@ class Runner
     {
         foreach ($this->observers as $observer) {
             $observer->onStartRun($this);
+        }
+    }
+
+    private function onProcessedMutable(Mutable $mutable)
+    {
+        foreach ($this->observers as $observer) {
+            $observer->onProcessedMutable($mutable);
+        }
+    }
+
+    private function onMutationsGenerated()
+    {
+        foreach ($this->observers as $observer) {
+            $observer->onMutationsGenerated();
         }
     }
 

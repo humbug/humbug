@@ -16,6 +16,7 @@ use Humbug\TestSuite\Mutant\Observers\JsonLoggingObserver;
 use Humbug\TestSuite\Mutant\Observers\LoggingObserver;
 use Humbug\TestSuite\Mutant\Observers\PerformanceObserver;
 use Humbug\TestSuite\Mutant\Observers\TextLoggingObserver;
+use Humbug\TestSuite\Mutant\Observers\SpinnerObserver;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Finder\Finder;
@@ -64,6 +65,7 @@ class Builder
 
         $testSuite->addObserver(new LoggingObserver($renderer, $output));
         $testSuite->addObserver(new PerformanceObserver($renderer, $input));
+        $testSuite->addObserver(new SpinnerObserver($input, $output));
 
         /**
          * Add logging observers

@@ -131,8 +131,8 @@ class Humbug extends Command
             $incrementalCache = new IncrementalCache($container);
         }
 
-        $testSuite = $this->builder->build($container, $renderer, $input, $output);
-        $testSuite->run($result->getCoverage(), $this->mutableIterator, $incrementalCache);
+        $mutationTestingRunner = $this->builder->build($container, $renderer, $input, $output);
+        $mutationTestingRunner->run($result->getCoverage(), $this->mutableIterator, $incrementalCache);
 
         if ($this->isLoggingEnabled()) {
             $output->write(PHP_EOL);

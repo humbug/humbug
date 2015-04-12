@@ -13,11 +13,11 @@ namespace Humbug\TestSuite\Mutant\Observers;
 use Humbug\Mutant;
 use Humbug\Renderer\Text;
 use Humbug\TestSuite\Mutant\Collector;
-use Humbug\TestSuite\Mutant\Observer;
+use Humbug\TestSuite\Mutant\BaseObserver;
 use Humbug\TestSuite\Mutant\Result;
 use Humbug\TestSuite\Mutant\Runner;
 
-class JsonLoggingObserver implements Observer
+class JsonLoggingObserver extends BaseObserver
 {
 
     private $jsonLogFile;
@@ -28,18 +28,6 @@ class JsonLoggingObserver implements Observer
     {
         $this->jsonLogFile = $jsonLogFile;
         $this->renderer = $renderer;
-    }
-
-    public function onStartRun(Runner $testSuite)
-    {
-    }
-
-    public function onShadowMutant(Runner $testSuite, $mutationIndex)
-    {
-    }
-
-    public function onMutantDone(Runner $testSuite, Result $result, $index)
-    {
     }
 
     public function onEndRun(Runner $testSuite, Collector $resultCollector)

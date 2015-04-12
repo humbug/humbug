@@ -13,12 +13,12 @@ namespace Humbug\TestSuite\Mutant\Observers;
 use Humbug\Mutant;
 use Humbug\Renderer\Text;
 use Humbug\TestSuite\Mutant\Collector;
-use Humbug\TestSuite\Mutant\Observer;
+use Humbug\TestSuite\Mutant\BaseObserver;
 use Humbug\TestSuite\Mutant\Result;
 use Humbug\TestSuite\Mutant\Runner;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class LoggingObserver implements Observer
+class LoggingObserver extends BaseObserver
 {
 
     private $renderer;

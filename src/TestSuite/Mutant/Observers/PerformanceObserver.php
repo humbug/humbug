@@ -13,13 +13,13 @@ namespace Humbug\TestSuite\Mutant\Observers;
 use Humbug\Mutant;
 use Humbug\Renderer\Text;
 use Humbug\TestSuite\Mutant\Collector;
-use Humbug\TestSuite\Mutant\Observer;
+use Humbug\TestSuite\Mutant\BaseObserver;
 use Humbug\TestSuite\Mutant\Result;
 use Humbug\TestSuite\Mutant\Runner;
 use Humbug\Utility\Performance;
 use Symfony\Component\Console\Input\InputInterface;
 
-class PerformanceObserver implements Observer
+class PerformanceObserver extends BaseObserver
 {
 
     private $renderer;
@@ -51,13 +51,5 @@ class PerformanceObserver implements Observer
         }
 
         Performance::downMemProfiler();
-    }
-
-    public function onMutantDone(Runner $testSuite, Result $result, $index)
-    {
-    }
-
-    public function onShadowMutant(Runner $testSuite, $mutationIndex)
-    {
     }
 }

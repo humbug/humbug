@@ -1,0 +1,108 @@
+<?php
+/**
+ *
+ * @category   Humbug
+ * @package    Humbug
+ * @copyright  Copyright (c) 2015 Pádraic Brady (http://blog.astrumfutura.com)
+ * @license    https://github.com/padraic/humbug/blob/master/LICENSE New BSD License
+ */
+
+namespace Humbug\TestSuite\Mutant\Observers;
+
+use Humbug\Mutable;
+use Humbug\TestSuite\Mutant\Collector;
+use Humbug\TestSuite\Mutant\BaseObserver;
+use Humbug\TestSuite\Mutant\Result;
+use Humbug\TestSuite\Mutant\Runner;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+
+class SpinnerObserver extends BaseObserver
+{
+
+    /**
+     * @var array
+     */
+    private $states = ['\\', '|', '/', '-'];
+
+    /**
+     * @var int
+     */
+    private $count = 0;
+
+    /**
+     * @var int
+     */
+    private $time;
+
+    /**
+     * @var int
+     */
+    private $refresh;
+
+    /**
+     * @var InputInterface
+     */
+    private $input;
+
+    /**
+     * @var OutputInterface
+     */
+    private $output;
+
+    /**
+     * @param OutputInterface $output
+     * @param int $refresh Minimum refresh threshold in milliseconds
+     */
+    public function __construct(InputInterface $input, OutputInterface $output, $refresh = 100)
+    {
+        $this->input = $input;
+        $this->output = $output;
+        $this->refresh = $refresh;
+    }
+
+    /**
+     * @param Mutable $mutable
+     * @return void
+     */
+    public function onProcessedMutable(Mutable $mutable)
+    {
+        if ($this->input->getOption('no-progress-bar') || !$this->output->isDecorated()) {
+            return;
+        }
+
+        $time = microtime(true);
+        $interval = $time - $this->time;
+        $this->time = $time;
+        if (round($interval*1000) > $this->refresh) {    
+            $state = $this->states[($this->count % 4)];
+            $this->count++;
+            $this->overwrite($state);
+        }
+    }
+
+    /**
+     * @return void
+     */
+    public function onMutationsGenerated()
+    {
+        if ($this->input->getOption('no-progress-bar') || !$this->output->isDecorated()) {
+            return;
+        }
+
+        $this->moveToLineStart();
+    }
+
+    private function overwrite($state)
+    {
+        if ($this->count > 0) {
+            $this->moveToLineStart();
+        }
+        $this->output->write($state);
+    }
+
+    private function moveToLineStart()
+    {
+        $this->output->write("\x0D");
+    }
+}
