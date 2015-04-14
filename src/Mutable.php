@@ -36,8 +36,8 @@ class Mutable
      */
     protected $mutators = [
         // Booleans
-        '\Humbug\Mutator\Boolean\True',
-        '\Humbug\Mutator\Boolean\False',
+        '\Humbug\Mutator\Boolean\TrueValue',
+        '\Humbug\Mutator\Boolean\FalseValue',
         '\Humbug\Mutator\Boolean\LogicalNot',
         '\Humbug\Mutator\Boolean\LogicalAnd',
         '\Humbug\Mutator\Boolean\LogicalOr',

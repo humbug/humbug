@@ -144,7 +144,7 @@ class MutableTest extends \PHPUnit_Framework_TestCase
         $file = new Mutable($this->root . '/bool1.php');
         $file->generate();
         $return = $file->getMutations();
-        $this->assertEquals('\Humbug\Mutator\Boolean\True', $return[0]->getMutator());
+        $this->assertEquals('\Humbug\Mutator\Boolean\TrueValue', $return[0]->getMutator());
     }
 
     public function testShouldGenerateBooleanFalseMutationWhenBoolFalseDetected()
@@ -152,7 +152,7 @@ class MutableTest extends \PHPUnit_Framework_TestCase
         $file = new Mutable($this->root . '/bool2.php');
         $file->generate();
         $return = $file->getMutations();
-        $this->assertEquals('\Humbug\Mutator\Boolean\False', $return[0]->getMutator());
+        $this->assertEquals('\Humbug\Mutator\Boolean\FalseValue', $return[0]->getMutator());
     }
 
     public function testShoultNotGenerateMutableOnArrayConcatenation()

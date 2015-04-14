@@ -18,7 +18,7 @@ class FalseTest extends \PHPUnit_Framework_TestCase
 
     public function testReturnsTokenEquivalentToTrue()
     {
-        $mutation = new Mutator\Boolean\False;
+        $mutation = new Mutator\Boolean\FalseValue;
         $tokens = [];
         $mutation->getMutation($tokens, 10);
         $this->assertEquals([10 => [T_STRING, 'true']], $tokens);
@@ -28,10 +28,10 @@ class FalseTest extends \PHPUnit_Framework_TestCase
     {
         $tokens = [10 => [T_STRING, 'FALSE']];
 
-        $this->assertTrue(Mutator\Boolean\False::mutates($tokens, 10));
+        $this->assertTrue(Mutator\Boolean\FalseValue::mutates($tokens, 10));
 
         $tokens = [11 => [T_STRING, 'TRUE']];
 
-        $this->assertFalse(Mutator\Boolean\False::mutates($tokens, 11));
+        $this->assertFalse(Mutator\Boolean\FalseValue::mutates($tokens, 11));
     }
 }

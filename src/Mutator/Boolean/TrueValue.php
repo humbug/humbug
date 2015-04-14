@@ -12,11 +12,11 @@ namespace Humbug\Mutator\Boolean;
 
 use Humbug\Mutator\MutatorAbstract;
 
-class False extends MutatorAbstract
+class TrueValue extends MutatorAbstract
 {
 
     /**
-     * Replace boolean FALSE with TRUE
+     * Replace boolean TRUE with FALSE
      *
      * @param array $tokens
      * @param int $index
@@ -26,14 +26,14 @@ class False extends MutatorAbstract
     {
         $tokens[$index] = [
             T_STRING,
-            'true'
+            'false'
         ];
     }
 
     public static function mutates(array &$tokens, $index)
     {
         $t = $tokens[$index];
-        if (is_array($t) && $t[0] == T_STRING && strtolower($t[1]) == 'false') {
+        if (is_array($t) && $t[0] == T_STRING && strtolower($t[1]) == 'true') {
             return true;
         }
         return false;
