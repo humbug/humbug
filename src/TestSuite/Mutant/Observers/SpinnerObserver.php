@@ -71,7 +71,7 @@ class SpinnerObserver extends BaseObserver
         $time = microtime(true);
         $interval = $time - $this->time;
         $this->time = $time;
-        if (round($interval*1000) > $this->refresh) {    
+        if (round($interval*1000) > $this->refresh) {
             $state = $this->states[($this->count % 4)];
             $this->count++;
             $this->overwrite($state);
