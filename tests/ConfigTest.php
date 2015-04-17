@@ -170,39 +170,41 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($config->getLogsText());
     }
 
-    public function testShouldRiseExceptionWhenLogsJsonDirNotExists()
+    public function testShouldNotRiseExceptionWhenLogsJsonDirNotExists()
     {
+        $directory = 'path/to/not-a-dir';
         $configData = (object)[
             'logs' => (object)[
-                'json' => 'path/to/not-a-dir/logs.json'
+                'json' => $directory . '/logs.json'
             ]
         ];
-
-        $this->setExpectedExceptionRegExp(
-            'Humbug\Exception\JsonConfigException',
-            '/Directory for json logging does not exist: .+/'
-        );
 
         $config = new Config($configData);
 
         $config->getLogsJson();
+
+        $this->assertTrue(file_exists($directory) && is_dir($directory));
+
+        // Remove the directory so that it does not persist over to other tests.
+        $this->assertTrue(rmdir($directory), 'Could not remove test directory. This will affect subsequent tests.');
     }
 
-    public function testShouldRiseExceptionWhenTextJsonDirNotExists()
+    public function testShouldNotRiseExceptionWhenTextJsonDirNotExists()
     {
+        $directory = 'path/to/not-a-dir';
         $configData = (object)[
             'logs' => (object)[
-                'text' => 'path/to/not-a-dir/logs.txt'
+                'text' => $directory . '/logs.txt'
             ]
         ];
-
-        $this->setExpectedExceptionRegExp(
-            'Humbug\Exception\JsonConfigException',
-            '/Directory for text logging does not exist: .+/'
-        );
 
         $config = new Config($configData);
 
         $config->getLogsText();
+
+        $this->assertTrue(file_exists($directory) && is_dir($directory));
+
+        // Remove the directory so that it does not persist over to other tests.
+        $this->assertTrue(rmdir($directory), 'Could not remove test directory. This will affect subsequent tests.');
     }
 }
