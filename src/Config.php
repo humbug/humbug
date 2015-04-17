@@ -81,7 +81,7 @@ class Config
             return null;
         }
 
-        if (!file_exists(dirname($this->config->logs->{$type})) && !mkdir(dirname($this->config->logs->{$type}), 0755, true)) {
+        if (!is_dir(dirname($this->config->logs->{$type})) && !mkdir(dirname($this->config->logs->{$type}), 0755, true)) {
             throw new JsonConfigException(
                 'Directory for ' . $type . ' logging does not exist and could not be created: '
                 . dirname($this->config->logs->{$type})
