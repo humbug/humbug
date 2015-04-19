@@ -143,7 +143,7 @@ class MutantTest extends \PHPUnit_Framework_TestCase
     public function getMutation()
     {
         return new Mutation(
-            __DIR__ . '/_files/mutables/Math.php',
+            __DIR__ . DIRECTORY_SEPARATOR . '_files' . DIRECTORY_SEPARATOR . 'mutables' . DIRECTORY_SEPARATOR . 'Math.php',
             8,
             'Phpunit_MM1_Math',
             'add',
@@ -159,7 +159,7 @@ class MutantTest extends \PHPUnit_Framework_TestCase
             $mutation,
             $this->getFileGenerator(),
             $this->getCoverageData([ 'dummy' ], [ 'dummyMethod' ]),
-            __DIR__ . '/_files/mutables/'
+            __DIR__ . DIRECTORY_SEPARATOR . '_files' . DIRECTORY_SEPARATOR . 'mutables' . DIRECTORY_SEPARATOR
         );
 
         $this->assertEquals($mutation, $mutant->getMutation());
@@ -173,7 +173,7 @@ class MutantTest extends \PHPUnit_Framework_TestCase
             $this->getMutation(),
             $this->getFileGenerator(),
             $this->getExceptionRaisingCoverageData(),
-            __DIR__ . '/_files/mutables/'
+            __DIR__ . DIRECTORY_SEPARATOR . '_files' . DIRECTORY_SEPARATOR . 'mutables' . DIRECTORY_SEPARATOR
         );
         $this->assertSame([], $mutant->getTests());
     }
@@ -185,7 +185,7 @@ class MutantTest extends \PHPUnit_Framework_TestCase
             $mutation,
             new FileGenerator(__DIR__ . '/_files/mutants/'),
             $this->getCoverageData([ 'dummy' ], [ 'dummyMethod' ]),
-            __DIR__ . '/_files/mutables/'
+            __DIR__ . DIRECTORY_SEPARATOR . '_files' . DIRECTORY_SEPARATOR . 'mutables' . DIRECTORY_SEPARATOR
         );
 
         $diff = $this->prophesize('Humbug\Utility\Diff');
