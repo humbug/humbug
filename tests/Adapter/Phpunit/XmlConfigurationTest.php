@@ -325,11 +325,11 @@ class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($configurationDir, $actualSuiteDirectory);
 
         $actualWhiteListDirectory = $xpath->query('/phpunit/filter/whitelist/directory')->item(0)->nodeValue;
-        $this->assertEquals($configurationDir . '/white-list', $actualWhiteListDirectory);
+        $this->assertEquals($configurationDir . DIRECTORY_SEPARATOR . 'white-list', $actualWhiteListDirectory);
 
         $actualWhiteListExcludeDirectory =
             $xpath->query('/phpunit/filter/whitelist/exclude/directory')->item(0)->nodeValue;
-        $this->assertEquals($configurationDir . '/white-list/exclude', $actualWhiteListExcludeDirectory);
+        $this->assertEquals($configurationDir . DIRECTORY_SEPARATOR . 'white-list' . DIRECTORY_SEPARATOR . 'exclude', $actualWhiteListExcludeDirectory);
     }
 
     public function testShouldReplaceFilePathsToAbsolutePaths()
@@ -348,7 +348,7 @@ class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
         $xpath = new \DOMXPath($dom);
 
         $actualSuiteDirectory = $xpath->query('/phpunit/testsuites/testsuite/file')->item(0)->nodeValue;
-        $this->assertEquals($configurationDir . '/file.php', $actualSuiteDirectory);
+        $this->assertEquals($configurationDir . DIRECTORY_SEPARATOR . 'file.php', $actualSuiteDirectory);
     }
 
     public function testShouldReplaceSuiteExcludesWithAbsolutePaths()
@@ -367,7 +367,7 @@ class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
         $xpath = new \DOMXPath($dom);
 
         $actualSuiteExclude = $xpath->query('/phpunit/testsuites/testsuite/exclude')->item(0)->nodeValue;
-        $this->assertEquals($configurationDir . '/excluded-tests', $actualSuiteExclude);
+        $this->assertEquals($configurationDir . DIRECTORY_SEPARATOR . 'excluded-tests', $actualSuiteExclude);
     }
 
     public function testShouldReplaceBootstrapWithAbsolutePath()
@@ -386,7 +386,7 @@ class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
         $xpath = new \DOMXPath($dom);
 
         $actualBootstrapPath = $xpath->query('/phpunit/@bootstrap')->item(0)->nodeValue;
-        $this->assertEquals($configurationDir . '/file.php', $actualBootstrapPath);
+        $this->assertEquals($configurationDir . DIRECTORY_SEPARATOR . 'file.php', $actualBootstrapPath);
     }
 
     public function testShouldReplaceWildcardsWithAbsolutePaths()

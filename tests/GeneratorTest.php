@@ -30,7 +30,7 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->searchDir = dirname(__FILE__) . '/_files/root/base1';
+        $this->searchDir = dirname(__FILE__) . DIRECTORY_SEPARATOR . '_files' . DIRECTORY_SEPARATOR . 'root' . DIRECTORY_SEPARATOR . 'base1';
 
         $this->finder = $this->createPhpFileFinder($this->searchDir);
     }
@@ -48,8 +48,8 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
         $generator->generate($this->finder);
         $mutables = $generator->getMutables();
 
-        $this->assertEquals($mutables[0]->getFilename(), $this->searchDir . '/library/bool1.php');
-        $this->assertEquals($mutables[1]->getFilename(), $this->searchDir . '/library/bool2.php');
+        $this->assertEquals($mutables[0]->getFilename(), $this->searchDir . DIRECTORY_SEPARATOR . 'library' . DIRECTORY_SEPARATOR . 'bool1.php');
+        $this->assertEquals($mutables[1]->getFilename(), $this->searchDir . DIRECTORY_SEPARATOR . 'library' . DIRECTORY_SEPARATOR . 'bool2.php');
     }
 
     private function createPhpFileFinder($searchDir)
