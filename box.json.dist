@@ -17,11 +17,7 @@
                 "Tests",
                 "mockery",
                 "behat",
-                "symfony/class-loader",
-                "symfony/translation",
-                "symfony/dependency-injection",
                 "symfony/filesystem",
-                "symfony/config",
                 "mikey179"
             ],
             "in": [
