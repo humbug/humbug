@@ -48,6 +48,23 @@ wget https://padraic.github.io/humbug/downloads/humbug.phar.pubkey
 chmod +x humbug.phar
 ```
 
+On Windows, you can just download using a browser or from Powershell v3 using the following commands where `wget` is an alias for `Invoke-WebRequest`:
+
+```sh
+wget https://padraic.github.io/humbug/downloads/humbug.phar -OutFile humbug.phar
+wget https://padraic.github.io/humbug/downloads/humbug.phar.pubkey -OutFile humbug.phar.pubkey
+```
+
+If you're stuck with Powershell v2:
+
+```sh
+$client = new-object System.Net.WebClient
+$client.DownloadFile("https://padraic.github.io/humbug/downloads/humbug.phar", "humbug.phar")
+$client.DownloadFile("https://padraic.github.io/humbug/downloads/humbug.phar.pubkey", "humbug.phar.pubkey")
+```
+
+##### PHAR Updates
+
 The phar is signed with an openssl private key. You will need the pubkey file
 to be stored beside the phar file at all times in order to use it. If you rename
 `humbug.phar` to `humbug`, for example, then also rename the key from
