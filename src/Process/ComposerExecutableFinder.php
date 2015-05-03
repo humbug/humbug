@@ -22,7 +22,7 @@ class ComposerExecutableFinder
      */
     public function find()
     {
-        return tryAndGetNiceThing();
+        return $this->tryAndGetNiceThing();
     }
 
     /**
@@ -33,10 +33,10 @@ class ComposerExecutableFinder
         $probable = ['composer', 'composer.phar'];
         $finder = new ExecutableFinder;
         $located = null;
-        $immediatePaths = [getcwd(), realpath('../'.getcwd()), realpath('../../'.getcwd())];
+        $immediatePaths = [getcwd(), realpath(getcwd().'/../'), realpath(getcwd().'/../../')];
         foreach ($probable as $name) {
             if ($path = $finder->find($name, null, $immediatePaths)) {
-                return realpath($path);
+                return $path;
                 break;
             }
         }

@@ -13,7 +13,6 @@ namespace Humbug\Adapter\Phpunit\Process;
 use Humbug\Process\ComposerExecutableFinder;
 use Humbug\Exception\RuntimeException;
 use Symfony\Component\Process\Process;
-
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\PhpExecutableFinder;
 
@@ -26,7 +25,7 @@ class PhpunitExecutableFinder
     public function find()
     {
         $this->checkVendorPath();
-        return $this->findPhpunit()
+        return $this->findPhpunit();
     }
 
     /**
@@ -70,7 +69,7 @@ class PhpunitExecutableFinder
         $located = null;
         foreach ($probable as $name) {
             if ($path = $finder->find($name, null, [getcwd()])) {
-                return $this->makeExecutable(realpath($path));
+                return $this->makeExecutable($path);
             }
         }
         $dirs = array_merge(
