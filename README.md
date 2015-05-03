@@ -48,7 +48,8 @@ wget https://padraic.github.io/humbug/downloads/humbug.phar.pubkey
 chmod +x humbug.phar
 ```
 
-On Windows, you can just download using a browser or from Powershell v3 using the following commands where `wget` is an alias for `Invoke-WebRequest`:
+On Windows, you can just download using a browser or from Powershell v3 using the
+following commands where `wget` is an alias for `Invoke-WebRequest`:
 
 ```sh
 wget https://padraic.github.io/humbug/downloads/humbug.phar -OutFile humbug.phar
@@ -80,6 +81,26 @@ same frequency as git master. To update your current phar, just run:
 Note: Using a phar means that fixes may take longer to reach your version, but there's
 more assurance of having a stable development version. The public key is
 downloaded only once. It is re-used by self-update to verify future phar releases.
+
+###### Self-Update Request Debugging
+
+If you experience any issues self-updating with unexpected `openssl` or SSL errors,
+please ensure that you have enabled the `openssl` extension. On Windows, you can
+do this by adding or uncommenting the following line in the `php.ini` file for
+PHP on the command line (if different than the file for your http server):
+
+```
+extension=php_openssl.dll
+```
+
+Certain other SSL errors may arise due missing certificates. You can rectify this
+by finding their location on your system (e.g. `C:/xampp/php/ext/cacert.pem`), or
+alternatively downloading a copy from http://curl.haxx.se/ca/cacert.pem. Then
+ensure the following option is correctly pointing to this file:
+
+```
+openssl.cafile=C:/path/to/cacert.pem
+```
 
 #### Composer
 
