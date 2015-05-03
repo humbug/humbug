@@ -30,7 +30,7 @@ class ComposerExecutableFinder
         $immediatePaths = [getcwd(), realpath('../'.getcwd()), realpath('../../'.getcwd())];
         foreach ($probable as $name) {
             if ($path = $finder->find($name, null, $immediatePaths)) {
-                $located = realpath($path);
+                return realpath($path);
                 break;
             }
         }
@@ -38,17 +38,15 @@ class ComposerExecutableFinder
          * Check for options without execute permissions and prefix the PHP
          * executable instead. Make your eyes very large and innocent.
          */
-        if (is_null($located)) {
-            $dirs = array_merge(
-                explode(PATH_SEPARATOR, getenv('PATH') ?: getenv('Path')),
-                $immediatePaths
-            );
-            foreach ($dirs as $dir) {
-                foreach ($probable as $name) {
-                    $path = sprintf('%s/%s', $dir, $name);
-                    if (file_exists($path)) {
-                        return $this->makeExecutable($path);
-                    }
+        $dirs = array_merge(
+            explode(PATH_SEPARATOR, getenv('PATH') ?: getenv('Path')),
+            $immediatePaths
+        );
+        foreach ($dirs as $dir) {
+            foreach ($probable as $name) {
+                $path = sprintf('%s/%s', $dir, $name);
+                if (file_exists($path)) {
+                    return $this->makeExecutable($path);
                 }
             }
         }
