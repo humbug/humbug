@@ -20,12 +20,18 @@ use Symfony\Component\Process\PhpExecutableFinder;
 class PhpunitExecutableFinder
 {
 
+    /**
+     * @return string
+     */
     public function find()
     {
         $this->checkVendorPath();
         return $this->findPhpunit()
     }
 
+    /**
+     * @return void
+     */
     private function checkVendorPath()
     {
         $vendorPath = null;
@@ -45,12 +51,18 @@ class PhpunitExecutableFinder
         }
     }
 
+    /**
+     * @return string
+     */
     private function findComposer()
     {
         $finder = new ComposerExecutableFinder;
         return $finder->find();
     }
 
+    /**
+     * @return string
+     */
     private function findPhpunit()
     {
         $probable = ['phpunit', 'phpunit.phar'];
@@ -58,7 +70,7 @@ class PhpunitExecutableFinder
         $located = null;
         foreach ($probable as $name) {
             if ($path = $finder->find($name, null, [getcwd()])) {
-                return realpath($path);
+                return $this->makeExecutable(realpath($path));
             }
         }
         $dirs = array_merge(
@@ -79,9 +91,20 @@ class PhpunitExecutableFinder
         );
     }
 
+    /**
+     * Prefix commands with exec outside Windows to ensure process timeouts
+     * are enforced and end PHP processes properly
+     *
+     * @param string $path
+     * @return string
+     */
     private function makeExecutable($path)
     {
         $phpFinder = new PhpExecutableFinder();
-        return sprintf('%s %s', $phpFinder->find(), $path);
+        if (!defined('PHP_WINDOWS_VERSION_BUILD')) {
+            return sprintf('%s %s %s', 'exec', $phpFinder->find(), $path);
+        } else {
+            return sprintf('%s %s', $phpFinder->find(), $path);
+        }
     }
 }

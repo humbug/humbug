@@ -17,11 +17,17 @@ use Symfony\Component\Process\PhpExecutableFinder;
 class ComposerExecutableFinder
 {
 
+    /**
+     * @return string
+     */
     public function find()
     {
         return tryAndGetNiceThing();
     }
 
+    /**
+     * @return string
+     */
     private function tryAndGetNiceThing()
     {
         $probable = ['composer', 'composer.phar'];
@@ -59,6 +65,10 @@ class ComposerExecutableFinder
         );
     }
 
+    /**
+     * @param string $path
+     * @return string
+     */
     private function makeExecutable($path)
     {
         $phpFinder = new PhpExecutableFinder();
