@@ -292,24 +292,4 @@ class Humbug extends Command
     {
         return $this->jsonLogFile !== null || $this->textLogFile !== null;
     }
-
-    private function testFilesHaveChanged(
-        FileCollector $collector,
-        FileCollection $cached,
-        \Humbug\Utility\CoverageData $coverage,
-        AdapterAbstract $adapter,
-        $file)
-    {
-        $result = false;
-        $tests = $coverage->getAllTestClasses($file);
-        foreach ($tests as $test) {
-            $file = $adapter->getClassFile($test, $this->container);
-            $collector->collect($file);
-            if (!$cached->hasFile($file)
-            || $collector->getCollection()->getFileHash($file) !== $cached->getFileHash($file)) {
-                $result = true;
-            }
-        }
-        return $result;
-    }
 }

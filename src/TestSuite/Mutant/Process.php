@@ -13,7 +13,7 @@ namespace Humbug\TestSuite\Mutant;
 use Humbug\Adapter\AdapterAbstract;
 use Humbug\Exception\RuntimeException;
 use Humbug\Mutant;
-use Symfony\Component\Process\PhpProcess;
+use Symfony\Component\Process\Process as SymfonyProcess;
 
 class Process
 {
@@ -52,7 +52,7 @@ class Process
      * @param Mutant $mutant
      * @param PhpProcess $process
      */
-    public function __construct(AdapterAbstract $adapter, Mutant $mutant, PhpProcess $process, $index)
+    public function __construct(AdapterAbstract $adapter, Mutant $mutant, SymfonyProcess $process, $index)
     {
         $this->adapter = $adapter;
         $this->mutant = $mutant;

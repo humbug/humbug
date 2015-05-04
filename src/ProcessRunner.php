@@ -14,7 +14,6 @@
 namespace Humbug;
 
 use Humbug\Adapter\AdapterAbstract;
-use Symfony\Component\Process\PhpProcess;
 use Symfony\Component\Process\Process;
 
 class ProcessRunner
@@ -27,7 +26,7 @@ class ProcessRunner
      * @return bool
      */
     public function run(
-        PhpProcess $process,
+        Process $process,
         AdapterAbstract $testFrameworkAdapter,
         \Closure $onProgressCallback = null
     ) {

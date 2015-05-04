@@ -28,6 +28,7 @@ class Job
         } else {
             $humbugBootstrap = realpath(__DIR__ . '/../../../bootstrap.php');
         }
+        
         $file = sys_get_temp_dir() . '/humbug.phpunit.bootstrap.php';
 
         if (!is_null($mutantFile)) {
@@ -48,14 +49,14 @@ PREPEND;
             file_put_contents($file, $buffer);
         } else {
             if (!empty($bootstrap)) {
-                $buffer = "<?php\nrequire_once '{$bootstrap}';";
+                $buffer = "<?php\nrequire_once '{$humbugBootstrap}';\nrequire_once '{$bootstrap}';";
             } else {
-                $buffer = "<?php\n";
+                $buffer = "<?php\nrequire_once '{$humbugBootstrap}';";
             }
             file_put_contents($file, $buffer);
         }
 
-        $args = base64_encode(serialize($args));
+        /*$args = base64_encode(serialize($args));
         
         $script = <<<SCRIPT
 <?php
@@ -64,6 +65,6 @@ require_once '{$humbugBootstrap}';
 use Humbug\Adapter\Phpunit;
 Phpunit::main('{$args}');
 SCRIPT;
-        return $script;
+        return $script;*/
     }
 }

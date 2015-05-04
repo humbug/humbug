@@ -15,9 +15,10 @@ use Humbug\Adapter\Phpunit\TestClassLocator;
 use Humbug\Adapter\Phpunit\XmlConfiguration;
 use Humbug\Adapter\Phpunit\XmlConfigurationBuilder;
 use Humbug\Adapter\Phpunit\Job;
+use Humbug\Adapter\Phpunit\Process\PhpunitExecutableFinder;
 use Humbug\Utility\CoverageData;
 use Symfony\Component\Process\PhpExecutableFinder;
-use Symfony\Component\Process\PhpProcess;
+use Symfony\Component\Process\Process;
 
 class Phpunit extends AdapterAbstract
 {
@@ -39,7 +40,7 @@ class Phpunit extends AdapterAbstract
      * @param   null|string       $interceptFile
      * @param   null|string       $mutantFile
      * @param   array             $testSuites
-     * @return  \Symfony\Component\Process\PhpProcess
+     * @return  \Symfony\Component\Process\Process
      */
     public function getProcess(
         Container $container,
@@ -96,7 +97,9 @@ class Phpunit extends AdapterAbstract
         /**
          * Initial command is expected, of course.
          */
-        array_unshift($jobopts['cliopts'], 'phpunit');
+        $phpunitFinder = new PhpunitExecutableFinder;
+        $command = $phpunitFinder->find();
+        array_unshift($jobopts['cliopts'], $command);
 
         /**
          * Log the first run so we can analyse test times to make future
@@ -119,15 +122,16 @@ class Phpunit extends AdapterAbstract
             $interceptFile
         );
 
-        $process = new PhpProcess($job, null, $_ENV);
+        /*$process = new PhpProcess($job, null, $_ENV);
         if (!defined('PHP_WINDOWS_VERSION_BUILD')) {
             $executableFinder = new PhpExecutableFinder();
             $php = $executableFinder->find();
             if ($php !== false) {
                 $process->setCommandLine('exec '.$php);
             }
-        }
+        }*/
         
+        $process = new Process(implode(' ', $jobopts['cliopts']), $jobopts['testdir'], $_ENV);
         $process->setTimeout($timeout);
 
         return $process;

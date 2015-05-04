@@ -99,6 +99,7 @@ class PhpunitExecutableFinder
      */
     private function makeExecutable($path)
     {
+        $path = realpath($path);
         $phpFinder = new PhpExecutableFinder();
         if (!defined('PHP_WINDOWS_VERSION_BUILD')) {
             return sprintf('%s %s %s', 'exec', $phpFinder->find(), $path);

@@ -12,7 +12,7 @@
 namespace Humbug\TestSuite\Unit;
 
 use Humbug\Utility\CoverageData;
-use Symfony\Component\Process\PhpProcess;
+use Symfony\Component\Process\Process;
 
 class Result
 {
@@ -53,7 +53,7 @@ class Result
      * @param CoverageData $coverage
      * @param float $lineCoverage
      */
-    public function __construct(PhpProcess $process, $hasFailure, CoverageData $coverage = null, $lineCoverage)
+    public function __construct(Process $process, $hasFailure, CoverageData $coverage = null, $lineCoverage)
     {
         $this->hasFailure = (bool)$hasFailure;
         $this->exitCode = (int)$process->getExitCode();

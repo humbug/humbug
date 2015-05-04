@@ -14,7 +14,7 @@ namespace Humbug\TestSuite\Unit;
 use Humbug\Adapter\AdapterAbstract;
 use Humbug\Container;
 use Humbug\ProcessRunner;
-use Symfony\Component\Process\PhpProcess;
+use Symfony\Component\Process\Process; //PhpProcess
 
 class Runner
 {
@@ -43,7 +43,7 @@ class Runner
      * @param PhpProcess $process
      * @param $coverageLogFile
      */
-    public function __construct(AdapterAbstract $adapter, PhpProcess $process, $coverageLogFile)
+    public function __construct(AdapterAbstract $adapter, Process $process, $coverageLogFile)
     {
         $this->adapter = $adapter;
         $this->coverageLogFile = $coverageLogFile;
@@ -91,7 +91,7 @@ class Runner
     }
 
     private function performInitialTestsRun(
-        PhpProcess $process,
+        Process $process,
         AdapterAbstract $testFrameworkAdapter
     ) {
         $observers = $this->observers;
