@@ -44,13 +44,13 @@ class Result implements \Serializable
      */
     private $stdOut = '';
 
-    public static function getStatusCode($passFlag, $successFlag, $timeoutFlag)
+    public static function getStatusCode($passFlag, $exitCode, $timeoutFlag)
     {
         $status = Result::ESCAPE;
 
         if ($timeoutFlag === true) {
             $status = Result::TIMEOUT;
-        } elseif ($successFlag === false) {
+        } elseif (!in_array($exitCode, [0,1,2])) {
             $status = Result::ERROR;
         } elseif ($passFlag === false) {
             $status = Result::KILL;

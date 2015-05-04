@@ -65,7 +65,10 @@ class Builder
 
         $testSuite->addObserver(new LoggingObserver($renderer, $output));
         $testSuite->addObserver(new PerformanceObserver($renderer, $input));
-        $testSuite->addObserver(new SpinnerObserver($input, $output));
+        $testSuite->addObserver($spinnerObserver = new SpinnerObserver($input, $output));
+        if (!defined('PHP_WINDOWS_VERSION_BUILD')) {
+            $spinnerObserver->setStates(['◓','◑','◒','◐']);
+        }
 
         /**
          * Add logging observers

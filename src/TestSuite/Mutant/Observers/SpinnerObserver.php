@@ -72,7 +72,7 @@ class SpinnerObserver extends BaseObserver
         $interval = $time - $this->time;
         $this->time = $time;
         if (round($interval*1000) > $this->refresh) {
-            $state = $this->states[($this->count % 4)];
+            $state = $this->states[($this->count % count($this->states))];
             $this->count++;
             $this->overwrite($state);
         }
@@ -90,12 +90,20 @@ class SpinnerObserver extends BaseObserver
         $this->moveToLineStart();
     }
 
+    /**
+     * @param array $states
+     */
+    public function setStates(array $states)
+    {
+        $this->states = $states;
+    }
+
     private function overwrite($state)
     {
         if ($this->count > 0) {
             $this->moveToLineStart();
         }
-        $this->output->write($state);
+        $this->output->write($state.' ');
     }
 
     private function moveToLineStart()

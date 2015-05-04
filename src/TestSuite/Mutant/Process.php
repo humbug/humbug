@@ -101,9 +101,18 @@ class Process
             throw new RuntimeException('Result has already been processed.');
         }
 
+        /**
+         * Exit Code should be 0, 1, 2 or a larger integer.
+         * The exit code 0 indicates no problem, should be an escaped mutant
+         * detected by checkout the out.
+         * Exit codes 1 and 2 indicate failures in the test framework, should
+         * be caught mutants.
+         * Other exit codes should arise on non-associated errors.
+         */
+
         $status = Result::getStatusCode(
             $this->adapter->ok($this->process->getOutput()),
-            $this->process->isSuccessful(),
+            $this->process->getExitCode(),
             $this->isTimeout
         );
 
