@@ -50,7 +50,7 @@ class Result implements \Serializable
 
         if ($timeoutFlag === true) {
             $status = Result::TIMEOUT;
-        } elseif (!in_array($exitCode, [0,1,2])) {
+        } elseif (!in_array($exitCode, [0, 1, 2])) {
             $status = Result::ERROR;
         } elseif ($passFlag === false) {
             $status = Result::KILL;

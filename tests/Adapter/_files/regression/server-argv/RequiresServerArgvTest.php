@@ -13,4 +13,4 @@ class RequiresServerArgvTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertContains('phpunit', $_SERVER['argv'][0]);
     }
-} 
+}

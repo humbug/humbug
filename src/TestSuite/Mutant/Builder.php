@@ -67,7 +67,7 @@ class Builder
         $testSuite->addObserver(new PerformanceObserver($renderer, $input));
         $testSuite->addObserver($spinnerObserver = new SpinnerObserver($input, $output));
         if (!defined('PHP_WINDOWS_VERSION_BUILD')) {
-            $spinnerObserver->setStates(['◓','◑','◒','◐']);
+            $spinnerObserver->setStates(['◓', '◑', '◒', '◐']);
         }
 
         /**
