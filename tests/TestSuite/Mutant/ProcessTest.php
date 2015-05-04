@@ -23,9 +23,9 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
 
         $mutant = $this->prophesize(('Humbug\Mutant'));
 
-        $process = $this->prophesize('Symfony\Component\Process\PhpProcess');
+        $process = $this->prophesize('Symfony\Component\Process\Process');
         $process->clearOutput()->willReturn(null);
-        $process->isSuccessful()->willReturn(false);
+        $process->getExitCode()->willReturn(0);
         $process->getOutput()->willReturn('');
         $process->getErrorOutput()->willReturn('');
 
@@ -48,9 +48,9 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
 
         $mutant = $this->prophesize(('Humbug\Mutant'));
 
-        $process = $this->prophesize('Symfony\Component\Process\PhpProcess');
+        $process = $this->prophesize('Symfony\Component\Process\Process');
         $process->clearOutput()->willReturn(null);
-        $process->isSuccessful()->willReturn(false);
+        $process->getExitCode()->willReturn(0);
         $process->getOutput()->willReturn('');
         $process->getErrorOutput()->willReturn('');
 
@@ -72,9 +72,9 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
 
         $mutant = $this->prophesize(('Humbug\Mutant'));
 
-        $process = $this->prophesize('Symfony\Component\Process\PhpProcess');
+        $process = $this->prophesize('Symfony\Component\Process\Process');
         $process->clearOutput()->willReturn(null);
-        $process->isSuccessful()->willReturn(false);
+        $process->getExitCode()->willReturn(0);
         $process->getOutput()->willReturn('');
         $process->getErrorOutput()->willReturn('');
 

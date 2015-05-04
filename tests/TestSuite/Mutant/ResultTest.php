@@ -16,17 +16,17 @@ class ResultTest extends \PHPUnit_Framework_TestCase
 {
     public function testGetStatusCodeReturnsCorrectCode()
     {
-        $this->assertEquals(Result::TIMEOUT, Result::getStatusCode(true, true, true));
-        $this->assertEquals(Result::TIMEOUT, Result::getStatusCode(false, false, true));
-        $this->assertEquals(Result::TIMEOUT, Result::getStatusCode(true, false, true));
-        $this->assertEquals(Result::TIMEOUT, Result::getStatusCode(false, true, true));
+        $this->assertEquals(Result::TIMEOUT, Result::getStatusCode(true, 0, true));
+        $this->assertEquals(Result::TIMEOUT, Result::getStatusCode(false, 1, true));
+        $this->assertEquals(Result::TIMEOUT, Result::getStatusCode(true, 2, true));
+        $this->assertEquals(Result::TIMEOUT, Result::getStatusCode(false, 3, true));
 
-        $this->assertEquals(Result::ESCAPE, Result::getStatusCode(true, true, false));
+        $this->assertEquals(Result::ESCAPE, Result::getStatusCode(true, 0, false));
 
-        $this->assertEquals(Result::ERROR, Result::getStatusCode(true, false, false));
-        $this->assertEquals(Result::ERROR, Result::getStatusCode(false, false, false));
+        $this->assertEquals(Result::ERROR, Result::getStatusCode(true, 255, false));
+        $this->assertEquals(Result::ERROR, Result::getStatusCode(false, 255, false));
 
-        $this->assertEquals(Result::KILL, Result::getStatusCode(false, true, false));
+        $this->assertEquals(Result::KILL, Result::getStatusCode(false, 1, false));
     }
 
     public function getInvalidStatusCodes()
