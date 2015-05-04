@@ -14,7 +14,7 @@ namespace Humbug\TestSuite\Unit;
 use Humbug\Adapter\AdapterAbstract;
 use Humbug\Container;
 use Humbug\ProcessRunner;
-use Symfony\Component\Process\Process; //PhpProcess
+use Symfony\Component\Process\Process;
 
 class Runner
 {
@@ -24,7 +24,7 @@ class Runner
     private $adapter;
 
     /**
-     * @var PhpProcess
+     * @var Process
      */
     private $process;
 
@@ -40,7 +40,7 @@ class Runner
 
     /**
      * @param AdapterAbstract $adapter
-     * @param PhpProcess $process
+     * @param Process $process
      * @param $coverageLogFile
      */
     public function __construct(AdapterAbstract $adapter, Process $process, $coverageLogFile)

@@ -48,7 +48,7 @@ class Result
     private $lineCoverage = 0;
 
     /**
-     * @param PhpProcess $process
+     * @param Process $process
      * @param bool $hasFailure
      * @param CoverageData $coverage
      * @param float $lineCoverage

@@ -35,12 +35,12 @@ class Phpunit extends AdapterAbstract
      * Second element is an array containing the key "stdout" which stores the
      * output from the last test run.
      *
-     * @param   \Humbug\container $container
+     * @param   Container         $container
      * @param   bool              $firstRun
      * @param   null|string       $interceptFile
      * @param   null|string       $mutantFile
      * @param   array             $testSuites
-     * @return  \Symfony\Component\Process\Process
+     * @return  Process
      */
     public function getProcess(
         Container $container,
@@ -54,20 +54,20 @@ class Phpunit extends AdapterAbstract
             'basedir'       => $container->getBaseDirectory(),
             'timeout'       => $container->getTimeout(),
             'cachedir'      => $container->getTempDirectory(),
-            'cliopts'       => $container->getAdapterOptions(),
+            'command'       => $container->getAdapterOptions(),
             'constraints'   => $container->getAdapterConstraints()
         ];
 
         /**
          * We like standardised easy to parse outout
          */
-        array_unshift($jobopts['cliopts'], '--tap');
+        array_unshift($jobopts['command'], '--tap');
 
         /*
          * We only need a single fail!
          */
-        if (!in_array('--stop-on-failure', $jobopts['cliopts'])) {
-            array_unshift($jobopts['cliopts'], '--stop-on-failure');
+        if (!in_array('--stop-on-failure', $jobopts['command'])) {
+            array_unshift($jobopts['command'], '--stop-on-failure');
         }
 
         /**
@@ -84,22 +84,22 @@ class Phpunit extends AdapterAbstract
 
         file_put_contents($configFile, $xmlConfiguration->generateXML());
 
-        foreach ($jobopts['cliopts'] as $key => $value) {
+        foreach ($jobopts['command'] as $key => $value) {
             if ($value == '--configuration' || $value == '-C') {
-                unset($jobopts['cliopts'][$key]);
-                unset($jobopts['cliopts'][$key+1]);
+                unset($jobopts['command'][$key]);
+                unset($jobopts['command'][$key+1]);
             } elseif (preg_match('%\\-\\-configuration=%', $value)) {
-                unset($jobopts['cliopts'][$key]);
+                unset($jobopts['command'][$key]);
             }
         }
-        array_unshift($jobopts['cliopts'], '--configuration=' . $configFile);
+        array_unshift($jobopts['command'], '--configuration=' . $configFile);
 
         /**
          * Initial command is expected, of course.
          */
         $phpunitFinder = new PhpunitExecutableFinder;
         $command = $phpunitFinder->find();
-        array_unshift($jobopts['cliopts'], $command);
+        array_unshift($jobopts['command'], $command);
 
         /**
          * Log the first run so we can analyse test times to make future
@@ -107,71 +107,25 @@ class Phpunit extends AdapterAbstract
          */
         $timeout = 0;
         if ($firstRun) {
-            $jobopts['cliopts'] = array_merge(
-                $jobopts['cliopts'],
+            $jobopts['command'] = array_merge(
+                $jobopts['command'],
                 explode(' ', $jobopts['constraints'])
             );
         } else {
             $timeout = $container->getTimeout();
         }
 
-        $job = Job::generate(
+        Job::generate(
             $mutantFile,
             $jobopts,
             $container->getBootstrap(),
             $interceptFile
         );
-
-        /*$process = new PhpProcess($job, null, $_ENV);
-        if (!defined('PHP_WINDOWS_VERSION_BUILD')) {
-            $executableFinder = new PhpExecutableFinder();
-            $php = $executableFinder->find();
-            if ($php !== false) {
-                $process->setCommandLine('exec '.$php);
-            }
-        }*/
         
-        $process = new Process(implode(' ', $jobopts['cliopts']), $jobopts['testdir'], $_ENV);
+        $process = new Process(implode(' ', $jobopts['command']), $jobopts['testdir'], $_ENV);
         $process->setTimeout($timeout);
 
         return $process;
-    }
-
-    /**
-     * Executed in a separate process spawned from the execute() method above.
-     *
-     * Uses an instance of PHPUnit_TextUI_Command to execute the PHPUnit
-     * tests and simulate any Humbug supported command line options suitable
-     * for PHPUnit. At present, we merely dissect a generic 'options' string
-     * equivalant to anything typed into a console after a normal 'phpunit'
-     * command. The adapter captures the TextUI output for further processing.
-     *
-     * @param string $arguments PHP serialised set of arguments to pass to PHPUnit
-     * @return void
-     */
-    public static function main($arguments)
-    {
-        $arguments = unserialize(base64_decode($arguments));
-
-        /**
-         * Switch working directory to tests (if required) and execute the test suite
-         */
-        $originalWorkingDir = getcwd();
-        if (isset($arguments['testdir']) && !empty($arguments['testdir'])) {
-            chdir($arguments['testdir']);
-        }
-        $command = new \PHPUnit_TextUI_Command;
-        try {
-            $command->run($arguments['cliopts'], false);
-            if (getcwd() !== $originalWorkingDir) {
-                chdir($originalWorkingDir);
-            }
-        } catch (\Exception $e) {
-            if (getcwd() !== $originalWorkingDir) {
-                chdir($originalWorkingDir);
-            }
-            throw $e;
-        }
     }
 
     /**

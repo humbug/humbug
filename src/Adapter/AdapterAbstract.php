@@ -11,7 +11,7 @@
 namespace Humbug\Adapter;
 
 use Humbug\Container;
-use Symfony\Component\Process\PhpProcess;
+use Symfony\Component\Process\Process;
 
 abstract class AdapterAbstract
 {
@@ -23,12 +23,12 @@ abstract class AdapterAbstract
      * Second element is an array containing the key "stdout" which stores the
      * output from the last test run.
      *
-     * @param   \Humbug\container $container
+     * @param   Container         $container
      * @param   bool              $firstRun
      * @param   null|string       $interceptFile
      * @param   null|string       $mutantFile
      * @param   array             $testCases
-     * @return  \Symfony\Component\Process\Process
+     * @return  Process
      */
     abstract public function getProcess(
         Container $container,

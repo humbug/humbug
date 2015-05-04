@@ -16,7 +16,6 @@ use Humbug\Utility\CoverageData;
 use Humbug\Utility\Diff;
 use Humbug\Utility\Tokenizer;
 use Humbug\Exception\NoCoveringTestsException;
-use Symfony\Component\Process\PhpProcess;
 use Serializable;
 
 class Mutant implements Serializable

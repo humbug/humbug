@@ -19,7 +19,7 @@ use Symfony\Component\Process\Process;
 class ProcessRunner
 {
     /**
-     * @param PhpProcess $process
+     * @param Process $process
      * @param AdapterAbstract $testFrameworkAdapter
      * @param callable $onProgressCallback
      *

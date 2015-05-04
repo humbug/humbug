@@ -33,7 +33,7 @@ class Process
     private $mutableIndex;
 
     /**
-     * @var PhpProcess
+     * @var SymfonyProcess
      */
     private $process;
 
@@ -50,7 +50,7 @@ class Process
     /**
      * @param AdapterAbstract $adapter
      * @param Mutant $mutant
-     * @param PhpProcess $process
+     * @param SymfonyProcess $process
      */
     public function __construct(AdapterAbstract $adapter, Mutant $mutant, SymfonyProcess $process, $index)
     {
@@ -77,7 +77,7 @@ class Process
     }
 
     /**
-     * @return PhpProcess
+     * @return SymfonyProcess
      */
     public function getProcess()
     {
