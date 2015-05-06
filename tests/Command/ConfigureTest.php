@@ -50,7 +50,7 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
         @rmdir('src1');
         @rmdir('src2');
 
-        rmdir($this->configureDir);
+        @rmdir($this->configureDir);
     }
 
     public function testShouldCreateConfigurationIfUserConfirmsIt()
