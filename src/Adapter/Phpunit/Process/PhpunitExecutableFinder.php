@@ -104,6 +104,9 @@ class PhpunitExecutableFinder
         if (!defined('PHP_WINDOWS_VERSION_BUILD')) {
             return sprintf('%s %s %s', 'exec', $phpFinder->find(), $path);
         } else {
+            if (false !== strpos($path, '.bat')) {
+                return $path;
+            }
             return sprintf('%s %s', $phpFinder->find(), $path);
         }
     }
