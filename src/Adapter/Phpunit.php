@@ -117,7 +117,6 @@ class Phpunit extends AdapterAbstract
 
         Job::generate(
             $mutantFile,
-            $jobopts,
             $container->getBootstrap(),
             $interceptFile
         );

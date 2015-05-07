@@ -21,7 +21,7 @@ class Job
      * @param null|string   $replacingFile
      * @return string
      */
-    public static function generate($mutantFile = null, array $args = [], $bootstrap = '', $replacingFile = null)
+    public static function generate($mutantFile = null, $bootstrap = '', $replacingFile = null)
     {
         if ('phar:' === substr(__FILE__, 0, 5)) {
             $humbugBootstrap = \Phar::running() . '/bootstrap.php';

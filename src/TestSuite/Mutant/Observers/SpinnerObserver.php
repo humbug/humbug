@@ -28,7 +28,7 @@ class SpinnerObserver extends BaseObserver
     private $count = 0;
 
     /**
-     * @var int
+     * @var float
      */
     private $time;
 
