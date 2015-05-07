@@ -122,7 +122,7 @@ class Phpunit extends AdapterAbstract
             $interceptFile
         );
         
-        $process = new Process(implode(' ', $jobopts['command']), $jobopts['testdir'], $_ENV);
+        $process = new Process(implode(' ', $jobopts['command']), $jobopts['testdir'], array_replace($_ENV, $_SERVER));
         $process->setTimeout($timeout);
 
         return $process;
