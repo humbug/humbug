@@ -12,9 +12,8 @@ namespace Humbug\Process;
 
 use Humbug\Exception\RuntimeException as KickToysOutOfPramAndCryLoudlyException;
 use Symfony\Component\Process\ExecutableFinder;
-use Symfony\Component\Process\PhpExecutableFinder;
 
-class ComposerExecutableFinder
+class ComposerExecutableFinder extends AbstractExecutableFinder
 {
 
     /**
@@ -44,17 +43,9 @@ class ComposerExecutableFinder
          * Check for options without execute permissions and prefix the PHP
          * executable instead. Make your eyes very large and innocent.
          */
-        $dirs = array_merge(
-            explode(PATH_SEPARATOR, getenv('PATH') ?: getenv('Path')),
-            $immediatePaths
-        );
-        foreach ($dirs as $dir) {
-            foreach ($probable as $name) {
-                $path = sprintf('%s/%s', $dir, $name);
-                if (file_exists($path)) {
-                    return $this->makeExecutable($path);
-                }
-            }
+        $result = $this->searchNonExecutables($probable, $immediatePaths);
+        if (!is_null($result)) {
+            return $result;
         }
         /**
          * We tried.
@@ -63,15 +54,5 @@ class ComposerExecutableFinder
             'Unable to locate a Composer executable on local system. Ensure '
             . 'that Composer is installed and available.'
         );
-    }
-
-    /**
-     * @param string $path
-     * @return string
-     */
-    private function makeExecutable($path)
-    {
-        $phpFinder = new PhpExecutableFinder();
-        return sprintf('%s %s', $phpFinder->find(), $path);
     }
 }

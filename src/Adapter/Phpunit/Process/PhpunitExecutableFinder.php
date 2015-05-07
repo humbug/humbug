@@ -10,13 +10,14 @@
 
 namespace Humbug\Adapter\Phpunit\Process;
 
+use Humbug\Process\AbstractExecutableFinder;
 use Humbug\Process\ComposerExecutableFinder;
 use Humbug\Exception\RuntimeException;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\PhpExecutableFinder;
 
-class PhpunitExecutableFinder
+class PhpunitExecutableFinder extends AbstractExecutableFinder
 {
 
     /**
@@ -66,23 +67,14 @@ class PhpunitExecutableFinder
     {
         $probable = ['phpunit', 'phpunit.phar'];
         $finder = new ExecutableFinder;
-        $located = null;
         foreach ($probable as $name) {
             if ($path = $finder->find($name, null, [getcwd()])) {
                 return $this->makeExecutable($path);
             }
         }
-        $dirs = array_merge(
-            explode(PATH_SEPARATOR, getenv('PATH') ?: getenv('Path')),
-            [getcwd()]
-        );
-        foreach ($dirs as $dir) {
-            foreach ($probable as $name) {
-                $path = sprintf('%s/%s', $dir, $name);
-                if (file_exists($path)) {
-                    return $this->makeExecutable($path);
-                }
-            }
+        $result = $this->searchNonExecutables($probable, [getcwd()]);
+        if (!is_null($result)) {
+            return $result;
         }
         throw new RuntimeException(
             'Unable to locate a PHPUnit executable on local system. Ensure '
@@ -97,7 +89,7 @@ class PhpunitExecutableFinder
      * @param string $path
      * @return string
      */
-    private function makeExecutable($path)
+    protected function makeExecutable($path)
     {
         $path = realpath($path);
         $phpFinder = new PhpExecutableFinder();
