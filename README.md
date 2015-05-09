@@ -242,10 +242,10 @@ Mutation Testing is commencing on 78 files...
 
 .....M.M..EMMMMMSSSSMMMMMSMMMMMSSSE.ESSSSSSSSSSSSSSSSSM..M.. |   60 ( 7/78)
 ...MM.ES..SSSSSSSSSS...MMM.MEMME.SSSS.............SSMMSSSSM. |  120 (12/78)
-M.M.M...TT.M...T.MM....S.....SSS..M..SMMSM.......T...M...... |  180 (17/78)
+M.M.M...TT.M...T.MM....S.....SSS..M..SMMSM...........M...... |  180 (17/78)
 MM...M...ESSSEM..MMM.M.MM...SSS.SS.M.SMMMMMMM..SMMMMS....... |  240 (24/78)
 .........SMMMSMMMM.MM..M.SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS |  300 (26/78)
-SSSSSSSSM..E....S......SS......M.SS..S..M...SSSSSSSS....MEM. |  360 (37/78)
+SSSSSSSSM..E....S......SS......M.SS..S..M...SSSSSSSS....MMM. |  360 (37/78)
 .M....MM..SM..S..SSSSSSSS.EM.S.E.M............M.....M.SM.M.M |  420 (45/78)
 ..M....MMS...MMSSS................M.....EME....SEMS...SSSSSS |  480 (52/78)
 SSSSS.EMSSSSM..M.MMMM...SSE.....MMM.M..MM..MSSSSSSSSSSSSSSSS |  540 (60/78)
@@ -253,15 +253,16 @@ SSS....SSSSSSSSMM.SSS..........S..M..MSSMS.SSSSSSSSSSSSSSSSS |  600 (68/78)
 ......E...M..........SM.....M..MMMMM.MMMMMSSSSSSSM.SS
 
 653 mutations were generated:
-     283 mutants were killed
+     284 mutants were killed
      218 mutants were not covered by tests
-     130 covered mutants were not detected
-      18 fatal errors were encountered
-       4 time outs were encountered
+     131 covered mutants were not detected
+      17 fatal errors were encountered
+       3 time outs were encountered
 
-Out of 435 test covered mutations, 70% were detected.
-Out of 653 total mutations, 47% were detected.
-Out of 653 total mutations, 67% were covered by tests.
+Metrics:
+    Mutation Score Indicator (MSI): 47%
+    Mutation Code Coverage: 67%
+    Covered Code MSI: 70%
 
 Remember that some mutants will inevitably be harmless (i.e. false positives).
 
@@ -269,34 +270,38 @@ Humbug results are being logged as JSON to: log.json
 Humbug results are being logged as TEXT to: log.txt
 ```
 
-To explain the perhaps cryptic progress output, a killed mutant is a defect which
-was detected by the test suite, an escaped mutation is a defect that was never
-detected, an uncovered mutant is a mutation occuring on a line that Code Coverage
-indicates is not executed, a fatal error is anything which led to the adapter
-crashing (typically if a mutation creates a syntax or logical problem in the
-source code) and a timed out mutant is a mutation which took longer than your
-defined timeout to execute (perhaps an infinite loop which mutations will infrequently
-create in source code).
+To explain the perhaps cryptic progress output:
+* Killed Mutation (.): A mutation that caused unit tests to fail which is a positive
+outcome.
+* Escaped Mutation (E): A mutation where the unit tests still passed which is not
+what we want! Our unit tests should detect any behaviour changes.
+* Uncovered Mutation (S): A mutation which occurs on a line not covered by any unit
+test. Since there are no unit tests, this is another undesireable result.
+* Fatal Error (F): A mutation created a fatal error. Usually a positive result since
+it's obviously going to be noticed. In some cases, however, it might be a Humbug
+problem that needs fixing.
+* Timeout (T): This is where unit tests exceed the allowed timeout configured for
+Humbug. Likely a positive result if your timeout is appropriate, and often occurs
+when a mutation ends up creating an infinite loop.
 
 Kills, errors and timeouts are all counted as detected mutations. We report errors
 in the logs on the off chance that Humbug itself encountered an internal error, i.e.
 a bug to be reported as an issue here!
 
-The example summary results reported a number of statistics:
-* The headline news is that 70% of mutations which were covered by unit tests
-were detected by your unit tests. Analysing the log may assist in improving that score.
-* A combined detection score of 47% was achieved. This includes mutations which
-occured in source code not covered by any of the tests run. Better code coverage
-would increase this combined score.
-* Finally, 33% of the mutations generated occured in source not covered by unit
-tests. For example, if you had a 90% Code Coverage then this is telling you that
-the 10% uncovered code is generating 33% of all mutations. Such discrepancies are
-proof that Code Coverage is, ahem, unreliable.
+The example summary results reported a number of metric scores:
+* A Mutation Score Indicator (MSI) of 47%. This means that 47% of all generated
+mutations were detected (i.e. kills, timeouts or fatal errors). The MSI is the
+primary Mutation Testing metric. Given the code coverage of 65%, there is a 18%
+discrepancy so Code Coverage was a terrible quality measurement in this example.
+* Mutation Code Coverage is 67%. On average it should be within the same ballpark
+as your normal code coverage, but code coverage ignores mutation frequency.
+* The Mutation Score Indicator for code that is actually covered by tests was 70%
+(i.e. ignoring code not even tested). This gives you some idea of how effective
+the tests that do exist really are.
 
-As a short hand metric, this example would be reported as having a Mutation Score
-Indicator (MSI) of 47%. Over half of all generated mutations went undetected. The
-Code Coverage is reported as 65%, showing a discrepancy of 18% between the two.
-Ideally, both scores would be much closer were the test suite more effective.
+If you examine these metrics, the standout issue is that the MSI of 47% is 18 points
+lower than the reported Code Coverage at 65%. These unit tests are far less effective
+than Code Coverage alone could detect.
 
 Interpreting these results requires some context. The logs will list all undetected
 mutations as diffs against the original source code. Examining these will provide

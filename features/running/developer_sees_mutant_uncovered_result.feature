@@ -85,9 +85,10 @@ Feature: Use Humbug
                    0 fatal errors were encountered
                    0 time outs were encountered
 
-            Out of 0 test covered mutations, 0% were detected.
-            Out of 1 total mutations, 0% were detected.
-            Out of 1 total mutations, 0% were covered by tests.
+            Metrics:
+                Mutation Score Indicator (MSI): 0%
+                Mutation Code Coverage: 0%
+                Covered Code MSI: 0%
 
             Remember that some mutants will inevitably be harmless (i.e. false positives).
 

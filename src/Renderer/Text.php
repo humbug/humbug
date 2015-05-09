@@ -249,9 +249,10 @@ class Text
             $coveredRate = 0;
             $detectionRateAll = 0;
         }
-        $this->write('Out of ' . ($measurableTotal) . ' test covered mutations, <options=bold>' . $detectionRateTested . '%</options=bold> were detected.');
-        $this->write('Out of ' . $collector->getTotalCount() . ' total mutations, <options=bold>' . $detectionRateAll . '%</options=bold> were detected.');
-        $this->write('Out of ' . $collector->getTotalCount() . ' total mutations, <options=bold>' . $coveredRate . '%</options=bold> were covered by tests.');
+        $this->write('Metrics:');
+        $this->write('    Mutation Score Indicator (MSI): <options=bold>' . $detectionRateAll . '%</options=bold>');
+        $this->write('    Mutation Code Coverage: <options=bold>' . $coveredRate . '%</options=bold>');
+        $this->write('    Covered Code MSI: <options=bold>' . $detectionRateTested . '%</options=bold>');
         $this->write(PHP_EOL, false);
         $this->write('Remember that some mutants will inevitably be harmless (i.e. false positives).');
     }
