@@ -38,6 +38,13 @@ abstract class AdapterAbstract
         array $testCases = []
     );
 
+    /**
+     * Return adapter name
+     *
+     * @return string
+     */
+    abstract public function getName();
+
     abstract public function getClassFile($class, Container $container);
 
     /**

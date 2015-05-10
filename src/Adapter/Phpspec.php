@@ -47,7 +47,7 @@ class Phpspec extends AdapterAbstract
             'testdir'       => $container->getTestRunDirectory(),
             'basedir'       => $container->getBaseDirectory(),
             'timeout'       => $container->getTimeout(),
-            'cachedir'      => $container->getCacheDirectory(),
+            'cachedir'      => $container->getTempDirectory(),
             'cliopts'       => $container->getAdapterOptions(),
             'constraints'   => $container->getAdapterConstraints()
         ];
@@ -126,6 +126,11 @@ class Phpspec extends AdapterAbstract
         return 'phpspec';
     }
 
+    public function getClassFile($class, Container $container)
+    {
+        throw new \Exception('Not implemented');
+    }
+
     /**
      * Executed in a separate process spawned from the execute() method above.
      *
@@ -174,7 +179,7 @@ class Phpspec extends AdapterAbstract
     public function getSpecMap(Container $container)
     {
         $coverage = new SpecMapData(
-            $container->getCacheDirectory() . '/phpspec.specmap.humbug.json'
+            $container->getTempDirectory() . '/phpspec.specmap.humbug.json'
         );
         return $coverage;
     }

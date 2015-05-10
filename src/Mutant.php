@@ -13,6 +13,7 @@ namespace Humbug;
 use Humbug\TestSuite\Mutant\FileGenerator;
 use Humbug\TestSuite\Mutant\Result;
 use Humbug\Utility\CoverageData;
+use Humbug\Utility\SpecMapData;
 use Humbug\Utility\Diff;
 use Humbug\Utility\Tokenizer;
 use Humbug\Exception\NoCoveringTestsException;
@@ -60,23 +61,33 @@ class Mutant implements Serializable
     {
         $this->mutation = $mutation;
 
+        $this->setCoverage($coverage);
+
+        $this->file = $generator->generateFile($mutation);
+        $this->baseDirectory = $baseDirectory;
+        $this->diff = Diff::getInstance();
+    }
+
+    public function setCoverage(CoverageData $coverage)
+    {
         try {
             $this->tests = $coverage->getTestClasses(
-                $mutation->getFile(),
-                $mutation->getLine()
+                $this->mutation->getFile(),
+                $this->mutation->getLine()
             );
             $this->testMethods = $coverage->getTestMethods(
-                $mutation->getFile(),
-                $mutation->getLine()
+                $this->mutation->getFile(),
+                $this->mutation->getLine()
             );
         } catch (NoCoveringTestsException $e) {
             $this->tests = [];
             $this->testMethods = [];
         }
+    }
 
-        $this->file = $generator->generateFile($mutation);
-        $this->baseDirectory = $baseDirectory;
-        $this->diff = Diff::getInstance();
+    public function setSpecMap(SpecMapData $specMap)
+    {
+        $this->tests = $specMap->getSpecTitles($this->mutation['file']);
     }
 
     /**

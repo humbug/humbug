@@ -10,7 +10,6 @@
 
 namespace Humbug\Adapter;
 
-use Humbug\Container;
 use Humbug\Exception\InvalidArgumentException;
 
 abstract class ConfigurationAbstract
