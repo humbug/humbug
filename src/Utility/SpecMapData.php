@@ -44,5 +44,4 @@ class SpecMapData
         }
         return [$this->data[$file]['specTitle']];
     }
-
 }
