@@ -13,6 +13,7 @@ namespace Humbug\Adapter;
 use Humbug\Container;
 use Humbug\Adapter\Phpspec\YamlConfiguration;
 use Humbug\Adapter\Phpspec\Job;
+use Humbug\Adapter\Phpspec\Process\PhpspecExecutableFinder;
 use Humbug\Utility\SpecMapData;
 use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\PhpProcess;
@@ -48,36 +49,38 @@ class Phpspec extends AdapterAbstract
             'basedir'       => $container->getBaseDirectory(),
             'timeout'       => $container->getTimeout(),
             'cachedir'      => $container->getTempDirectory(),
-            'cliopts'       => $container->getAdapterOptions(),
+            'command'       => $container->getAdapterOptions(),
             'constraints'   => $container->getAdapterConstraints()
         ];
 
         /*
          * We only need a single fail!
          */
-        if (!in_array('--stop-on-failure', $jobopts['cliopts'])) {
-            array_unshift($jobopts['cliopts'], '--stop-on-failure');
+        if (!in_array('--stop-on-failure', $jobopts['command'])) {
+            array_unshift($jobopts['command'], '--stop-on-failure');
         }
 
         /**
          * Handle any editing of the configuration
          */
         $configFile = YamlConfiguration::assemble($container, $firstRun, $testSuites);
-        foreach ($jobopts['cliopts'] as $key => $value) {
+        foreach ($jobopts['command'] as $key => $value) {
             if ($value == '--config' || $value == '-c') {
-                unset($jobopts['cliopts'][$key]);
-                unset($jobopts['cliopts'][$key+1]);
+                unset($jobopts['command'][$key]);
+                unset($jobopts['command'][$key+1]);
             } elseif (preg_match('%\\-\\-config=%', $value)) {
-                unset($jobopts['cliopts'][$key]);
+                unset($jobopts['command'][$key]);
             }
         }
-        array_unshift($jobopts['cliopts'], '--config=' . $configFile);
+        array_unshift($jobopts['command'], '--config=' . $configFile);
 
         /**
          * Initial command is expected, of course.
          */
-        array_unshift($jobopts['cliopts'], 'run');
-        array_unshift($jobopts['cliopts'], 'phpspec');
+        array_unshift($jobopts['command'], 'run');
+        $phpspecFinder = new PhpspecExecutableFinder;
+        $command = $phpspecFinder->find();
+        array_unshift($jobopts['command'], $command);
 
         /**
          * Log the first run so we can analyse test times to make future
@@ -86,8 +89,8 @@ class Phpspec extends AdapterAbstract
         $timeout = 0;
         if ($firstRun) {
             if (!empty($jobopts['constraints'])) {
-                $jobopts['cliopts'] = array_merge(
-                    $jobopts['cliopts'],
+                $jobopts['command'] = array_merge(
+                    $jobopts['command'],
                     explode(' ', $jobopts['constraints'])
                 );
             }
@@ -95,22 +98,13 @@ class Phpspec extends AdapterAbstract
             $timeout = $container->getTimeout();
         }
 
-        $job = Job::generate(
+        Job::generate(
             $mutantFile,
-            $jobopts,
             $container->getBootstrap(),
             $interceptFile
         );
 
-        $process = new PhpProcess($job, null, $_ENV);
-        if (!defined('PHP_WINDOWS_VERSION_BUILD')) {
-            $executableFinder = new PhpExecutableFinder();
-            $php = $executableFinder->find();
-            if ($php !== false) {
-                $process->setCommandLine('exec '.$php);
-            }
-        }
-        
+        $process = new Process(implode(' ', $jobopts['command']), $jobopts['testdir'], array_replace($_ENV, $_SERVER));
         $process->setTimeout($timeout);
 
         return $process;
@@ -158,7 +152,7 @@ class Phpspec extends AdapterAbstract
         }
         $application = new PhpspecApplication('2.2.x-dev-humbug');
         try {
-            $argv = new ArgvInput($arguments['cliopts']);
+            $argv = new ArgvInput($arguments['command']);
             $application->run($argv);
             if (getcwd() !== $originalWorkingDir) {
                 chdir($originalWorkingDir);

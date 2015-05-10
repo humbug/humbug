@@ -55,7 +55,7 @@ class YamlConfiguration extends ConfigurationAbstract
             self::handleFastestSpecFirstFilter();
         }
 
-        $saveFile = self::$container->getCacheDirectory() . '/phpspec.humbug.yml';
+        $saveFile = self::$container->getTempDirectory() . '/phpspec.humbug.yml';
         $extensions = self::$config['extensions'];
 
         /**
@@ -82,7 +82,7 @@ class YamlConfiguration extends ConfigurationAbstract
         self::$config['humbug.filtered_resource_loader.filters'][] =
             'Humbug\PhpSpec\Loader\Filter\Specification\FastestFirstFilter';
         self::$config['humbug.time_collector.target'] =
-            self::$container->getCacheDirectory() . '/phpspec.times.humbug.json';
+            self::$container->getTempDirectory() . '/phpspec.times.humbug.json';
     }
 
     protected static function handleIncludeOnlySpecFilter(array $specs)
@@ -96,14 +96,14 @@ class YamlConfiguration extends ConfigurationAbstract
     {
         self::$config['extensions'][] = 'Humbug\PhpSpec\SpecMapperExtension';
         self::$config['humbug.spec_mapper.target'] =
-            self::$container->getCacheDirectory() . '/phpspec.specmap.humbug.json';
+            self::$container->getTempDirectory() . '/phpspec.specmap.humbug.json';
     }
 
     protected static function handleTimeCollectorLogging()
     {
         self::$config['extensions'][] = 'Humbug\PhpSpec\TimeCollectorExtension';
         self::$config['humbug.time_collector.target'] =
-            self::$container->getCacheDirectory() . '/phpspec.times.humbug.json';
+            self::$container->getTempDirectory() . '/phpspec.times.humbug.json';
     }
 
     protected static function parseConfigurationFile()
@@ -150,8 +150,8 @@ class YamlConfiguration extends ConfigurationAbstract
         self::$config['extensions'][] = 'PhpSpec\Extension\CodeCoverageExtension';
         self::$config['code_coverage']['format'] = ['text', 'php'];
         self::$config['code_coverage']['output'] = [
-            'php'   => self::$container->getCacheDirectory() . '/coverage.humbug.php',
-            'text'   => self::$container->getCacheDirectory() . '/coverage.humbug.txt'
+            'php'   => self::$container->getTempDirectory() . '/coverage.humbug.php',
+            'text'   => self::$container->getTempDirectory() . '/coverage.humbug.txt'
         ];
 
         self::$config['code_coverage']['whitelist'] = [];
