@@ -20,7 +20,7 @@ warned ;).
 	- [Configuration](#configuration)
 		- [Configure command](#configure-command)
 		- [Manual Configuration](#manual-configuration)
-		- [Running Humbug](#running-humbug)
+	- [Running Humbug](#running-humbug)
 - [Command Line Options](#command-line-options)
 	- [Overriding The Configured Timeout](#overriding-the-configured-timeout)
 	- [Restricting Files To Mutate](#restricting-files-to-mutate)
