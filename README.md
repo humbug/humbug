@@ -11,6 +11,7 @@ warned ;).
 
 **Table of Contents**
 
+- [Introduction](#introduction)
 - [Installation](#installation)
 	- [Git](#git)
 	- [Phar](#phar)
@@ -26,6 +27,9 @@ warned ;).
 	- [Incremental Analysis](#incremental-analysis)
 - [Performance](#performance)
 - [Mutators](#mutators)
+
+Introduction
+------------
 
 Mutation Testing is, in a nutshell, giving your unit tests a run for their money.
 It involves injecting small defects into source code and then checking if the unit
