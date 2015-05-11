@@ -3,21 +3,21 @@ Humbug: Mutation Testing for PHP
 
 **Table of Contents**
 
-- [Installation](#)
-	- [Git](#)
-	- [Phar](#)
-	- [Composer](#)
-- [Usage](#)
-	- [Configuration](#)
-		- [Configure command](#)
-		- [Manual Configuration](#)
-		- [Running Humbug](#)
-- [Command Line Options](#)
-	- [Overriding The Configured Timeout](#)
-	- [Restricting Files To Mutate](#)
-	- [Incremental Analysis](#)
-- [Performance](#)
-- [Mutators](#)
+- [Installation](#installation)
+	- [Git](#git)
+	- [Phar](#phar)
+	- [Composer](#composer)
+- [Usage](#usage)
+	- [Configuration](#configuration)
+		- [Configure command](#configure-command)
+		- [Manual Configuration](#manual-configuration)
+		- [Running Humbug](#running-humbug)
+- [Command Line Options](#command-line-options)
+	- [Overriding The Configured Timeout](#overriding-the-configured-timeout)
+	- [Restricting Files To Mutate](#restricting-files-to-mutate)
+	- [Incremental Analysis](#incremental-analysis)
+- [Performance](#performance)
+- [Mutators](#mutators)
 
 Humbug is a Mutation Testing framework for PHP. It is currently in development and
 so, while it does actually work quite well, it will have rough edges that a team
