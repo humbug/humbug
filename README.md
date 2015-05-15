@@ -21,6 +21,7 @@ warned ;).
 		- [Configure command](#configure-command)
 		- [Manual Configuration](#manual-configuration)
 	- [Running Humbug](#running-humbug)
+		- [The Metrics](#the-metrics)
 - [Command Line Options](#command-line-options)
 	- [Overriding The Configured Timeout](#overriding-the-configured-timeout)
 	- [Restricting Files To Mutate](#restricting-files-to-mutate)
@@ -309,6 +310,8 @@ when a mutation ends up creating an infinite loop.
 Kills, errors and timeouts are all counted as detected mutations. We report errors
 in the logs on the off chance that Humbug itself encountered an internal error, i.e.
 a bug to be reported as an issue here!
+
+#### The Metrics
 
 The example summary results reported a number of metric scores:
 * A Mutation Score Indicator (MSI) of 47%. This means that 47% of all generated
