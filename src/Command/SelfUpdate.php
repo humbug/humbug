@@ -54,6 +54,7 @@ class SelfUpdate extends Command
          */
         if ($input->getOption('dev')) {
             $this->updateToDevelopmentBuild();
+            return;
         }
         /**
          * This is the final development build being installed automatically
