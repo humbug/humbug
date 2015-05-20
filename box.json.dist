@@ -18,6 +18,11 @@
                 "mockery",
                 "behat",
                 "symfony/filesystem",
+                "symfony/translation",
+                "symfony/class-loader",
+                "symfony/dependency-injection",
+                "symfony/config",
+                "symfony/filesystem",
                 "mikey179"
             ],
             "in": [
