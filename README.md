@@ -105,6 +105,15 @@ Note: Using a phar means that fixes may take longer to reach your version, but t
 more assurance of having a stable development version. The public key is
 downloaded only once. It is re-used by self-update to verify future phar releases.
 
+Once releases commence towards stable, there will be an alpha, beta, RC and a final
+release. Your development track phar file will self-update automatically until
+it reaches a stable release. If you wish to continue tracking the development
+level phars, you will need to indicate this using one of the stability flags:
+
+```sh
+./humbug.phar self-update --dev
+```
+
 ###### Self-Update Request Debugging
 
 If you experience any issues self-updating with unexpected `openssl` or SSL errors,
