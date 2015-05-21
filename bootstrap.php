@@ -9,7 +9,7 @@
  */
 
 foreach ([__DIR__ . '/../../autoload.php', __DIR__ . '/vendor/autoload.php'] as $file) {
-    if (file_exists($file)) {
+    if (file_exists($file) && !defined('HUMBUG_COMPOSER_INSTALL')) {
         define('HUMBUG_COMPOSER_INSTALL', $file);
         break;
     }
