@@ -52,8 +52,12 @@ abstract class AdapterAbstract
      */
     public function ok($output)
     {
-        if (preg_match("%not ok \\d+ - %", $output)) {
-            return false;
+        $lines = explode("\n", $output);
+        foreach ($lines as $line) {
+            if (preg_match("%not ok \\d+ - %", $line)
+            && !preg_match("%# TODO%", $line)) {
+                return false;
+            }
         }
         return true;
     }
