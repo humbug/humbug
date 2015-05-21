@@ -10,7 +10,8 @@
     "finder": [
         {
             "name": [
-                "*.php"
+                "*.php",
+                "*.dist"
             ],
             "exclude": [
                 "tests",
