@@ -27,6 +27,11 @@ class Application extends BaseApplication
 
     public function __construct()
     {
+        $pharVersion = '@package_version@';
+        if ($pharVersion !== '@package_version@') {
+            parent::__construct(self::$logo.PHP_EOL.self::NAME, $pharVersion);
+            return;
+        }
         parent::__construct(self::$logo.PHP_EOL.self::NAME, self::VERSION);
     }
 }

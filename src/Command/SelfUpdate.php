@@ -92,7 +92,9 @@ class SelfUpdate extends Command
     {
         $updater->getStrategy()->setPackageName(self::PACKAGE_NAME);
         $updater->getStrategy()->setPharName(self::FILE_NAME);
-        $updater->getStrategy()->setCurrentLocalVersion(Application::VERSION);
+        $updater->getStrategy()->setCurrentLocalVersion(
+            $this->getApplication()->getVersion()
+        );
         $this->update($updater);
     }
 

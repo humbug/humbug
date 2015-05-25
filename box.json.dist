@@ -31,6 +31,7 @@
             ]
         }
     ],
+    "git-version": "package_version",
     "main": "bin/humbug",
     "output": "build/humbug.phar",
     "stub": true,
