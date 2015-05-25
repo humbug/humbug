@@ -35,7 +35,7 @@ $input = new \Symfony\Component\Console\Input\ArgvInput(prepareArgv());
 $application = new Application();
 if ('phar:' !== substr(__FILE__, 0, 5)) {
     $application->setDispatcher($dispatcher);
-} elseif(!$input->getOption('version')) {
+} else {
     $output->writeln($application->getLongVersion() . PHP_EOL);
 }
 
