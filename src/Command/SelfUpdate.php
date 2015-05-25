@@ -98,6 +98,15 @@ class SelfUpdate extends Command
 
     protected function update(Updater $updater)
     {
+        $newVersion = $updater->getNewVersion();
+        $oldVersion = $updater->getOldVersion();
+        if (strlen($newVersion) == 40) {
+            $newVersion = 'dev-' . $newVersion;
+        }
+        if (strlen($oldVersion) == 40) {
+            $oldVersion = 'dev-' . $oldVersion;
+        }
+
         $this->output->writeln('Updating...'.PHP_EOL);
         try {
             $result = $updater->update();
@@ -105,17 +114,17 @@ class SelfUpdate extends Command
                 $this->output->writeln('<fg=green>Humbug has been updated.</fg=green>');
                 $this->output->writeln(sprintf(
                     '<fg=green>Current version is:</fg=green> <options=bold>%s</options=bold>.',
-                    $updater->getNewVersion()
+                    $newVersion
                 ));
                 $this->output->writeln(sprintf(
                     '<fg=green>Previous version was:</fg=green> <options=bold>%s</options=bold>.',
-                    $updater->getOldVersion()
+                    $oldVersion
                 ));
             } else {
                 $this->output->writeln('<fg=green>Humbug is currently up to date.</fg=green>');
                 $this->output->writeln(sprintf(
                     '<fg=green>Current version is:</fg=green> <options=bold>%s</options=bold>.',
-                    $updater->getOldVersion()
+                    $oldVersion
                 ));
             }
         } catch (\Exception $e) {
