@@ -30,10 +30,12 @@ $dispatcher->addListener(ConsoleEvents::COMMAND, function(ConsoleCommandEvent $e
 
 $output = new ConsoleOutput();
 
+$input = new \Symfony\Component\Console\Input\ArgvInput(prepareArgv());
+
 $application = new Application();
 if ('phar:' !== substr(__FILE__, 0, 5)) {
     $application->setDispatcher($dispatcher);
-} else {
+} elseif(!$input->getOption('version')) {
     $output->writeln($application->getLongVersion() . PHP_EOL);
 }
 
@@ -65,4 +67,4 @@ function prepareArgv()
     return $argv;
 }
 
-$application->run(new \Symfony\Component\Console\Input\ArgvInput(prepareArgv()), $output);
+$application->run($input, $output);
