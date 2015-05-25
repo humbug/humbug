@@ -52,15 +52,16 @@ class SelfUpdate extends Command
          *
          * Will be updated again once the stable track is established.
          */
-        if ($input->getOption('dev')) {
-            $this->updateToDevelopmentBuild();
+        if ($input->getOption('pre')) {
+            $this->updateToPreReleaseBuild();
             return;
         }
         /**
          * This is the final development build being installed automatically
          * Any future dev updates need to carry the --dev flag in command.
          */
-        $this->updateToPreReleaseBuild(); // alpha/beta/rc?
+        $this->updateToDevelopmentBuild();
+         // alpha/beta/rc?
 
         // Can likely add update config at some point...
     }
