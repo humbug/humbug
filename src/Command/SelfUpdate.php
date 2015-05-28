@@ -36,6 +36,11 @@ class SelfUpdate extends Command
     protected $output;
 
     /**
+     * @var string
+     */
+    protected $version;
+
+    /**
      * Execute the command.
      *
      * @param InputInterface $input
@@ -44,26 +49,45 @@ class SelfUpdate extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->output = $output;
-        /**
-         * This specific code assumes migration from manual SHA-1 tracked
-         * development versions to either a pre-release (default) or solely
-         * a stable version. An option is allowed for going back to manual
-         * phar builds at the development level.
-         *
-         * Will be updated again once the stable track is established.
-         */
+        $this->version = $this->getApplication()->getVersion();
+        $parser = new VersionParser;
+
+        if ($input->getOption('rollback')) {
+            $this->rollback();
+            return;
+        }
+
+        if ($input->getOption('dev')) {
+            $this->updateToDevelopmentBuild();
+            return;
+        }
+        
         if ($input->getOption('pre')) {
             $this->updateToPreReleaseBuild();
             return;
         }
-        /**
-         * This is the final development build being installed automatically
-         * Any future dev updates need to carry the --dev flag in command.
-         */
-        $this->updateToDevelopmentBuild();
-         // alpha/beta/rc?
 
-        // Can likely add update config at some point...
+        if ($input->getOption('stable')) {
+            $this->updateToStableBuild();
+            return;
+        }
+
+        if ($input->getOption('check')) {
+            throw new \RuntimeException('Not implemented.')
+            return;
+        }
+
+        if ($parser->isStable($this->version)) {
+            $this->updateToStableBuild();
+            return;
+        }
+
+        if ($parser->isPreRelease($this->version)) {
+            $this->updateToPreReleaseBuild();
+            return;
+        }
+
+        $this->updateToDevelopmentBuild();
     }
 
     protected function updateToStableBuild()
@@ -93,9 +117,7 @@ class SelfUpdate extends Command
     {
         $updater->getStrategy()->setPackageName(self::PACKAGE_NAME);
         $updater->getStrategy()->setPharName(self::FILE_NAME);
-        $updater->getStrategy()->setCurrentLocalVersion(
-            $this->getApplication()->getVersion()
-        );
+        $updater->getStrategy()->setCurrentLocalVersion($this->version);
         $this->update($updater);
     }
 
@@ -136,6 +158,21 @@ class SelfUpdate extends Command
         }
         $this->output->write(PHP_EOL);
         $this->output->writeln('You can also select update stability using --dev, --pre (alpha/beta/rc) or --stable.');
+    }
+
+    protected function rollback()
+    {
+        $updater = new Updater;
+        try {
+            $result = $updater->rollback();
+            if ($result) {
+                $this->output->writeln('<fg=green>Humbug has been rolled back to prior version.</fg=green>');
+            } else {
+                $this->output->writeln('<fg=red>Rollback failed for reasons unknown.</fg=red>');
+            }
+        } catch (\Exception $e) {
+            $this->output->writeln(sprintf('Error: <fg=yellow>%s</fg=yellow>', $e->getMessage()));
+        }
     }
 
     protected function configure()
