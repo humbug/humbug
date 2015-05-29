@@ -85,6 +85,11 @@ class SelfUpdate extends Command
             return;
         }
 
+        if ($input->getOption('non-dev')) {
+            $this->updateToMostRecentNonDevRemote();
+            return;
+        }
+
         /**
          * If current build is stable, only update to more recent stable
          * versions if available. User may specify otherwise using options.
@@ -112,7 +117,7 @@ class SelfUpdate extends Command
     {
         $updater = new Updater;
         $updater->setStrategy(Updater::STRATEGY_GITHUB);
-        $updater->getStrategy()->setStability('unstable');
+        $updater->getStrategy()->setStability(GithubStrategy::UNSTABLE);
         return $this->getGithubReleasesUpdater($updater);
     }
 
@@ -120,7 +125,7 @@ class SelfUpdate extends Command
     {
         $updater = new Updater;
         $updater->setStrategy(Updater::STRATEGY_GITHUB);
-        $updater->getStrategy()->setStability('any');
+        $updater->getStrategy()->setStability(GithubStrategy::ANY);
         return $this->getGithubReleasesUpdater($updater);
     }
 
@@ -285,16 +290,22 @@ class SelfUpdate extends Command
                'Update to most recent development build of Humbug.'
             )
             ->addOption(
+               'non-dev',
+               'n',
+               InputOption::VALUE_NONE,
+               'Update to most recent non-development (alpha/beta/stable) build of Humbug tagged on Github.'
+            )
+            ->addOption(
                'pre',
                'p',
                InputOption::VALUE_NONE,
-               'Update to most recent pre-release version of Humbug (alpha/beta/rc), if higher than stable versions, tagged on Github.'
+               'Update to most recent pre-release version of Humbug (alpha/beta/rc) tagged on Github.'
             )
             ->addOption(
                'stable',
                's',
                InputOption::VALUE_NONE,
-               'Update to most recent stable version.'
+               'Update to most recent stable version tagged on Github.'
             )
             ->addOption(
                'rollback',
