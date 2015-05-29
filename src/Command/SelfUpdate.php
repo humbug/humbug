@@ -18,6 +18,8 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Humbug\SelfUpdate\Updater;
 use Humbug\SelfUpdate\VersionParser;
+use Humbug\SelfUpdate\Strategy\ShaStrategy;
+use Humbug\SelfUpdate\Strategy\GithubStrategy;
 
 class SelfUpdate extends Command
 {
@@ -57,6 +59,11 @@ class SelfUpdate extends Command
             return;
         }
 
+        if ($input->getOption('check')) {
+            $this->printAvailableUpdates();
+            return;
+        }
+
         if ($input->getOption('dev')) {
             $this->updateToDevelopmentBuild();
             return;
@@ -69,11 +76,6 @@ class SelfUpdate extends Command
 
         if ($input->getOption('stable')) {
             $this->updateToStableBuild();
-            return;
-        }
-
-        if ($input->getOption('check')) {
-            throw new \RuntimeException('Not implemented.')
             return;
         }
 
@@ -90,34 +92,54 @@ class SelfUpdate extends Command
         $this->updateToDevelopmentBuild();
     }
 
-    protected function updateToStableBuild()
+    protected function getStableUpdater()
     {
         $updater = new Updater;
         $updater->setStrategy(Updater::STRATEGY_GITHUB);
-        $this->updateUsingGithubReleases($updater);
+        return $this->getGithubReleasesUpdater($updater);
     }
 
-    protected function updateToPreReleaseBuild()
+    protected function getPreReleaseUpdater()
     {
         $updater = new Updater;
         $updater->setStrategy(Updater::STRATEGY_GITHUB);
         $updater->getStrategy()->setStability('unstable');
-        $this->updateUsingGithubReleases($updater);
+        return $this->getGithubReleasesUpdater($updater);
     }
 
-    protected function updateToDevelopmentBuild()
-    {
-        $updater = new Updater;
-        $updater->getStrategy()->setPharUrl(self::PHAR_URL);
-        $updater->getStrategy()->setVersionUrl(self::VERSION_URL);
-        $this->update($updater);
-    }
-
-    protected function updateUsingGithubReleases(Updater $updater)
+    protected function getGithubReleasesUpdater(Updater $updater)
     {
         $updater->getStrategy()->setPackageName(self::PACKAGE_NAME);
         $updater->getStrategy()->setPharName(self::FILE_NAME);
         $updater->getStrategy()->setCurrentLocalVersion($this->version);
+        return $updater;
+    }
+
+    protected function getDevelopmentUpdater()
+    {
+        $updater = new Updater;
+        $updater->getStrategy()->setPharUrl(self::PHAR_URL);
+        $updater->getStrategy()->setVersionUrl(self::VERSION_URL);
+        return $updater;
+    }
+
+    protected function updateToStableBuild()
+    {
+        $this->updateUsingGithubReleases($this->getStableUpdater());
+    }
+
+    protected function updateToPreReleaseBuild()
+    {
+        $this->updateUsingGithubReleases($this->getPreReleaseUpdater());
+    }
+
+    protected function updateToDevelopmentBuild()
+    {
+        $this->update($this->getDevelopmentUpdater());
+    }
+
+    protected function updateUsingGithubReleases(Updater $updater)
+    {
         $this->update($updater);
     }
 
@@ -175,6 +197,70 @@ class SelfUpdate extends Command
         }
     }
 
+    protected function printAvailableUpdates()
+    {
+        $this->printCurrentLocalVersion();
+        $this->printCurrentStableVersion();
+        $this->printCurrentPreReleaseVersion();
+        $this->printCurrentDevVersion();
+        $this->output->writeln('You can select update stability using --dev, --pre or --stable when self-updating.');
+    }
+
+    protected function printCurrentLocalVersion()
+    {
+        $this->output->writeln(sprintf(
+            'Your current local build version is: <options=bold>%s</options=bold>',
+            $this->version
+        ));
+    }
+
+    protected function printCurrentStableVersion()
+    {
+        $this->printUsingGithubReleases($this->getStableUpdater());
+    }
+
+    protected function printCurrentPreReleaseVersion()
+    {
+        $this->printUsingGithubReleases($this->getPreReleaseUpdater());
+    }
+
+    protected function printUsingGithubReleases(Updater $updater)
+    {
+        $this->printVersion($updater);
+    }
+
+    protected function printCurrentDevVersion()
+    {
+        $this->printVersion($this->getDevelopmentUpdater());
+    }
+
+    protected function printVersion(Updater $updater)
+    {
+        $stability = 'stable';
+        if ($updater->getStrategy() instanceof ShaStrategy) {
+            $stability = 'development';
+        } elseif ($updater->getStrategy() instanceof GithubStrategy
+        && $updater->getStrategy()->getStability() == GithubStrategy::UNSTABLE) {
+            $stability = 'pre-release';
+        }
+
+        try {
+            if ($updater->hasUpdate()) {
+                $this->output->writeln(sprintf(
+                    'The current %s build available remotely is: <options=bold>%s</options=bold>',
+                    $stability,
+                    $updater->getNewVersion()
+                ));
+            } elseif (false == $updater->getNewVersion()) {
+                $this->output->writeln(sprintf('There are no %s builds available.', $stability));
+            } else {
+                $this->output->writeln(sprintf('You have the current %s build installed.', $stability));
+            }
+        } catch (\Exception $e) {
+            $this->output->writeln(sprintf('Error: <fg=yellow>%s</fg=yellow>', $e->getMessage()));
+        }
+    }
+
     protected function configure()
     {
         $this
@@ -197,6 +283,12 @@ class SelfUpdate extends Command
                's',
                InputOption::VALUE_NONE,
                'Update to most recent stable version.'
+            )
+            ->addOption(
+               'rollback',
+               'r',
+               InputOption::VALUE_NONE,
+               'Rollback to previous version of Humbug if available on filesystem.'
             )
             ->addOption(
                'check',
