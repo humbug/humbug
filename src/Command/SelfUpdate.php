@@ -54,6 +54,9 @@ class SelfUpdate extends Command
         $this->version = $this->getApplication()->getVersion();
         $parser = new VersionParser;
 
+        /**
+         * Check for ancilliary options
+         */
         if ($input->getOption('rollback')) {
             $this->rollback();
             return;
@@ -64,6 +67,9 @@ class SelfUpdate extends Command
             return;
         }
 
+        /**
+         * Update to any specified stability option
+         */
         if ($input->getOption('dev')) {
             $this->updateToDevelopmentBuild();
             return;
@@ -79,17 +85,20 @@ class SelfUpdate extends Command
             return;
         }
 
+        /**
+         * If current build is stable, only update to more recent stable
+         * versions if available. User may specify otherwise using options.
+         */
         if ($parser->isStable($this->version)) {
             $this->updateToStableBuild();
             return;
         }
 
-        if ($parser->isPreRelease($this->version)) {
-            $this->updateToPreReleaseBuild();
-            return;
-        }
-
-        $this->updateToDevelopmentBuild();
+        /**
+         * By default, update to most recent remote version regardless
+         * of stability.
+         */
+        $this->updateToMostRecentNonDevRemote();
     }
 
     protected function getStableUpdater()
@@ -104,6 +113,14 @@ class SelfUpdate extends Command
         $updater = new Updater;
         $updater->setStrategy(Updater::STRATEGY_GITHUB);
         $updater->getStrategy()->setStability('unstable');
+        return $this->getGithubReleasesUpdater($updater);
+    }
+
+    protected function getMostRecentNonDevUpdater()
+    {
+        $updater = new Updater;
+        $updater->setStrategy(Updater::STRATEGY_GITHUB);
+        $updater->getStrategy()->setStability('any');
         return $this->getGithubReleasesUpdater($updater);
     }
 
@@ -125,22 +142,22 @@ class SelfUpdate extends Command
 
     protected function updateToStableBuild()
     {
-        $this->updateUsingGithubReleases($this->getStableUpdater());
+        $this->update($this->getStableUpdater());
     }
 
     protected function updateToPreReleaseBuild()
     {
-        $this->updateUsingGithubReleases($this->getPreReleaseUpdater());
+        $this->update($this->getPreReleaseUpdater());
+    }
+
+    protected function updateToMostRecentNonDevRemote()
+    {
+        $this->update($this->getMostRecentNonDevUpdater());
     }
 
     protected function updateToDevelopmentBuild()
     {
         $this->update($this->getDevelopmentUpdater());
-    }
-
-    protected function updateUsingGithubReleases(Updater $updater)
-    {
-        $this->update($updater);
     }
 
     protected function update(Updater $updater)
@@ -216,17 +233,12 @@ class SelfUpdate extends Command
 
     protected function printCurrentStableVersion()
     {
-        $this->printUsingGithubReleases($this->getStableUpdater());
+        $this->printVersion($this->getStableUpdater());
     }
 
     protected function printCurrentPreReleaseVersion()
     {
-        $this->printUsingGithubReleases($this->getPreReleaseUpdater());
-    }
-
-    protected function printUsingGithubReleases(Updater $updater)
-    {
-        $this->printVersion($updater);
+        $this->printVersion($this->getPreReleaseUpdater());
     }
 
     protected function printCurrentDevVersion()
