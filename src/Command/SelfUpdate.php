@@ -291,7 +291,7 @@ class SelfUpdate extends Command
             )
             ->addOption(
                'non-dev',
-               'n',
+               'N',
                InputOption::VALUE_NONE,
                'Update to most recent non-development (alpha/beta/stable) build of Humbug tagged on Github.'
             )
