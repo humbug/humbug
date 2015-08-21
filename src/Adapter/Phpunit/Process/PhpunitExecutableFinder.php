@@ -80,7 +80,7 @@ class PhpunitExecutableFinder extends AbstractExecutableFinder
                 return $this->makeExecutable($path);
             }
         }
-        $result = $this->searchNonExecutables($probable, [getcwd()]);
+        $result = $this->searchNonExecutables($probable, [$dir]);
         if (!is_null($result)) {
             return $result;
         }
@@ -135,9 +135,12 @@ class PhpunitExecutableFinder extends AbstractExecutableFinder
         return $this->config;
     }
 
+    /**
+     * @return string
+     */
     private function getPhpunitExecutableName()
     {
-        return $this->getConfig()->getPhpunitConfig()->phar;
+        return basename($this->getConfig()->getPhpunitConfig()->phar);
     }
 
     /**
@@ -146,7 +149,7 @@ class PhpunitExecutableFinder extends AbstractExecutableFinder
     private function getExecutableNames()
     {
         if ($this->isExecutableNameConfigured()) {
-            return $probable[] = $this->getPhpunitExecutableName();
+            return [$this->getPhpunitExecutableName()];
         }
         return ['phpunit', 'phpunit.phar'];
     }
@@ -157,9 +160,8 @@ class PhpunitExecutableFinder extends AbstractExecutableFinder
     private function getPhpunitExecutablePath()
     {
         if ($this->getConfig()->isPhpunitConfigured()) {
-            return $this->getConfig()->getPhpunitConfig()->path;
+            return dirname($this->getConfig()->getPhpunitConfig()->phar);
         }
         return getcwd();
     }
-
 }

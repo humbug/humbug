@@ -48,16 +48,9 @@ class Config
                 'Phpunit destination is not included in configuration file'
             );
         }
-
         if (!isset($this->config->phpunit->phar)) {
             throw new JsonConfigException(
-                'Name of phpunit executable is not included in configuration file'
-            );
-        }
-
-        if (!isset($this->config->phpunit->path)) {
-            throw new JsonConfigException(
-                'Path to phpunit executable is not included in configuration file'
+                'full path of phpunit executable is not included in configuration file'
             );
         }
 
