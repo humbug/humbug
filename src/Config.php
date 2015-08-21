@@ -41,6 +41,36 @@ class Config
         return $this->config->source;
     }
 
+    public function getPhpunitConfig()
+    {
+        if (!isset($this->config->phpunit)) {
+            throw new JsonConfigException(
+                'Phpunit destination is not included in configuration file'
+            );
+        }
+
+        if (!isset($this->config->phpunit->phar)) {
+            throw new JsonConfigException(
+                'Name of phpunit executable is not included in configuration file'
+            );
+        }
+
+        if (!isset($this->config->phpunit->path)) {
+            throw new JsonConfigException(
+                'Path to phpunit executable is not included in configuration file'
+            );
+        }
+
+        return $this->config->phpunit;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isPhpunitConfigured() {
+        return isset($this->config->phpunit);
+    }
+
     public function getTimeout()
     {
         if (!isset($this->config->timeout)) {
