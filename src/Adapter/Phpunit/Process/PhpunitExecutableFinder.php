@@ -110,13 +110,6 @@ class PhpunitExecutableFinder extends AbstractExecutableFinder
             return sprintf('%s %s', $phpFinder->find(), $path);
         }
     }
-    /**
-     * @return bool
-     */
-    private function isExecutableNameConfigured()
-    {
-        return $this->getConfig()->isPhpunitConfigured();
-    }
 
     private function setConfig()
     {
@@ -136,20 +129,12 @@ class PhpunitExecutableFinder extends AbstractExecutableFinder
     }
 
     /**
-     * @return string
-     */
-    private function getPhpunitExecutableName()
-    {
-        return basename($this->getConfig()->getPhpunitConfig()->phar);
-    }
-
-    /**
      * @return array
      */
     private function getExecutableNames()
     {
-        if ($this->isExecutableNameConfigured()) {
-            return [$this->getPhpunitExecutableName()];
+        if ($this->getConfig()->isPhpunitConfigured()) {
+            return [basename($this->getConfig()->getPhpunitConfig()->phar)];
         }
         return ['phpunit', 'phpunit.phar'];
     }
