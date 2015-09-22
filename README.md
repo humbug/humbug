@@ -444,7 +444,7 @@ This temporarily encompasses logical mutators.
 | false | true |
 | && | &#124;&#124; |
 | &#124;&#124; | && |
-| and | for |
+| and | or |
 | or | and |
 | ! |  |
 
