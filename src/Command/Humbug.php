@@ -185,8 +185,8 @@ class Humbug extends Command
         if ($chDir !== null) {
             $this->container->setTestRunDirectory($chDir);
         }
-        $this->jsonLogFile = $newConfig->getLogsJson();
-        $this->textLogFile = $newConfig->getLogsText();
+        $this->jsonLogFile = $input->getOption('log-json') ?: $newConfig->getLogsJson();
+        $this->textLogFile = $input->getOption('log-text') ?: $newConfig->getLogsText();
 
         $this->builder = new MutantBuilder();
         $this->builder->setLogFiles($this->textLogFile, $this->jsonLogFile);
@@ -250,6 +250,18 @@ class Humbug extends Command
                'i',
                InputOption::VALUE_NONE,
                'Enable incremental mutation testing by relying on cached results.'
+            )
+            ->addOption(
+               'log-json',
+               null,
+               InputOption::VALUE_REQUIRED,
+               'Generate log file in JSON format.'
+            )
+            ->addOption(
+               'log-text',
+               null,
+               InputOption::VALUE_REQUIRED,
+               'Generate log file in text format.'
             )
         ;
     }
