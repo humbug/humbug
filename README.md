@@ -305,11 +305,11 @@ Humbug results are being logged as TEXT to: log.txt
 To explain the perhaps cryptic progress output:
 * Killed Mutation (.): A mutation that caused unit tests to fail which is a positive
 outcome.
-* Escaped Mutation (E): A mutation where the unit tests still passed which is not
+* Escaped Mutation (M): A mutation where the unit tests still passed which is not
 what we want! Our unit tests should detect any behaviour changes.
 * Uncovered Mutation (S): A mutation which occurs on a line not covered by any unit
 test. Since there are no unit tests, this is another undesireable result.
-* Fatal Error (F): A mutation created a fatal error. Usually a positive result since
+* Fatal Error (E): A mutation created a fatal error. Usually a positive result since
 it's obviously going to be noticed. In some cases, however, it might be a Humbug
 problem that needs fixing.
 * Timeout (T): This is where unit tests exceed the allowed timeout configured for
