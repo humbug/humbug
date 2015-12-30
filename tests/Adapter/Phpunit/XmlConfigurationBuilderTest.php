@@ -113,10 +113,10 @@ class XmlConfigurationBuilderTest extends \PHPUnit_Framework_TestCase
 
         $xmlConfiguration = $this->builder->getConfiguration();
 
-        $filterListener = new ObjectVisitor('\Humbug\Phpunit\Listener\FilterListener', [
+        $filterListener = new ObjectVisitor('\Humbug\Adapter\Phpunit\Listeners\TestSuiteFilterListener', [
             0, //root suite nesting level
-            new ObjectVisitor('\Humbug\Phpunit\Filter\TestSuite\IncludeOnlyFilter', $testSuites),
-            new ObjectVisitor('\Humbug\Phpunit\Filter\TestSuite\FastestFirstFilter', ['path/to/stats.json'])
+            $testSuites,
+            'path/to/stats.json'
         ]);
 
         $xmlConfiguration->wasCalledWith('addListener', [$filterListener]);
