@@ -109,16 +109,10 @@ class XmlConfigurationBuilder
         }
 
         if ($this->pathToTimeStats) {
-            $timeCollectionListener = new ObjectVisitor(
-                '\Humbug\Phpunit\Listener\TimeCollectorListener',
-                [
-                    new ObjectVisitor(
-                        '\Humbug\Phpunit\Logger\JsonLogger',
-                        [$this->pathToTimeStats]
-                    ),
-                    $xmlConfiguration->getRootTestSuiteNestingLevel()
-                ]
-            );
+            $timeCollectionListener = new ObjectVisitor('\Humbug\Adapter\Phpunit\Listeners\JsonLoggingTimeCollectorListener', [
+                $this->pathToTimeStats,
+                $xmlConfiguration->getRootTestSuiteNestingLevel()
+            ]);
             $xmlConfiguration->addListener($timeCollectionListener);
         }
 

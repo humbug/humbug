@@ -93,12 +93,9 @@ class XmlConfigurationBuilderTest extends \PHPUnit_Framework_TestCase
         $xmlConfiguration = $this->builder->getConfiguration();
 
         $timeCollectionListener = new ObjectVisitor(
-            '\Humbug\Phpunit\Listener\TimeCollectorListener',
+            '\Humbug\Adapter\Phpunit\Listeners\JsonLoggingTimeCollectorListener',
             [
-                new ObjectVisitor(
-                    '\Humbug\Phpunit\Logger\JsonLogger',
-                    ['path/to/stats.json']
-                ),
+                'path/to/stats.json',
                 0 //root suite nesting level
             ]
         );
