@@ -115,8 +115,8 @@ class XmlConfigurationBuilderTest extends \PHPUnit_Framework_TestCase
 
         $filterListener = new ObjectVisitor('\Humbug\Adapter\Phpunit\Listeners\TestSuiteFilterListener', [
             0, //root suite nesting level
-            $testSuites,
-            'path/to/stats.json'
+            'path/to/stats.json',
+            'suite'
         ]);
 
         $xmlConfiguration->wasCalledWith('addListener', [$filterListener]);

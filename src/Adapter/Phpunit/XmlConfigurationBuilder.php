@@ -117,11 +117,10 @@ class XmlConfigurationBuilder
         }
 
         if (!empty($this->filterTestSuites) || $this->filterStatsPath) {
-            $filterListener = new ObjectVisitor('\Humbug\Adapter\Phpunit\Listeners\TestSuiteFilterListener', [
+            $filterListener = new ObjectVisitor('\Humbug\Adapter\Phpunit\Listeners\TestSuiteFilterListener', array_merge([
                 $xmlConfiguration->getRootTestSuiteNestingLevel(),
-                $this->filterTestSuites,
                 $this->filterStatsPath
-            ]);
+            ], $this->filterTestSuites));
             $xmlConfiguration->addListener($filterListener);
         }
 
