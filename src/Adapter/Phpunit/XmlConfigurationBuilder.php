@@ -109,34 +109,18 @@ class XmlConfigurationBuilder
         }
 
         if ($this->pathToTimeStats) {
-            $timeCollectionListener = new ObjectVisitor(
-                '\Humbug\Phpunit\Listener\TimeCollectorListener',
-                [
-                    new ObjectVisitor(
-                        '\Humbug\Phpunit\Logger\JsonLogger',
-                        [$this->pathToTimeStats]
-                    ),
-                    $xmlConfiguration->getRootTestSuiteNestingLevel()
-                ]
-            );
+            $timeCollectionListener = new ObjectVisitor('\Humbug\Adapter\Phpunit\Listeners\JsonLoggingTimeCollectorListener', [
+                $this->pathToTimeStats,
+                $xmlConfiguration->getRootTestSuiteNestingLevel()
+            ]);
             $xmlConfiguration->addListener($timeCollectionListener);
         }
 
         if (!empty($this->filterTestSuites) || $this->filterStatsPath) {
-            $filterListener = new ObjectVisitor(
-                '\Humbug\Phpunit\Listener\FilterListener',
-                [
-                    $xmlConfiguration->getRootTestSuiteNestingLevel(),
-                    new ObjectVisitor(
-                        '\Humbug\Phpunit\Filter\TestSuite\IncludeOnlyFilter',
-                        $this->filterTestSuites
-                    ),
-                    new ObjectVisitor(
-                        '\Humbug\Phpunit\Filter\TestSuite\FastestFirstFilter',
-                        [$this->filterStatsPath]
-                    )
-                ]
-            );
+            $filterListener = new ObjectVisitor('\Humbug\Adapter\Phpunit\Listeners\TestSuiteFilterListener', array_merge([
+                $xmlConfiguration->getRootTestSuiteNestingLevel(),
+                $this->filterStatsPath
+            ], $this->filterTestSuites));
             $xmlConfiguration->addListener($filterListener);
         }
 
