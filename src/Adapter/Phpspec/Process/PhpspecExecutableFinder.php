@@ -8,14 +8,14 @@
  * @license    https://github.com/padraic/humbug/blob/master/LICENSE New BSD License
  */
 
-namespace Humbug\Adapter\Phpunit\Process;
+namespace Humbug\Adapter\Phpspec\Process;
 
 use Humbug\Process\AbstractExecutableFinder;
 use Humbug\Exception\RuntimeException;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\PhpExecutableFinder;
 
-class PhpunitExecutableFinder extends AbstractExecutableFinder
+class PhpspecExecutableFinder extends AbstractExecutableFinder
 {
 
     /**
@@ -24,15 +24,15 @@ class PhpunitExecutableFinder extends AbstractExecutableFinder
     public function find()
     {
         $this->checkVendorPath();
-        return $this->findPhpunit();
+        return $this->findPhpspec();
     }
 
     /**
      * @return string
      */
-    private function findPhpunit()
+    private function findPhpspec()
     {
-        $probable = ['phpunit', 'phpunit.phar'];
+        $probable = ['phpspec', 'phpspec.phar'];
         $finder = new ExecutableFinder;
         foreach ($probable as $name) {
             if ($path = $finder->find($name, null, [getcwd()])) {
@@ -44,8 +44,8 @@ class PhpunitExecutableFinder extends AbstractExecutableFinder
             return $result;
         }
         throw new RuntimeException(
-            'Unable to locate a PHPUnit executable on local system. Ensure '
-            . 'that PHPUnit is installed and available.'
+            'Unable to locate an Phpspec executable on local system. Ensure '
+            . 'that Phpspec is installed and available.'
         );
     }
 

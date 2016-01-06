@@ -128,6 +128,16 @@ class Phpunit extends AdapterAbstract
     }
 
     /**
+     * Return adapter name
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return 'phpunit';
+    }
+
+    /**
      * Load coverage data from and return
      *
      * @param Container $container
