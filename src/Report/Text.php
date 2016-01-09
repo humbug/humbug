@@ -67,4 +67,32 @@ class Text
 
         return $out;
     }
+    
+    /**
+     * 
+     * @param Mutant[] $mutants
+     * @param string $mutantsGroupName
+     * @return string
+     */
+    public function prepareShadowsReport(array $mutants, $mutantsGroupName)
+    {
+        $out[] =
+            '------' . PHP_EOL .
+            $mutantsGroupName . PHP_EOL .
+            '------' . PHP_EOL .
+            PHP_EOL;
+
+        $processed = [];
+        foreach ($mutants as $index => $mutant) {
+            $mutation = $mutant->getMutation();
+            $uncovered = 'Mutator ' . $mutation->getMutator() . ' on ' . $mutation->getClass() . '::' . $mutation->getMethod() . '() in ' . $mutation->getFile(). ' on line ' . $mutation->getLine();
+            if (in_array($uncovered, $processed)) {
+                continue;
+            }
+            $processed[] = $uncovered;
+            $out[] = $index + 1 . ') ' . $uncovered;
+        }
+
+        return implode(PHP_EOL, $out) . PHP_EOL . PHP_EOL;
+    }
 }

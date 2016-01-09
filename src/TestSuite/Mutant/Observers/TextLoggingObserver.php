@@ -10,11 +10,10 @@
  */
 namespace Humbug\TestSuite\Mutant\Observers;
 
-use Humbug\Mutant;
 use Humbug\Renderer\Text;
 use Humbug\Report\Text as TextReport;
-use Humbug\TestSuite\Mutant\Collector;
 use Humbug\TestSuite\Mutant\BaseObserver;
+use Humbug\TestSuite\Mutant\Collector;
 use Humbug\TestSuite\Mutant\Result;
 use Humbug\TestSuite\Mutant\Runner;
 
@@ -49,8 +48,16 @@ class TextLoggingObserver extends BaseObserver
     {
         $textReport = new TextReport();
 
-        $out = $textReport->prepareMutantsReport($collector->getEscaped(), 'Escapes');
-
+        $out = '';
+        
+        if ($collector->getShadowCount() > 0) {
+            $out .= PHP_EOL . $textReport->prepareShadowsReport($collector->getShadows(), 'Uncovered');
+        }
+        
+        if ($collector->getEscapeCount() > 0) {
+            $out .= PHP_EOL . $textReport->prepareMutantsReport($collector->getEscaped(), 'Escapes');
+        }
+        
         if ($collector->getTimeoutCount() > 0) {
             $out .= PHP_EOL . $textReport->prepareMutantsReport($collector->getTimeouts(), 'Timeouts');
         }

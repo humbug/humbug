@@ -27,7 +27,7 @@ class Collector
     private $shadowCount = 0;
 
     /**
-     * @var Mutant[] Mutants killed by a test case.
+     * @var Mutant[] Mutants not covered by a test case.
      */
     private $shadows = [];
 
@@ -140,6 +140,14 @@ class Collector
     }
 
     /**
+     * @return Mutant[] List of mutants not covered by tests.
+     */
+    public function getShadows()
+    {
+        return $this->shadows;
+    }
+    
+    /**
      * @return int Count of mutants successfully killed by tests.
      */
     public function getKilledCount()
@@ -211,6 +219,7 @@ class Collector
     public function toGroupedMutantArray()
     {
         return [
+            'uncovered' => $this->createUncoveredGroup($this->shadows),
             'escaped' => $this->createGroup($this->escaped),
             'errored' => $this->createGroup($this->errors),
             'timeouts' => $this->createGroup($this->timeouts),
@@ -239,6 +248,29 @@ class Collector
         return $group;
     }
 
+    private function createUncoveredGroup(array $mutants)
+    {
+        $group = [];
+
+        foreach ($mutants as $mutant) {
+            $mutantData = $mutant->toArray();
+            $uncovered = [
+                'file' => $mutantData['file'],
+                'mutator' => $mutantData['mutator'],
+                'class' => $mutantData['class'],
+                'method' => $mutantData['method'],
+                'line' => $mutantData['line'],
+            ];
+            if (in_array($uncovered, $group)) {
+                continue;
+            }
+            
+            $group[] = $uncovered;
+        }
+
+        return $group;
+    }
+    
     public function toGroupedFileArray()
     {
         $types = [
