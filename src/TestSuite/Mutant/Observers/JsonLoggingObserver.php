@@ -66,8 +66,7 @@ class JsonLoggingObserver extends BaseObserver
                 'covered_score' => $detectionRateTested,
                 'combined_score' => $detectionRateAll,
                 'mutation_coverage' => (100 - $uncoveredRate)
-            ],
-            'escaped' => []
+            ]
         ];
 
         $out = array_merge($out, $collector->toGroupedMutantArray());
