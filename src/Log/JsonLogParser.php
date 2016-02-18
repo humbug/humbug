@@ -39,7 +39,7 @@ class JsonLogParser
             $count = 0;
             foreach ($result[$section] as $key => $value) {
                 if ($shouldFilter && !in_array($key, $this->classesToFilter)) {
-                    unset ($result[$section][$key]);
+                    unset($result[$section][$key]);
                 } else {
                     $count += $value['count'];
                 }
