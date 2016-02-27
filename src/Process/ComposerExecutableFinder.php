@@ -15,6 +15,18 @@ use Symfony\Component\Process\ExecutableFinder;
 
 class ComposerExecutableFinder extends AbstractExecutableFinder
 {
+    /**
+     * @var string
+     */
+    private $basePath;
+
+    /**
+     * @param string $basePath
+     */
+    public function __construct($basePath)
+    {
+        $this->basePath = $basePath;
+    }
 
     /**
      * @return string
@@ -25,13 +37,19 @@ class ComposerExecutableFinder extends AbstractExecutableFinder
     }
 
     /**
+     * @throws \Humbug\Exception\RuntimeException
      * @return string
      */
     private function tryAndGetNiceThing()
     {
         $probable = ['composer', 'composer.phar'];
         $finder = new ExecutableFinder;
-        $immediatePaths = [getcwd(), realpath(getcwd().'/../'), realpath(getcwd().'/../../')];
+        $immediatePaths = [
+            $this->basePath,
+            realpath($this->basePath . '/../'),
+            realpath($this->basePath . '/../../')
+        ];
+
         foreach ($probable as $name) {
             if ($path = $finder->find($name, null, $immediatePaths)) {
                 return $path;
