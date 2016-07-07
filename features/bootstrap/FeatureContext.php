@@ -34,6 +34,8 @@ class FeatureContext implements Context, SnippetAcceptingContext
      */
     public function __construct()
     {
+        require_once __DIR__ . '/../../bootstrap.php';
+
         $this->application = new Application;
         $this->application->setAutoExit(false);
         $this->application->add(new HumbugCommand);
