@@ -18,20 +18,20 @@
     "require": {
         "php": ">=5.4.0",
         "phpunit/phpunit": "^4.5|^5.0",
-        "symfony/console": "~2.6",
-        "symfony/finder": "~2.6",
-        "symfony/process": "~2.6",
-        "symfony/event-dispatcher": "~2.6",
-        "sebastian/diff": "~1.1",
+        "symfony/console": "^2.6|^3.0",
+        "symfony/finder": "^2.6|^3.0",
+        "symfony/process": "^2.6|^3.0",
+        "symfony/event-dispatcher": "^2.6|^3.0",
+        "sebastian/diff": "^1.1",
         "padraic/phpunit-accelerator": "^1.0.2",
         "padraic/phpunit-extensions": "^1.0.0",
         "padraic/phar-updater": "^1.0.0"
     },
     "require-dev": {
-        "mockery/mockery": "~0.9",
+        "mockery/mockery": "^0.9",
         "behat/behat": "^3.0.15",
-        "symfony/filesystem": "~2.6",
-        "mikey179/vfsStream": "~1.4"
+        "symfony/filesystem": "^2.6|^3.0",
+        "mikey179/vfsStream": "^1.4"
     },
     "autoload": {
         "psr-4": { "Humbug\\": "src/" }
