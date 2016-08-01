@@ -508,6 +508,38 @@ they don't exist until runtime (something else to work on!).
 
 More Mutators will be added over time.
 
+JSON Log Stats
+--------------
+
+```sh
+bin/humbug stats ../my-project/humbuglog.json ../my-project/list-of-classes.txt --skip-killed=yes [-vvv]
+```
+
+Parses stats from humbuglog.json or your custom named JSON log.
+
+CLI reference:
+```sh
+humbug stats [humbuglog.json location] [class list location] [--skip-killed=yes] [-vvv]
+```
+
+    humbuglog.json location, defaults to ./humbuglog.json
+
+    class list location, a path to a text file containing full class names, one per line.
+
+    only this files-related stats would be shown
+    --skip-killed=yes is used to completely skip output of "killed" section
+    various verbosity levels define amount of info to be displayed:
+        by default, there's one line per class with amount of mutants killed/escaped/errored/timed out (depending on output section)
+        -v adds one line per each mutant with line number and method name
+        -vv adds extra line for each mutant, displaying diff view of line mutant is detected in
+        -vvv shows full diff with several lines before and after
+
+This can be tested on humbug itself, by running in humbug's dir:
+
+bin/humbug
+bin/humbug stats [-vvv]
+
+
 Did I Say Rough Edges?
 ----------------------
 
