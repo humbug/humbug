@@ -41,6 +41,7 @@ if ('phar:' !== substr(__FILE__, 0, 5)) {
 
 $application->add(new \Humbug\Command\Humbug());
 $application->add(new \Humbug\Command\Configure());
+$application->add(new \Humbug\Command\Stats());
 
 
 if ('phar:' === substr(__FILE__, 0, 5)) {
