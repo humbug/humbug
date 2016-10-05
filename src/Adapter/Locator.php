@@ -24,10 +24,10 @@ class Locator
     public function locate($name)
     {
         // @see https://github.com/symfony/Config/blob/master/FileLocator.php#L83
-        if ('/' === $name[0]
+        if (!empty($name) && ('/' === $name[0]
             || '\\' === $name[0]
             || (strlen($name) > 3 && ctype_alpha($name[0]) && $name[1] == ':' && ($name[2] == '\\' || $name[2] == '/'))
-        ) {
+        )) {
             if (!file_exists($name)) {
                 throw new InvalidArgumentException("$name does not exist");
             }
