@@ -126,4 +126,11 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $result2 = $this->container->getMutableFiles($finder);
         $this->assertSame($expected, $result2);
     }
+    
+    public function testSetConfigure()
+    {
+        $result = $this->container->setConfigure('app/humbug/phpunit.humbug.xml');
+        $this->assertEquals('app/humbug/phpunit.humbug.xml', $this->container->getConfigure());
+        $this->assertSame($this->container, $result);
+    }
 }

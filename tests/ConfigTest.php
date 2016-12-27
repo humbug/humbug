@@ -204,4 +204,15 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         // Remove the directory so that it does not persist over to other tests.
         $this->assertTrue(rmdir($directory), 'Could not remove test directory. This will affect subsequent tests.');
     }
+    
+    public function testShouldHaveConfigure()
+    {
+        $configData = (object)[
+            'configure' => 'app/humbug/phpunit.humbug.xml'
+        ];
+
+        $config = new Config($configData);
+
+        $this->assertEquals('app/humbug/phpunit.humbug.xml', $config->getConfigure());
+    }
 }
