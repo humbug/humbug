@@ -6,12 +6,16 @@ Feature: Developer runs Humbug with --version option
     Scenario: View Humbug version
         Given I am in any directory
         When I run humbug with "--version"
-        Then I should see:
+        Then I should see output containing:
             """
              _  _            _
             | || |_  _ _ __ | |__ _  _ __ _
             | __ | || | '  \| '_ \ || / _` |
             |_||_|\_,_|_|_|_|_.__/\_,_\__, |
                                       |___/ 
-            Humbug version 1.0-dev
+            Humbug
+            """
+        And I should see output containing:
+            """
+            1.0-dev
             """
