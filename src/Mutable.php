@@ -146,7 +146,7 @@ class Mutable
             }
 
             //TODO: handle whitespace!
-            if (is_array($token) && $token[0] == T_FUNCTION) {
+            if (is_array($token) && $token[0] == T_FUNCTION && $className !== '???') {
                 if (!isset($tokens[$index+2][1])) {
                     continue; // ignore closure
                 }
