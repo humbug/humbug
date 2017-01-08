@@ -23,7 +23,7 @@ Feature: Use Humbug
                     $foo = new Foo;
                     $r = $foo->add(2, 1);
                     // emulate error
-                    if ($r !== 3) $foo->bar();
+                    if ($r !== 3) trigger_error("fail", E_USER_ERROR);
                     $this->assertEquals(3, $r);
                 }
             }
