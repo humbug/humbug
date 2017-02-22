@@ -7,14 +7,12 @@ php:
   - 5.5
   - 5.4
   - hhvm
-  - hhvm-nightly
 
 matrix:
   fast_finish: true
   allow_failures:
     - php: 7.0
     - php: hhvm
-    - php: hhvm-nightly
         
 branches:
   only:
