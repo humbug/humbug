@@ -14,10 +14,13 @@ namespace Humbug\Test\Report;
 
 use Humbug\Mutation;
 use Humbug\Report\Text;
+use Humbug\Test\PHPUnitHandleDeprecatedMethodsTrait;
 use Humbug\TestSuite\Mutant\Result;
 
 class TextTest extends \PHPUnit_Framework_TestCase
 {
+    use PHPUnitHandleDeprecatedMethodsTrait;
+
     private $diff = <<<DIFF
 --- Original
 +++ New

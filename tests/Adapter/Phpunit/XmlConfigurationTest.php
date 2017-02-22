@@ -15,9 +15,12 @@ namespace Humbug\Test\Adapter\Phpunit;
 use Humbug\Adapter\Locator;
 use Humbug\Adapter\Phpunit\ConfigurationLoader;
 use Humbug\Adapter\Phpunit\XmlConfiguration;
+use Humbug\Test\PHPUnitHandleDeprecatedMethodsTrait;
 
 class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
 {
+    use PHPUnitHandleDeprecatedMethodsTrait;
+
     public function testShouldThrowExceptionIfNoDocumentElementIsPresent()
     {
         $this->setExpectedException('\LogicException', 'No document element present. Document should not be empty!');

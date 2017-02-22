@@ -15,10 +15,8 @@ use Humbug\Adapter\Phpunit\Job;
 
 class JobTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testGenerateReturnsPHPScriptRenderedWithCurrentRunnersSettingsAndSerialisedMutationArray()
     {
-        $this->markTestIncomplete();
         $script = Job::generate('the_file.php', '/path/to/bootstrap.php');
         $bootstrap = realpath(__DIR__ . '/../../../bootstrap.php');
         $this->assertFileExists($bootstrap);
