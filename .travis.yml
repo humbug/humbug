@@ -22,7 +22,9 @@ matrix:
     - php: 7.1
       env: DEPS=lowest
     - php: 7.1
-      env: DEPS=latest
+      env:
+        - DEPS=latest
+        - TEST_COVERAGE=true
     - php: hhvm
       env: DEPS=lowest
     - php: hhvm
@@ -48,9 +50,10 @@ before_install:
   - travis_retry composer self-update
 
 before_script:
+  - if [[ $TEST_COVERAGE != 'true' && "$(php --version | grep xdebug -ci)" -ge 1 ]]; then phpenv config-rm xdebug.ini ; fi
   - if [[ $DEPS == 'latest' ]]; then travis_retry composer update --no-interaction --prefer-source ; fi
   - if [[ $DEPS == 'lowest' ]]; then travis_retry composer update --no-interaction --prefer-source --prefer-lowest ; fi
 
 script:
-  - vendor/bin/phpunit --coverage-text
+  - if [[ $TEST_COVERAGE == 'true' ]]; then vendor/bin/phpunit --coverage-text ; else vendor/bin/phpunit ; fi
   - vendor/bin/behat
