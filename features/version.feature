@@ -13,5 +13,5 @@ Feature: Developer runs Humbug with --version option
             | __ | || | '  \| '_ \ || / _` |
             |_||_|\_,_|_|_|_|_.__/\_,_\__, |
                                       |___/ 
-            Humbug version 1.0-dev
+            Humbug 1.0-dev
             """
