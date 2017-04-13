@@ -1,38 +1,27 @@
 language: php
-sudo: false
 
 matrix:
   include:
     - php: 5.4
-      env: DEPS=lowest
+      env: COMPOSER_FLAGS='--prefer-lowest'
     - php: 5.4
-      env: DEPS=latest
     - php: 5.5
-      env: DEPS=lowest
+      env: COMPOSER_FLAGS='--prefer-lowest'
     - php: 5.5
-      env: DEPS=latest
     - php: 5.6
-      env: DEPS=lowest
+      env: COMPOSER_FLAGS='--prefer-lowest'
     - php: 5.6
-      env: DEPS=latest
     - php: 7.0
-      env: DEPS=lowest
+      env: COMPOSER_FLAGS='--prefer-lowest'
     - php: 7.0
-      env: DEPS=latest
     - php: 7.1
-      env: DEPS=lowest
+      env: COMPOSER_FLAGS='--prefer-lowest'
     - php: 7.1
       env:
-        - DEPS=latest
         - TEST_COVERAGE=true
     - php: hhvm
-      env: DEPS=lowest
+      env: COMPOSER_FLAGS='--prefer-lowest'
     - php: hhvm
-      env: DEPS=latest
-    - php: hhvm-nightly
-      env: DEPS=lowest
-    - php: hhvm-nightly
-      env: DEPS=latest
   fast_finish: true
   allow_failures:
     - php: hhvm
@@ -46,12 +35,8 @@ cache:
   directories:
     - $HOME/.composer/cache
 
-before_install:
-  - travis_retry composer self-update
-
 before_script:
-  - if [[ $DEPS == 'latest' ]]; then travis_retry composer update --no-interaction --prefer-source ; fi
-  - if [[ $DEPS == 'lowest' ]]; then travis_retry composer update --no-interaction --prefer-source --prefer-lowest ; fi
+  - composer update --no-interaction --prefer-source $COMPOSER_FLAGS
 
 script:
   - if [[ $TEST_COVERAGE == 'true' ]]; then vendor/bin/phpunit --coverage-text ; else vendor/bin/phpunit ; fi
