@@ -17,27 +17,21 @@ matrix:
     - php: 7.1
       env: COMPOSER_FLAGS='--prefer-lowest'
     - php: 7.1
-      env:
-        - TEST_COVERAGE=true
+      env: PHPUNIT_FLAGS='--coverage-text'
     - php: hhvm
       env: COMPOSER_FLAGS='--prefer-lowest'
     - php: hhvm
   fast_finish: true
   allow_failures:
     - php: hhvm
-    - php: hhvm-nightly
-
-branches:
-  only:
-    - master
 
 cache:
   directories:
     - $HOME/.composer/cache
 
 before_script:
-  - composer update --no-interaction --prefer-source $COMPOSER_FLAGS
+  - composer update --no-interaction --prefer-dist $COMPOSER_FLAGS
 
 script:
-  - if [[ $TEST_COVERAGE == 'true' ]]; then vendor/bin/phpunit --coverage-text ; else vendor/bin/phpunit ; fi
-  - vendor/bin/behat
+  - vendor/bin/phpunit $PHPUNIT_FLAGS
+  - vendor/bin/behat -vv
