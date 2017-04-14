@@ -6,7 +6,7 @@ so, while it does actually work quite well, it will have rough edges that a team
 of minions are slaving to hammer out. If it falls out of the gate, you have been
 warned ;).
 
-[![Build Status](https://travis-ci.org/padraic/humbug.svg)](https://travis-ci.org/padraic/humbug) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/padraic/humbug/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/padraic/humbug/?branch=master)
+[![Build Status](https://travis-ci.org/humbug/humbug.svg)](https://travis-ci.org/humbug/humbug) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/humbug/humbug/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/humbug/humbug/?branch=master)
 [![StyleCI](https://styleci.io/repos/28300862/shield?style=flat)](https://styleci.io/repos/28300862)
 
 ⚠️️ Update your remotes! Humbug has transferred to a new location. While your
