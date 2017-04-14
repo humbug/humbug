@@ -15,10 +15,6 @@ matrix:
     - php: 7.0
     - php: hhvm
     - php: hhvm-nightly
-        
-branches:
-  only:
-    - master
 
 cache:
   directories:
