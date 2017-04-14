@@ -7,7 +7,7 @@ of minions are slaving to hammer out. If it falls out of the gate, you have been
 warned ;).
 
 [![Build Status](https://travis-ci.org/humbug/humbug.svg)](https://travis-ci.org/humbug/humbug) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/humbug/humbug/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/humbug/humbug/?branch=master)
-[![StyleCI](https://styleci.io/repos/28300862/shield?style=flat)](https://styleci.io/repos/28300862)
+[![StyleCI](https://styleci.io/repos/28300862/shield?style=flat)](https://styleci.io/repos/28300862) [![Total Downloads](https://poser.pugx.org/humbug/humbug/downloads.png)](https://packagist.org/packages/humbug/humbug)
 
 ⚠️️ Update your remotes! Humbug has transferred to a new location. While your
 existing repositories will redirect transparently for any operations, take some
