@@ -9,6 +9,16 @@ warned ;).
 [![Build Status](https://travis-ci.org/padraic/humbug.svg)](https://travis-ci.org/padraic/humbug) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/padraic/humbug/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/padraic/humbug/?branch=master)
 [![StyleCI](https://styleci.io/repos/28300862/shield?style=flat)](https://styleci.io/repos/28300862)
 
+⚠️️ Update your remotes! Humbug has transferred to a new location. While your
+existing repositories will redirect transparently for any operations, take some
+time to transition to the new URL.
+```sh
+$ git remote set-url upstream https://github.com/humbug/humbug.git
+```
+Replace `upstream` with the name of the remote you use locally; `upstream` is commonly
+used but you may be using something else. You may also using a different URL (e.g. git@github.com:mockery/mockery.git).
+Run `git remote -v` to see what you're actually using.
+
 **Table of Contents**
 
 - [Introduction](#introduction)
@@ -52,7 +62,7 @@ Installation
 You can clone and install Humbug's dependencies using Composer:
 
 ```sh
-git clone https://github.com/padraic/humbug.git
+git clone https://github.com/humbug/humbug.git
 cd humbug
 /path/to/composer.phar install
 ```
