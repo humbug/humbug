@@ -357,7 +357,7 @@ Command Line Options
 Humbug has a few command line options of note, other than those normally associated
 with any Symfony Console application.
 
-####Overriding The Configured Timeout
+#### Overriding The Configured Timeout
 
 You can manually set the timeout threshold for any single test:
 
@@ -365,7 +365,7 @@ You can manually set the timeout threshold for any single test:
 humbug --timeout=10
 ```
 
-####Restricting Files To Mutate
+#### Restricting Files To Mutate
 
 If you're only interested in mutating a subset of your files, you can pass
 any number of `--file` options containing simple file names, globs or regular
@@ -380,7 +380,7 @@ This in no way restricts the initial Humbug check on the overall test suite whic
 is still executed in full to ensure all tests are passing correctly before
 proceeding.
 
-####Incremental Analysis
+#### Incremental Analysis
 
 Incremental Analysis (IA) is an experimental unfinished mode of operation where results
 are cached locally between runs and reused where it makes sense. At present, this
