@@ -15,7 +15,6 @@ use Humbug\Adapter\Phpunit\Job;
 
 class JobTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testGenerateReturnsPHPScriptRenderedWithCurrentRunnersSettingsAndSerialisedMutationArray()
     {
         $this->markTestIncomplete();

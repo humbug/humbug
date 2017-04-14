@@ -20,7 +20,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class LoggingObserver extends BaseObserver
 {
-
     private $renderer;
 
     private $output;

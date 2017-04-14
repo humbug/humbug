@@ -15,7 +15,6 @@ use Humbug\Mutator;
 
 class TrueTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testReturnsTokenEquivalentToFalse()
     {
         $mutation = new Mutator\Boolean\TrueValue;

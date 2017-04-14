@@ -14,7 +14,6 @@ use Symfony\Component\Process\Exception\ProcessTimedOutException;
 
 class ParallelGroup
 {
-
     protected $processes = [];
 
     protected $timeouts = [];

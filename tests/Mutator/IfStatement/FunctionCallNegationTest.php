@@ -16,7 +16,6 @@ use Humbug\Utility\Tokenizer;
 
 class FunctionCallNegationTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testNotMutatesWithValueTrue()
     {
         $content = '<?php if(true){}';

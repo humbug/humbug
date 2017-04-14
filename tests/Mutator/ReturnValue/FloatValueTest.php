@@ -16,7 +16,6 @@ use Humbug\Utility\Tokenizer;
 
 class FloatValueTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testMutatesWithValueReturnOne()
     {
         $content = '<?php return 1.0;';

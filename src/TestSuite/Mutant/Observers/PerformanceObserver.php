@@ -21,7 +21,6 @@ use Symfony\Component\Console\Input\InputInterface;
 
 class PerformanceObserver extends BaseObserver
 {
-
     private $renderer;
 
     private $isDisabled = false;

@@ -69,7 +69,7 @@ class Text
     }
     
     /**
-     * 
+     *
      * @param Mutant[] $mutants
      * @param string $mutantsGroupName
      * @return string
