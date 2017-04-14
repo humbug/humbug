@@ -16,7 +16,6 @@ use Humbug\Utility\Tokenizer;
 
 class BracketedStatementTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testDoesNotMutateWithValueReturnTrue()
     {
         // return false;

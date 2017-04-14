@@ -15,7 +15,6 @@ use Humbug\Mutator;
 
 class MulEqualTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testReturnsTokenEquivalentToDivEqualOperator()
     {
         $mutation = new Mutator\Arithmetic\MulEqual;

@@ -15,7 +15,6 @@ use Humbug\Mutator;
 
 class ShiftLeftTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testReturnsTokenEquivalentToShiftRightOperator()
     {
         $mutation = new Mutator\Arithmetic\ShiftLeft;

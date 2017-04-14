@@ -16,7 +16,6 @@ use Humbug\Utility\Tokenizer;
 
 class IntegerNegationTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testNotMutatesWithValueReturnTrue()
     {
         $content = '<?php return true;';
