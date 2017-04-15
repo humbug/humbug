@@ -71,7 +71,7 @@ DIFF;
             $this->createMutantResult()
         ];
 
-        $textReport = $this->getMock('Humbug\Report\Text', ['prepareReportForMutant']);
+        $textReport = $this->createPartialMock('Humbug\Report\Text', ['prepareReportForMutant']);
 
         $textReport->expects($this->at(0))->method('prepareReportForMutant')->with($results[0]);
         $textReport->expects($this->at(1))->method('prepareReportForMutant')->with($results[1]);
@@ -103,12 +103,12 @@ DIFF;
 
     private function createMutant()
     {
-        return $this->getMock('Humbug\Mutant', [], [], '', false);
+        return $this->createMock('Humbug\Mutant', [], [], '', false);
     }
 
     private function createMutantResult()
     {
-        return $this->getMock('Humbug\TestSuite\Mutant\Result', [], [], '', false);
+        return $this->createMock('Humbug\TestSuite\Mutant\Result', [], [], '', false);
     }
 
     private function getExpectedMutantReport()
