@@ -19,6 +19,7 @@ use Humbug\Test\PHPUnitHandleDeprecatedMethodsTrait;
 
 class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
 {
+    /* TODO: Remove it after ending support of PHPUnit 4 */
     use PHPUnitHandleDeprecatedMethodsTrait;
 
     public function testShouldThrowExceptionIfNoDocumentElementIsPresent()

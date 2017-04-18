@@ -13,6 +13,7 @@
 
 namespace Humbug\Test;
 
+/* TODO: Remove it after ending support of PHPUnit 4 */
 trait PHPUnitHandleDeprecatedMethodsTrait
 {
 
