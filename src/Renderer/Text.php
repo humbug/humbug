@@ -18,7 +18,6 @@ use Symfony\Component\Console\Helper\FormatterHelper;
 
 class Text
 {
-
     protected $output;
 
     protected $progressCount = 0;

@@ -15,7 +15,6 @@ use Humbug\Mutator;
 
 class BitwiseOrTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testReturnsTokenEquivalentToBitwiseOrOperator()
     {
         $mutation = new Mutator\Arithmetic\BitwiseOr;

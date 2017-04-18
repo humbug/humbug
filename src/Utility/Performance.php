@@ -12,7 +12,6 @@ namespace Humbug\Utility;
 
 class Performance
 {
-
     protected static $startTime;
 
     protected static $endTime;

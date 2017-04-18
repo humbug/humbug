@@ -15,7 +15,6 @@ use Humbug\Mutator;
 
 class NotIdenticalTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testReturnsTokenEquivalentToIdentical()
     {
         $mutation = new Mutator\ConditionalNegation\NotIdentical;

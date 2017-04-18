@@ -18,7 +18,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class LoggingObserver implements Observer
 {
-
     private $totalCount = 0;
 
     private $renderer;

@@ -14,7 +14,6 @@ use Humbug\Container;
 
 class TestClassLocator
 {
-
     private $container;
 
     private $dom;
