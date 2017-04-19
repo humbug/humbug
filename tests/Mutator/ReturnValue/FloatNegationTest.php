@@ -16,7 +16,6 @@ use Humbug\Utility\Tokenizer;
 
 class FloatNegationTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testNotMutatesWithValueReturnTrue()
     {
         $content = '<?php return true;';

@@ -19,7 +19,7 @@ class Application extends BaseApplication
 | || |_  _ _ __ | |__ _  _ __ _
 | __ | || | \'  \| \'_ \ || / _` |
 |_||_|\_,_|_|_|_|_.__/\_,_\__, |
-                          |___/ ';
+                          |___/';
 
     const NAME = 'Humbug';
 
@@ -33,5 +33,24 @@ class Application extends BaseApplication
             return;
         }
         parent::__construct(self::$logo.PHP_EOL.self::NAME, self::VERSION);
+    }
+
+    /**
+     * @todo Remove when upgrading to symfony/console:^3.0
+     * @see https://github.com/humbug/humbug/issues/219
+     *
+     * {@inheritdoc}
+     */
+    public function getLongVersion()
+    {
+        if ('UNKNOWN' !== $this->getName()) {
+            if ('UNKNOWN' !== $this->getVersion()) {
+                return sprintf('%s <info>%s</info>', $this->getName(), $this->getVersion());
+            }
+
+            return $this->getName();
+        }
+
+        return 'Console Tool';
     }
 }
