@@ -15,16 +15,13 @@ namespace Humbug\Test\Adapter\Phpunit;
 use Humbug\Adapter\Locator;
 use Humbug\Adapter\Phpunit\ConfigurationLoader;
 use Humbug\Adapter\Phpunit\XmlConfiguration;
-use Humbug\Test\PHPUnitHandleDeprecatedMethodsTrait;
 
 class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
 {
-    /* TODO: Remove it after ending support of PHPUnit 4 */
-    use PHPUnitHandleDeprecatedMethodsTrait;
-
     public function testShouldThrowExceptionIfNoDocumentElementIsPresent()
     {
-        $this->setExpectedException('\LogicException', 'No document element present. Document should not be empty!');
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage('No document element present. Document should not be empty!');
 
         $dom = new \DOMDocument();
         new XmlConfiguration($dom);
@@ -169,8 +166,7 @@ class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
 
         $xmlConfiguration = new XmlConfiguration($dom);
 
-        $visitor = $this->getMock('Humbug\Adapter\Phpunit\XmlConfiguration\Visitor');
-
+        $visitor = $this->createMock(XmlConfiguration\Visitor::class);
         $visitor->expects($this->once())->method('visitElement')->with($this->isInstanceOf('\DOMElement'));
 
         $xmlConfiguration->addListener($visitor);
@@ -186,8 +182,7 @@ class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
 
         $xmlConfiguration = new XmlConfiguration($dom);
 
-        $visitor = $this->getMock('Humbug\Adapter\Phpunit\XmlConfiguration\Visitor');
-
+        $visitor = $this->createMock(XmlConfiguration\Visitor::class);
         $visitor->expects($this->exactly(2))->method('visitElement')->with($this->isInstanceOf('\DOMElement'));
 
         $xmlConfiguration->addListener($visitor);

@@ -12,16 +12,13 @@
  */
 namespace Humbug\Test\Report;
 
+use Humbug\Mutant;
 use Humbug\Mutation;
 use Humbug\Report\Text;
-use Humbug\Test\PHPUnitHandleDeprecatedMethodsTrait;
 use Humbug\TestSuite\Mutant\Result;
 
 class TextTest extends \PHPUnit_Framework_TestCase
 {
-    /* TODO: Remove it after ending support of PHPUnit 4 */
-    use PHPUnitHandleDeprecatedMethodsTrait;
-
     private $diff = <<<DIFF
 --- Original
 +++ New
@@ -75,7 +72,9 @@ DIFF;
             $this->createMutantResult()
         ];
 
-        $textReport = $this->getMock('Humbug\Report\Text', ['prepareReportForMutant']);
+        $textReport = $this->getMockBuilder(Text::class)
+            ->setMethods(['prepareReportForMutant'])
+            ->getMock();
 
         $textReport->expects($this->at(0))->method('prepareReportForMutant')->with($results[0]);
         $textReport->expects($this->at(1))->method('prepareReportForMutant')->with($results[1]);
@@ -107,12 +106,12 @@ DIFF;
 
     private function createMutant()
     {
-        return $this->getMock('Humbug\Mutant', [], [], '', false);
+        return $this->getMockBuilder(Mutant::class)->disableOriginalConstructor()->getMock();
     }
 
     private function createMutantResult()
     {
-        return $this->getMock('Humbug\TestSuite\Mutant\Result', [], [], '', false);
+        return $this->getMockBuilder(Result::class)->disableOriginalConstructor()->getMock();
     }
 
     private function getExpectedMutantReport()
