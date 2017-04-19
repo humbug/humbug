@@ -32,7 +32,8 @@ class MutableIteratorTest extends \PHPUnit_Framework_TestCase
     {
         $finder = new Finder();
 
-        $finder->files('*.php');
+        $finder->files();
+        $finder->name('*.php');
         $finder->in([ __DIR__ . '/_files/mutables' ]);
 
         $container = new Container([ 'options' => '' ]);

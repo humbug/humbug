@@ -12,6 +12,7 @@
  */
 namespace Humbug\Test\Report;
 
+use Humbug\Mutant;
 use Humbug\Mutation;
 use Humbug\Report\Text;
 use Humbug\TestSuite\Mutant\Result;
@@ -71,7 +72,9 @@ DIFF;
             $this->createMutantResult()
         ];
 
-        $textReport = $this->getMock('Humbug\Report\Text', ['prepareReportForMutant']);
+        $textReport = $this->getMockBuilder(Text::class)
+            ->setMethods(['prepareReportForMutant'])
+            ->getMock();
 
         $textReport->expects($this->at(0))->method('prepareReportForMutant')->with($results[0]);
         $textReport->expects($this->at(1))->method('prepareReportForMutant')->with($results[1]);
@@ -103,12 +106,12 @@ DIFF;
 
     private function createMutant()
     {
-        return $this->getMock('Humbug\Mutant', [], [], '', false);
+        return $this->getMockBuilder(Mutant::class)->disableOriginalConstructor()->getMock();
     }
 
     private function createMutantResult()
     {
-        return $this->getMock('Humbug\TestSuite\Mutant\Result', [], [], '', false);
+        return $this->getMockBuilder(Result::class)->disableOriginalConstructor()->getMock();
     }
 
     private function getExpectedMutantReport()

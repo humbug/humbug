@@ -14,6 +14,7 @@
 namespace Humbug\Test;
 
 use Humbug\Config;
+use Humbug\Exception\JsonConfigException;
 
 class ConfigTest extends \PHPUnit_Framework_TestCase
 {
@@ -61,10 +62,8 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
         $config = new Config($configData);
 
-        $this->setExpectedException(
-            'Humbug\Exception\JsonConfigException',
-            'Source code data is not included in configuration file'
-        );
+        $this->expectException(JsonConfigException::class);
+        $this->expectExceptionMessage('Source code data is not included in configuration file');
 
         $config->getSource();
     }
@@ -75,10 +74,8 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
             'source' => (object)[]
         ];
 
-        $this->setExpectedException(
-            'Humbug\Exception\JsonConfigException',
-            'You must set at least one source directory or exclude in the configuration file'
-        );
+        $this->expectException(JsonConfigException::class);
+        $this->expectExceptionMessage('You must set at least one source directory or exclude in the configuration file');
 
         $config = new Config($configData);
 
@@ -134,10 +131,8 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
         $config = new Config($configData);
 
-        $this->setExpectedExceptionRegExp(
-            'Humbug\Exception\JsonConfigException',
-            '/Directory in which to run tests does not exist: .+/'
-        );
+        $this->expectException(JsonConfigException::class);
+        $this->expectExceptionMessageRegExp('/Directory in which to run tests does not exist: .+/');
 
         $config->getChDir();
     }
