@@ -18,6 +18,6 @@ class PhpunitExecutableFinderTest extends \PHPUnit_Framework_TestCase
     {
         $finder = new PhpunitExecutableFinder();
         $result = $finder->find();
-        $this->assertRegExp('%phpunit(\\.bat|\\.phar)?$%', $result);
+        $this->assertRegExp('%phpunit.*(\\.bat|\\.phar)?$%', $result);
     }
 }
