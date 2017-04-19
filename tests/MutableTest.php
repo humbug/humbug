@@ -16,7 +16,6 @@ use Humbug\Mutator;
 
 class MutableTest extends \PHPUnit_Framework_TestCase
 {
-
     protected $root = '';
 
     public function setUp()

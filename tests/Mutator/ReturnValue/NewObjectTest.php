@@ -16,7 +16,6 @@ use Humbug\Utility\Tokenizer;
 
 class NewObjectTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testMutatesWithValueReturnTrue()
     {
         $content = '<?php return true;';

@@ -12,10 +12,6 @@ matrix:
     - php: 7.0
     - php: hhvm
 
-branches:
-  only:
-    - master
-
 cache:
   directories:
     - $HOME/.composer/cache

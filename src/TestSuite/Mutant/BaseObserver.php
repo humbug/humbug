@@ -17,7 +17,6 @@ use Humbug\TestSuite\Mutant\Runner;
 
 abstract class BaseObserver implements Observer
 {
-
     public function onStartRun(Runner $testSuite)
     {
     }
