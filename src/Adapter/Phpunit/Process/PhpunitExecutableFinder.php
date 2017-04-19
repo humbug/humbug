@@ -19,6 +19,18 @@ use Symfony\Component\Process\PhpExecutableFinder;
 
 class PhpunitExecutableFinder extends AbstractExecutableFinder
 {
+    /**
+     * @var string
+     */
+    private $basePath;
+
+    /**
+     * @param string $basePath
+     */
+    public function __construct($basePath)
+    {
+        $this->basePath = $basePath;
+    }
 
     /**
      * @return string
@@ -35,13 +47,13 @@ class PhpunitExecutableFinder extends AbstractExecutableFinder
     private function checkVendorPath()
     {
         $vendorPath = null;
+        $composer = $this->findComposer();
         try {
-            $composer = $this->findComposer();
             $process = new Process(sprintf('%s %s', $composer, 'config bin-dir'));
             $process->run();
             $vendorPath = trim($process->getOutput());
         } catch (RuntimeException $e) {
-            $candidate = getcwd() . '/vendor/bin';
+            $candidate = $this->basePath . '/vendor/bin';
             if (file_exists($candidate)) {
                 $vendorPath = $candidate;
             }
@@ -56,7 +68,7 @@ class PhpunitExecutableFinder extends AbstractExecutableFinder
      */
     private function findComposer()
     {
-        $finder = new ComposerExecutableFinder;
+        $finder = new ComposerExecutableFinder($this->basePath);
         return $finder->find();
     }
 
@@ -68,11 +80,11 @@ class PhpunitExecutableFinder extends AbstractExecutableFinder
         $probable = ['phpunit', 'phpunit.phar'];
         $finder = new ExecutableFinder;
         foreach ($probable as $name) {
-            if ($path = $finder->find($name, null, [getcwd()])) {
+            if ($path = $finder->find($name, null, [$this->basePath])) {
                 return $this->makeExecutable($path);
             }
         }
-        $result = $this->searchNonExecutables($probable, [getcwd()]);
+        $result = $this->searchNonExecutables($probable, [$this->basePath]);
         if (!is_null($result)) {
             return $result;
         }
