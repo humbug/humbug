@@ -250,6 +250,18 @@ or if you just cloned Humbug:
 ../humbug/bin/humbug
 ```
 
+or if you added Humbug as a composer dependency to your project:
+
+```sh
+./vendor/bin/humbug
+```
+
+Instead of php with the xdebug extension you may also run Humbug via [phpdbg](http://phpdbg.com/):
+
+```sh
+phpdbg -qrr humbug.phar
+```
+
 If all went well, you will get something similar to:
 
 ```
