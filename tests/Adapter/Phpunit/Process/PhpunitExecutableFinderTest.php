@@ -14,11 +14,10 @@ use Humbug\Adapter\Phpunit\Process\PhpunitExecutableFinder;
 
 class PhpunitExecutableFinderTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testFinderCanLocatePhpunitExecutable()
     {
         $finder = new PhpunitExecutableFinder();
         $result = $finder->find();
-        $this->assertRegExp('%phpunit(\\.bat|\\.phar)?$%', $result);
+        $this->assertRegExp('%phpunit.*(\\.bat|\\.phar)?$%', $result);
     }
 }

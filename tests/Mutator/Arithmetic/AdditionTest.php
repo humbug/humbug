@@ -15,7 +15,6 @@ use Humbug\Mutator;
 
 class AdditionTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testReturnsTokenEquivalentToSubstractionOperator()
     {
         $mutation = new Mutator\Arithmetic\Addition;

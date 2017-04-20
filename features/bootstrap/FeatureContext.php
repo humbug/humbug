@@ -15,8 +15,6 @@ use Humbug\Command\Humbug as HumbugCommand;
  */
 class FeatureContext implements Context, SnippetAcceptingContext
 {
-
-
     private $application;
 
     private $appTester;

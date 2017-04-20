@@ -19,7 +19,6 @@ use Humbug\TestSuite\Mutant\Runner;
 
 class JsonLoggingObserver extends BaseObserver
 {
-
     private $jsonLogFile;
 
     private $renderer;

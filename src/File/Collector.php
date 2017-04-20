@@ -12,7 +12,6 @@ namespace Humbug\File;
 
 class Collector
 {
-
     private $collection;
 
     public function __construct(Collection $collection)

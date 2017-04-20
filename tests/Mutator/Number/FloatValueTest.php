@@ -15,7 +15,6 @@ use Humbug\Mutator\Number\FloatValue;
 
 class FloatValueTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testReturnsTokenSwitchingZeroForOne()
     {
         $mutation = new FloatValue;

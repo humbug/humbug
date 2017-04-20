@@ -23,7 +23,6 @@ use Humbug\SelfUpdate\Strategy\GithubStrategy;
 
 class SelfUpdate extends Command
 {
-
     const VERSION_URL = 'https://padraic.github.io/humbug/downloads/humbug.version';
 
     const PHAR_URL = 'https://padraic.github.io/humbug/downloads/humbug.phar';
