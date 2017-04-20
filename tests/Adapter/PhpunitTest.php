@@ -76,7 +76,7 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
             'getAdapterOptions'     => [],
             'getBootstrap'          => '',
             'getAdapterConstraints' => 'MM1_MathTest MathTest.php',
-            'getConfigure'          => null
+            'getConfigure' => null
         ]);
 
         $adapter = new Phpunit;
@@ -293,7 +293,7 @@ OUTPUT;
     {
         $container = m::mock('\Humbug\Container');
         $container->shouldReceive([
-            'getSourceList'    => $this->root,
+            'getSourceList' => $this->root,
             'getTestRunDirectory'      => $this->root,
             'getBaseDirectory'      => $this->root,
             'getTimeout'            => 1200,
@@ -301,7 +301,7 @@ OUTPUT;
             'getAdapterOptions'     => [],
             'getBootstrap'          => '',
             'getAdapterConstraints' => 'PassTest',
-            'getConfigure'          => $this->root . '/phpunit.humbug.xml'
+            'getConfigure' => $this->root . '/phpunit.humbug.xml'
         ]);
 ;
         $adapter = new Phpunit;
