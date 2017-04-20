@@ -2,21 +2,18 @@ language: php
 matrix:
   include:
     - php: 5.6
-      env: COMPOSER_FLAGS='--prefer-lowest'
-    - php: 5.6
     - php: 7.0
-      env: COMPOSER_FLAGS='--prefer-lowest'
-    - php: 7.0
-    - php: 7.1
-      env: COMPOSER_FLAGS='--prefer-lowest'
     - php: 7.1
       env: PHPUNIT_FLAGS='--coverage-text'
-    - php: hhvm
-      env: COMPOSER_FLAGS='--prefer-lowest'
     - php: hhvm
   fast_finish: true
   allow_failures:
     - php: hhvm
+
+env:
+  matrix:
+    - COMPOSER_FLAGS="--prefer-lowest"
+    - COMPOSER_FLAGS=""
 
 cache:
   directories:
