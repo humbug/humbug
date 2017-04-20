@@ -14,7 +14,6 @@
 namespace Humbug\Test;
 
 use Humbug\Config;
-use Humbug\Exception\JsonConfigException;
 
 class ConfigTest extends \PHPUnit_Framework_TestCase
 {
@@ -56,26 +55,28 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
+    /**
+     * @expectedException \Humbug\Exception\JsonConfigException
+     * @expectedExceptionMessage Source code data is not included in configuration file
+     */
     public function testShouldRiseExceptionWhenSourceIsNotPresent()
     {
         $configData = new \stdClass();
 
         $config = new Config($configData);
 
-        $this->expectException(JsonConfigException::class);
-        $this->expectExceptionMessage('Source code data is not included in configuration file');
-
         $config->getSource();
     }
 
+    /**
+     * @expectedException \Humbug\Exception\JsonConfigException
+     * @expectedExceptionMessage You must set at least one source directory or exclude in the configuration file
+     */
     public function testShouldRiseExceptionWhenSourceDirectoriesAndExcludesAreNotPresent()
     {
         $configData = (object)[
             'source' => (object)[]
         ];
-
-        $this->expectException(JsonConfigException::class);
-        $this->expectExceptionMessage('You must set at least one source directory or exclude in the configuration file');
 
         $config = new Config($configData);
 
@@ -123,6 +124,10 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($config->getChDir());
     }
 
+    /**
+     * @expectedException \Humbug\Exception\JsonConfigException
+     * @expectedExceptionMessageRegExp /Directory in which to run tests does not exist: .+/
+     */
     public function testShouldRiseExceptionWhenChDirNotExists()
     {
         $configData = (object)[
@@ -130,9 +135,6 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         ];
 
         $config = new Config($configData);
-
-        $this->expectException(JsonConfigException::class);
-        $this->expectExceptionMessageRegExp('/Directory in which to run tests does not exist: .+/');
 
         $config->getChDir();
     }
