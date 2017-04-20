@@ -14,6 +14,7 @@
 namespace Humbug\Test;
 
 use Humbug\Container;
+use Humbug\Exception\InvalidArgumentException;
 use Mockery as m;
 use Symfony\Component\Finder\Finder;
 
@@ -50,7 +51,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $input = [
             'options' => null
         ];
-        $this->setExpectedException('\InvalidArgumentException');
+        $this->expectException(\InvalidArgumentException::class);
         $container = new Container($input);
         $container->get('invalid-option');
     }
@@ -88,7 +89,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
 
     public function testsetTempDirectoryThrowsExceptionOnUnwriteableParam()
     {
-        $this->setExpectedException('Humbug\\Exception\\InvalidArgumentException');
+        $this->expectException(InvalidArgumentException::class);
         $result = $this->container->setTempDirectory('/really/does/not/exist');
     }
 
