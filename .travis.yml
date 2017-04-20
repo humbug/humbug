@@ -26,8 +26,8 @@ cache:
     - $HOME/.composer/cache
 
 before_script:
-  - composer update --no-interaction --prefer-dist $COMPOSER_FLAGS
+  - composer update --no-interaction --no-suggest --prefer-dist $COMPOSER_FLAGS
 
 script:
   - vendor/bin/phpunit $PHPUNIT_FLAGS
-  - vendor/bin/behat -vv
+  - vendor/bin/behat -vv -f progress
