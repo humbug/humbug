@@ -7,13 +7,16 @@ php:
   - hhvm
 
 env:
-  - COMPOSER_FLAGS="--prefer-lowest"
-  - COMPOSER_FLAGS=""
+  - COMPOSER_FLAGS=--prefer-lowest
+  - COMPOSER_FLAGS=
 
 matrix:
   include:
     - php: 7.1
-      env: PHPUNIT_FLAGS='--coverage-text'
+      env: PHPUNIT_FLAGS=--coverage-text
+  exclude:
+    - php: 7.1
+      env: COMPOSER_FLAGS=
   fast_finish: true
   allow_failures:
     - php: hhvm
