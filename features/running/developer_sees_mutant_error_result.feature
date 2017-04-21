@@ -3,6 +3,7 @@ Feature: Use Humbug
     As a developer
     I need to be able to run Humbug
 
+    @php:^5.6
     Scenario:
         Given the class file "src/Foo.php" contains:
             """
