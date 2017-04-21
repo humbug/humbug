@@ -46,12 +46,15 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('test-option', $container->get('test'));
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     */
     public function testGetShouldRiseExceptionForUnknownOption()
     {
         $input = [
             'options' => null
         ];
-        $this->expectException(\InvalidArgumentException::class);
+
         $container = new Container($input);
         $container->get('invalid-option');
     }
@@ -87,9 +90,11 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($this->container, $result);
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     */
     public function testsetTempDirectoryThrowsExceptionOnUnwriteableParam()
     {
-        $this->expectException(InvalidArgumentException::class);
         $result = $this->container->setTempDirectory('/really/does/not/exist');
     }
 
