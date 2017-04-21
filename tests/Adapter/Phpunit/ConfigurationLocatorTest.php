@@ -14,7 +14,6 @@ namespace Humbug\Test\Adapter\Phpunit;
 
 use Humbug\Adapter\Phpunit\ConfigurationLocator;
 use Humbug\Adapter\Phpunit\XmlConfiguration;
-use Humbug\Exception\RuntimeException;
 
 class ConfigurationLocatorTest extends \PHPUnit_Framework_TestCase
 {
@@ -40,11 +39,12 @@ class ConfigurationLocatorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedXmlPath, $configurationFile);
     }
 
+    /**
+     * @expectedException \Humbug\Exception\RuntimeException
+     */
     public function testShouldRiseExceptionWhileLocatingConfiguration()
     {
         $directory = __DIR__;
-
-        $this->expectException(RuntimeException::class);
 
         (new ConfigurationLocator())->locate($directory);
     }

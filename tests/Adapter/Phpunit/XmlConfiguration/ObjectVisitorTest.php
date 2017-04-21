@@ -130,10 +130,11 @@ class ObjectVisitorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('object', $argumentList->item(2)->tagName);
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     */
     public function testShouldRiseExceptionWhenArgumentTypeIsNotSupported()
     {
-        $this->expectException(\InvalidArgumentException::class);
-
         $objectVisitor = new ObjectVisitor('This\Is\Test\ClassName', [new \stdClass()]);
 
         $objectVisitor->visitElement($this->visitedObject);
