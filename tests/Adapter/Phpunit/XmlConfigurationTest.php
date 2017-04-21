@@ -231,6 +231,42 @@ class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('/target2', $log->getAttribute('target'));
     }
 
+    public function testShouldAddEnvironmentVariable()
+    {
+        $dom = $this->createBaseDomDocument();
+
+        $xmlConfiguration = new XmlConfiguration($dom);
+
+        $xmlConfiguration->addEnvironmentVariable('ENV_VAR', 'foo');
+
+        $xpath = (new \DOMXPath($dom));
+
+        $this->assertEquals(1, $xpath->evaluate('count(/phpunit/php)'));
+
+        $envList = $xpath->query('/phpunit/php/env');
+        $this->assertEquals(1, $envList->length);
+
+        $env = $envList->item(0);
+
+        $this->assertEquals('ENV_VAR', $env->getAttribute('name'));
+        $this->assertEquals('foo', $env->getAttribute('value'));
+
+        //second variable
+        $xmlConfiguration->addEnvironmentVariable('ENV_VAR2', 'bar');
+
+        $xpath = (new \DOMXPath($dom));
+
+        $this->assertEquals(1, $xpath->evaluate('count(/phpunit/php)'));
+
+        $envList = $xpath->query('/phpunit/php/env');
+        $this->assertEquals(2, $envList->length);
+
+        $env = $envList->item(1);
+
+        $this->assertEquals('ENV_VAR2', $env->getAttribute('name'));
+        $this->assertEquals('bar', $env->getAttribute('value'));
+    }
+
     public function testShouldAddWhiteListDirsFilter()
     {
         $whiteList = [
