@@ -15,7 +15,6 @@ use Humbug\Mutant;
 
 class ProcessBuilder
 {
-
     private $adapter;
 
     private $container;

@@ -15,7 +15,6 @@ use Humbug\Mutator;
 
 class MultiplicationTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testReturnsTokenEquivalentToDivisionOperator()
     {
         $mutation = new Mutator\Arithmetic\Multiplication;

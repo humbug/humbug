@@ -24,7 +24,6 @@ use org\bovigo\vfs\vfsStreamDirectory;
 
 class MutantTest extends \PHPUnit_Framework_TestCase
 {
-
     private $container;
 
     private $coverage;

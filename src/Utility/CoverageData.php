@@ -17,7 +17,6 @@ use Symfony\Component\Finder\Finder;
 
 class CoverageData
 {
-
     protected $data;
 
     protected $lastFile;

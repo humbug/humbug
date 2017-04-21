@@ -18,7 +18,6 @@ use Humbug\Console\Application;
  */
 class ApplicationTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testApplicationHasHumbugLogoSet()
     {
         $app = new Application;

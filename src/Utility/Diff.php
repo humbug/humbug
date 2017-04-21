@@ -14,7 +14,6 @@ use SebastianBergmann\Diff\Differ;
 
 class Diff
 {
-
     private static $instance;
 
     public static function getInstance()

@@ -15,7 +15,6 @@ use Humbug\Mutant;
 
 class Result implements \Serializable
 {
-
     const KILL = 0;
 
     const ESCAPE = 1;
