@@ -124,6 +124,11 @@ class XmlConfigurationBuilder
             $xmlConfiguration->addListener($filterListener);
         }
 
+        /**
+         * Disable deprecation notices for Symfony
+         */
+        $xmlConfiguration->addEnvironmentVariable('SYMFONY_DEPRECATIONS_HELPER', 'weak');
+
         return $xmlConfiguration;
     }
 

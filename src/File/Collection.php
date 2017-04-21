@@ -14,7 +14,6 @@ use Humbug\Exception\RuntimeException;
 
 class Collection
 {
-
     private $files = [];
 
     public function __construct(array $import = null)

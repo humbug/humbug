@@ -18,7 +18,6 @@ use org\bovigo\vfs\vfsStreamDirectory;
 
 class CollectionTest extends \PHPUnit_Framework_TestCase
 {
-
     private $tmp;
 
     public function setup()

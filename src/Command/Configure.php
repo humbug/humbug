@@ -196,7 +196,6 @@ class Configure extends Command
     {
         $frameworkConfigurationQuestion = new Question('Where is your phpunit.xml(.dist) configuration located? : ');
         $frameworkConfigurationQuestion->setValidator(function ($answer) use ($configurationLocator) {
-
             $answer = trim($answer);
 
             if (!$answer) {

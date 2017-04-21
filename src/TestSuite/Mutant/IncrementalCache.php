@@ -20,7 +20,6 @@ use Humbug\Exception\RuntimeException;
 
 class IncrementalCache
 {
-
     const FILES = 'source_files.json';
 
     const TESTS = 'test_files.json';
