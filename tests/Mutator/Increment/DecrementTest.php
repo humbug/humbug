@@ -15,7 +15,6 @@ use Humbug\Mutator;
 
 class DecrementTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testReturnsTokenEquivalentToIncrementOperator()
     {
         $mutation = new Mutator\Increment\Decrement;

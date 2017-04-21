@@ -26,7 +26,6 @@ use Humbug\Exception\RuntimeException;
 */
 class IncludeInterceptor
 {
-
     const STREAM_OPEN_FOR_INCLUDE = 0x00000080;
 
     public $context;

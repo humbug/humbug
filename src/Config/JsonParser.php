@@ -18,7 +18,6 @@ use Humbug\Exception\JsonConfigException;
 
 class JsonParser
 {
-
     const FILE = 'humbug.json';
 
     const DIST = 'humbug.json.dist';

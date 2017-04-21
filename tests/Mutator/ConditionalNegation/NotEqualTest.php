@@ -15,7 +15,6 @@ use Humbug\Mutator;
 
 class NotEqualTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testReturnsTokenEquivalentToEqual()
     {
         $mutation = new Mutator\ConditionalNegation\NotEqual;

@@ -15,7 +15,6 @@ use Humbug\Mutator;
 
 class PowEqualTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testReturnsTokenEquivalentToDivEqualOperator()
     {
         $mutation = new Mutator\Arithmetic\PowEqual;
@@ -27,7 +26,7 @@ class PowEqualTest extends \PHPUnit_Framework_TestCase
     public function testMutatesMulEqualToDivEqual()
     {
         if (!defined('T_POW')) {
-            $this->markTestSkipped();
+            $this->markTestSkipped('No "T_POW" PHP constant');
         }
 
         $tokens = [10 => [T_POW_EQUAL, '**=']];

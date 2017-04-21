@@ -12,7 +12,6 @@ namespace Humbug\Utility;
 
 class Tokenizer
 {
-
     const T_NEWLINE = -1;
 
     /**
