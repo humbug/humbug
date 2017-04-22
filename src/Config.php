@@ -60,7 +60,8 @@ class Config
     /**
      * @return bool
      */
-    public function isPhpunitConfigured() {
+    public function isPhpunitConfigured()
+    {
         return isset($this->config->phpunit);
     }
 
