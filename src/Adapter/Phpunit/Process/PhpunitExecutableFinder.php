@@ -107,7 +107,11 @@ class PhpunitExecutableFinder extends AbstractExecutableFinder
             if (false !== strpos($path, '.bat')) {
                 return $path;
             }
-            return sprintf('%s %s', $phpFinder->find(), $path);
+            /*
+             * Was: return sprintf('%s %s', $phpFinder->find(), $path);
+             * Including php command may create issues.
+             */
+            return $path;
         }
     }
 
