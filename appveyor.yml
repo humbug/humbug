@@ -46,4 +46,4 @@ install:
 
 test_script:
     - cd c:\projects\workspace
-    - vendor/bin/phpunit -c phpunit.xml.dist
+    - vendor\bin\phpunit -c phpunit.xml.dist
