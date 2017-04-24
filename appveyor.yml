@@ -43,14 +43,10 @@ install:
     - ps: |
             $client = New-Object System.Net.WebClient
             $phpMinorVersion = $env:PHP_VERSION -replace '\.\d+$'
-            $vcVersion = "VC14"
-            if ($phpMinorVersion == "5.6")
-            {
-                $vcVersion = "VC11"
-            }
+            $vcVersion = 'VC14'
             $xdebugUrl = "https://xdebug.org/files/php_xdebug-$env:XDEBUG_VERSION-$phpMinorVersion-vc$env:VC_VERSION-nts.dll"
             Write-Output "Downloading $xdebugUrl"
-            $xdebugPath = "C:\tools\php\ext\xdebug.dll"
+            $xdebugPath = Join-Path $PWD 'ext\xdebug.dll'
             $client.DownloadFile($xdebugUrl, $xdebugPath)
             Add-Content php.ini @"
             extension_dir=ext
