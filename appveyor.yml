@@ -41,17 +41,18 @@ install:
     - IF %PHP%==1 echo @php %%~dp0composer.phar %%* > composer.bat
     # Install xdebug
     - ps: |
+            $client = New-Object System.Net.WebClient
             $phpMinorVersion = $env:PHP_VERSION -replace '\.\d+$'
             $vcVersion = "VC14"
-            if ($phpMinorVersion = "5.6")
+            if ($phpMinorVersion == "5.6")
             {
                 $vcVersion = "VC11"
             }
             $xdebugUrl = "https://xdebug.org/files/php_xdebug-$env:XDEBUG_VERSION-$phpMinorVersion-vc$env:VC_VERSION-nts.dll"
             Write-Output "Downloading $xdebugUrl"
-            $xdebugPath = Join-Path $PWD 'php\ext\xdebug.dll'
+            $xdebugPath = "C:\tools\php\ext\xdebug.dll"
             $client.DownloadFile($xdebugUrl, $xdebugPath)
-            Add-Content .\php\php.ini @"
+            Add-Content php.ini @"
             extension_dir=ext
             zend_extension=$xdebugPath
             "@
