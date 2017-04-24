@@ -42,8 +42,7 @@ install:
     # Install xdebug
     - ps: |
             $client = New-Object System.Net.WebClient
-            $phpMinorVersion = $env:PHP_VERSION -replace '\.\d+$'
-            $xdebugUrl = "https://xdebug.org/files/php_xdebug-$env:XDEBUG_VERSION-$phpMinorVersion-vc14-nts.dll"
+            $xdebugUrl = "https://xdebug.org/files/php_xdebug-$env:XDEBUG_VERSION-$env:php_ver_target-vc14-nts.dll"
             Write-Output "Downloading $xdebugUrl"
             $xdebugPath = Join-Path $PWD 'ext\xdebug.dll'
             $client.DownloadFile($xdebugUrl, $xdebugPath)
