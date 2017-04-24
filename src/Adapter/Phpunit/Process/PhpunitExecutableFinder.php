@@ -104,10 +104,14 @@ class PhpunitExecutableFinder extends AbstractExecutableFinder
         if (!defined('PHP_WINDOWS_VERSION_BUILD')) {
             return sprintf('%s %s %s', 'exec', $phpFinder->find(), $path);
         } else {
-            if (false !== strpos($path, '.bat')) {
+            if (false !== stripos($path, '.bat')) {
                 return $path;
             }
-            return sprintf('%s %s', $phpFinder->find(), $path);
+            /*
+             * Was: return sprintf('%s %s', $phpFinder->find(), $path);
+             * Including php command may create issues as phpunit is a script.
+             */
+            return $path;
         }
     }
 
