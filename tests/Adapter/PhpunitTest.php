@@ -242,7 +242,7 @@ not ok 103 - Error: Humbug\Test\Utility\TestTimeAnalyserTest::testAnalysisOfJuni
 1..103
 
 OUTPUT;
-        $this->assertFalse($adapter->ok($output), $process->getErrorOutput());
+        $this->assertFalse($adapter->ok($output));
     }
 
     /**
