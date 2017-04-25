@@ -5,12 +5,12 @@ clone_folder: c:\projects\workspace
 
 environment:
   matrix:
-  - dependencies: lowest
-    php_ver_target: 7.0
+  #- dependencies: lowest
+  #  php_ver_target: 7.0
   - dependencies: highest
     php_ver_target: 7.0
-  - dependencies: lowest
-    php_ver_target: 7.1
+  #- dependencies: lowest
+  #  php_ver_target: 7.1
   - dependencies: highest
     php_ver_target: 7.1
 
