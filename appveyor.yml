@@ -44,10 +44,10 @@ install:
             $client = New-Object System.Net.WebClient
             $xdebugUrl = "https://xdebug.org/files/php_xdebug-$env:XDEBUG_VERSION-$env:php_ver_target-vc14-nts.dll"
             $xdebugPath = 'c:\tools\php\ext\xdebug.dll'
-            Write-Output "Downloading $xdebugUrl to $xdebugPath"
+            Write-Output "Downloading $xdebugUrl"
+            Write-Output "to $xdebugPath"
             $client.DownloadFile($xdebugUrl, $xdebugPath)
             Add-Content php.ini @"
-            extension_dir=ext
             zend_extension=xdebug.dll
             "@
     # Install composer and update per matrix
