@@ -48,7 +48,7 @@ install:
             Write-Output "to $xdebugPath"
             $client.DownloadFile($xdebugUrl, $xdebugPath)
             Add-Content php.ini @"
-            zend_extension=xdebug.dll
+            zend_extension=$xdebugPath
             "@
     # Install composer and update per matrix
     - appveyor-retry appveyor DownloadFile https://getcomposer.org/composer.phar
