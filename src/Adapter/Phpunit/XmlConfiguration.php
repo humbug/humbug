@@ -154,7 +154,7 @@ class XmlConfiguration
     /**
      * Adds a <php><env name="XXX" value="YYY"/></php> to set environment variables
      * and generates the <php> block if not present.
-     * 
+     *
      * @param string $name  Environment variable name
      * @param string $value Value of the variable to set
      */

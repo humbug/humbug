@@ -102,6 +102,14 @@ class MutableTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('\Math2', $return[1]->getClass());
     }
 
+    public function testShouldDetectMutationsForTraits()
+    {
+        $file = new Mutable($this->root . '/trait.php');
+        $file->generate();
+        $return = $file->getMutations();
+        $this->assertEquals('\Foo', $return[0]->getClass());
+    }
+
 
     // Ensure correct class is returned as a mutation
 
