@@ -85,7 +85,7 @@ class Text
         }
         if ($result->hasStdOut()) {
             $error[] = 'Stdout:';
-            $error = array_merge($error, $this->indent($this->headAndTail($result->getStdOut()), true));
+            $error = array_merge($error, $this->indent($this->extractFail($result->getStdOut()), true));
         }
         if ($result->hasStdErr()) {
             $error[] = 'Stderr:';
@@ -304,7 +304,7 @@ class Text
      * @param string $output
      * @return string
      */
-    protected function headAndTail($output, $lineCount = 20, $omittedMarker = '[...Middle of output removed by Humbug...]')
+    protected function headAndTail($output, $lineCount = 10, $omittedMarker = '[...Middle of output removed by Humbug...]')
     {
         $lines = explode("\n", $output);
         if (count($lines) <= ($lineCount * 2)) {
@@ -315,5 +315,14 @@ class Text
             [$omittedMarker],
             array_slice($lines, -$lineCount, $lineCount)
         ));
+    }
+
+    protected function extractFail($output)
+    {
+        $result = preg_match('%##teamcity\[testFailed.*\]%', $output, $matches);
+        if ($result) {
+            return $matches[0];
+        }
+        return 'No failure output was detected by Humbug, but a failure was reported by PHPUnit.';
     }
 }
