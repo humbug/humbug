@@ -54,11 +54,8 @@ abstract class AdapterAbstract
      */
     public function ok($output)
     {
-        $lines = explode("\n", $output);
-        foreach ($lines as $line) {
-            if (preg_match("%##teamcity\[testFailed%", $line)) {
-                return false;
-            }
+        if (preg_match("%##teamcity\[testFailed%", $output)) {
+            return false;
         }
         return true;
     }
