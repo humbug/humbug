@@ -92,11 +92,9 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($adapter->ok($result));
     }
 
-    /**
-     * @requires PHPUnit 6.0
-     */
     public function testAdapterRunsPhpunitCommandWithAlltestsFileTarget()
     {
+        $this->markTestSkipped('See https://github.com/sebastianbergmann/phpunit/issues/2665');
         $container = m::mock('\Humbug\Container');
         $container->shouldReceive([
             'getSourceList'    => __DIR__ . '/_files/phpunit2',
