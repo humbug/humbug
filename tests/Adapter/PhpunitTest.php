@@ -92,6 +92,9 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($adapter->ok($result));
     }
 
+    /**
+     * @requires PHPUnit 6.0
+     */
     public function testAdapterRunsPhpunitCommandWithAlltestsFileTarget()
     {
         $container = m::mock('\Humbug\Container');
@@ -171,6 +174,7 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
 
         $result = $process->getOutput();
 
+        $this->assertContains('##teamcity[', $result);
         $this->assertFalse($adapter->ok($result));
     }
 
@@ -198,6 +202,7 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
 
         $result = $process->getOutput();
 
+        $this->assertContains('##teamcity[', $result);
         $this->assertFalse($adapter->ok($result));
     }
 
@@ -225,6 +230,7 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
 
         $result = $process->getOutput();
 
+        $this->assertContains('##teamcity[', $result);
         $this->assertFalse($adapter->ok($result));
     }
 
