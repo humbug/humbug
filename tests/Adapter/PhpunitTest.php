@@ -88,7 +88,7 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
 
         $result = $process->getOutput();
 
-        $this->assertStringStartsWith('TAP version', $result);
+        $this->assertContains('##teamcity[', $result);
         $this->assertTrue($adapter->ok($result));
     }
 
@@ -116,7 +116,7 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
 
         $result = $process->getOutput();
 
-        $this->assertStringStartsWith('TAP version', $result);
+        $this->assertContains('##teamcity[', $result);
         $this->assertTrue($adapter->ok($result));
     }
 
@@ -230,6 +230,7 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
 
     public function testAdapterOutputProcessingDetectsFailOverMultipleLinesWithNoDepOnFinalStatusReport()
     {
+        $this->markTestIncomplete('This seems redundant as it should never happen - fail on first failure is set');
         $adapter = new Phpunit;
         $output = <<<OUTPUT
 TAP version 13
@@ -273,7 +274,7 @@ OUTPUT;
         $result = $process->getOutput();
 
         $this->assertEquals(2, $adapter->hasOks($result));
-        $this->assertStringStartsWith('TAP version', $result);
+        $this->assertContains('##teamcity[', $result);
         $this->assertTrue($adapter->ok($result), "Regression output: \n" . $result);
     }
 
