@@ -62,4 +62,4 @@ install:
 test_script:
     - cd c:\projects\workspace
     - vendor\bin\phpunit -c phpunit.xml.dist
-    - vendor\bin\behat -vv -f progress
+    #- vendor\bin\behat -vv -f progress
