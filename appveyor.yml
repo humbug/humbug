@@ -14,7 +14,7 @@ environment:
   - dependencies: highest
     php_ver_target: 7.1
 
-cache:
+cache: # cache is cleared when linked file is modified
     - '%LOCALAPPDATA%\Composer\files -> composer.lock'
     - composer.phar
     - C:\ProgramData\chocolatey\bin -> .appveyor.yml
@@ -24,12 +24,14 @@ cache:
 init:
     - SET PATH=C:\Program Files\OpenSSL;c:\tools\php;%PATH%
     - SET PHP=1
+    - SET XDEBUG=1
     - SET ANSICON=121x90 (121x90)
     - SET COMPOSER_NO_INTERACTION=1
     - SET XDEBUG_VERSION=2.5.3 # As of 24 April 2017 - UPDATE REGULARLY
 
 install:
     - IF EXIST c:\tools\php (SET PHP=0)
+    - IF EXIST c:\tools\php\ext\xdebug.dll (SET XDEBUG=0)
     # Install PHP
     - ps: appveyor-retry cinst --params '""/InstallDir:C:\tools\php""' --ignore-checksums -y php --version ((choco search php --exact --all-versions -r | select-string -pattern $env:php_ver_target | sort { [version]($_ -split '\|' | select -last 1) } -Descending | Select-Object -first 1) -replace '[php|]','')
     - cd c:\tools\php
@@ -41,6 +43,7 @@ install:
     - IF %PHP%==1 echo @php %%~dp0composer.phar %%* > composer.bat
     # Install xdebug
     - ps: |
+            IF %XDEBUG%==0 return
             $client = New-Object System.Net.WebClient
             $xdebugUrl = "https://xdebug.org/files/php_xdebug-$env:XDEBUG_VERSION-$env:php_ver_target-vc14-nts-x86_64.dll"
             $xdebugPath = 'c:\tools\php\ext\xdebug.dll'
