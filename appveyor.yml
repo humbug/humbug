@@ -17,9 +17,9 @@ environment:
 cache: # cache is cleared when linked file is modified
     - '%LOCALAPPDATA%\Composer\files -> composer.lock'
     - composer.phar
-    - C:\ProgramData\chocolatey\bin -> .appveyor.yml
-    - C:\ProgramData\chocolatey\lib -> .appveyor.yml
-    - c:\tools\php -> .appveyor.yml
+    - C:\ProgramData\chocolatey\bin -> appveyor.yml
+    - C:\ProgramData\chocolatey\lib -> appveyor.yml
+    - c:\tools\php -> appveyor.yml
 
 init:
     - SET PATH=C:\Program Files\OpenSSL;c:\tools\php;%PATH%
