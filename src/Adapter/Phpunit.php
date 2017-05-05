@@ -47,8 +47,9 @@ class Phpunit extends AdapterAbstract
         $firstRun = false,
         $interceptFile = null,
         $mutantFile = null,
-        array $testSuites = [])
-    {
+        array $testSuites = []
+    ) {
+    
         $jobopts = [
             'testdir'       => $container->getTestRunDirectory(),
             'basedir'       => $container->getBaseDirectory(),

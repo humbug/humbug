@@ -201,8 +201,9 @@ class Runner
         CoverageData $coverage,
         Collector $collector,
         $mutableFile,
-        $index)
-    {
+        $index
+    ) {
+    
         static $fileHits = [];
         static $cacheHits = [];
 
