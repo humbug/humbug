@@ -8,6 +8,7 @@ warned ;).
 
 [![Build Status](https://travis-ci.org/humbug/humbug.svg)](https://travis-ci.org/humbug/humbug) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/humbug/humbug/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/humbug/humbug/?branch=master)
 [![StyleCI](https://styleci.io/repos/28300862/shield?style=flat)](https://styleci.io/repos/28300862) [![Total Downloads](https://poser.pugx.org/humbug/humbug/downloads.png)](https://packagist.org/packages/humbug/humbug)
+[![Slack](https://img.shields.io/badge/slack-%23humbug-red.svg?style=flat-square)](https://symfony.com/slack-invite)
 
 ⚠️️ Update your remotes! Humbug has transferred to a new location. While your
 existing repositories will redirect transparently for any operations, take some
