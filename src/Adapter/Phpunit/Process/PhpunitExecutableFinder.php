@@ -17,7 +17,6 @@ use Humbug\Config;
 use Humbug\Config\JsonParser;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\ExecutableFinder;
-use Symfony\Component\Process\PhpExecutableFinder;
 
 class PhpunitExecutableFinder extends AbstractExecutableFinder
 {
@@ -100,15 +99,10 @@ class PhpunitExecutableFinder extends AbstractExecutableFinder
     protected function makeExecutable($path)
     {
         $path = realpath($path);
-        $phpFinder = new PhpExecutableFinder();
         if (!defined('PHP_WINDOWS_VERSION_BUILD')) {
-            return sprintf('%s %s %s', 'exec', $phpFinder->find(), $path);
-        } else {
-            if (false !== strpos($path, '.bat')) {
-                return $path;
-            }
-            return sprintf('%s %s', $phpFinder->find(), $path);
+            return sprintf('%s %s', 'exec', $path);
         }
+        return $path;
     }
 
     private function setConfig()
