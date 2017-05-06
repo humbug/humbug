@@ -203,7 +203,6 @@ class Runner
         $mutableFile,
         $index
     ) {
-
         static $fileHits = [];
         static $cacheHits = [];
 
