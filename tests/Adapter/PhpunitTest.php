@@ -171,7 +171,7 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
 
         $result = $process->getOutput();
 
-        $this->assertFalse($adapter->ok($result));
+        $this->assertFalse($adapter->ok($result), $result);
     }
 
     public function testAdapterDetectsTestsFailingFromException()
