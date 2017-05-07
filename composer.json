@@ -32,7 +32,8 @@
         "behat/behat": "^3.0.15",
         "symfony/filesystem": "^2.6|^3.0",
         "mikey179/vfsStream": "^1.4",
-        "ciaranmcnulty/versionbasedtestskipper": "^0.2.1"
+        "ciaranmcnulty/versionbasedtestskipper": "^0.2.1",
+        "povils/phpmnd": "^1.0.3"
     },
     "autoload": {
         "psr-4": { "Humbug\\": "src/" }
