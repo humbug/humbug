@@ -92,7 +92,7 @@ class Phpunit extends AdapterAbstract
                 unset($jobopts['command'][$key]);
             }
         }
-        array_unshift($jobopts['command'], '--configuration=' . $configFile);
+        array_unshift($jobopts['command'], '--configuration=' . escapeshellarg($configFile));
 
         /**
          * Initial command is expected, of course.
@@ -120,8 +120,8 @@ class Phpunit extends AdapterAbstract
             $container->getBootstrap(),
             $interceptFile
         );
-        
-        $process = new Process(implode(' ', $jobopts['command']), $jobopts['testdir'], array_replace($_ENV, $_SERVER));
+
+        $process = new Process(implode(' ', $jobopts['command']), escapeshellarg($jobopts['testdir']), array_replace($_ENV, $_SERVER));
         $process->setTimeout($timeout);
 
         return $process;

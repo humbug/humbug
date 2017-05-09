@@ -102,12 +102,12 @@ class PhpunitExecutableFinder extends AbstractExecutableFinder
         $path = realpath($path);
         $phpFinder = new PhpExecutableFinder();
         if (!defined('PHP_WINDOWS_VERSION_BUILD')) {
-            return sprintf('%s %s %s', 'exec', $phpFinder->find(), $path);
+            return sprintf('%s %s %s', 'exec', escapeshellarg($phpFinder->find()), escapeshellarg($path));
         } else {
             if (false !== strpos($path, '.bat')) {
-                return $path;
+                return escapeshellarg($path);
             }
-            return sprintf('%s %s', $phpFinder->find(), $path);
+            return sprintf('%s %s', escapeshellarg($phpFinder->find()), escapeshellarg($path));
         }
     }
 
