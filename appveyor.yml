@@ -1,0 +1,49 @@
+build: false
+platform:
+  - x64
+clone_folder: c:\projects\workspace
+
+environment:
+  matrix:
+  - dependencies: lowest
+    php_ver_target: 7.0
+  - dependencies: highest
+    php_ver_target: 7.0
+  - dependencies: lowest
+    php_ver_target: 7.1
+  - dependencies: highest
+    php_ver_target: 7.1
+
+cache:
+    - '%LOCALAPPDATA%\Composer\files -> composer.lock'
+    - composer.phar
+    - C:\ProgramData\chocolatey\bin -> .appveyor.yml
+    - C:\ProgramData\chocolatey\lib -> .appveyor.yml
+    - c:\tools\php -> .appveyor.yml
+
+init:
+    - SET PATH=C:\Program Files\OpenSSL;c:\tools\php;%PATH%
+    - SET PHP=1
+    - SET ANSICON=121x90 (121x90)
+    - SET COMPOSER_NO_INTERACTION=1
+
+install:
+    - IF EXIST c:\tools\php (SET PHP=0)
+    - ps: appveyor-retry cinst --params '""/InstallDir:C:\tools\php""' --ignore-checksums -y php --version ((choco search php --exact --all-versions -r | select-string -pattern $env:php_ver_target | sort { [version]($_ -split '\|' | select -last 1) } -Descending | Select-Object -first 1) -replace '[php|]','')
+    - cd c:\tools\php
+    - IF %PHP%==1 copy php.ini-production php.ini /Y
+    - IF %PHP%==1 echo date.timezone="UTC" >> php.ini
+    - IF %PHP%==1 echo extension_dir=ext >> php.ini
+    - IF %PHP%==1 echo extension=php_openssl.dll >> php.ini
+    - IF %PHP%==1 echo extension=php_mbstring.dll >> php.ini
+    - IF %PHP%==1 echo @php %%~dp0composer.phar %%* > composer.bat
+    - appveyor-retry appveyor DownloadFile https://getcomposer.org/composer.phar
+    - cd c:\projects\workspace
+    - IF %dependencies%==lowest appveyor-retry composer update --no-suggest --prefer-dist --prefer-lowest
+    - IF %dependencies%==highest appveyor-retry composer update --no-suggest --prefer-dist
+    - composer show
+
+
+test_script:
+    - cd c:\projects\workspace
+    - vendor\bin\phpunit -c phpunit.xml.dist
