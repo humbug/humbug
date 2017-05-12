@@ -88,7 +88,7 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
 
         $result = $process->getOutput();
 
-        $this->assertContains('##teamcity[', $result);
+        $this->assertContains('##teamcity[', $result, $process->getErrorOutput());
         $this->assertTrue($adapter->ok($result));
     }
 
@@ -118,7 +118,7 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
         $result = $process->getOutput();
 
         $this->assertContains('##teamcity[', $result);
-        $this->assertTrue($adapter->ok($result));
+        $this->assertTrue($adapter->ok($result), $process->getErrorOutput());
     }
 
     public function testAdapterDetectsTestsPassing()
@@ -145,7 +145,7 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
 
         $result = $process->getOutput();
 
-        $this->assertTrue($adapter->ok($result));
+        $this->assertTrue($adapter->ok($result), $process->getErrorOutput());
     }
 
     public function testAdapterDetectsTestsFailingFromTestFail()
@@ -173,7 +173,7 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
         $result = $process->getOutput();
 
         $this->assertContains('##teamcity[', $result);
-        $this->assertFalse($adapter->ok($result));
+        $this->assertFalse($adapter->ok($result), $process->getErrorOutput());
     }
 
     public function testAdapterDetectsTestsFailingFromException()
@@ -201,7 +201,7 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
         $result = $process->getOutput();
 
         $this->assertContains('##teamcity[', $result);
-        $this->assertFalse($adapter->ok($result));
+        $this->assertFalse($adapter->ok($result), $process->getErrorOutput());
     }
 
     public function testAdapterDetectsTestsFailingFromError()
@@ -229,7 +229,7 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
         $result = $process->getOutput();
 
         $this->assertContains('##teamcity[', $result);
-        $this->assertFalse($adapter->ok($result));
+        $this->assertFalse($adapter->ok($result), $process->getErrorOutput());
     }
 
     public function testAdapterOutputProcessingDetectsFailOverMultipleLinesWithNoDepOnFinalStatusReport()
@@ -276,8 +276,8 @@ OUTPUT;
         $process->run();
 
         $result = $process->getOutput();
-
-        $this->assertEquals(2, $adapter->hasOks($result));
+      
+        $this->assertEquals(2, $adapter->hasOks($result), $process->getErrorOutput());
         $this->assertContains('##teamcity[', $result);
         $this->assertTrue($adapter->ok($result), "Regression output: \n" . $result);
     }

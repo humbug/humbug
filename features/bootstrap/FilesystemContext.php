@@ -89,6 +89,14 @@ class FilesystemContext implements Context, SnippetAcceptingContext
     }
 
     /**
+     * @Given the directory :dir exists
+     */
+    public function theDirectoryExists($dir)
+    {
+        $this->filesystem->mkdir($this->workingDirectory . '/' . $dir);
+    }
+
+    /**
      * @Then the file :file should contain:
      */
     public function theFileShouldContain($file, PyStringNode $contents)
