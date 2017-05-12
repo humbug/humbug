@@ -1,0 +1,67 @@
+build: false
+platform:
+  - x64
+clone_folder: c:\projects\workspace
+
+environment:
+  matrix:
+  #- dependencies: lowest
+  #  php_ver_target: 7.0
+  - dependencies: highest
+    php_ver_target: 7.0
+  #- dependencies: lowest
+  #  php_ver_target: 7.1
+  - dependencies: highest
+    php_ver_target: 7.1
+
+cache: # cache is cleared when linked file is modified
+    - '%LOCALAPPDATA%\Composer\files -> composer.lock'
+    - composer.phar
+    - C:\ProgramData\chocolatey\bin -> appveyor.yml
+    - C:\ProgramData\chocolatey\lib -> appveyor.yml
+    - c:\tools\php -> appveyor.yml
+
+init:
+    - SET PATH=C:\Program Files\OpenSSL;c:\tools\php;%PATH%
+    - SET PHP=1
+    - SET ANSICON=121x90 (121x90)
+    - SET COMPOSER_NO_INTERACTION=1
+    - SET XDEBUG_VERSION=2.5.3 # As of 24 April 2017 - UPDATE REGULARLY
+
+install:
+    - IF EXIST c:\tools\php (SET PHP=0)
+    # Enable Windows update service
+    - ps: Set-Service wuauserv -StartupType Manual
+    # Install PHP
+    - ps: appveyor-retry cinst --params '""/InstallDir:C:\tools\php""' --ignore-checksums -y php --version ((choco search php --exact --all-versions -r | select-string -pattern $env:php_ver_target | sort { [version]($_ -split '\|' | select -last 1) } -Descending | Select-Object -first 1) -replace '[php|]','')
+    - cd c:\tools\php
+    - IF %PHP%==1 copy php.ini-production php.ini /Y
+    - IF %PHP%==1 echo date.timezone="UTC" >> php.ini
+    - IF %PHP%==1 echo extension_dir=ext >> php.ini
+    - IF %PHP%==1 echo extension=php_openssl.dll >> php.ini
+    - IF %PHP%==1 echo extension=php_mbstring.dll >> php.ini
+    - IF %PHP%==1 echo @php %%~dp0composer.phar %%* > composer.bat
+    # Install xdebug
+    - ps: |
+            if (Test-Path "c:\tools\php\ext\xdebug.dll") {return}
+            $client = New-Object System.Net.WebClient
+            $xdebugUrl = "https://xdebug.org/files/php_xdebug-$env:XDEBUG_VERSION-$env:php_ver_target-vc14-nts-x86_64.dll"
+            $xdebugPath = 'c:\tools\php\ext\xdebug.dll'
+            Write-Output "Downloading $xdebugUrl"
+            Write-Output "to $xdebugPath"
+            $client.DownloadFile($xdebugUrl, $xdebugPath)
+            Add-Content php.ini @"
+            zend_extension=$xdebugPath
+            "@
+    # Install composer and update per matrix
+    - appveyor-retry appveyor DownloadFile https://getcomposer.org/composer.phar
+    - cd c:\projects\workspace
+    - IF %dependencies%==lowest appveyor-retry composer update --no-suggest --prefer-dist --prefer-lowest
+    - IF %dependencies%==highest appveyor-retry composer update --no-suggest --prefer-dist
+    - composer show
+
+
+test_script:
+    - cd c:\projects\workspace
+    - vendor\bin\phpunit -c phpunit.xml.dist
+    #- vendor\bin\behat -vv -f progress
