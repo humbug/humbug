@@ -117,7 +117,8 @@ class IncrementalCache
     {
         if (!$this->hasResultsFor($file)) {
             throw new RuntimeException(sprintf(
-                'There are no incremental cache results for file: %s', $file
+                'There are no incremental cache results for file: %s',
+                $file
             ));
         }
         return $this->cachedResults[$file];

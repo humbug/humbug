@@ -30,10 +30,7 @@ class Tokenizer
             $tname = is_array($token) ? $token[0] : null;
             $tdata = is_array($token) ? $token[1] : $token;
             $split = preg_split("%(\r\n|\n)%", $tdata, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
-            if ($tname == T_CONSTANT_ENCAPSED_STRING) {
-                $ntokens[] = [$tname, $tdata];
-                continue;
-            } elseif (substr($tdata, 0, 2) == '/*') {
+            if ($tname == T_CONSTANT_ENCAPSED_STRING || substr($tdata, 0, 2) == '/*') {
                 $ntokens[] = [$tname, $tdata];
                 foreach ($split as $value) {
                     if ($value == "\r\n" || $value == "\n") {
