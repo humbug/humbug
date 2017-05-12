@@ -23,8 +23,12 @@ class Job
      */
     public static function generate($mutantFile = null, $bootstrap = '', $replacingFile = null)
     {
+        $loadHumbug = '';
         if ('phar:' === substr(__FILE__, 0, 5)) {
-            $humbugBootstrap = \Phar::running() . '/bootstrap.php';
+            $loadHumbug = '\Phar::loadPhar(\''
+                . str_replace('phar://', '', \Phar::running())
+                . '\', \'humbug.phar\');';
+            $humbugBootstrap = 'phar://humbug.phar' . '/bootstrap.php';
         } else {
             $humbugBootstrap = realpath(__DIR__ . '/../../../bootstrap.php');
         }
@@ -36,6 +40,7 @@ class Job
             $replacingFile = addslashes($replacingFile);
             $prepend = <<<PREPEND
 <?php
+{$loadHumbug}
 require_once '{$humbugBootstrap}';
 use Humbug\StreamWrapper\IncludeInterceptor;
 IncludeInterceptor::intercept('{$replacingFile}', '{$mutantFile}');
@@ -49,9 +54,9 @@ PREPEND;
             file_put_contents($file, $buffer);
         } else {
             if (!empty($bootstrap)) {
-                $buffer = "<?php\nrequire_once '{$humbugBootstrap}';\nrequire_once '{$bootstrap}';";
+                $buffer = "<?php\n{$loadHumbug}\nrequire_once '{$humbugBootstrap}';\nrequire_once '{$bootstrap}';";
             } else {
-                $buffer = "<?php\nrequire_once '{$humbugBootstrap}';";
+                $buffer = "<?php\n{$loadHumbug}\nrequire_once '{$humbugBootstrap}';";
             }
             file_put_contents($file, $buffer);
         }
