@@ -49,7 +49,7 @@
     },
     "scripts": {
         "test": "phpunit",
-        "cs:check": "phpcs -pn --standard=PSR2 --runtime-set ignore_warnings_on_exit 1 src tests --ignore=*_files*,*XmlConfigurationBuilderTest.php",
-        "cs:fix": "phpcbf -pn --standard=PSR2 --runtime-set ignore_errors_on_exit 1 --runtime-set ignore_warnings_on_exit 1 src tests --ignore=*_files*,*XmlConfigurationBuilderTest.php"
+        "cs:check": "phpcs -pn --standard=PSR2 --runtime-set ignore_warnings_on_exit 1 src tests --ignore=*_files*,*XmlConfigurationBuilderTest.php,*IncludeInterceptor.php",
+        "cs:fix": "phpcbf -pn --standard=PSR2 --runtime-set ignore_errors_on_exit 1 --runtime-set ignore_warnings_on_exit 1 src tests --ignore=*_files*,*XmlConfigurationBuilderTest.php,*IncludeInterceptor.php"
     }
 }
