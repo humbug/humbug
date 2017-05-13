@@ -101,7 +101,6 @@ class PhpunitExecutableFinder extends AbstractExecutableFinder
         $path = realpath($path);
         if (!defined('PHP_WINDOWS_VERSION_BUILD')) {
             return sprintf('%s %s', 'exec', $path);
-
         }
         return $path;
     }
