@@ -32,7 +32,8 @@
         "behat/behat": "^3.0.15",
         "symfony/filesystem": "^2.6|^3.0",
         "mikey179/vfsStream": "^1.4",
-        "ciaranmcnulty/versionbasedtestskipper": "^0.2.1"
+        "ciaranmcnulty/versionbasedtestskipper": "^0.2.1",
+        "squizlabs/php_codesniffer": "^2.8"
     },
     "autoload": {
         "psr-4": { "Humbug\\": "src/" }
@@ -47,6 +48,8 @@
         }
     },
     "scripts": {
-        "test": "phpunit"
+        "test": "phpunit",
+        "cs:check": "phpcs -pn --standard=PSR2 --runtime-set ignore_warnings_on_exit 1 src tests --ignore=*_files*,*XmlConfigurationBuilderTest.php",
+        "cs:fix": "phpcbf -pn --standard=PSR2 --runtime-set ignore_errors_on_exit 1 --runtime-set ignore_warnings_on_exit 1 src tests --ignore=*_files*,*XmlConfigurationBuilderTest.php"
     }
 }
