@@ -52,8 +52,11 @@ class Configure extends Command
             return 0;
         }
 
-        $excludeDirs = $this->getDirs($input, $output,
-            'Any directories to exclude from within your source directories? :');
+        $excludeDirs = $this->getDirs(
+            $input,
+            $output,
+            'Any directories to exclude from within your source directories? :'
+        );
 
         $timeout = $this->getTimeout($input, $output);
 
@@ -84,10 +87,10 @@ class Configure extends Command
     {
         $this->setName('configure')
             ->addOption(
-               'force',
-               'f',
-               InputOption::VALUE_NONE,
-               'If it already exists, recreate the configuration anyway.'
+                'force',
+                'f',
+                InputOption::VALUE_NONE,
+                'If it already exists, recreate the configuration anyway.'
             )
         ;
     }
@@ -196,7 +199,6 @@ class Configure extends Command
     {
         $frameworkConfigurationQuestion = new Question('Where is your phpunit.xml(.dist) configuration located? : ');
         $frameworkConfigurationQuestion->setValidator(function ($answer) use ($configurationLocator) {
-
             $answer = trim($answer);
 
             if (!$answer) {

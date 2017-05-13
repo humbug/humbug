@@ -15,7 +15,6 @@ use Humbug\Mutator;
 
 class LogicalOrTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testReturnsTokenEquivalentToBooleanAnd()
     {
         $mutation = new Mutator\Boolean\LogicalOr;

@@ -1,35 +1,33 @@
 language: php
-sudo: false
 
 php:
-  - 7.0
   - 5.6
-  - 5.5
-  - 5.4
+  - 7.0
+  - 7.1
   - hhvm
-  - hhvm-nightly
+
+env:
+  - COMPOSER_FLAGS=--prefer-lowest
+  - COMPOSER_FLAGS=
 
 matrix:
+  include:
+    - php: 7.1
+      env: PHPUNIT_FLAGS=--coverage-text
+  exclude:
+    - php: 7.1
+      env: COMPOSER_FLAGS=
   fast_finish: true
   allow_failures:
-    - php: 7.0
     - php: hhvm
-    - php: hhvm-nightly
-        
-branches:
-  only:
-    - master
 
 cache:
   directories:
     - $HOME/.composer/cache
 
-before_install:
-  - travis_retry composer self-update
-
 before_script:
-  - travis_retry composer install --no-interaction
+  - composer update --no-interaction --no-suggest --prefer-dist $COMPOSER_FLAGS
 
 script:
-  - vendor/bin/phpunit --coverage-text
-  - vendor/bin/behat
+  - vendor/bin/phpunit $PHPUNIT_FLAGS
+  - vendor/bin/behat -vv -f progress

@@ -19,7 +19,6 @@ use Symfony\Component\Console\Input\InputInterface;
 
 class ProgressBarObserver implements Observer
 {
-
     private $progressBar;
 
     private $isDisabled = false;

@@ -15,7 +15,6 @@ use Humbug\Mutator;
 
 class MinusEqualTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testReturnsTokenEquivalentToPlusEqualOperator()
     {
         $mutation = new Mutator\Arithmetic\MinusEqual;

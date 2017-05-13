@@ -15,7 +15,6 @@ use Humbug\Mutator;
 
 class LogicalLowerOrTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testReturnsTokenEquivalentToLogicalLowerAnd()
     {
         $mutation = new Mutator\Boolean\LogicalLowerOr;

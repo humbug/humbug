@@ -16,8 +16,8 @@
         "issues": "https://github.com/padraic/humbug/issues"
     },
     "require": {
-        "php": ">=5.4.0",
-        "phpunit/phpunit": "^4.5|^5.0",
+        "php": ">=5.6.0",
+        "phpunit/phpunit": "^5.0",
         "symfony/console": "^2.6|^3.0",
         "symfony/finder": "^2.6|^3.0",
         "symfony/process": "^2.6|^3.0",
@@ -31,7 +31,9 @@
         "mockery/mockery": "^0.9",
         "behat/behat": "^3.0.15",
         "symfony/filesystem": "^2.6|^3.0",
-        "mikey179/vfsStream": "^1.4"
+        "mikey179/vfsStream": "^1.4",
+        "ciaranmcnulty/versionbasedtestskipper": "^0.2.1",
+        "squizlabs/php_codesniffer": "^2.8"
     },
     "autoload": {
         "psr-4": { "Humbug\\": "src/" }
@@ -46,6 +48,8 @@
         }
     },
     "scripts": {
-        "test": "phpunit"
+        "test": "phpunit",
+        "cs:check": "phpcs -pn --standard=PSR2 --runtime-set ignore_warnings_on_exit 1 src tests --ignore=*_files*,*XmlConfigurationBuilderTest.php,*IncludeInterceptor.php",
+        "cs:fix": "phpcbf -pn --standard=PSR2 --runtime-set ignore_errors_on_exit 1 --runtime-set ignore_warnings_on_exit 1 src tests --ignore=*_files*,*XmlConfigurationBuilderTest.php,*IncludeInterceptor.php"
     }
 }

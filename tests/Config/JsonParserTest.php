@@ -39,29 +39,29 @@ class JsonParserTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('stdClass', $config);
     }
 
+    /**
+     * @expectedException \Humbug\Exception\JsonConfigException
+     */
     public function testParsesNonDistFilePreferentially()
     {
-        $this->setExpectedException(
-            '\Humbug\Exception\JsonConfigException'
-        );
-        $config = $this->parser->parseFile(__DIR__ . '/../_files/config4/');
+        $this->parser->parseFile(__DIR__ . '/../_files/config4/');
     }
 
+    /**
+     * @expectedException \Humbug\Exception\JsonConfigException
+     * @expectedExceptionMessage Please create a humbug.json(.dist) file.
+     */
     public function testShouldRiseExceptionWhenFileNotExists()
     {
-        $this->setExpectedException(
-            '\Humbug\Exception\JsonConfigException',
-            'Please create a humbug.json(.dist) file.'
-        );
         $this->parser->parseFile('it/not/exists/');
     }
 
+    /**
+     * @expectedException \Humbug\Exception\JsonConfigException
+     * @expectedExceptionMessageRegExp |Error parsing configuration file JSON.*|
+     */
     public function testShouldRiseExceptionWhenFileContainsInvalidJson()
     {
-        $this->setExpectedExceptionRegExp(
-            '\Humbug\Exception\JsonConfigException',
-            '/Error parsing configuration file JSON.*/'
-        );
         $this->parser->parseFile(__DIR__ . '/../_files/config2/');
     }
 }

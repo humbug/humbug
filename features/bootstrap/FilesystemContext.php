@@ -39,6 +39,8 @@ class FilesystemContext implements Context, SnippetAcceptingContext
         $this->workingDirectory = tempnam(sys_get_temp_dir(), 'humbug-behat');
         $this->filesystem->remove($this->workingDirectory);
         $this->filesystem->mkdir($this->workingDirectory);
+        $this->filesystem->symlink(__DIR__ . '/../../composer.json', $this->workingDirectory . '/composer.json');
+        $this->filesystem->symlink(__DIR__ . '/../../vendor', $this->workingDirectory . '/vendor');
         chdir($this->workingDirectory);
     }
 
@@ -84,6 +86,14 @@ class FilesystemContext implements Context, SnippetAcceptingContext
     public function theFileShouldExist($file)
     {
         $this->throwExceptionIfFalse(file_exists($file), sprintf('Expected file to exist: %s', $file));
+    }
+
+    /**
+     * @Given the directory :dir exists
+     */
+    public function theDirectoryExists($dir)
+    {
+        $this->filesystem->mkdir($this->workingDirectory . '/' . $dir);
     }
 
     /**

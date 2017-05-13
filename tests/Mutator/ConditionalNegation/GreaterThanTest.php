@@ -15,7 +15,6 @@ use Humbug\Mutator;
 
 class GreaterThanTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testReturnsTokenEquivalentToLessThanOrEqualTo()
     {
         $mutation = new Mutator\ConditionalNegation\GreaterThan;

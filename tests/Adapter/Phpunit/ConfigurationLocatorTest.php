@@ -39,11 +39,12 @@ class ConfigurationLocatorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedXmlPath, $configurationFile);
     }
 
+    /**
+     * @expectedException \Humbug\Exception\RuntimeException
+     */
     public function testShouldRiseExceptionWhileLocatingConfiguration()
     {
         $directory = __DIR__;
-
-        $this->setExpectedException('\Humbug\Exception\RuntimeException');
 
         (new ConfigurationLocator())->locate($directory);
     }
