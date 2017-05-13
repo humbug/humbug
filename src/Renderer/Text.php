@@ -287,7 +287,7 @@ class Text
      * @param bool $asArray
      * @return string
      */
-    protected function indent($output, $asArray = false)
+    private function indent($output, $asArray = false)
     {
         $lines = explode("\n", $output);
         $out = [];
@@ -308,7 +308,7 @@ class Text
      * @param string $output
      * @return string
      */
-    protected function headAndTail($output, $lineCount = 10, $omittedMarker = '[...Middle of output removed by Humbug...]')
+    private function headAndTail($output, $lineCount = 10, $omittedMarker = '[...Middle of output removed by Humbug...]')
     {
         $lines = explode("\n", $output);
         if (count($lines) <= ($lineCount * 2)) {
@@ -321,10 +321,9 @@ class Text
         ));
     }
 
-    protected function extractFail($output)
+    private function extractFail($output)
     {
-        $result = preg_match('%##teamcity\[testFailed.*\]%', $output, $matches);
-        if ($result) {
+        if (preg_match('%##teamcity\[testFailed.*\]%', $output, $matches)) {
             return $matches[0];
         }
         return 'No failure output was detected by Humbug, but a failure was reported by PHPUnit.';

@@ -43,18 +43,10 @@ class ProcessRunner
         ) {
             if ($out == Process::ERR) {
                 $hasFailure = true;
-                //$process->stop();
-                //return;
-            }
-
-            if ($hasFailure) {
-                //return;
             }
 
             if (!$testFrameworkAdapter->ok($data)) {
                 $hasFailure = true;
-                //$process->stop();
-                //return;
             }
 
             $oksCount = $testFrameworkAdapter->hasOks($data);

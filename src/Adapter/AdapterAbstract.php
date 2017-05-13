@@ -73,7 +73,7 @@ abstract class AdapterAbstract
         $result = preg_match_all("%##teamcity\[testFinished%", $output);
         if ($result) {
             $this->okCount += $result;
-            return $this->okCount; // was: (int) end($matches[1]);
+            return $this->okCount;
         }
         return false;
     }

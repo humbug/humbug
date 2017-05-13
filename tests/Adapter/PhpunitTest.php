@@ -92,35 +92,6 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($adapter->ok($result));
     }
 
-    public function testAdapterRunsPhpunitCommandWithAlltestsFileTarget()
-    {
-        $this->markTestSkipped('See https://github.com/sebastianbergmann/phpunit/issues/2665');
-        $container = m::mock('\Humbug\Container');
-        $container->shouldReceive([
-            'getSourceList'    => __DIR__ . '/_files/phpunit2',
-            'getTestRunDirectory'      => __DIR__ . '/_files/phpunit2',
-            'getBaseDirectory'      => __DIR__ . '/_files/phpunit2',
-            'getTimeout'            => 1200,
-            'getTempDirectory'     => $this->tmpDir,
-            'getAdapterOptions'     => [],
-            'getBootstrap'          => '',
-            'getAdapterConstraints' => 'AllTests.php'
-        ]);
-
-        $adapter = new Phpunit;
-        $process = $adapter->getProcess(
-            $container,
-            true,
-            true
-        );
-        $process->run();
-
-        $result = $process->getOutput();
-
-        $this->assertContains('##teamcity[', $result);
-        $this->assertTrue($adapter->ok($result), $process->getErrorOutput());
-    }
-
     public function testAdapterDetectsTestsPassing()
     {
         $container = m::mock('\Humbug\Container');
