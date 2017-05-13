@@ -1,9 +1,8 @@
 Feature: Use Humbug
-    So that I can see a Humbug mutant error result
+    So that I can see a Humbug mutant test skipped result with no tests
     As a developer
     I need to be able to run Humbug
 
-    @php:^5.6
     Scenario:
         Given the class file "src/Foo.php" contains:
             """
@@ -12,20 +11,6 @@ Feature: Use Humbug
             {
                 public function add($a, $b) {
                     return $a + $b;
-                }
-            }
-            """
-        And the test file "tests/FooTest.php" contains:
-            """
-            <?php
-            class FooTest extends \PHPUnit_Framework_TestCase
-            {
-                public function testAddsNumbers() {
-                    $foo = new Foo;
-                    $r = $foo->add(2, 1);
-                    // emulate error
-                    if ($r !== 3) require __DIR__ . '/this.does.not.exist.xyz'; 
-                    $this->assertEquals(3, $r);
                 }
             }
             """
@@ -80,19 +65,19 @@ Feature: Use Humbug
             Mutation Testing is commencing on 1 files...
             (.: killed, M: escaped, S: uncovered, E: fatal error, T: timed out)
 
-            E
+            S
 
             1 mutations were generated:
                    0 mutants were killed
-                   0 mutants were not covered by tests
+                   1 mutants were not covered by tests
                    0 covered mutants were not detected
-                   1 fatal errors were encountered
+                   0 fatal errors were encountered
                    0 time outs were encountered
 
             Metrics:
-                Mutation Score Indicator (MSI): 100%
-                Mutation Code Coverage: 100%
-                Covered Code MSI: 100%
+                Mutation Score Indicator (MSI): 0%
+                Mutation Code Coverage: 0%
+                Covered Code MSI: 0%
 
             Remember that some mutants will inevitably be harmless (i.e. false positives).
 

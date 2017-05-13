@@ -1,9 +1,8 @@
 Feature: Use Humbug
-    So that I can see a Humbug mutant error result
+    So that I can see a Humbug mutant kill result
     As a developer
     I need to be able to run Humbug
 
-    @php:^5.6
     Scenario:
         Given the class file "src/Foo.php" contains:
             """
@@ -11,6 +10,10 @@ Feature: Use Humbug
             class Foo
             {
                 public function add($a, $b) {
+                    $myString = "This is my string
+                        which is very
+                        very long and
+                        has several line breaks.";
                     return $a + $b;
                 }
             }
@@ -22,10 +25,7 @@ Feature: Use Humbug
             {
                 public function testAddsNumbers() {
                     $foo = new Foo;
-                    $r = $foo->add(2, 1);
-                    // emulate error
-                    if ($r !== 3) require __DIR__ . '/this.does.not.exist.xyz'; 
-                    $this->assertEquals(3, $r);
+                    $this->assertEquals(3, $foo->add(2, 1));
                 }
             }
             """
@@ -80,13 +80,13 @@ Feature: Use Humbug
             Mutation Testing is commencing on 1 files...
             (.: killed, M: escaped, S: uncovered, E: fatal error, T: timed out)
 
-            E
+            .
 
             1 mutations were generated:
-                   0 mutants were killed
+                   1 mutants were killed
                    0 mutants were not covered by tests
                    0 covered mutants were not detected
-                   1 fatal errors were encountered
+                   0 fatal errors were encountered
                    0 time outs were encountered
 
             Metrics:

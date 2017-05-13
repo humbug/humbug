@@ -6,7 +6,7 @@ so, while it does actually work quite well, it will have rough edges that a team
 of minions are slaving to hammer out. If it falls out of the gate, you have been
 warned ;).
 
-[![Build Status](https://travis-ci.org/humbug/humbug.svg)](https://travis-ci.org/humbug/humbug) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/humbug/humbug/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/humbug/humbug/?branch=master)
+[![Build Status](https://travis-ci.org/humbug/humbug.svg)](https://travis-ci.org/humbug/humbug) [![Build status](https://ci.appveyor.com/api/projects/status/j1v1iwcv5o8ohb7p/branch/master?svg=true)](https://ci.appveyor.com/project/humbug/humbug/branch/master) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/humbug/humbug/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/humbug/humbug/?branch=master)
 [![StyleCI](https://styleci.io/repos/28300862/shield?style=flat)](https://styleci.io/repos/28300862) [![Total Downloads](https://poser.pugx.org/humbug/humbug/downloads.png)](https://packagist.org/packages/humbug/humbug)
 [![Slack](https://img.shields.io/badge/slack-%23humbug-red.svg?style=flat-square)](https://symfony.com/slack-invite)
 
@@ -23,6 +23,7 @@ Run `git remote -v` to see what you're actually using.
 **Table of Contents**
 
 - [Introduction](#introduction)
+- [Contributing](#contributing)
 - [Installation](#installation)
 	- [Git](#git)
 	- [Phar](#phar)
@@ -54,6 +55,13 @@ Testing is intended to help you judge how well your unit tests actually perform
 and where they could be improved.
 
 I've written in more detail about why Mutation Testing is worth having: [Lies, Damned Lies and Code Coverage: Towards Mutation Testing](http://blog.astrumfutura.com/2015/01/lies-damned-lies-and-code-coverage-towards-mutation-testing/)
+
+Contributing
+------------
+
+Humbug is an open source project that welcomes pull requests and issues from anyone.
+Before opening pull requests, please read our short [Contribution Guide](https://github.com/humbug/humbug/blob/master/.github/CONTRIBUTING.md).
+
 
 Installation
 ------------
@@ -442,6 +450,9 @@ Mutators
 Humbug implements a basic suite of Mutators, which essentially tells us when a
 particular PHP token can be mutated, and also apply that mutation to an array
 of tokens.
+
+Note: Source code held within functions (rather than class methods) is not mutated
+at this time.
 
 Binary Arithmetic:
 
