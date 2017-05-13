@@ -88,7 +88,7 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
 
         $result = $process->getOutput();
 
-        $this->assertStringStartsWith('TAP version', $result);
+        $this->assertStringStartsWith('TAP version', $result, $process->getErrorOutput());
         $this->assertTrue($adapter->ok($result));
     }
 
@@ -116,7 +116,7 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
 
         $result = $process->getOutput();
 
-        $this->assertStringStartsWith('TAP version', $result);
+        $this->assertStringStartsWith('TAP version', $result, $process->getErrorOutput());
         $this->assertTrue($adapter->ok($result));
     }
 
@@ -144,7 +144,7 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
 
         $result = $process->getOutput();
 
-        $this->assertTrue($adapter->ok($result));
+        $this->assertTrue($adapter->ok($result), $process->getErrorOutput());
     }
 
     public function testAdapterDetectsTestsFailingFromTestFail()
@@ -171,7 +171,7 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
 
         $result = $process->getOutput();
 
-        $this->assertFalse($adapter->ok($result));
+        $this->assertFalse($adapter->ok($result), $process->getErrorOutput());
     }
 
     public function testAdapterDetectsTestsFailingFromException()
@@ -198,7 +198,7 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
 
         $result = $process->getOutput();
 
-        $this->assertFalse($adapter->ok($result));
+        $this->assertFalse($adapter->ok($result), $process->getErrorOutput());
     }
 
     public function testAdapterDetectsTestsFailingFromError()
@@ -225,7 +225,7 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
 
         $result = $process->getOutput();
 
-        $this->assertFalse($adapter->ok($result));
+        $this->assertFalse($adapter->ok($result), $process->getErrorOutput());
     }
 
     public function testAdapterOutputProcessingDetectsFailOverMultipleLinesWithNoDepOnFinalStatusReport()
@@ -272,7 +272,7 @@ OUTPUT;
 
         $result = $process->getOutput();
 
-        $this->assertEquals(2, $adapter->hasOks($result));
+        $this->assertEquals(2, $adapter->hasOks($result), $process->getErrorOutput());
         $this->assertStringStartsWith('TAP version', $result);
         $this->assertTrue($adapter->ok($result), "Regression output: \n" . $result);
     }
