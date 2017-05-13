@@ -33,6 +33,7 @@ build
 composer.lock
 docs
 vendor
+vendor-bin/*/vendor
 
 #Other generic stuff that might be
 composer.phar
