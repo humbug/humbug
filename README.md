@@ -451,6 +451,9 @@ Humbug implements a basic suite of Mutators, which essentially tells us when a
 particular PHP token can be mutated, and also apply that mutation to an array
 of tokens.
 
+Note: Source code held within functions (rather than class methods) is not mutated
+at this time.
+
 Binary Arithmetic:
 
 | Original | Mutated | Original | Mutated |
