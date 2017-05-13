@@ -247,7 +247,27 @@ other than your project's base directory.
     "source": {
         "directories": [
             "src"
-        ],
+        ]
+    }
+}
+```
+
+If you use a specific phpunit instance, e.g. a PHAR file or script on a custom path, you
+can configure Humbug to use that instance by configuring the absolute path to
+the file. Humbug will otherwise perform a standard search for an executable, i.e.
+first priority being local vendor directory, next being system PATH. The custom phar or
+script file name must start with `phpunit`.
+
+```js
+{
+    "timeout": 10,
+    "source": {
+        "directories": [
+            "src"
+        ]
+    }
+    "phpunit": {
+        "filepath": "/absolute/path/to/phpunit-5.7.phar"
     }
 }
 ```

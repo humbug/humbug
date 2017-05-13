@@ -20,4 +20,9 @@ class PhpunitExecutableFinderTest extends \PHPUnit_Framework_TestCase
         $result = $finder->find();
         $this->assertRegExp('%phpunit.*(\\.bat|\\.phar)?$%i', $result);
     }
+
+    public function testFinderCanLocateACustomPhpunitNotInVendorOrPath()
+    {
+        $this->markTestIncomplete('Design test to inject custom config for this.');
+    }
 }

@@ -128,7 +128,7 @@ class PhpunitExecutableFinder extends AbstractExecutableFinder
     private function getExecutableNames()
     {
         if ($this->getConfig()->isPhpunitConfigured()) {
-            return [basename($this->getConfig()->getPhpunitConfig()->phar)];
+            return [basename($this->getConfig()->getPhpunitConfig()->filepath)];
         }
         return ['phpunit', 'phpunit.phar'];
     }
@@ -139,7 +139,7 @@ class PhpunitExecutableFinder extends AbstractExecutableFinder
     private function getPhpunitExecutablePath()
     {
         if ($this->getConfig()->isPhpunitConfigured()) {
-            return dirname($this->getConfig()->getPhpunitConfig()->phar);
+            return dirname($this->getConfig()->getPhpunitConfig()->filepath);
         }
         return getcwd();
     }
