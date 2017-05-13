@@ -24,7 +24,7 @@ Feature: Use Humbug
                     $foo = new Foo;
                     $r = $foo->add(2, 1);
                     // emulate error
-                    if ($r !== 3) $foo->bar();
+                    if ($r !== 3) require __DIR__ . '/this.does.not.exist.xyz'; 
                     $this->assertEquals(3, $r);
                 }
             }

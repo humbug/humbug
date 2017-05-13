@@ -175,7 +175,9 @@ class Text
             $this->write(
                 ' |' . $counter . ' ('
                 . str_pad($current, strlen($count), ' ', STR_PAD_LEFT)
-                . '/' . $count . ')' . PHP_EOL, false);
+                . '/' . $count . ')' . PHP_EOL,
+                false
+            );
         }
     }
 
@@ -196,7 +198,9 @@ class Text
             $this->write(
                 ' |' . $counter . ' ('
                 . str_pad($current, strlen($count), ' ', STR_PAD_LEFT)
-                . '/' . $count . ')' . PHP_EOL, false);
+                . '/' . $count . ')' . PHP_EOL,
+                false
+            );
         }
     }
 

@@ -23,6 +23,7 @@ Run `git remote -v` to see what you're actually using.
 **Table of Contents**
 
 - [Introduction](#introduction)
+- [Contributing](#contributing)
 - [Installation](#installation)
 	- [Git](#git)
 	- [Phar](#phar)
@@ -53,7 +54,14 @@ Whereas Code Coverage can tell you what code your tests are executing, Mutation
 Testing is intended to help you judge how well your unit tests actually perform
 and where they could be improved.
 
-I've written in more detail about why Mutation Testing is worth having: [Lies, Damned Lies and Code Coverage: Towards Mutation Testing](http://blog.astrumfutura.com/2015/01/lies-damned-lies-and-code-coverage-towards-mutation-testing/)
+I've written in more detail about why Mutation Testing is worth having: [Lies, Damned Lies and Code Coverage: Towards Mutation Testing](http://padraic.github.io/humbug.html)
+
+Contributing
+------------
+
+Humbug is an open source project that welcomes pull requests and issues from anyone.
+Before opening pull requests, please read our short [Contribution Guide](https://github.com/humbug/humbug/blob/master/.github/CONTRIBUTING.md).
+
 
 Installation
 ------------
@@ -442,6 +450,9 @@ Mutators
 Humbug implements a basic suite of Mutators, which essentially tells us when a
 particular PHP token can be mutated, and also apply that mutation to an array
 of tokens.
+
+Note: Source code held within functions (rather than class methods) is not mutated
+at this time.
 
 Binary Arithmetic:
 

@@ -32,11 +32,14 @@ class ProcessRunner
     ) {
         $hasFailure = false;
 
-        $process->run(function ($out, $data) use (
-                $process,
-                $testFrameworkAdapter,
-                $onProgressCallback,
-                &$hasFailure
+        $process->run(function (
+            $out,
+            $data
+        ) use (
+            $process,
+            $testFrameworkAdapter,
+            $onProgressCallback,
+            &$hasFailure
         ) {
             if ($out == Process::ERR) {
                 $hasFailure = true;
