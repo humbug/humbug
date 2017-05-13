@@ -15,7 +15,6 @@ use Symfony\Component\Process\Process;
 
 abstract class AdapterAbstract
 {
-
     protected $okCount = 0;
     
     /**
