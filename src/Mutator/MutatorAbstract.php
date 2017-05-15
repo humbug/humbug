@@ -15,6 +15,12 @@ use Humbug\Utility\Tokenizer;
 abstract class MutatorAbstract
 {
     /**
+     * @param array $tokens
+     * @param int $index
+     */
+    abstract public static function getMutation(array &$tokens, $index);
+
+    /**
      * Perform a mutation against the given original source code tokens for
      * a mutable element
      *
