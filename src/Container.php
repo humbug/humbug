@@ -181,7 +181,7 @@ class Container
     /**
      * Get the base directory.
      *
-     * @return string
+     * @return \stdClass
      */
     public function getSourceList()
     {
