@@ -35,7 +35,7 @@ class ObjectVisitor implements Visitor
         $this->arguments = $arguments;
     }
 
-    public function visitElement(\DOMNode $domElement)
+    public function visitElement(\DOMElement $domElement)
     {
         $domElement->setAttribute('class', $this->className);
         $dom = $domElement->ownerDocument;
