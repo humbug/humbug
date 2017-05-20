@@ -302,30 +302,37 @@ class Text
     }
 
     /**
-     * Display only the head and tail of given output, removing text between
-     * the two where deemed umimportant.
-     *
-     * @param string $output
+     * Extract failure details and reformat into human readable form.
+     * 
+     * @param  string $output
      * @return string
      */
-    private function headAndTail($output, $lineCount = 10, $omittedMarker = '[...Middle of output removed by Humbug...]')
-    {
-        $lines = explode("\n", $output);
-        if (count($lines) <= ($lineCount * 2)) {
-            return $output;
-        }
-        return implode("\n", array_merge(
-            array_slice($lines, 0, $lineCount),
-            [$omittedMarker],
-            array_slice($lines, -$lineCount, $lineCount)
-        ));
-    }
-
     private function extractFail($output)
     {
         if (preg_match('%##teamcity\[testFailed.*\]%', $output, $matches)) {
-            return $matches[0];
+            preg_match(
+                "/##teamcity.*name='(.*)' message='(.*)' details='\\s*(.*)' flowId=.*/",
+                $output,
+                $matches
+            );
+            $matches = $this->replaceEscapedChars($matches);
+            $fail = sprintf(
+                'Test Name: %s' . PHP_EOL . 'Failure Message: %s' . PHP_EOL . 'Trace:' . PHP_EOL . '%s',
+                $matches[1],
+                $matches[2],
+                $matches[3]
+            );
+            return $fail;
         }
         return 'No failure output was detected by Humbug, but a failure was reported by PHPUnit.';
+    }
+
+    private function replaceEscapedChars(array $chars)
+    {
+        return str_replace(
+            ["|n ", "|n", "|'", "|\""],
+            ["\n", "\n", "'", "\""],
+            $chars
+        );
     }
 }

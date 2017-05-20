@@ -68,5 +68,5 @@ Feature: Use Humbug
         When I run humbug
         Then I should see output containing:
             """
-            ##teamcity[testFailed
+            Failure Message:
             """
