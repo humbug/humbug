@@ -311,7 +311,7 @@ class Text
     {
         if (preg_match('%##teamcity\[testFailed.*\]%', $output, $matches)) {
             preg_match(
-                "/##teamcity.*name='(.*)' message='(.*)' details='\\s*(.*)' flowId=.*/",
+                "/##teamcity\\[testFailed.*name='(.*)' message='(.*)' details='\\s*(.*)' flowId=.*/",
                 $output,
                 $matches
             );
