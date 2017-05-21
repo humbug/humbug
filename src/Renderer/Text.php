@@ -303,7 +303,7 @@ class Text
 
     /**
      * Extract failure details and reformat into human readable form.
-     * 
+     *
      * @param  string $output
      * @return string
      */
