@@ -53,10 +53,7 @@ abstract class AdapterAbstract
      */
     public function ok($output)
     {
-        if (preg_match("%##teamcity\[testFailed%", $output)) {
-            return false;
-        }
-        return true;
+        return 0 === preg_match("%##teamcity\[testFailed%", $output);
     }
 
     /**
