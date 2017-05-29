@@ -63,6 +63,14 @@ class Humbug extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        if (PHP_SAPI !== 'phpdbg' && !defined('HHVM_VERSION') && !extension_loaded('xdebug')) {
+            $output->writeln(
+                '<error>You need to install and enable xdebug, or use phpdbg, '
+                . 'in order to allow for code coverage generation.</error>'
+            );
+            return 1;
+        }
+
         Performance::upMemProfiler();
 
         $this->validate($input);

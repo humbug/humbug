@@ -93,7 +93,7 @@ class Mutant implements Serializable
     public function getDiff()
     {
         return $this->diff->difference(
-            file_get_contents($this->mutation->getfile()),
+            file_get_contents($this->mutation->getFile()),
             file_get_contents($this->file)
         );
     }
