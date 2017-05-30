@@ -1,0 +1,5 @@
+{
+    "require": {
+        "povils/phpmnd": "^1.0"
+    }
+}
