@@ -20,7 +20,9 @@
 
     <filter>
         <whitelist>
-            <directory>.</directory>
+            <exclude>
+                <directory>.</directory>
+            </exclude>
         </whitelist>
     </filter>
     

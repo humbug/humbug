@@ -68,13 +68,5 @@ Feature: Use Humbug
         When I run humbug
         Then I should see output containing:
             """
-            Humbug running test suite to generate logs and code coverage data...
-
-            Tests must be in a fully passing state before Humbug is run.
-            Incomplete, skipped or risky tests are allowed.
-            The testing framework reported an exit code of 143.
-            The testing framework ran into a failure or error. Refer to output below.
-            Stdout:
-               > TAP version 13
-               > not ok 1 - Error: FooTest::testAddsNumbers
+            Failure Message:
             """
