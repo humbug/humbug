@@ -16,7 +16,7 @@ class ReplaceWildcardVisitor implements Visitor
         $this->locator = $locator;
     }
 
-    public function visitElement(\DOMNode $domElement)
+    public function visitElement(\DOMElement $domElement)
     {
         $directories = $this->locator->locateDirectories($domElement->nodeValue);
 
