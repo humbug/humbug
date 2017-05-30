@@ -54,7 +54,7 @@ Whereas Code Coverage can tell you what code your tests are executing, Mutation
 Testing is intended to help you judge how well your unit tests actually perform
 and where they could be improved.
 
-I've written in more detail about why Mutation Testing is worth having: [Lies, Damned Lies and Code Coverage: Towards Mutation Testing](http://blog.astrumfutura.com/2015/01/lies-damned-lies-and-code-coverage-towards-mutation-testing/)
+I've written in more detail about why Mutation Testing is worth having: [Lies, Damned Lies and Code Coverage: Towards Mutation Testing](http://padraic.github.io/humbug.html)
 
 Contributing
 ------------

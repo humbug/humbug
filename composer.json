@@ -17,7 +17,7 @@
     },
     "require": {
         "php": ">=5.6.0",
-        "phpunit/phpunit": "^5.0",
+        "phpunit/phpunit": "^5.7",
         "symfony/console": "^2.6|^3.0",
         "symfony/finder": "^2.6|^3.0",
         "symfony/process": "^2.6|^3.0",
@@ -29,7 +29,7 @@
     },
     "require-dev": {
         "mockery/mockery": "^0.9",
-        "behat/behat": "^3.0.15",
+        "behat/behat": "^3.3",
         "symfony/filesystem": "^2.6|^3.0",
         "mikey179/vfsStream": "^1.4",
         "ciaranmcnulty/versionbasedtestskipper": "^0.2.1",

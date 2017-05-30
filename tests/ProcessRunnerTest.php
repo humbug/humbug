@@ -75,10 +75,7 @@ class ProcessRunnerTest extends \PHPUnit_Framework_TestCase
     private function createOkProcess()
     {
         $process = new PhpProcess('<?php
-echo "TAP version 13\r\n";
-echo "ok 78 - Humbug\Test\Mutator\ConditionalBoundary\LessThanOrEqualToTest::testReturnsTokenEquivalentToLessThanOrEqualTo\r\n";
-echo "ok 79 - Humbug\Test\Mutator\ConditionalBoundary\LessThanOrEqualToTest::testMutatesLessThanToLessThanOrEqualTo\r\n";
-echo "ok 80 - Humbug\Test\Mutator\ConditionalBoundary\LessThanTest::testReturnsTokenEquivalentToLessThanOrEqualTo\r\n";
+echo "##teamcity[testFinished name=\'Some sort of test finished\' duration=\'0\' flowId=\'15199\']\r\n";
         ');
 
         return $process;
@@ -95,13 +92,7 @@ echo "ok 80 - Humbug\Test\Mutator\ConditionalBoundary\LessThanTest::testReturnsT
     private function createNotOkProcess()
     {
         $process = new PhpProcess('<?php
-echo "TAP version 13\r\n";
-echo "not ok 82 - Humbug\Test\Mutator\ConditionalBoundary\LessThanOrEqualToTest::testMutatesLessThanToLessThanOrEqualTo\r\n";
-echo "not ok 78 - Humbug\Test\Mutator\ConditionalBoundary\LessThanOrEqualToTest::testReturnsTokenEquivalentToLessThanOrEqualTo\r\n";
-echo "not ok 79 - Humbug\Test\Mutator\ConditionalBoundary\LessThanOrEqualToTest::testMutatesLessThanToLessThanOrEqualTo\r\n";
-echo "not ok 80 - Humbug\Test\Mutator\ConditionalBoundary\LessThanOrEqualToTest::testMutatesLessThanToLessThanOrEqualTo\r\n";
-echo "not ok 81 - Humbug\Test\Mutator\ConditionalBoundary\LessThanOrEqualToTest::testMutatesLessThanToLessThanOrEqualTo\r\n";
-echo "ok 81 - Humbug\Test\Mutator\ConditionalBoundary\LessThanOrEqualToTest::testMutatesLessThanToLessThanOrEqualTo\r\n";
+echo "##teamcity[testFailed name=\'Some sort of test finished\' duration=\'0\' flowId=\'15199\']\r\n";
         ');
         return $process;
     }
