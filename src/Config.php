@@ -75,6 +75,15 @@ class Config
         return $this->getLogs('text');
     }
 
+    public function getDepth()
+    {
+        if (!isset($this->config->depth)) {
+            return null;
+        }
+
+        return $this->config->depth;
+    }
+
     private function getLogs($type)
     {
         if (!isset($this->config->logs->{$type})) {
