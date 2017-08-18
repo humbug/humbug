@@ -166,7 +166,7 @@ class Humbug extends Command
                 $finder->exclude($exclude);
             }
         }
-        if(!\is_null($depth)){
+        if (!\is_null($depth)) {
             $finder->depth($depth);
         }
         return $finder;
