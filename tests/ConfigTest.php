@@ -167,6 +167,21 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($config->getLogsText());
     }
 
+    public function testShouldHaveDepth()
+    {
+        $depth = 1;
+        $configData = new \stdClass();
+        $configData->depth = $depth;
+        $config = new Config($configData);
+        $this->assertSame($depth, $config->getDepth());
+    }
+
+    public function testShouldNotHaveDepth()
+    {
+        $config = new Config(new \stdClass());
+        $this->assertNull($config->getDepth());
+    }
+
     public function testShouldNotRiseExceptionWhenLogsJsonDirNotExists()
     {
         $directory = 'path/to/not-a-dir';

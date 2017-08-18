@@ -64,6 +64,8 @@ class Configure extends Command
 
         $jsonLogFile = $this->getJsonLogFile($input, $output);
 
+        $depth = $this->getDepth($input, $output);
+
         if (!$this->isGenerationConfirmed($input, $output)) {
             $output->writeln('<fg=red>Aborted.</fg=red>' .PHP_EOL);
             return 0;
@@ -75,7 +77,8 @@ class Configure extends Command
             $chDir,
             $timeout,
             $textLogFile,
-            $jsonLogFile
+            $jsonLogFile,
+            $depth
         );
 
         $this->saveConfiguration($configuration);
@@ -127,7 +130,8 @@ class Configure extends Command
         $chDir,
         $timeout,
         $textLogFile,
-        $jsonLogFile
+        $jsonLogFile,
+        $depth
     ) {
         $source = new \stdClass();
         $source->directories = $sourcesDirs;
@@ -153,6 +157,9 @@ class Configure extends Command
             $configuration->logs = $logs;
         }
 
+        if ($depth) {
+            $configuration->depth = $depth;
+        }
         return $configuration;
     }
 
@@ -306,6 +313,17 @@ class Configure extends Command
         $textLogQuestion = new Question('Where do you want to store the json log (if you need it)? : ');
         $textLogFile = $this->getQuestionHelper()->ask($input, $output, $textLogQuestion);
         return $textLogFile;
+    }
+
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return string
+     */
+    private function getDepth(InputInterface $input, OutputInterface $output)
+    {
+        $depthQuestion = new Question('Depth of traversing directories recursively (if you want to restrict it) : ');
+        return $this->getQuestionHelper()->ask($input, $output, $depthQuestion);
     }
 
     /**

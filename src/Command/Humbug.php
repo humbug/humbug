@@ -151,7 +151,7 @@ class Humbug extends Command
         }
     }
 
-    protected function prepareFinder($directories, $excludes, array $names = null)
+    protected function prepareFinder($directories, $excludes, array $names = null, $depth = null)
     {
         $finder = new Finder;
         $finder->files();
@@ -173,6 +173,9 @@ class Humbug extends Command
             foreach ($excludes as $exclude) {
                 $finder->exclude($exclude);
             }
+        }
+        if (!\is_null($depth)) {
+            $finder->depth($depth);
         }
         return $finder;
     }
@@ -202,7 +205,8 @@ class Humbug extends Command
         $finder = $this->prepareFinder(
             isset($source->directories)? $source->directories : null,
             isset($source->excludes)? $source->excludes : null,
-            $input->getOption('file')
+            $input->getOption('file'),
+            $newConfig->getDepth()
         );
 
         $this->mutableIterator = new MutableIterator($this->container, $finder);
