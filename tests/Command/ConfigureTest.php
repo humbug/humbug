@@ -66,6 +66,7 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
             "\n" .
             "\n" .
             "\n" .
+            "\n" .
             "Y\n"
         );
 
@@ -107,6 +108,7 @@ JSON;
             "\n" .
             "\n" .
             "\n" .
+            "\n" .
             "Y\n"
         );
 
@@ -142,6 +144,7 @@ JSON;
             "\n" .
             "custom-log.txt\n" .
             "\n" .
+            "\n" .
             "Y\n"
         );
 
@@ -176,6 +179,7 @@ JSON;
             "\n" .
             "\n" .
             "humbuglog.json\n" .
+            "\n" .
             "Y\n"
         );
 
@@ -210,6 +214,7 @@ JSON;
         $this->setUserInput(
             $srcDir1 . "\n" .
             $srcDir2 . "\n" .
+            "\n" .
             "\n" .
             "\n" .
             "\n" .
@@ -260,6 +265,7 @@ JSON;
             "\n" .
             "\n" .
             "\n" .
+            "\n" .
             "Y\n"
         );
 
@@ -298,6 +304,7 @@ JSON;
             "5\n" .
             "\n" .
             "\n" .
+            "\n" .
             "Y\n"
         );
 
@@ -314,6 +321,42 @@ JSON;
     "logs": {
         "text": "humbuglog.txt"
     }
+}
+JSON;
+
+        $this->assertHumbugJsonEqualsJson($expectedJson);
+    }
+
+    public function testShouldCreateConfigurationWithDepth()
+    {
+        mkdir('src');
+        touch('phpunit.xml');
+
+        $this->setUserInput(
+            "src\n" .
+            "\n" .
+            "\n" .
+            "\n" .
+            "\n" .
+            "\n" .
+            "1\n" .
+            "Y\n"
+        );
+
+        $this->executeCommand();
+
+        $expectedJson = <<<JSON
+{
+    "source": {
+        "directories": [
+            "src"
+        ]
+    },
+    "timeout": 10,
+    "logs": {
+        "text": "humbuglog.txt"
+    },
+    "depth" : "1"
 }
 JSON;
 
@@ -343,6 +386,7 @@ JSON;
 
         $this->setUserInput(
             $srcDirName . "\n".
+            "\n" .
             "\n" .
             "\n" .
             "\n" .
