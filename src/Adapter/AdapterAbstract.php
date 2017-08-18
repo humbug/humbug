@@ -15,6 +15,7 @@ use Symfony\Component\Process\Process;
 
 abstract class AdapterAbstract
 {
+    protected $okCount = 0;
     
     /**
      * Runs the tests suite according to Runner set options and the execution
@@ -52,14 +53,7 @@ abstract class AdapterAbstract
      */
     public function ok($output)
     {
-        $lines = explode("\n", $output);
-        foreach ($lines as $line) {
-            if (preg_match("%not ok \\d+ - %", $line)
-            && !preg_match("%# TODO%", $line)) {
-                return false;
-            }
-        }
-        return true;
+        return 0 === preg_match("%##teamcity\[testFailed%", $output);
     }
 
     /**
@@ -67,16 +61,15 @@ abstract class AdapterAbstract
      *
      * This assumes the output is in Test Anywhere Protocol (TAP) format.
      *
-     * TODO: Update regex to make certain we take the LAST numbered ok
-     *
      * @param string $output
      * @return bool|int
      */
     public function hasOks($output)
     {
-        $result = preg_match_all("%ok (\\d+) - .*%m", $output, $matches);
+        $result = preg_match_all("%##teamcity\[testFinished%", $output);
         if ($result) {
-            return (int) end($matches[1]);
+            $this->okCount += $result;
+            return $this->okCount;
         }
         return false;
     }

@@ -14,11 +14,10 @@ use Humbug\Process\ComposerExecutableFinder;
 
 class ComposerExecutableFinderTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testFinderCanLocatePhpunitExecutable()
     {
         $finder = new ComposerExecutableFinder();
         $result = $finder->find();
-        $this->assertRegExp('%composer(\\.bat|\\.phar)?$%', $result);
+        $this->assertRegExp('%composer(\\.bat|\\.phar)?$%i', $result);
     }
 }

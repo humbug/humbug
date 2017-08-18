@@ -88,35 +88,7 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
 
         $result = $process->getOutput();
 
-        $this->assertStringStartsWith('TAP version', $result);
-        $this->assertTrue($adapter->ok($result));
-    }
-
-    public function testAdapterRunsPhpunitCommandWithAlltestsFileTarget()
-    {
-        $container = m::mock('\Humbug\Container');
-        $container->shouldReceive([
-            'getSourceList'    => __DIR__ . '/_files/phpunit2',
-            'getTestRunDirectory'      => __DIR__ . '/_files/phpunit2',
-            'getBaseDirectory'      => __DIR__ . '/_files/phpunit2',
-            'getTimeout'            => 1200,
-            'getTempDirectory'     => $this->tmpDir,
-            'getAdapterOptions'     => [],
-            'getBootstrap'          => '',
-            'getAdapterConstraints' => 'AllTests.php'
-        ]);
-
-        $adapter = new Phpunit;
-        $process = $adapter->getProcess(
-            $container,
-            true,
-            true
-        );
-        $process->run();
-
-        $result = $process->getOutput();
-
-        $this->assertStringStartsWith('TAP version', $result);
+        $this->assertContains('##teamcity[', $result, $process->getErrorOutput());
         $this->assertTrue($adapter->ok($result));
     }
 
@@ -144,7 +116,7 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
 
         $result = $process->getOutput();
 
-        $this->assertTrue($adapter->ok($result));
+        $this->assertTrue($adapter->ok($result), $process->getErrorOutput());
     }
 
     public function testAdapterDetectsTestsFailingFromTestFail()
@@ -171,7 +143,8 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
 
         $result = $process->getOutput();
 
-        $this->assertFalse($adapter->ok($result));
+        $this->assertContains('##teamcity[', $result);
+        $this->assertFalse($adapter->ok($result), $process->getErrorOutput());
     }
 
     public function testAdapterDetectsTestsFailingFromException()
@@ -198,7 +171,8 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
 
         $result = $process->getOutput();
 
-        $this->assertFalse($adapter->ok($result));
+        $this->assertContains('##teamcity[', $result);
+        $this->assertFalse($adapter->ok($result), $process->getErrorOutput());
     }
 
     public function testAdapterDetectsTestsFailingFromError()
@@ -225,11 +199,13 @@ class PhpunitTest extends \PHPUnit_Framework_TestCase
 
         $result = $process->getOutput();
 
-        $this->assertFalse($adapter->ok($result));
+        $this->assertContains('##teamcity[', $result);
+        $this->assertFalse($adapter->ok($result), $process->getErrorOutput());
     }
 
     public function testAdapterOutputProcessingDetectsFailOverMultipleLinesWithNoDepOnFinalStatusReport()
     {
+        $this->markTestIncomplete('This seems redundant as it should never happen - fail on first failure is set');
         $adapter = new Phpunit;
         $output = <<<OUTPUT
 TAP version 13
@@ -271,9 +247,9 @@ OUTPUT;
         $process->run();
 
         $result = $process->getOutput();
-
-        $this->assertEquals(2, $adapter->hasOks($result));
-        $this->assertStringStartsWith('TAP version', $result);
+      
+        $this->assertEquals(2, $adapter->hasOks($result), $process->getErrorOutput());
+        $this->assertContains('##teamcity[', $result);
         $this->assertTrue($adapter->ok($result), "Regression output: \n" . $result);
     }
 

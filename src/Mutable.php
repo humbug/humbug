@@ -139,14 +139,14 @@ class Mutable
                 continue;
             }
 
-            if (is_array($token) && ($token[0] == T_CLASS || $token[0] == T_INTERFACE)
+            if (is_array($token) && ($token[0] == T_CLASS || $token[0] == T_INTERFACE || $token[0] == T_TRAIT)
             && $tokens[$index-1][0] !== T_DOUBLE_COLON) {
                 $className = $namespace . '\\' . $tokens[$index+2][1];
                 continue;
             }
 
             //TODO: handle whitespace!
-            if (is_array($token) && $token[0] == T_FUNCTION) {
+            if (is_array($token) && $token[0] == T_FUNCTION && '???' !== $className) {
                 if (!isset($tokens[$index+2][1])) {
                     continue; // ignore closure
                 }

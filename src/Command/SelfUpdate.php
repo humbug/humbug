@@ -23,7 +23,6 @@ use Humbug\SelfUpdate\Strategy\GithubStrategy;
 
 class SelfUpdate extends Command
 {
-
     const VERSION_URL = 'https://padraic.github.io/humbug/downloads/humbug.version';
 
     const PHAR_URL = 'https://padraic.github.io/humbug/downloads/humbug.phar';
@@ -284,40 +283,40 @@ class SelfUpdate extends Command
             ->setName('self-update')
             ->setDescription('Update humbug.phar to most recent stable, pre-release or development build.')
             ->addOption(
-               'dev',
-               'd',
-               InputOption::VALUE_NONE,
-               'Update to most recent development build of Humbug.'
+                'dev',
+                'd',
+                InputOption::VALUE_NONE,
+                'Update to most recent development build of Humbug.'
             )
             ->addOption(
-               'non-dev',
-               'N',
-               InputOption::VALUE_NONE,
-               'Update to most recent non-development (alpha/beta/stable) build of Humbug tagged on Github.'
+                'non-dev',
+                'N',
+                InputOption::VALUE_NONE,
+                'Update to most recent non-development (alpha/beta/stable) build of Humbug tagged on Github.'
             )
             ->addOption(
-               'pre',
-               'p',
-               InputOption::VALUE_NONE,
-               'Update to most recent pre-release version of Humbug (alpha/beta/rc) tagged on Github.'
+                'pre',
+                'p',
+                InputOption::VALUE_NONE,
+                'Update to most recent pre-release version of Humbug (alpha/beta/rc) tagged on Github.'
             )
             ->addOption(
-               'stable',
-               's',
-               InputOption::VALUE_NONE,
-               'Update to most recent stable version tagged on Github.'
+                'stable',
+                's',
+                InputOption::VALUE_NONE,
+                'Update to most recent stable version tagged on Github.'
             )
             ->addOption(
-               'rollback',
-               'r',
-               InputOption::VALUE_NONE,
-               'Rollback to previous version of Humbug if available on filesystem.'
+                'rollback',
+                'r',
+                InputOption::VALUE_NONE,
+                'Rollback to previous version of Humbug if available on filesystem.'
             )
             ->addOption(
-               'check',
-               'c',
-               InputOption::VALUE_NONE,
-               'Checks what updates are available across all possible stability tracks.'
+                'check',
+                'c',
+                InputOption::VALUE_NONE,
+                'Checks what updates are available across all possible stability tracks.'
             )
         ;
     }

@@ -15,8 +15,6 @@ use Humbug\Command\Humbug as HumbugCommand;
  */
 class FeatureContext implements Context, SnippetAcceptingContext
 {
-
-
     private $application;
 
     private $appTester;
@@ -108,7 +106,7 @@ class FeatureContext implements Context, SnippetAcceptingContext
      */
     public function iShouldSeeContaining(PyStringNode $string)
     {
-        if (!preg_match('/' . preg_quote((string) $string) . '/', $this->appTester->getDisplay())) {
+        if (!preg_match('/' . preg_quote((string) $string, '/') . '/', $this->appTester->getDisplay())) {
             throw new \RuntimeException(sprintf(
                 'Output did not match expected pattern:%s%s', PHP_EOL, $this->appTester->getDisplay()
             ));

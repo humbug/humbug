@@ -4,3 +4,5 @@ default:
       contexts: [ FeatureContext, FilesystemContext ]
   formatters:
     progress: ~
+  extensions:
+    Cjm\Behat\VersionBasedTestSkipperExtension: ~

@@ -47,8 +47,8 @@ class Phpunit extends AdapterAbstract
         $firstRun = false,
         $interceptFile = null,
         $mutantFile = null,
-        array $testSuites = [])
-    {
+        array $testSuites = []
+    ) {
         $jobopts = [
             'testdir'       => $container->getTestRunDirectory(),
             'basedir'       => $container->getBaseDirectory(),
@@ -61,7 +61,7 @@ class Phpunit extends AdapterAbstract
         /**
          * We like standardised easy to parse outout
          */
-        array_unshift($jobopts['command'], '--tap');
+        array_unshift($jobopts['command'], '--teamcity');
 
         /*
          * We only need a single fail!

@@ -45,7 +45,6 @@ class Addition extends MutatorAbstract
         if (!is_array($t) && $t == '+') {
             $tokenCount = count($tokens);
             for ($i = $index + 1; $i < $tokenCount; $i++) {
-
                 // check for short array syntax
                 if (!is_array($tokens[$i]) && $tokens[$i][0] == '[') {
                     return false;

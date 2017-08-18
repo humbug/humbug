@@ -63,6 +63,14 @@ class Humbug extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        if (PHP_SAPI !== 'phpdbg' && !defined('HHVM_VERSION') && !extension_loaded('xdebug')) {
+            $output->writeln(
+                '<error>You need to install and enable xdebug, or use phpdbg, '
+                . 'in order to allow for code coverage generation.</error>'
+            );
+            return 1;
+        }
+
         Performance::upMemProfiler();
 
         $this->validate($input);
@@ -210,62 +218,62 @@ class Humbug extends Command
             ->setName('run')
             ->setDescription('Run Humbug for target tests')
             ->addOption(
-               'adapter',
-               'a',
-               InputOption::VALUE_REQUIRED,
-               'Set name of the test adapter to use.',
+                'adapter',
+                'a',
+                InputOption::VALUE_REQUIRED,
+                'Set name of the test adapter to use.',
                 'phpunit'
             )
             ->addOption(
-               'options',
-               'o',
-               InputOption::VALUE_REQUIRED,
-               'Set command line options string to pass to test adapter. '
+                'options',
+                'o',
+                InputOption::VALUE_REQUIRED,
+                'Set command line options string to pass to test adapter. '
                     . 'Default is dictated dynamically by '.'Humbug'.'.'
             )
             ->addOption(
-               'file',
-               'f',
-               InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
-               'Pattern representing file(s) to mutate. Can set more than once.'
+                'file',
+                'f',
+                InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
+                'Pattern representing file(s) to mutate. Can set more than once.'
             )
             ->addOption(
-               'constraints',
-               'c',
-               InputOption::VALUE_REQUIRED,
-               'Options set on adapter to constrain which tests are run. '
+                'constraints',
+                'c',
+                InputOption::VALUE_REQUIRED,
+                'Options set on adapter to constrain which tests are run. '
                     . 'Applies only to the very first test run.'
             )
             ->addOption(
-               'timeout',
-               't',
-               InputOption::VALUE_REQUIRED,
-               'Sets a timeout applied for each test run to combat infinite loop mutations.',
+                'timeout',
+                't',
+                InputOption::VALUE_REQUIRED,
+                'Sets a timeout applied for each test run to combat infinite loop mutations.',
                 10
             )
             ->addOption(
-               'no-progress-bar',
-               'b',
-               InputOption::VALUE_NONE,
-               'Removes dynamic output like the progress bar and performance data from output.'
+                'no-progress-bar',
+                'b',
+                InputOption::VALUE_NONE,
+                'Removes dynamic output like the progress bar and performance data from output.'
             )
             ->addOption(
-               'incremental',
-               'i',
-               InputOption::VALUE_NONE,
-               'Enable incremental mutation testing by relying on cached results.'
+                'incremental',
+                'i',
+                InputOption::VALUE_NONE,
+                'Enable incremental mutation testing by relying on cached results.'
             )
             ->addOption(
-               'log-json',
-               null,
-               InputOption::VALUE_REQUIRED,
-               'Generate log file in JSON format.'
+                'log-json',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Generate log file in JSON format.'
             )
             ->addOption(
-               'log-text',
-               null,
-               InputOption::VALUE_REQUIRED,
-               'Generate log file in text format.'
+                'log-text',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Generate log file in text format.'
             )
         ;
     }

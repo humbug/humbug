@@ -151,6 +151,31 @@ class XmlConfiguration
         $log->setAttribute('target', $target);
     }
 
+    /**
+     * Adds a <php><env name="XXX" value="YYY"/></php> to set environment variables
+     * and generates the <php> block if not present.
+     *
+     * @param string $name  Environment variable name
+     * @param string $value Value of the variable to set
+     */
+    public function addEnvironmentVariable($name, $value)
+    {
+        $phpNodeList = $this->xpath->query('/phpunit/php');
+
+        if ($phpNodeList->length) {
+            $phpNode = $phpNodeList->item(0);
+        } else {
+            $phpNode = $this->dom->createElement('php');
+            $this->rootElement->appendChild($phpNode);
+        }
+
+        $env = $this->dom->createElement('env');
+        $phpNode->appendChild($env);
+
+        $env->setAttribute('name', $name);
+        $env->setAttribute('value', $value);
+    }
+
     public function addWhiteListFilter(array $whiteListDirectories, array $excludeDirectories = [])
     {
         if (empty($whiteListDirectories)) {

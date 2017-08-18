@@ -86,6 +86,13 @@ class XmlConfigurationBuilderTest extends \PHPUnit_Framework_TestCase
         $xmlConfiguration->wasCalledWith('addLogger', ['coverage-text', 'file/coverage.txt']);
     }
 
+    public function testShouldBuildConfigurationWithSymfonyDeprecationNoticesDisabled()
+    {
+        $xmlConfiguration = $this->builder->getConfiguration();
+
+        $xmlConfiguration->wasCalledWith('addEnvironmentVariable', ['SYMFONY_DEPRECATIONS_HELPER', 'weak']);
+    }
+
     public function testShouldBuildConfigurationWithTimeCollectorListener()
     {
         $this->builder->setTimeCollectionListener('path/to/stats.json');
@@ -170,6 +177,11 @@ class FakeConfiguration extends XmlConfiguration
     }
 
     public function replacePathsToAbsolutePaths(XmlConfiguration\Visitor $pathVisitor, XmlConfiguration\Visitor $wildcardVisitor)
+    {
+        $this->calls[][__FUNCTION__] = func_get_args();
+    }
+
+    public function addEnvironmentVariable($name, $value)
     {
         $this->calls[][__FUNCTION__] = func_get_args();
     }

@@ -19,7 +19,6 @@ use Humbug\TestSuite\Mutant\Runner;
 
 class TextLoggingObserver extends BaseObserver
 {
-
     private $textLogFile;
 
     private $renderer;

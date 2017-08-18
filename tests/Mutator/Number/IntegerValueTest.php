@@ -15,7 +15,6 @@ use Humbug\Mutator\Number\IntegerValue;
 
 class IntegerValueTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testReturnsTokenSwitchingZeroForOne()
     {
         $mutation = new IntegerValue;

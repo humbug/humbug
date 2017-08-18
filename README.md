@@ -6,12 +6,24 @@ so, while it does actually work quite well, it will have rough edges that a team
 of minions are slaving to hammer out. If it falls out of the gate, you have been
 warned ;).
 
-[![Build Status](https://travis-ci.org/padraic/humbug.svg)](https://travis-ci.org/padraic/humbug) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/padraic/humbug/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/padraic/humbug/?branch=master)
-[![StyleCI](https://styleci.io/repos/28300862/shield?style=flat)](https://styleci.io/repos/28300862)
+[![Build Status](https://travis-ci.org/humbug/humbug.svg)](https://travis-ci.org/humbug/humbug) [![Build status](https://ci.appveyor.com/api/projects/status/j1v1iwcv5o8ohb7p/branch/master?svg=true)](https://ci.appveyor.com/project/humbug/humbug/branch/master) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/humbug/humbug/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/humbug/humbug/?branch=master)
+[![StyleCI](https://styleci.io/repos/28300862/shield?style=flat)](https://styleci.io/repos/28300862) [![Total Downloads](https://poser.pugx.org/humbug/humbug/downloads.png)](https://packagist.org/packages/humbug/humbug)
+[![Slack](https://img.shields.io/badge/slack-%23humbug-red.svg?style=flat-square)](https://symfony.com/slack-invite)
+
+⚠️️ Update your remotes! Humbug has transferred to a new location. While your
+existing repositories will redirect transparently for any operations, take some
+time to transition to the new URL.
+```sh
+$ git remote set-url upstream https://github.com/humbug/humbug.git
+```
+Replace `upstream` with the name of the remote you use locally; `upstream` is commonly
+used but you may be using something else. You may also using a different URL (e.g. git@github.com:mockery/mockery.git).
+Run `git remote -v` to see what you're actually using.
 
 **Table of Contents**
 
 - [Introduction](#introduction)
+- [Contributing](#contributing)
 - [Installation](#installation)
 	- [Git](#git)
 	- [Phar](#phar)
@@ -42,7 +54,14 @@ Whereas Code Coverage can tell you what code your tests are executing, Mutation
 Testing is intended to help you judge how well your unit tests actually perform
 and where they could be improved.
 
-I've written in more detail about why Mutation Testing is worth having: [Lies, Damned Lies and Code Coverage: Towards Mutation Testing](http://blog.astrumfutura.com/2015/01/lies-damned-lies-and-code-coverage-towards-mutation-testing/)
+I've written in more detail about why Mutation Testing is worth having: [Lies, Damned Lies and Code Coverage: Towards Mutation Testing](http://padraic.github.io/humbug.html)
+
+Contributing
+------------
+
+Humbug is an open source project that welcomes pull requests and issues from anyone.
+Before opening pull requests, please read our short [Contribution Guide](https://github.com/humbug/humbug/blob/master/.github/CONTRIBUTING.md).
+
 
 Installation
 ------------
@@ -52,7 +71,7 @@ Installation
 You can clone and install Humbug's dependencies using Composer:
 
 ```sh
-git clone https://github.com/padraic/humbug.git
+git clone https://github.com/humbug/humbug.git
 cd humbug
 /path/to/composer.phar install
 ```
@@ -250,6 +269,18 @@ or if you just cloned Humbug:
 ../humbug/bin/humbug
 ```
 
+or if you added Humbug as a composer dependency to your project:
+
+```sh
+./vendor/bin/humbug
+```
+
+Instead of php with the xdebug extension you may also run Humbug via [phpdbg](http://phpdbg.com/):
+
+```sh
+phpdbg -qrr humbug.phar
+```
+
 If all went well, you will get something similar to:
 
 ```
@@ -347,7 +378,7 @@ Command Line Options
 Humbug has a few command line options of note, other than those normally associated
 with any Symfony Console application.
 
-####Overriding The Configured Timeout
+#### Overriding The Configured Timeout
 
 You can manually set the timeout threshold for any single test:
 
@@ -355,7 +386,7 @@ You can manually set the timeout threshold for any single test:
 humbug --timeout=10
 ```
 
-####Restricting Files To Mutate
+#### Restricting Files To Mutate
 
 If you're only interested in mutating a subset of your files, you can pass
 any number of `--file` options containing simple file names, globs or regular
@@ -370,7 +401,7 @@ This in no way restricts the initial Humbug check on the overall test suite whic
 is still executed in full to ensure all tests are passing correctly before
 proceeding.
 
-####Incremental Analysis
+#### Incremental Analysis
 
 Incremental Analysis (IA) is an experimental unfinished mode of operation where results
 are cached locally between runs and reused where it makes sense. At present, this
@@ -419,6 +450,9 @@ Mutators
 Humbug implements a basic suite of Mutators, which essentially tells us when a
 particular PHP token can be mutated, and also apply that mutation to an array
 of tokens.
+
+Note: Source code held within functions (rather than class methods) is not mutated
+at this time.
 
 Binary Arithmetic:
 

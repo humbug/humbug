@@ -108,7 +108,7 @@ class JsonLogParser
             }
         }
         $stats['total'] = $total;
-        $percent = [];
+        $percents = [];
         foreach ($stats as $section => $amount) {
             $percents[$section] = round((float)$amount / (float)$stats['total'] * 100);
         }

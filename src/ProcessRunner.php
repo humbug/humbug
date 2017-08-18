@@ -32,26 +32,21 @@ class ProcessRunner
     ) {
         $hasFailure = false;
 
-        $process->run(function ($out, $data) use (
-                $process,
-                $testFrameworkAdapter,
-                $onProgressCallback,
-                &$hasFailure
+        $process->run(function (
+            $out,
+            $data
+        ) use (
+            $process,
+            $testFrameworkAdapter,
+            $onProgressCallback,
+            &$hasFailure
         ) {
             if ($out == Process::ERR) {
-                $hasFailure= true;
-                $process->stop();
-                return;
-            }
-
-            if ($hasFailure) {
-                return;
+                $hasFailure = true;
             }
 
             if (!$testFrameworkAdapter->ok($data)) {
                 $hasFailure = true;
-                $process->stop();
-                return;
             }
 
             $oksCount = $testFrameworkAdapter->hasOks($data);

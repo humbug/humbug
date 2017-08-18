@@ -111,7 +111,8 @@ class Container
     {
         if (!is_dir($dir)) {
             throw new InvalidArgumentException(sprintf(
-                'The cache directory does not exist: %s', $dir
+                'The cache directory does not exist: %s',
+                $dir
             ));
         }
         $this->cacheDirectory = $dir;
@@ -180,7 +181,7 @@ class Container
     /**
      * Get the base directory.
      *
-     * @return string
+     * @return \stdClass
      */
     public function getSourceList()
     {

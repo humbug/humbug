@@ -18,7 +18,6 @@ use Symfony\Component\Console\Helper\FormatterHelper;
 
 class Text
 {
-
     protected $output;
 
     protected $progressCount = 0;
@@ -86,7 +85,7 @@ class Text
         }
         if ($result->hasStdOut()) {
             $error[] = 'Stdout:';
-            $error = array_merge($error, $this->indent($this->headAndTail($result->getStdOut()), true));
+            $error = array_merge($error, $this->indent($this->extractFail($result->getStdOut()), true));
         }
         if ($result->hasStdErr()) {
             $error[] = 'Stderr:';
@@ -176,7 +175,9 @@ class Text
             $this->write(
                 ' |' . $counter . ' ('
                 . str_pad($current, strlen($count), ' ', STR_PAD_LEFT)
-                . '/' . $count . ')' . PHP_EOL, false);
+                . '/' . $count . ')' . PHP_EOL,
+                false
+            );
         }
     }
 
@@ -197,7 +198,9 @@ class Text
             $this->write(
                 ' |' . $counter . ' ('
                 . str_pad($current, strlen($count), ' ', STR_PAD_LEFT)
-                . '/' . $count . ')' . PHP_EOL, false);
+                . '/' . $count . ')' . PHP_EOL,
+                false
+            );
         }
     }
 
@@ -284,7 +287,7 @@ class Text
      * @param bool $asArray
      * @return string
      */
-    protected function indent($output, $asArray = false)
+    private function indent($output, $asArray = false)
     {
         $lines = explode("\n", $output);
         $out = [];
@@ -299,22 +302,37 @@ class Text
     }
 
     /**
-     * Display only the head and tail of given output, removing text between
-     * the two where deemed umimportant.
+     * Extract failure details and reformat into human readable form.
      *
-     * @param string $output
+     * @param  string $output
      * @return string
      */
-    protected function headAndTail($output, $lineCount = 20, $omittedMarker = '[...Middle of output removed by Humbug...]')
+    private function extractFail($output)
     {
-        $lines = explode("\n", $output);
-        if (count($lines) <= ($lineCount * 2)) {
-            return $output;
+        if (preg_match('%##teamcity\[testFailed.*\]%', $output, $matches)) {
+            preg_match(
+                "/##teamcity\\[testFailed.*name='(.*)' message='(.*)' details='\\s*(.*)' flowId=.*/",
+                $output,
+                $matches
+            );
+            $matches = $this->replaceEscapedChars($matches);
+            $fail = sprintf(
+                'Test Name: %s' . PHP_EOL . 'Failure Message: %s' . PHP_EOL . 'Trace:' . PHP_EOL . '%s',
+                $matches[1],
+                $matches[2],
+                $matches[3]
+            );
+            return $fail;
         }
-        return implode("\n", array_merge(
-            array_slice($lines, 0, $lineCount),
-            [$omittedMarker],
-            array_slice($lines, -$lineCount, $lineCount)
-        ));
+        return 'No failure output was detected by Humbug, but a failure was reported by PHPUnit.';
+    }
+
+    private function replaceEscapedChars(array $chars)
+    {
+        return str_replace(
+            ["|n ", "|n", "|'", "|\""],
+            ["\n", "\n", "'", "\""],
+            $chars
+        );
     }
 }
