@@ -37,6 +37,7 @@ Run `git remote -v` to see what you're actually using.
 - [Command Line Options](#command-line-options)
 	- [Overriding The Configured Timeout](#overriding-the-configured-timeout)
 	- [Restricting Files To Mutate](#restricting-files-to-mutate)
+	- [Mutate specific files](#mutate-specific-files)
 	- [Incremental Analysis](#incremental-analysis)
 - [Performance](#performance)
 - [Mutators](#mutators)
@@ -395,6 +396,21 @@ method.
 
 ```sh
 humbug --file=NewClass.php --file=*Driver.php
+```
+
+This in no way restricts the initial Humbug check on the overall test suite which
+is still executed in full to ensure all tests are passing correctly before
+proceeding.
+
+#### Mutate specific files
+
+If you want to mutate only a few specific files, you can pass 
+any number of `--path` options containing full path file names. This option will be passed 
+to a filter `\Closure` that will intersect files found using the config and/or `--file` option
+ with the files provided by you using the `--path` option.
+
+```sh
+humbug --path=src/Data/NewClass.php --path=src/Driver/Driver.php
 ```
 
 This in no way restricts the initial Humbug check on the overall test suite which
