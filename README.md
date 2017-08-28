@@ -413,7 +413,7 @@ to a filter `\Closure` that will intersect files found using the config and/or `
 humbug --path=src/Data/NewClass.php --path=src/Driver/Driver.php
 ```
 
-This in no way restricts the initial Humbug check on the overall test suite which
+Note: This in no way restricts the initial Humbug check on the overall test suite which
 is still executed in full to ensure all tests are passing correctly before
 proceeding.
 

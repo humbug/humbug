@@ -178,7 +178,7 @@ class Humbug extends Command
 
         if (isset($paths)) {
             $finder->filter(function (SplFileInfo $file) use ($paths) {
-                return \in_array($file, $paths);
+                return in_array($file, $paths);
             });
         }
         return $finder;
@@ -245,7 +245,7 @@ class Humbug extends Command
                 'path',
                 'p',
                 InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
-                'Full path file(s) to mutate. If present, an intersection between this and config files will be made!'
+                'Full path file(s) to mutate. If present, an intersection between this and config files will be made.'
             )
             ->addOption(
                 'constraints',
