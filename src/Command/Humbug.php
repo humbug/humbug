@@ -176,7 +176,7 @@ class Humbug extends Command
             }
         }
 
-        if (isset($paths)) {
+        if (!is_null($paths) && count($paths) > 0) {
             $finder->filter(function (SplFileInfo $file) use ($paths) {
                 return in_array($file, $paths);
             });
