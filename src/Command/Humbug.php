@@ -29,6 +29,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\SplFileInfo;
 
 class Humbug extends Command
 {
@@ -151,7 +152,7 @@ class Humbug extends Command
         }
     }
 
-    protected function prepareFinder($directories, $excludes, array $names = null)
+    protected function prepareFinder($directories, $excludes, array $names = null, $paths = null)
     {
         $finder = new Finder;
         $finder->files();
@@ -173,6 +174,12 @@ class Humbug extends Command
             foreach ($excludes as $exclude) {
                 $finder->exclude($exclude);
             }
+        }
+
+        if (!is_null($paths) && count($paths) > 0) {
+            $finder->filter(function (SplFileInfo $file) use ($paths) {
+                return in_array($file, $paths);
+            });
         }
         return $finder;
     }
@@ -202,7 +209,8 @@ class Humbug extends Command
         $finder = $this->prepareFinder(
             isset($source->directories)? $source->directories : null,
             isset($source->excludes)? $source->excludes : null,
-            $input->getOption('file')
+            $input->getOption('file'),
+            $input->getOption('path')
         );
 
         $this->mutableIterator = new MutableIterator($this->container, $finder);
@@ -232,6 +240,12 @@ class Humbug extends Command
                 'f',
                 InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
                 'Pattern representing file(s) to mutate. Can set more than once.'
+            )
+            ->addOption(
+                'path',
+                'p',
+                InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
+                'Full path file(s) to mutate. If present, an intersection between this and config files will be made.'
             )
             ->addOption(
                 'constraints',
