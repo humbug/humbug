@@ -13,7 +13,7 @@ namespace Humbug\Test\Mutator\Boolean;
 
 use Humbug\Mutator;
 
-class LogicalLowerAndTest extends \PHPUnit_Framework_TestCase
+class LogicalLowerAndTest extends \PHPUnit\Framework\TestCase
 {
     public function testReturnsTokenEquivalentToLogicalLowerOr()
     {

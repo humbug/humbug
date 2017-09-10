@@ -1,6 +1,6 @@
 <?php
 
-class FirstTest extends \PHPUnit_Framework_TestCase
+class FirstTest extends \PHPUnit\Framework\TestCase
 {
     public function testFirst()
     {

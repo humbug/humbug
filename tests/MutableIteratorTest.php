@@ -15,7 +15,7 @@ use Humbug\MutableIterator;
 use Prophecy\Argument;
 use Symfony\Component\Finder\Finder;
 
-class MutableIteratorTest extends \PHPUnit_Framework_TestCase
+class MutableIteratorTest extends \PHPUnit\Framework\TestCase
 {
     public function testIteratorIsEmptyWhenNoMutablesAreFound()
     {

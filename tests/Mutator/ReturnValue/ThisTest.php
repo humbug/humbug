@@ -14,7 +14,7 @@ namespace Humbug\Test\Mutator\ReturnValue;
 use Humbug\Mutator\ReturnValue\This;
 use Humbug\Utility\Tokenizer;
 
-class ThisTest extends \PHPUnit_Framework_TestCase
+class ThisTest extends \PHPUnit\Framework\TestCase
 {
     public function testMutatesWithValueReturnTrue()
     {

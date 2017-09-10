@@ -13,7 +13,7 @@ namespace Humbug\Test\Mutator\ConditionalNegation;
 
 use Humbug\Mutator;
 
-class NotEqualTest extends \PHPUnit_Framework_TestCase
+class NotEqualTest extends \PHPUnit\Framework\TestCase
 {
     public function testReturnsTokenEquivalentToEqual()
     {

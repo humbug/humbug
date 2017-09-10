@@ -1,6 +1,6 @@
 <?php
 
-class RequiresServerArgvTest extends \PHPUnit_Framework_TestCase
+class RequiresServerArgvTest extends \PHPUnit\Framework\TestCase
 {
     public function testServerShouldHaveArgv()
     {

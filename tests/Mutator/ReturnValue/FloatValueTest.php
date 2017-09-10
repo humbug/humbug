@@ -14,7 +14,7 @@ namespace Humbug\Test\Mutator\ReturnValue;
 use Humbug\Mutator\ReturnValue\FloatValue;
 use Humbug\Utility\Tokenizer;
 
-class FloatValueTest extends \PHPUnit_Framework_TestCase
+class FloatValueTest extends \PHPUnit\Framework\TestCase
 {
     public function testMutatesWithValueReturnOne()
     {

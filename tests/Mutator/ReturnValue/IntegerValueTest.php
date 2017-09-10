@@ -14,7 +14,7 @@ namespace Humbug\Test\Mutator\ReturnValue;
 use Humbug\Mutator\ReturnValue\IntegerValue;
 use Humbug\Utility\Tokenizer;
 
-class IntegerValueTest extends \PHPUnit_Framework_TestCase
+class IntegerValueTest extends \PHPUnit\Framework\TestCase
 {
     public function testMutatesWithValueReturnOne()
     {

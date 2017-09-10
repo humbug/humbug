@@ -16,7 +16,7 @@ use Humbug\Adapter\Locator;
 use Humbug\Adapter\Phpunit\ConfigurationLoader;
 use Humbug\Adapter\Phpunit\XmlConfiguration;
 
-class XmlConfigurationTest extends \PHPUnit_Framework_TestCase
+class XmlConfigurationTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @expectedException \LogicException

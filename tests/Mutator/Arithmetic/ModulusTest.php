@@ -13,7 +13,7 @@ namespace Humbug\Test\Mutator\Arithmetic;
 
 use Humbug\Mutator;
 
-class ModulusTest extends \PHPUnit_Framework_TestCase
+class ModulusTest extends \PHPUnit\Framework\TestCase
 {
     public function testReturnsTokenEquivalentToMultiplicationOperator()
     {

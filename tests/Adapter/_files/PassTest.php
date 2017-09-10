@@ -1,6 +1,6 @@
 <?php
 
-class PassTest extends \PHPUnit_Framework_TestCase
+class PassTest extends \PHPUnit\Framework\TestCase
 {
 
     /**

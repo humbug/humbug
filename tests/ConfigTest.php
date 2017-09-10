@@ -15,7 +15,7 @@ namespace Humbug\Test;
 
 use Humbug\Config;
 
-class ConfigTest extends \PHPUnit_Framework_TestCase
+class ConfigTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @dataProvider validSourceDataProvider

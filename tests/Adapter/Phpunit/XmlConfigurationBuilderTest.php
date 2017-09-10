@@ -17,7 +17,7 @@ use Humbug\Adapter\Phpunit\XmlConfiguration;
 use Humbug\Adapter\Phpunit\XmlConfiguration\ObjectVisitor;
 use Humbug\Adapter\Phpunit\XmlConfigurationBuilder;
 
-class XmlConfigurationBuilderTest extends \PHPUnit_Framework_TestCase
+class XmlConfigurationBuilderTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var FakeConfigurationBuilder

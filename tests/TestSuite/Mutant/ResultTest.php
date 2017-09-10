@@ -12,7 +12,7 @@ namespace Humbug\Test\TestSuite\Mutant;
 
 use Humbug\TestSuite\Mutant\Result;
 
-class ResultTest extends \PHPUnit_Framework_TestCase
+class ResultTest extends \PHPUnit\Framework\TestCase
 {
     public function testGetStatusCodeReturnsCorrectCode()
     {

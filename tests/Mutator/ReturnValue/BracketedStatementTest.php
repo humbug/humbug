@@ -14,7 +14,7 @@ namespace Humbug\Test\Mutator\ReturnValue;
 use Humbug\Mutator;
 use Humbug\Utility\Tokenizer;
 
-class BracketedStatementTest extends \PHPUnit_Framework_TestCase
+class BracketedStatementTest extends \PHPUnit\Framework\TestCase
 {
     public function testDoesNotMutateWithValueReturnTrue()
     {

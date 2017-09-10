@@ -22,7 +22,7 @@ use Mockery as m;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 
-class MutantTest extends \PHPUnit_Framework_TestCase
+class MutantTest extends \PHPUnit\Framework\TestCase
 {
     private $container;
 

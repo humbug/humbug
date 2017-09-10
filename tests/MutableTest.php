@@ -14,7 +14,7 @@ namespace Humbug\Test;
 use Humbug\Mutable;
 use Humbug\Mutator;
 
-class MutableTest extends \PHPUnit_Framework_TestCase
+class MutableTest extends \PHPUnit\Framework\TestCase
 {
     protected $root = '';
 

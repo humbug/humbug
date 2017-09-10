@@ -12,7 +12,7 @@ namespace Humbug\Test\Process;
 
 use Humbug\Process\ComposerExecutableFinder;
 
-class ComposerExecutableFinderTest extends \PHPUnit_Framework_TestCase
+class ComposerExecutableFinderTest extends \PHPUnit\Framework\TestCase
 {
     public function testFinderCanLocatePhpunitExecutable()
     {

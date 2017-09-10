@@ -4,7 +4,7 @@ namespace Humbug\Test\Adapter;
 
 use Humbug\Adapter\Locator;
 
-class LocatorTest extends \PHPUnit_Framework_TestCase
+class LocatorTest extends \PHPUnit\Framework\TestCase
 {
     public function testShouldLocateMany()
     {

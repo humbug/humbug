@@ -14,7 +14,7 @@ namespace Humbug\Test\Mutator\IfStatement;
 use Humbug\Mutator\IfStatement\FunctionCallNegation;
 use Humbug\Utility\Tokenizer;
 
-class FunctionCallNegationTest extends \PHPUnit_Framework_TestCase
+class FunctionCallNegationTest extends \PHPUnit\Framework\TestCase
 {
     public function testNotMutatesWithValueTrue()
     {

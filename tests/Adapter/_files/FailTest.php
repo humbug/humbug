@@ -1,6 +1,6 @@
 <?php
 
-class FailTest extends \PHPUnit_Framework_TestCase
+class FailTest extends \PHPUnit\Framework\TestCase
 {
 
     /**

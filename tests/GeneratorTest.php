@@ -16,7 +16,7 @@ use Humbug\Mutable;
 use Mockery as m;
 use Symfony\Component\Finder\Finder;
 
-class GeneratorTest extends \PHPUnit_Framework_TestCase
+class GeneratorTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var string

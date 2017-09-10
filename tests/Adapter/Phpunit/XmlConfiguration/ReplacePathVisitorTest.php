@@ -15,7 +15,7 @@ namespace Humbug\Test\Adapter\Phpunit\XmlConfiguration;
 use Humbug\Adapter\Locator;
 use Humbug\Adapter\Phpunit\XmlConfiguration\ReplacePathVisitor;
 
-class ReplacePathVisitorTest extends \PHPUnit_Framework_TestCase
+class ReplacePathVisitorTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var ReplacePathVisitor

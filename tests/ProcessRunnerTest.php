@@ -18,7 +18,7 @@ use Humbug\Adapter\Phpunit;
 use Humbug\ProcessRunner;
 use Symfony\Component\Process\PhpProcess;
 
-class ProcessRunnerTest extends \PHPUnit_Framework_TestCase
+class ProcessRunnerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var ProcessRunner

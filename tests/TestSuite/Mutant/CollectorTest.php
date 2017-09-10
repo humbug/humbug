@@ -12,7 +12,7 @@ namespace Humbug\Test\TestSuite\Mutant;
 
 use Humbug\TestSuite\Mutant\Collector;
 
-class CollectorTest extends \PHPUnit_Framework_TestCase
+class CollectorTest extends \PHPUnit\Framework\TestCase
 {
     public function testAddShadowToCollector()
     {

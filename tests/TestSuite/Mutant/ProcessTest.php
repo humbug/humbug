@@ -14,7 +14,7 @@ use Humbug\TestSuite\Mutant\Process;
 use Humbug\TestSuite\Mutant\Result;
 use Prophecy\Argument;
 
-class ProcessTest extends \PHPUnit_Framework_TestCase
+class ProcessTest extends \PHPUnit\Framework\TestCase
 {
     public function testPropertiesReturnConstructorAssignedValues()
     {

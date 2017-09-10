@@ -14,7 +14,7 @@ namespace Humbug\Test\Mutator\ReturnValue;
 use Humbug\Mutator\ReturnValue\FloatNegation;
 use Humbug\Utility\Tokenizer;
 
-class FloatNegationTest extends \PHPUnit_Framework_TestCase
+class FloatNegationTest extends \PHPUnit\Framework\TestCase
 {
     public function testNotMutatesWithValueReturnTrue()
     {

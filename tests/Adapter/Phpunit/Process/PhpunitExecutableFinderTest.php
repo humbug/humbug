@@ -12,7 +12,7 @@ namespace Humbug\Test\Adapter\Phpunit\Process;
 
 use Humbug\Adapter\Phpunit\Process\PhpunitExecutableFinder;
 
-class PhpunitExecutableFinderTest extends \PHPUnit_Framework_TestCase
+class PhpunitExecutableFinderTest extends \PHPUnit\Framework\TestCase
 {
     public function testFinderCanLocatePhpunitExecutable()
     {

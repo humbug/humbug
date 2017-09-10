@@ -16,7 +16,7 @@ use Humbug\Console\Application;
 /**
  * For actually running Humbug, refer to the Behat feature directory
  */
-class ApplicationTest extends \PHPUnit_Framework_TestCase
+class ApplicationTest extends \PHPUnit\Framework\TestCase
 {
     public function testApplicationHasHumbugLogoSet()
     {

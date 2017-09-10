@@ -13,7 +13,7 @@ namespace Humbug\Test\Mutator\Arithmetic;
 
 use Humbug\Mutator;
 
-class NotTest extends \PHPUnit_Framework_TestCase
+class NotTest extends \PHPUnit\Framework\TestCase
 {
     public function testReturnsTokenEquivalentToWhitespace()
     {

@@ -12,7 +12,7 @@ namespace Humbug\Test\TestSuite\Mutant;
 
 use Humbug\TestSuite\Mutant\PartitionBuilder;
 
-class PartitionTest extends \PHPUnit_Framework_TestCase
+class PartitionTest extends \PHPUnit\Framework\TestCase
 {
     public function testGetBatchesReturnsMutantsInPartitions()
     {

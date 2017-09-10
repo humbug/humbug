@@ -13,7 +13,7 @@ namespace Humbug\Test\Mutator\Arithmetic;
 
 use Humbug\Mutator;
 
-class ModEqualTest extends \PHPUnit_Framework_TestCase
+class ModEqualTest extends \PHPUnit\Framework\TestCase
 {
     public function testReturnsTokenEquivalentToMulEqualOperator()
     {

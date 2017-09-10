@@ -13,7 +13,7 @@ namespace Humbug\Test\Mutator\Arithmetic;
 
 use Humbug\Mutator;
 
-class BitwiseAndTest extends \PHPUnit_Framework_TestCase
+class BitwiseAndTest extends \PHPUnit\Framework\TestCase
 {
     public function testReturnsTokenEquivalentToBitwiseOrOperator()
     {

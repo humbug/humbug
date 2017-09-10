@@ -13,7 +13,7 @@ namespace Humbug\Test\Mutator\Number;
 
 use Humbug\Mutator\Number\IntegerValue;
 
-class IntegerValueTest extends \PHPUnit_Framework_TestCase
+class IntegerValueTest extends \PHPUnit\Framework\TestCase
 {
     public function testReturnsTokenSwitchingZeroForOne()
     {

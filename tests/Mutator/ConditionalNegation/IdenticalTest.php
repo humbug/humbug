@@ -13,7 +13,7 @@ namespace Humbug\Test\Mutator\ConditionalNegation;
 
 use Humbug\Mutator;
 
-class IdenticalTest extends \PHPUnit_Framework_TestCase
+class IdenticalTest extends \PHPUnit\Framework\TestCase
 {
     public function testReturnsTokenEquivalentToNotIdentical()
     {

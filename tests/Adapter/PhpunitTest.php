@@ -14,7 +14,7 @@ namespace Humbug\Test\Adapter;
 use Humbug\Adapter\Phpunit;
 use Mockery as m;
 
-class PhpunitTest extends \PHPUnit_Framework_TestCase
+class PhpunitTest extends \PHPUnit\Framework\TestCase
 {
     private $root;
     private $tmpDir;

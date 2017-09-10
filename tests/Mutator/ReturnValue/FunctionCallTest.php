@@ -14,7 +14,7 @@ namespace Humbug\Test\Mutator\ReturnValue;
 use Humbug\Mutator\ReturnValue\FunctionCall;
 use Humbug\Utility\Tokenizer;
 
-class FunctionCallTest extends \PHPUnit_Framework_TestCase
+class FunctionCallTest extends \PHPUnit\Framework\TestCase
 {
     public function testNotMutatesWithValueReturnTrue()
     {

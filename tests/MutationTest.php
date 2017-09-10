@@ -12,7 +12,7 @@ namespace Humbug\Test;
 
 use Humbug\Mutation;
 
-class MutationTest extends \PHPUnit_Framework_TestCase
+class MutationTest extends \PHPUnit\Framework\TestCase
 {
     public function testMutationProperties()
     {

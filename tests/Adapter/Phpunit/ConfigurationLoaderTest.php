@@ -14,7 +14,7 @@ namespace Humbug\Test\Adapter\Phpunit;
 
 use Humbug\Adapter\Phpunit\ConfigurationLoader;
 
-class ConfigurationLoaderTest extends \PHPUnit_Framework_TestCase
+class ConfigurationLoaderTest extends \PHPUnit\Framework\TestCase
 {
     public function testShouldLoadDomDocument()
     {

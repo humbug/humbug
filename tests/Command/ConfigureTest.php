@@ -16,7 +16,7 @@ use Humbug\Command\Configure;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class ConfigureTest extends \PHPUnit_Framework_TestCase
+class ConfigureTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var Configure

@@ -14,7 +14,7 @@ namespace Humbug\Test\Mutator\ReturnValue;
 use Humbug\Mutator\ReturnValue\IntegerNegation;
 use Humbug\Utility\Tokenizer;
 
-class IntegerNegationTest extends \PHPUnit_Framework_TestCase
+class IntegerNegationTest extends \PHPUnit\Framework\TestCase
 {
     public function testNotMutatesWithValueReturnTrue()
     {

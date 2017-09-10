@@ -18,7 +18,7 @@ use Humbug\Exception\InvalidArgumentException;
 use Mockery as m;
 use Symfony\Component\Finder\Finder;
 
-class ContainerTest extends \PHPUnit_Framework_TestCase
+class ContainerTest extends \PHPUnit\Framework\TestCase
 {
     private $container;
 
