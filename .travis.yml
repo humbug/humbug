@@ -4,7 +4,6 @@ php:
   - 5.6
   - 7.0
   - 7.1
-  - hhvm
 
 env:
   - COMPOSER_FLAGS=--prefer-lowest
@@ -18,8 +17,6 @@ matrix:
     - php: 7.1
       env: COMPOSER_FLAGS=
   fast_finish: true
-  allow_failures:
-    - php: hhvm
 
 cache:
   directories:
