@@ -23,6 +23,11 @@
     ],
     "require": {
         "php": "^7.0",
+        "ext-ctype": "*",
+        "ext-dom": "*",
+        "ext-json": "*",
+        "ext-libxml": "*",
+        "ext-tokenizer": "*",
         "phpunit/phpunit": "^6.0",
         "symfony/console": "^2.6|^3.0",
         "symfony/finder": "^2.6|^3.0",
