@@ -28,6 +28,7 @@ Run `git remote -v` to see what you're actually using.
 	- [Git](#git)
 	- [Phar](#phar)
 	- [Composer](#composer)
+	- [Docker](#docker)
 - [Usage](#usage)
 	- [Configuration](#configuration)
 		- [Configure command](#configure-command)
@@ -172,6 +173,15 @@ export PATH=~/.composer/vendor/bin:$PATH
 ```
 
 Humbug currently works on PHP 5.4 or greater.
+
+#### Docker
+
+If you already familiar with [Docker](https://www.docker.com/what-docker) you can also use the [Humbug Docker container](https://hub.docker.com/r/dockerizedphp/humbug/).
+For example as an shell alias to run Humbug everywhere on CLI. So add this line to your ~/.zshrc, ~/.bashrc or ~/.profile:
+
+```
+alias humbug='docker run -v $PWD:/app --rm dockerizedphp/humbug'
+```
 
 Usage
 -----
