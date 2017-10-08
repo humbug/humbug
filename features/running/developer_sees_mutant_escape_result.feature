@@ -17,12 +17,13 @@ Feature: Use Humbug
         And the test file "tests/FooTest.php" contains:
             """
             <?php
-            class FooTest extends \PHPUnit_Framework_TestCase
+            class FooTest extends \PHPUnit\Framework\TestCase
             {
                 public function testAddsNumbers() {
                     $foo = new Foo;
                     $foo->add(2, 1);
-                    // Whoops! No assertion!
+                    // Whoops! No good assertion!
+                    $this->assertTrue(true);
                 }
             }
             """

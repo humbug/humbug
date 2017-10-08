@@ -3,7 +3,6 @@ Feature: Use Humbug
     As a developer
     I need to be able to run Humbug
 
-    @php:^5.6
     Scenario:
         Given the class file "src/Foo.php" contains:
             """
@@ -18,7 +17,7 @@ Feature: Use Humbug
         And the test file "tests/FooTest.php" contains:
             """
             <?php
-            class FooTest extends \PHPUnit_Framework_TestCase
+            class FooTest extends \PHPUnit\Framework\TestCase
             {
                 public function testAddsNumbers() {
                     $foo = new Foo;
