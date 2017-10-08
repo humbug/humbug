@@ -16,10 +16,13 @@ namespace Humbug\Test;
 use Humbug\Container;
 use Humbug\Exception\InvalidArgumentException;
 use Mockery as m;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Symfony\Component\Finder\Finder;
 
 class ContainerTest extends \PHPUnit\Framework\TestCase
 {
+    use MockeryPHPUnitIntegration;
+
     private $container;
 
     public function setup()
@@ -27,10 +30,6 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         $this->container = new Container(['timeout'=>10]);
     }
 
-    public function tearDown()
-    {
-        m::close();
-    }
 
     public function testShouldHaveAdapterOptionsAfterCreate()
     {
@@ -100,7 +99,7 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
      */
     public function testsetTempDirectoryThrowsExceptionOnUnwriteableParam()
     {
-        $result = $this->container->setTempDirectory('/really/does/not/exist');
+        $this->container->setTempDirectory('/really/does/not/exist');
     }
 
     public function testSetPrimaryTimeout()
