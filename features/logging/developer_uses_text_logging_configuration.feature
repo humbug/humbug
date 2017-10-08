@@ -29,7 +29,7 @@ Feature: Use Humbug
         And the test file "tests/FooNormalTest.php" contains:
             """
             <?php
-            class FooNormalTest extends \PHPUnit_Framework_TestCase
+            class FooNormalTest extends \PHPUnit\Framework\TestCase
             {
                 public function testAddsNumbers() {
                     $foo = new Foo;
@@ -40,7 +40,7 @@ Feature: Use Humbug
         And the test file "tests/FooErrorTest.php" contains:
             """
             <?php
-            class FooErrorTest extends \PHPUnit_Framework_TestCase
+            class FooErrorTest extends \PHPUnit\Framework\TestCase
             {
                 public function testAddsNumbersError() {
                     $foo = new Foo;
@@ -54,7 +54,7 @@ Feature: Use Humbug
         And the test file "tests/FooTimeoutTest.php" contains:
             """
             <?php
-            class FooTimeoutTest extends \PHPUnit_Framework_TestCase
+            class FooTimeoutTest extends \PHPUnit\Framework\TestCase
             {
                 public function testAddsNumbersTimeout() {
                     $foo = new Foo;
@@ -62,18 +62,6 @@ Feature: Use Humbug
                     // emulate timeout
                     if ($r !== 3) sleep(3);
                     $this->assertEquals(3, $r);
-                }
-            }
-            """
-        And the test file "tests/FooEscapeTest.php" contains:
-            """
-            <?php
-            class FooEscapeTest extends \PHPUnit_Framework_TestCase
-            {
-                public function testMultipliesNumbers() {
-                    $foo = new Foo;
-                    $foo->add4(2, 1);
-                    // No assertion here...
                 }
             }
             """

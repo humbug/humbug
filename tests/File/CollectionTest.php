@@ -13,11 +13,14 @@ namespace Humbug\Test\File;
 
 use Humbug\File\Collection;
 use Mockery as m;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 
 class CollectionTest extends \PHPUnit\Framework\TestCase
 {
+    use MockeryPHPUnitIntegration;
+
     private $tmp;
 
     public function setup()

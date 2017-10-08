@@ -15,12 +15,6 @@
     "support": {
         "issues": "https://github.com/padraic/humbug/issues"
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/humbug/phpunit-accelerator"
-        }
-    ],
     "require": {
         "php": "^7.0",
         "ext-ctype": "*",
@@ -34,12 +28,11 @@
         "symfony/process": "^2.6|^3.0",
         "symfony/event-dispatcher": "^2.6|^3.0",
         "sebastian/diff": "^2.0",
-        "padraic/phpunit-accelerator": "dev-master",
         "padraic/phpunit-extensions": "^1.0.0",
         "padraic/phar-updater": "^1.0.0"
     },
     "require-dev": {
-        "mockery/mockery": "^0.9",
+        "mockery/mockery": "^1.0",
         "behat/behat": "^3.3",
         "symfony/filesystem": "^2.6|^3.0",
         "mikey179/vfsStream": "^1.4",
