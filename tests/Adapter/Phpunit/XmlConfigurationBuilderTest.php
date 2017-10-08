@@ -57,17 +57,6 @@ class XmlConfigurationBuilderTest extends \PHPUnit\Framework\TestCase
         $xmlConfiguration->wasCalledWith('replacePathsToAbsolutePaths', [$expectedPathVisitor, $expectedWildcardVisitor], 0);
     }
 
-    public function testShouldBuildConfigurationWithAcceleratorListener()
-    {
-        $this->builder->setAcceleratorListener();
-
-        $xmlConfiguration = $this->builder->getConfiguration();
-
-        $acceleratorListener = new ObjectVisitor('\MyBuilder\PhpunitAccelerator\TestListener', [true]);
-
-        $xmlConfiguration->wasCalledWith('addListener', [$acceleratorListener]);
-    }
-
     public function testShouldBuildConfigurationWithPhpCoverage()
     {
         $this->builder->setPhpCoverage('file/coverage.php');
@@ -188,7 +177,7 @@ class FakeConfiguration extends XmlConfiguration
 
     public function wasCalledWith($function, $arguments, $at = 1)
     {
-        \PHPUnit_Framework_Assert::assertTrue(isset($this->calls[$at][$function]));
-        \PHPUnit_Framework_Assert::assertEquals($arguments, $this->calls[$at][$function]);
+        \PHPUnit\Framework\Assert::assertTrue(isset($this->calls[$at][$function]));
+        \PHPUnit\Framework\Assert::assertEquals($arguments, $this->calls[$at][$function]);
     }
 }

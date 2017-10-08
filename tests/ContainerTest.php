@@ -27,6 +27,11 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         $this->container = new Container(['timeout'=>10]);
     }
 
+    public function tearDown()
+    {
+        m::close();
+    }
+
     public function testShouldHaveAdapterOptionsAfterCreate()
     {
         $input = [

@@ -25,6 +25,11 @@ class CollectionTest extends \PHPUnit\Framework\TestCase
         $this->tmp = vfsStream::setup('tempDir');
     }
 
+    public function tearDown()
+    {
+        m::close();
+    }
+
     public function testAddingSourceFile()
     {
         file_put_contents(vfsStream::url('tempDir/Foo.php'), '012345');

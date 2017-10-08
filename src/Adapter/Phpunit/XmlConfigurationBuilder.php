@@ -103,11 +103,6 @@ class XmlConfigurationBuilder
             $xmlConfiguration->addWhiteListFilter($this->coverageWhiteListDirs, $this->coverageExcludeDirs);
         }
 
-        if ($this->acceleratorListener) {
-            $acceleratorListener = new ObjectVisitor('\MyBuilder\PhpunitAccelerator\TestListener', [true]);
-            $xmlConfiguration->addListener($acceleratorListener);
-        }
-
         if ($this->pathToTimeStats) {
             $timeCollectionListener = new ObjectVisitor('\Humbug\Adapter\Phpunit\Listeners\JsonLoggingTimeCollectorListener', [
                 $this->pathToTimeStats,
