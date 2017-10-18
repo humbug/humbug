@@ -3,8 +3,8 @@ Humbug: Mutation Testing for PHP
 
 Humbug is a Mutation Testing framework for PHP. It is currently in development and
 so, while it does actually work quite well, it will have rough edges that a team
-of minions are slaving to hammer out. If it falls out of the gate, you have been
-warned ;).
+of minions are working hard to hammer out. If it falls out of the gate, you have 
+been warned ;).
 
 [![Build Status](https://travis-ci.org/humbug/humbug.svg)](https://travis-ci.org/humbug/humbug) [![Build status](https://ci.appveyor.com/api/projects/status/j1v1iwcv5o8ohb7p/branch/master?svg=true)](https://ci.appveyor.com/project/humbug/humbug/branch/master) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/humbug/humbug/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/humbug/humbug/?branch=master)
 [![StyleCI](https://styleci.io/repos/28300862/shield?style=flat)](https://styleci.io/repos/28300862) [![Total Downloads](https://poser.pugx.org/humbug/humbug/downloads.png)](https://packagist.org/packages/humbug/humbug)
