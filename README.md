@@ -1,6 +1,8 @@
 Humbug: Mutation Testing for PHP
 ================================
 
+🚨 This package is deprecated, check out [Infection](https://github.com/infection/infection) instead.
+
 Humbug is a Mutation Testing framework for PHP. It is currently in development and
 so, while it does actually work quite well, it will have rough edges that a team
 of minions are working hard to hammer out. If it falls out of the gate, you have 
