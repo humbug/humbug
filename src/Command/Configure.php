@@ -45,7 +45,7 @@ class Configure extends Command
 
         $chDir = $this->resolveChDir($input, $output);
 
-        $sourcesDirs = $this->getDirs($input, $output, 'What source directories do you want to include? : ');
+        $sourcesDirs = $this->getDirs($input, $output, 'What source directories do you want to include? [Press enter to skip after one provided] : ');
 
         if (empty($sourcesDirs)) {
             $output->writeln('A source directory was not provided. Unable to generate "humbug.json.dist".');
@@ -55,7 +55,7 @@ class Configure extends Command
         $excludeDirs = $this->getDirs(
             $input,
             $output,
-            'Any directories to exclude from within your source directories? :'
+            'Any directories to exclude from within your source directories? [Press enter to skip] :'
         );
 
         $timeout = $this->getTimeout($input, $output);
@@ -63,6 +63,8 @@ class Configure extends Command
         $textLogFile = $this->getTextLogFile($input, $output);
 
         $jsonLogFile = $this->getJsonLogFile($input, $output);
+
+        $phpunitFilepath = $this->getPhpunitFilepath($input, $output);
 
         if (!$this->isGenerationConfirmed($input, $output)) {
             $output->writeln('<fg=red>Aborted.</fg=red>' .PHP_EOL);
@@ -75,7 +77,8 @@ class Configure extends Command
             $chDir,
             $timeout,
             $textLogFile,
-            $jsonLogFile
+            $jsonLogFile,
+            $phpunitFilepath
         );
 
         $this->saveConfiguration($configuration);
@@ -118,6 +121,7 @@ class Configure extends Command
      * @param $timeout
      * @param $textLogFile
      * @param $jsonLogFile
+     * @param $phpunitFilepath
      *
      * @return \stdClass
      */
@@ -127,7 +131,8 @@ class Configure extends Command
         $chDir,
         $timeout,
         $textLogFile,
-        $jsonLogFile
+        $jsonLogFile,
+        $phpunitFilepath
     ) {
         $source = new \stdClass();
         $source->directories = $sourcesDirs;
@@ -151,6 +156,11 @@ class Configure extends Command
 
         if ($logs) {
             $configuration->logs = $logs;
+        }
+
+        if (!empty($phpunitFilepath)) {
+            $configuration->phpunit = new \stdClass();
+            $configuration->phpunit->filepath =  $phpunitFilepath;
         }
 
         return $configuration;
@@ -197,7 +207,7 @@ class Configure extends Command
      */
     private function createFrameworkConfigurationQuestion(ConfigurationLocator $configurationLocator)
     {
-        $frameworkConfigurationQuestion = new Question('Where is your phpunit.xml(.dist) configuration located? : ');
+        $frameworkConfigurationQuestion = new Question('Where is your phpunit.xml(.dist) configuration located? [current dir] : ');
         $frameworkConfigurationQuestion->setValidator(function ($answer) use ($configurationLocator) {
             $answer = trim($answer);
 
@@ -303,9 +313,21 @@ class Configure extends Command
      */
     private function getJsonLogFile(InputInterface $input, OutputInterface $output)
     {
-        $textLogQuestion = new Question('Where do you want to store the json log (if you need it)? : ');
+        $textLogQuestion = new Question('Where do you want to store the json log (if you need it)? [Press enter to skip] : ');
         $textLogFile = $this->getQuestionHelper()->ask($input, $output, $textLogQuestion);
         return $textLogFile;
+    }
+
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return string
+     */
+    private function getPhpunitFilepath(InputInterface $input, OutputInterface $output)
+    {
+        $textPhpunitQuestion = new Question('If you use a non-standard phpunit command/phar, you can provide its filepath here. [Press enter to skip] : ');
+        $textPhpunitFile = $this->getQuestionHelper()->ask($input, $output, $textPhpunitQuestion);
+        return $textPhpunitFile;
     }
 
     /**

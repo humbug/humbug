@@ -66,6 +66,7 @@ class ConfigureTest extends \PHPUnit\Framework\TestCase
             "\n" .
             "\n" .
             "\n" .
+            "\n" .
             "Y\n"
         );
 
@@ -88,11 +89,6 @@ JSON;
         $this->assertHumbugJsonEqualsJson($expectedJson);
     }
 
-    private function assertHumbugJsonEqualsJson($expectedJson)
-    {
-        $this->assertJsonStringEqualsJsonString($expectedJson, file_get_contents('humbug.json.dist'));
-    }
-
     public function testShouldCreateConfigurationWithDifferentLocationOfFrameworkConfigFile()
     {
         mkdir('app');
@@ -102,6 +98,7 @@ JSON;
         $this->setUserInput(
             "app\n" .
             "src\n" .
+            "\n" .
             "\n" .
             "\n" .
             "\n" .
@@ -142,6 +139,7 @@ JSON;
             "\n" .
             "custom-log.txt\n" .
             "\n" .
+            "\n" .
             "Y\n"
         );
 
@@ -176,6 +174,7 @@ JSON;
             "\n" .
             "\n" .
             "humbuglog.json\n" .
+            "\n" .
             "Y\n"
         );
 
@@ -210,6 +209,7 @@ JSON;
         $this->setUserInput(
             $srcDir1 . "\n" .
             $srcDir2 . "\n" .
+            "\n" .
             "\n" .
             "\n" .
             "\n" .
@@ -260,6 +260,7 @@ JSON;
             "\n" .
             "\n" .
             "\n" .
+            "\n" .
             "Y\n"
         );
 
@@ -298,6 +299,7 @@ JSON;
             "5\n" .
             "\n" .
             "\n" .
+            "\n" .
             "Y\n"
         );
 
@@ -313,6 +315,44 @@ JSON;
     "timeout": 5,
     "logs": {
         "text": "humbuglog.txt"
+    }
+}
+JSON;
+
+        $this->assertHumbugJsonEqualsJson($expectedJson);
+    }
+
+    public function testShouldCreateConfigurationWithCustomPhpunit()
+    {
+        mkdir('src');
+        touch('phpunit.xml');
+
+        $this->setUserInput(
+            "src\n" .
+            "\n" .
+            "\n" .
+            "\n" .
+            "\n" .
+            "\n" .
+            "/path/to/phpunit-2.0.phar\n" .
+            "Y\n"
+        );
+
+        $this->executeCommand();
+
+        $expectedJson = <<<JSON
+{
+    "source": {
+        "directories": [
+            "src"
+        ]
+    },
+    "timeout": 10,
+    "logs": {
+        "text": "humbuglog.txt"
+    },
+    "phpunit": {
+        "filepath": "\/path\/to\/phpunit-2.0.phar"
     }
 }
 JSON;
@@ -348,6 +388,7 @@ JSON;
             "\n" .
             "\n" .
             "\n" .
+            "\n" .
             "N\\n"
         );
 
@@ -363,6 +404,11 @@ JSON;
         $this->executeCommand();
 
         $this->assertStringEqualsFile('humbug.json', '{}');
+    }
+
+    private function assertHumbugJsonEqualsJson($expectedJson)
+    {
+        $this->assertJsonStringEqualsJsonString($expectedJson, file_get_contents('humbug.json.dist'));
     }
 
     private function getInputStream($input)
