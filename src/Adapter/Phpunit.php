@@ -80,9 +80,13 @@ class Phpunit extends AdapterAbstract
          */
         $xmlConfiguration = $this->assembleXmlConfiguration($container, $firstRun, $testSuites);
 
-        $configFile = $container->getTempDirectory() . '/phpunit.humbug.xml';
-
-        file_put_contents($configFile, $xmlConfiguration->generateXML());
+        $configure = $container->getConfigure();
+        if (null !== $configure) {
+            $configFile = $container->getBaseDirectory() . DIRECTORY_SEPARATOR . $configure;
+        } else {
+            $configFile = $container->getTempDirectory() . '/phpunit.humbug.xml';
+            file_put_contents($configFile, $xmlConfiguration->generateXML());
+        }
 
         foreach ($jobopts['command'] as $key => $value) {
             if ($value == '--configuration' || $value == '-C') {

@@ -114,4 +114,13 @@ class Config
 
         return $this->config->logs->{$type};
     }
+    
+    public function getConfigure()
+    {
+        if (!isset($this->config->configure)) {
+            return;
+        }
+
+        return $this->config->configure;
+    }
 }

@@ -75,7 +75,8 @@ class PhpunitTest extends \PHPUnit\Framework\TestCase
             'getTempDirectory'     => $this->tmpDir,
             'getAdapterOptions'     => [],
             'getBootstrap'          => '',
-            'getAdapterConstraints' => 'MM1_MathTest MathTest.php'
+            'getAdapterConstraints' => 'MM1_MathTest MathTest.php',
+            'getConfigure' => null
         ]);
 
         $adapter = new Phpunit;
@@ -88,6 +89,36 @@ class PhpunitTest extends \PHPUnit\Framework\TestCase
 
         $result = $process->getOutput();
 
+        $this->assertStringStartsWith('TAP version', $result);
+        $this->assertTrue($adapter->ok($result));
+    }
+
+    public function testAdapterRunsPhpunitCommandWithAlltestsFileTarget()
+    {
+        $container = m::mock('\Humbug\Container');
+        $container->shouldReceive([
+            'getSourceList'    => __DIR__ . '/_files/phpunit2',
+            'getTestRunDirectory'      => __DIR__ . '/_files/phpunit2',
+            'getBaseDirectory'      => __DIR__ . '/_files/phpunit2',
+            'getTimeout'            => 1200,
+            'getTempDirectory'     => $this->tmpDir,
+            'getAdapterOptions'     => [],
+            'getBootstrap'          => '',
+            'getAdapterConstraints' => 'AllTests.php',
+            'getConfigure'          => null
+        ]);
+
+        $adapter = new Phpunit;
+        $process = $adapter->getProcess(
+            $container,
+            true,
+            true
+        );
+        $process->run();
+
+        $result = $process->getOutput();
+
+        $this->assertStringStartsWith('TAP version', $result);
         $this->assertContains('##teamcity[', $result, $process->getErrorOutput());
         $this->assertTrue($adapter->ok($result));
     }
@@ -103,7 +134,8 @@ class PhpunitTest extends \PHPUnit\Framework\TestCase
             'getTempDirectory'     => $this->tmpDir,
             'getAdapterOptions'     => [],
             'getBootstrap'          => '',
-            'getAdapterConstraints' => 'PassTest'
+            'getAdapterConstraints' => 'PassTest',
+            'getConfigure'          => null
         ]);
 
         $adapter = new Phpunit;
@@ -130,7 +162,8 @@ class PhpunitTest extends \PHPUnit\Framework\TestCase
             'getTempDirectory'     => $this->tmpDir,
             'getAdapterOptions'     => [],
             'getBootstrap'          => '',
-            'getAdapterConstraints' => 'FailTest'
+            'getAdapterConstraints' => 'FailTest',
+            'getConfigure'          => null
         ]);
 
         $adapter = new Phpunit;
@@ -158,7 +191,8 @@ class PhpunitTest extends \PHPUnit\Framework\TestCase
             'getTempDirectory'     => $this->tmpDir,
             'getAdapterOptions'     => [],
             'getBootstrap'          => '',
-            'getAdapterConstraints' => 'ExceptionTest'
+            'getAdapterConstraints' => 'ExceptionTest',
+            'getConfigure'          => null
         ]);
 
         $adapter = new Phpunit;
@@ -186,7 +220,8 @@ class PhpunitTest extends \PHPUnit\Framework\TestCase
             'getTempDirectory'     => $this->tmpDir,
             'getAdapterOptions'     => [],
             'getBootstrap'          => '',
-            'getAdapterConstraints' => 'ErrorTest'
+            'getAdapterConstraints' => 'ErrorTest',
+            'getConfigure'          => null
         ]);
 
         $adapter = new Phpunit;
@@ -235,7 +270,8 @@ OUTPUT;
             'getTempDirectory'     => $this->tmpDir,
             'getAdapterOptions'     => [],
             'getBootstrap'          => '',
-            'getAdapterConstraints' => ''
+            'getAdapterConstraints' => '',
+            'getConfigure'          => null
         ]);
 
         $adapter = new Phpunit;
@@ -251,6 +287,34 @@ OUTPUT;
         $this->assertEquals(2, $adapter->hasOks($result), $process->getErrorOutput());
         $this->assertContains('##teamcity[', $result);
         $this->assertTrue($adapter->ok($result), "Regression output: \n" . $result);
+    }
+    
+    public function testUseCustomPhpunitConfigureFileTestsPassing()
+    {
+        $container = m::mock('\Humbug\Container');
+        $container->shouldReceive([
+            'getSourceList' => $this->root,
+            'getTestRunDirectory'      => $this->root,
+            'getBaseDirectory'      => $this->root,
+            'getTimeout'            => 1200,
+            'getTempDirectory'     => $this->tmpDir,
+            'getAdapterOptions'     => [],
+            'getBootstrap'          => '',
+            'getAdapterConstraints' => 'PassTest',
+            'getConfigure' => $this->root . '/phpunit.humbug.xml'
+        ]);
+;
+        $adapter = new Phpunit;
+        $process = $adapter->getProcess(
+            $container,
+            true,
+            true
+        );
+        $process->run();
+
+        $result = $process->getOutput();
+
+        $this->assertTrue($adapter->ok($result));
     }
 
     public function directoriesList()

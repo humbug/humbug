@@ -214,6 +214,11 @@ class Humbug extends Command
         );
 
         $this->mutableIterator = new MutableIterator($this->container, $finder);
+        
+        $configure = $newConfig->getConfigure();
+        if ($configure !== null) {
+            $this->container->setConfigure($configure);
+        }
     }
 
     protected function configure()

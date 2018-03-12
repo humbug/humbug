@@ -41,6 +41,8 @@ class Container
     protected $workingCacheDirectory;
 
     protected $srcList;
+    
+    protected $configure;
 
     public function __construct(array $inputOptions)
     {
@@ -343,5 +345,17 @@ class Container
     public function getBootstrap()
     {
         return $this->bootstrap;
+    }
+    
+    public function setConfigure($configure)
+    {
+        $this->configure = $configure;
+        
+        return $this;
+    }
+
+    public function getConfigure()
+    {
+        return $this->configure;
     }
 }
